@@ -1,0 +1,784 @@
+date,region,disease,cases
+2019-01-06,NCR,Dengue,121
+2019-01-13,NCR,Dengue,54
+2019-01-20,NCR,Dengue,128
+2019-01-27,NCR,Dengue,131
+2019-02-03,NCR,Dengue,0
+2019-02-10,NCR,Dengue,21
+2019-02-17,NCR,Dengue,81
+2019-02-24,NCR,Dengue,58
+2019-03-03,NCR,Dengue,68
+2019-03-10,NCR,Dengue,29
+2019-03-17,NCR,Dengue,106
+2019-03-24,NCR,Dengue,101
+2019-03-31,NCR,Dengue,69
+2019-04-07,NCR,Dengue,118
+2019-04-14,NCR,Dengue,91
+2019-04-21,NCR,Dengue,34
+2019-04-28,NCR,Dengue,93
+2019-05-05,NCR,Dengue,37
+2019-05-12,NCR,Dengue,124
+2019-05-19,NCR,Dengue,88
+2019-05-26,NCR,Dengue,88
+2019-06-02,NCR,Dengue,71
+2019-06-09,NCR,Dengue,164
+2019-06-16,NCR,Dengue,108
+2019-06-23,NCR,Dengue,103
+2019-06-30,NCR,Dengue,113
+2019-07-07,NCR,Dengue,159
+2019-07-14,NCR,Dengue,158
+2019-07-21,NCR,Dengue,166
+2019-07-28,NCR,Dengue,173
+2019-08-04,NCR,Dengue,255
+2019-08-11,NCR,Dengue,145
+2019-08-18,NCR,Dengue,145
+2019-08-25,NCR,Dengue,135
+2019-09-01,NCR,Dengue,202
+2019-09-08,NCR,Dengue,227
+2019-09-15,NCR,Dengue,172
+2019-09-22,NCR,Dengue,140
+2019-09-29,NCR,Dengue,140
+2019-10-06,NCR,Dengue,206
+2019-10-13,NCR,Dengue,208
+2019-10-20,NCR,Dengue,196
+2019-10-27,NCR,Dengue,139
+2019-11-03,NCR,Dengue,175
+2019-11-10,NCR,Dengue,165
+2019-11-17,NCR,Dengue,165
+2019-11-24,NCR,Dengue,188
+2019-12-01,NCR,Dengue,153
+2019-12-08,NCR,Dengue,167
+2019-12-15,NCR,Dengue,133
+2019-12-22,NCR,Dengue,137
+2019-12-29,NCR,Dengue,146
+2020-01-05,NCR,Dengue,45
+2020-01-12,NCR,Dengue,90
+2020-01-19,NCR,Dengue,77
+2020-01-26,NCR,Dengue,64
+2020-02-02,NCR,Dengue,75
+2020-02-09,NCR,Dengue,150
+2020-02-16,NCR,Dengue,40
+2020-02-23,NCR,Dengue,119
+2020-03-01,NCR,Dengue,0
+2020-03-08,NCR,Dengue,56
+2020-03-15,NCR,Dengue,77
+2020-03-22,NCR,Dengue,96
+2020-03-29,NCR,Dengue,102
+2020-04-05,NCR,Dengue,107
+2020-04-12,NCR,Dengue,58
+2020-04-19,NCR,Dengue,56
+2020-04-26,NCR,Dengue,119
+2020-05-03,NCR,Dengue,76
+2020-05-10,NCR,Dengue,32
+2020-05-17,NCR,Dengue,43
+2020-05-24,NCR,Dengue,59
+2020-05-31,NCR,Dengue,128
+2020-06-07,NCR,Dengue,119
+2020-06-14,NCR,Dengue,150
+2020-06-21,NCR,Dengue,107
+2020-06-28,NCR,Dengue,140
+2020-07-05,NCR,Dengue,167
+2020-07-12,NCR,Dengue,132
+2020-07-19,NCR,Dengue,172
+2020-07-26,NCR,Dengue,128
+2020-08-02,NCR,Dengue,146
+2020-08-09,NCR,Dengue,150
+2020-08-16,NCR,Dengue,118
+2020-08-23,NCR,Dengue,197
+2020-08-30,NCR,Dengue,157
+2020-09-06,NCR,Dengue,181
+2020-09-13,NCR,Dengue,203
+2020-09-20,NCR,Dengue,202
+2020-09-27,NCR,Dengue,211
+2020-10-04,NCR,Dengue,176
+2020-10-11,NCR,Dengue,159
+2020-10-18,NCR,Dengue,172
+2020-10-25,NCR,Dengue,97
+2020-11-01,NCR,Dengue,103
+2020-11-08,NCR,Dengue,104
+2020-11-15,NCR,Dengue,114
+2020-11-22,NCR,Dengue,171
+2020-11-29,NCR,Dengue,106
+2020-12-06,NCR,Dengue,124
+2020-12-13,NCR,Dengue,193
+2020-12-20,NCR,Dengue,112
+2020-12-27,NCR,Dengue,154
+2021-01-03,NCR,Dengue,73
+2021-01-10,NCR,Dengue,106
+2021-01-17,NCR,Dengue,66
+2021-01-24,NCR,Dengue,87
+2021-01-31,NCR,Dengue,135
+2021-02-07,NCR,Dengue,14
+2021-02-14,NCR,Dengue,107
+2021-02-21,NCR,Dengue,94
+2021-02-28,NCR,Dengue,53
+2021-03-07,NCR,Dengue,12
+2021-03-14,NCR,Dengue,79
+2021-03-21,NCR,Dengue,50
+2021-03-28,NCR,Dengue,84
+2021-04-04,NCR,Dengue,75
+2021-04-11,NCR,Dengue,148
+2021-04-18,NCR,Dengue,67
+2021-04-25,NCR,Dengue,34
+2021-05-02,NCR,Dengue,92
+2021-05-09,NCR,Dengue,98
+2021-05-16,NCR,Dengue,154
+2021-05-23,NCR,Dengue,136
+2021-05-30,NCR,Dengue,120
+2021-06-06,NCR,Dengue,176
+2021-06-13,NCR,Dengue,63
+2021-06-20,NCR,Dengue,94
+2021-06-27,NCR,Dengue,88
+2021-07-04,NCR,Dengue,119
+2021-07-11,NCR,Dengue,81
+2021-07-18,NCR,Dengue,178
+2021-07-25,NCR,Dengue,146
+2021-08-01,NCR,Dengue,95
+2021-08-08,NCR,Dengue,121
+2021-08-15,NCR,Dengue,186
+2021-08-22,NCR,Dengue,214
+2021-08-29,NCR,Dengue,269
+2021-09-05,NCR,Dengue,313
+2021-09-12,NCR,Dengue,203
+2021-09-19,NCR,Dengue,141
+2021-09-26,NCR,Dengue,90
+2021-10-03,NCR,Dengue,198
+2021-10-10,NCR,Dengue,148
+2021-10-17,NCR,Dengue,164
+2021-10-24,NCR,Dengue,152
+2021-10-31,NCR,Dengue,170
+2021-11-07,NCR,Dengue,221
+2021-11-14,NCR,Dengue,175
+2021-11-21,NCR,Dengue,156
+2021-11-28,NCR,Dengue,111
+2021-12-05,NCR,Dengue,76
+2021-12-12,NCR,Dengue,123
+2021-12-19,NCR,Dengue,136
+2021-12-26,NCR,Dengue,211
+2022-01-02,NCR,Dengue,206
+2022-01-09,NCR,Dengue,234
+2022-01-16,NCR,Dengue,158
+2022-01-23,NCR,Dengue,117
+2022-01-30,NCR,Dengue,118
+2022-02-06,NCR,Dengue,121
+2022-02-13,NCR,Dengue,242
+2022-02-20,NCR,Dengue,103
+2022-02-27,NCR,Dengue,172
+2022-03-06,NCR,Dengue,89
+2022-03-13,NCR,Dengue,169
+2022-03-20,NCR,Dengue,143
+2022-03-27,NCR,Dengue,118
+2022-04-03,NCR,Dengue,124
+2022-04-10,NCR,Dengue,98
+2022-04-17,NCR,Dengue,151
+2022-04-24,NCR,Dengue,115
+2022-05-01,NCR,Dengue,86
+2022-05-08,NCR,Dengue,90
+2022-05-15,NCR,Dengue,163
+2022-05-22,NCR,Dengue,235
+2022-05-29,NCR,Dengue,180
+2022-06-05,NCR,Dengue,177
+2022-06-12,NCR,Dengue,206
+2022-06-19,NCR,Dengue,262
+2022-06-26,NCR,Dengue,224
+2022-07-03,NCR,Dengue,207
+2022-07-10,NCR,Dengue,285
+2022-07-17,NCR,Dengue,265
+2022-07-24,NCR,Dengue,325
+2022-07-31,NCR,Dengue,273
+2022-08-07,NCR,Dengue,218
+2022-08-14,NCR,Dengue,219
+2022-08-21,NCR,Dengue,362
+2022-08-28,NCR,Dengue,371
+2022-09-04,NCR,Dengue,290
+2022-09-11,NCR,Dengue,284
+2022-09-18,NCR,Dengue,369
+2022-09-25,NCR,Dengue,254
+2022-10-02,NCR,Dengue,263
+2022-10-09,NCR,Dengue,331
+2022-10-16,NCR,Dengue,281
+2022-10-23,NCR,Dengue,294
+2022-10-30,NCR,Dengue,282
+2022-11-06,NCR,Dengue,298
+2022-11-13,NCR,Dengue,338
+2022-11-20,NCR,Dengue,271
+2022-11-27,NCR,Dengue,287
+2022-12-04,NCR,Dengue,156
+2022-12-11,NCR,Dengue,236
+2022-12-18,NCR,Dengue,190
+2022-12-25,NCR,Dengue,163
+2023-01-01,NCR,Dengue,90
+2023-01-08,NCR,Dengue,108
+2023-01-15,NCR,Dengue,158
+2023-01-22,NCR,Dengue,51
+2023-01-29,NCR,Dengue,106
+2023-02-05,NCR,Dengue,78
+2023-02-12,NCR,Dengue,81
+2023-02-19,NCR,Dengue,136
+2023-02-26,NCR,Dengue,112
+2023-03-05,NCR,Dengue,145
+2023-03-12,NCR,Dengue,76
+2023-03-19,NCR,Dengue,51
+2023-03-26,NCR,Dengue,72
+2023-04-02,NCR,Dengue,93
+2023-04-09,NCR,Dengue,92
+2023-04-16,NCR,Dengue,37
+2023-04-23,NCR,Dengue,93
+2023-04-30,NCR,Dengue,102
+2023-05-07,NCR,Dengue,210
+2023-05-14,NCR,Dengue,185
+2023-05-21,NCR,Dengue,68
+2023-05-28,NCR,Dengue,99
+2023-06-04,NCR,Dengue,52
+2023-06-11,NCR,Dengue,98
+2023-06-18,NCR,Dengue,145
+2023-06-25,NCR,Dengue,192
+2023-07-02,NCR,Dengue,112
+2023-07-09,NCR,Dengue,122
+2023-07-16,NCR,Dengue,61
+2023-07-23,NCR,Dengue,156
+2023-07-30,NCR,Dengue,122
+2023-08-06,NCR,Dengue,151
+2023-08-13,NCR,Dengue,140
+2023-08-20,NCR,Dengue,180
+2023-08-27,NCR,Dengue,108
+2023-09-03,NCR,Dengue,124
+2023-09-10,NCR,Dengue,288
+2023-09-17,NCR,Dengue,136
+2023-09-24,NCR,Dengue,145
+2023-10-01,NCR,Dengue,276
+2023-10-08,NCR,Dengue,323
+2023-10-15,NCR,Dengue,138
+2023-10-22,NCR,Dengue,171
+2023-10-29,NCR,Dengue,200
+2023-11-05,NCR,Dengue,258
+2023-11-12,NCR,Dengue,132
+2023-11-19,NCR,Dengue,160
+2023-11-26,NCR,Dengue,200
+2023-12-03,NCR,Dengue,179
+2023-12-10,NCR,Dengue,136
+2023-12-17,NCR,Dengue,140
+2023-12-24,NCR,Dengue,78
+2023-12-31,NCR,Dengue,123
+2019-01-06,Region III,Dengue,68
+2019-01-13,Region III,Dengue,79
+2019-01-20,Region III,Dengue,45
+2019-01-27,Region III,Dengue,75
+2019-02-03,Region III,Dengue,89
+2019-02-10,Region III,Dengue,55
+2019-02-17,Region III,Dengue,58
+2019-02-24,Region III,Dengue,44
+2019-03-03,Region III,Dengue,39
+2019-03-10,Region III,Dengue,12
+2019-03-17,Region III,Dengue,47
+2019-03-24,Region III,Dengue,32
+2019-03-31,Region III,Dengue,110
+2019-04-07,Region III,Dengue,93
+2019-04-14,Region III,Dengue,53
+2019-04-21,Region III,Dengue,16
+2019-04-28,Region III,Dengue,7
+2019-05-05,Region III,Dengue,92
+2019-05-12,Region III,Dengue,64
+2019-05-19,Region III,Dengue,77
+2019-05-26,Region III,Dengue,5
+2019-06-02,Region III,Dengue,105
+2019-06-09,Region III,Dengue,94
+2019-06-16,Region III,Dengue,46
+2019-06-23,Region III,Dengue,75
+2019-06-30,Region III,Dengue,108
+2019-07-07,Region III,Dengue,107
+2019-07-14,Region III,Dengue,101
+2019-07-21,Region III,Dengue,114
+2019-07-28,Region III,Dengue,115
+2019-08-04,Region III,Dengue,134
+2019-08-11,Region III,Dengue,185
+2019-08-18,Region III,Dengue,48
+2019-08-25,Region III,Dengue,133
+2019-09-01,Region III,Dengue,150
+2019-09-08,Region III,Dengue,156
+2019-09-15,Region III,Dengue,134
+2019-09-22,Region III,Dengue,86
+2019-09-29,Region III,Dengue,159
+2019-10-06,Region III,Dengue,207
+2019-10-13,Region III,Dengue,91
+2019-10-20,Region III,Dengue,172
+2019-10-27,Region III,Dengue,127
+2019-11-03,Region III,Dengue,132
+2019-11-10,Region III,Dengue,93
+2019-11-17,Region III,Dengue,113
+2019-11-24,Region III,Dengue,165
+2019-12-01,Region III,Dengue,134
+2019-12-08,Region III,Dengue,167
+2019-12-15,Region III,Dengue,142
+2019-12-22,Region III,Dengue,109
+2019-12-29,Region III,Dengue,148
+2020-01-05,Region III,Dengue,96
+2020-01-12,Region III,Dengue,104
+2020-01-19,Region III,Dengue,58
+2020-01-26,Region III,Dengue,65
+2020-02-02,Region III,Dengue,33
+2020-02-09,Region III,Dengue,88
+2020-02-16,Region III,Dengue,8
+2020-02-23,Region III,Dengue,73
+2020-03-01,Region III,Dengue,37
+2020-03-08,Region III,Dengue,82
+2020-03-15,Region III,Dengue,66
+2020-03-22,Region III,Dengue,104
+2020-03-29,Region III,Dengue,66
+2020-04-05,Region III,Dengue,0
+2020-04-12,Region III,Dengue,41
+2020-04-19,Region III,Dengue,5
+2020-04-26,Region III,Dengue,32
+2020-05-03,Region III,Dengue,107
+2020-05-10,Region III,Dengue,81
+2020-05-17,Region III,Dengue,40
+2020-05-24,Region III,Dengue,34
+2020-05-31,Region III,Dengue,77
+2020-06-07,Region III,Dengue,40
+2020-06-14,Region III,Dengue,66
+2020-06-21,Region III,Dengue,107
+2020-06-28,Region III,Dengue,143
+2020-07-05,Region III,Dengue,130
+2020-07-12,Region III,Dengue,35
+2020-07-19,Region III,Dengue,132
+2020-07-26,Region III,Dengue,130
+2020-08-02,Region III,Dengue,147
+2020-08-09,Region III,Dengue,194
+2020-08-16,Region III,Dengue,70
+2020-08-23,Region III,Dengue,125
+2020-08-30,Region III,Dengue,169
+2020-09-06,Region III,Dengue,95
+2020-09-13,Region III,Dengue,203
+2020-09-20,Region III,Dengue,165
+2020-09-27,Region III,Dengue,181
+2020-10-04,Region III,Dengue,130
+2020-10-11,Region III,Dengue,177
+2020-10-18,Region III,Dengue,183
+2020-10-25,Region III,Dengue,151
+2020-11-01,Region III,Dengue,147
+2020-11-08,Region III,Dengue,143
+2020-11-15,Region III,Dengue,98
+2020-11-22,Region III,Dengue,118
+2020-11-29,Region III,Dengue,112
+2020-12-06,Region III,Dengue,124
+2020-12-13,Region III,Dengue,139
+2020-12-20,Region III,Dengue,61
+2020-12-27,Region III,Dengue,87
+2021-01-03,Region III,Dengue,137
+2021-01-10,Region III,Dengue,59
+2021-01-17,Region III,Dengue,50
+2021-01-24,Region III,Dengue,80
+2021-01-31,Region III,Dengue,97
+2021-02-07,Region III,Dengue,62
+2021-02-14,Region III,Dengue,104
+2021-02-21,Region III,Dengue,83
+2021-02-28,Region III,Dengue,79
+2021-03-07,Region III,Dengue,67
+2021-03-14,Region III,Dengue,127
+2021-03-21,Region III,Dengue,37
+2021-03-28,Region III,Dengue,0
+2021-04-04,Region III,Dengue,101
+2021-04-11,Region III,Dengue,30
+2021-04-18,Region III,Dengue,52
+2021-04-25,Region III,Dengue,96
+2021-05-02,Region III,Dengue,0
+2021-05-09,Region III,Dengue,14
+2021-05-16,Region III,Dengue,7
+2021-05-23,Region III,Dengue,41
+2021-05-30,Region III,Dengue,89
+2021-06-06,Region III,Dengue,99
+2021-06-13,Region III,Dengue,96
+2021-06-20,Region III,Dengue,44
+2021-06-27,Region III,Dengue,19
+2021-07-04,Region III,Dengue,109
+2021-07-11,Region III,Dengue,97
+2021-07-18,Region III,Dengue,136
+2021-07-25,Region III,Dengue,150
+2021-08-01,Region III,Dengue,136
+2021-08-08,Region III,Dengue,163
+2021-08-15,Region III,Dengue,150
+2021-08-22,Region III,Dengue,164
+2021-08-29,Region III,Dengue,125
+2021-09-05,Region III,Dengue,146
+2021-09-12,Region III,Dengue,161
+2021-09-19,Region III,Dengue,184
+2021-09-26,Region III,Dengue,142
+2021-10-03,Region III,Dengue,174
+2021-10-10,Region III,Dengue,145
+2021-10-17,Region III,Dengue,148
+2021-10-24,Region III,Dengue,179
+2021-10-31,Region III,Dengue,77
+2021-11-07,Region III,Dengue,97
+2021-11-14,Region III,Dengue,86
+2021-11-21,Region III,Dengue,51
+2021-11-28,Region III,Dengue,103
+2021-12-05,Region III,Dengue,147
+2021-12-12,Region III,Dengue,105
+2021-12-19,Region III,Dengue,115
+2021-12-26,Region III,Dengue,140
+2022-01-02,Region III,Dengue,199
+2022-01-09,Region III,Dengue,140
+2022-01-16,Region III,Dengue,180
+2022-01-23,Region III,Dengue,126
+2022-01-30,Region III,Dengue,84
+2022-02-06,Region III,Dengue,85
+2022-02-13,Region III,Dengue,46
+2022-02-20,Region III,Dengue,61
+2022-02-27,Region III,Dengue,74
+2022-03-06,Region III,Dengue,110
+2022-03-13,Region III,Dengue,139
+2022-03-20,Region III,Dengue,29
+2022-03-27,Region III,Dengue,90
+2022-04-03,Region III,Dengue,41
+2022-04-10,Region III,Dengue,96
+2022-04-17,Region III,Dengue,78
+2022-04-24,Region III,Dengue,23
+2022-05-01,Region III,Dengue,125
+2022-05-08,Region III,Dengue,78
+2022-05-15,Region III,Dengue,88
+2022-05-22,Region III,Dengue,78
+2022-05-29,Region III,Dengue,102
+2022-06-05,Region III,Dengue,150
+2022-06-12,Region III,Dengue,138
+2022-06-19,Region III,Dengue,167
+2022-06-26,Region III,Dengue,179
+2022-07-03,Region III,Dengue,223
+2022-07-10,Region III,Dengue,176
+2022-07-17,Region III,Dengue,146
+2022-07-24,Region III,Dengue,245
+2022-07-31,Region III,Dengue,205
+2022-08-07,Region III,Dengue,264
+2022-08-14,Region III,Dengue,246
+2022-08-21,Region III,Dengue,235
+2022-08-28,Region III,Dengue,258
+2022-09-04,Region III,Dengue,318
+2022-09-11,Region III,Dengue,326
+2022-09-18,Region III,Dengue,258
+2022-09-25,Region III,Dengue,261
+2022-10-02,Region III,Dengue,293
+2022-10-09,Region III,Dengue,224
+2022-10-16,Region III,Dengue,262
+2022-10-23,Region III,Dengue,245
+2022-10-30,Region III,Dengue,252
+2022-11-06,Region III,Dengue,205
+2022-11-13,Region III,Dengue,171
+2022-11-20,Region III,Dengue,146
+2022-11-27,Region III,Dengue,171
+2022-12-04,Region III,Dengue,184
+2022-12-11,Region III,Dengue,180
+2022-12-18,Region III,Dengue,248
+2022-12-25,Region III,Dengue,208
+2023-01-01,Region III,Dengue,66
+2023-01-08,Region III,Dengue,105
+2023-01-15,Region III,Dengue,72
+2023-01-22,Region III,Dengue,71
+2023-01-29,Region III,Dengue,82
+2023-02-05,Region III,Dengue,92
+2023-02-12,Region III,Dengue,53
+2023-02-19,Region III,Dengue,99
+2023-02-26,Region III,Dengue,18
+2023-03-05,Region III,Dengue,55
+2023-03-12,Region III,Dengue,144
+2023-03-19,Region III,Dengue,60
+2023-03-26,Region III,Dengue,102
+2023-04-02,Region III,Dengue,56
+2023-04-09,Region III,Dengue,74
+2023-04-16,Region III,Dengue,54
+2023-04-23,Region III,Dengue,53
+2023-04-30,Region III,Dengue,35
+2023-05-07,Region III,Dengue,81
+2023-05-14,Region III,Dengue,41
+2023-05-21,Region III,Dengue,100
+2023-05-28,Region III,Dengue,120
+2023-06-04,Region III,Dengue,101
+2023-06-11,Region III,Dengue,85
+2023-06-18,Region III,Dengue,117
+2023-06-25,Region III,Dengue,97
+2023-07-02,Region III,Dengue,147
+2023-07-09,Region III,Dengue,57
+2023-07-16,Region III,Dengue,116
+2023-07-23,Region III,Dengue,64
+2023-07-30,Region III,Dengue,87
+2023-08-06,Region III,Dengue,193
+2023-08-13,Region III,Dengue,181
+2023-08-20,Region III,Dengue,129
+2023-08-27,Region III,Dengue,105
+2023-09-03,Region III,Dengue,56
+2023-09-10,Region III,Dengue,143
+2023-09-17,Region III,Dengue,248
+2023-09-24,Region III,Dengue,179
+2023-10-01,Region III,Dengue,144
+2023-10-08,Region III,Dengue,179
+2023-10-15,Region III,Dengue,106
+2023-10-22,Region III,Dengue,148
+2023-10-29,Region III,Dengue,158
+2023-11-05,Region III,Dengue,148
+2023-11-12,Region III,Dengue,174
+2023-11-19,Region III,Dengue,153
+2023-11-26,Region III,Dengue,159
+2023-12-03,Region III,Dengue,105
+2023-12-10,Region III,Dengue,154
+2023-12-17,Region III,Dengue,173
+2023-12-24,Region III,Dengue,76
+2023-12-31,Region III,Dengue,72
+2019-01-06,Region IV-A,Dengue,150
+2019-01-13,Region IV-A,Dengue,83
+2019-01-20,Region IV-A,Dengue,141
+2019-01-27,Region IV-A,Dengue,61
+2019-02-03,Region IV-A,Dengue,132
+2019-02-10,Region IV-A,Dengue,74
+2019-02-17,Region IV-A,Dengue,76
+2019-02-24,Region IV-A,Dengue,124
+2019-03-03,Region IV-A,Dengue,45
+2019-03-10,Region IV-A,Dengue,20
+2019-03-17,Region IV-A,Dengue,38
+2019-03-24,Region IV-A,Dengue,74
+2019-03-31,Region IV-A,Dengue,0
+2019-04-07,Region IV-A,Dengue,83
+2019-04-14,Region IV-A,Dengue,38
+2019-04-21,Region IV-A,Dengue,108
+2019-04-28,Region IV-A,Dengue,0
+2019-05-05,Region IV-A,Dengue,39
+2019-05-12,Region IV-A,Dengue,7
+2019-05-19,Region IV-A,Dengue,47
+2019-05-26,Region IV-A,Dengue,96
+2019-06-02,Region IV-A,Dengue,85
+2019-06-09,Region IV-A,Dengue,88
+2019-06-16,Region IV-A,Dengue,99
+2019-06-23,Region IV-A,Dengue,120
+2019-06-30,Region IV-A,Dengue,78
+2019-07-07,Region IV-A,Dengue,153
+2019-07-14,Region IV-A,Dengue,158
+2019-07-21,Region IV-A,Dengue,153
+2019-07-28,Region IV-A,Dengue,166
+2019-08-04,Region IV-A,Dengue,161
+2019-08-11,Region IV-A,Dengue,235
+2019-08-18,Region IV-A,Dengue,154
+2019-08-25,Region IV-A,Dengue,149
+2019-09-01,Region IV-A,Dengue,134
+2019-09-08,Region IV-A,Dengue,125
+2019-09-15,Region IV-A,Dengue,118
+2019-09-22,Region IV-A,Dengue,132
+2019-09-29,Region IV-A,Dengue,165
+2019-10-06,Region IV-A,Dengue,180
+2019-10-13,Region IV-A,Dengue,167
+2019-10-20,Region IV-A,Dengue,131
+2019-10-27,Region IV-A,Dengue,195
+2019-11-03,Region IV-A,Dengue,184
+2019-11-10,Region IV-A,Dengue,143
+2019-11-17,Region IV-A,Dengue,119
+2019-11-24,Region IV-A,Dengue,161
+2019-12-01,Region IV-A,Dengue,141
+2019-12-08,Region IV-A,Dengue,69
+2019-12-15,Region IV-A,Dengue,118
+2019-12-22,Region IV-A,Dengue,124
+2019-12-29,Region IV-A,Dengue,71
+2020-01-05,Region IV-A,Dengue,108
+2020-01-12,Region IV-A,Dengue,36
+2020-01-19,Region IV-A,Dengue,142
+2020-01-26,Region IV-A,Dengue,133
+2020-02-02,Region IV-A,Dengue,68
+2020-02-09,Region IV-A,Dengue,88
+2020-02-16,Region IV-A,Dengue,0
+2020-02-23,Region IV-A,Dengue,20
+2020-03-01,Region IV-A,Dengue,51
+2020-03-08,Region IV-A,Dengue,18
+2020-03-15,Region IV-A,Dengue,89
+2020-03-22,Region IV-A,Dengue,140
+2020-03-29,Region IV-A,Dengue,13
+2020-04-05,Region IV-A,Dengue,28
+2020-04-12,Region IV-A,Dengue,73
+2020-04-19,Region IV-A,Dengue,131
+2020-04-26,Region IV-A,Dengue,21
+2020-05-03,Region IV-A,Dengue,84
+2020-05-10,Region IV-A,Dengue,152
+2020-05-17,Region IV-A,Dengue,18
+2020-05-24,Region IV-A,Dengue,39
+2020-05-31,Region IV-A,Dengue,79
+2020-06-07,Region IV-A,Dengue,82
+2020-06-14,Region IV-A,Dengue,142
+2020-06-21,Region IV-A,Dengue,126
+2020-06-28,Region IV-A,Dengue,52
+2020-07-05,Region IV-A,Dengue,150
+2020-07-12,Region IV-A,Dengue,112
+2020-07-19,Region IV-A,Dengue,193
+2020-07-26,Region IV-A,Dengue,122
+2020-08-02,Region IV-A,Dengue,127
+2020-08-09,Region IV-A,Dengue,179
+2020-08-16,Region IV-A,Dengue,192
+2020-08-23,Region IV-A,Dengue,183
+2020-08-30,Region IV-A,Dengue,101
+2020-09-06,Region IV-A,Dengue,192
+2020-09-13,Region IV-A,Dengue,130
+2020-09-20,Region IV-A,Dengue,181
+2020-09-27,Region IV-A,Dengue,115
+2020-10-04,Region IV-A,Dengue,188
+2020-10-11,Region IV-A,Dengue,136
+2020-10-18,Region IV-A,Dengue,115
+2020-10-25,Region IV-A,Dengue,191
+2020-11-01,Region IV-A,Dengue,168
+2020-11-08,Region IV-A,Dengue,129
+2020-11-15,Region IV-A,Dengue,207
+2020-11-22,Region IV-A,Dengue,125
+2020-11-29,Region IV-A,Dengue,138
+2020-12-06,Region IV-A,Dengue,142
+2020-12-13,Region IV-A,Dengue,100
+2020-12-20,Region IV-A,Dengue,137
+2020-12-27,Region IV-A,Dengue,90
+2021-01-03,Region IV-A,Dengue,88
+2021-01-10,Region IV-A,Dengue,159
+2021-01-17,Region IV-A,Dengue,57
+2021-01-24,Region IV-A,Dengue,0
+2021-01-31,Region IV-A,Dengue,152
+2021-02-07,Region IV-A,Dengue,184
+2021-02-14,Region IV-A,Dengue,61
+2021-02-21,Region IV-A,Dengue,0
+2021-02-28,Region IV-A,Dengue,57
+2021-03-07,Region IV-A,Dengue,56
+2021-03-14,Region IV-A,Dengue,58
+2021-03-21,Region IV-A,Dengue,20
+2021-03-28,Region IV-A,Dengue,87
+2021-04-04,Region IV-A,Dengue,85
+2021-04-11,Region IV-A,Dengue,6
+2021-04-18,Region IV-A,Dengue,96
+2021-04-25,Region IV-A,Dengue,153
+2021-05-02,Region IV-A,Dengue,81
+2021-05-09,Region IV-A,Dengue,65
+2021-05-16,Region IV-A,Dengue,77
+2021-05-23,Region IV-A,Dengue,113
+2021-05-30,Region IV-A,Dengue,25
+2021-06-06,Region IV-A,Dengue,107
+2021-06-13,Region IV-A,Dengue,91
+2021-06-20,Region IV-A,Dengue,187
+2021-06-27,Region IV-A,Dengue,113
+2021-07-04,Region IV-A,Dengue,193
+2021-07-11,Region IV-A,Dengue,89
+2021-07-18,Region IV-A,Dengue,163
+2021-07-25,Region IV-A,Dengue,159
+2021-08-01,Region IV-A,Dengue,117
+2021-08-08,Region IV-A,Dengue,164
+2021-08-15,Region IV-A,Dengue,210
+2021-08-22,Region IV-A,Dengue,153
+2021-08-29,Region IV-A,Dengue,102
+2021-09-05,Region IV-A,Dengue,171
+2021-09-12,Region IV-A,Dengue,138
+2021-09-19,Region IV-A,Dengue,162
+2021-09-26,Region IV-A,Dengue,173
+2021-10-03,Region IV-A,Dengue,107
+2021-10-10,Region IV-A,Dengue,110
+2021-10-17,Region IV-A,Dengue,192
+2021-10-24,Region IV-A,Dengue,149
+2021-10-31,Region IV-A,Dengue,64
+2021-11-07,Region IV-A,Dengue,194
+2021-11-14,Region IV-A,Dengue,169
+2021-11-21,Region IV-A,Dengue,124
+2021-11-28,Region IV-A,Dengue,95
+2021-12-05,Region IV-A,Dengue,175
+2021-12-12,Region IV-A,Dengue,149
+2021-12-19,Region IV-A,Dengue,224
+2021-12-26,Region IV-A,Dengue,139
+2022-01-02,Region IV-A,Dengue,200
+2022-01-09,Region IV-A,Dengue,168
+2022-01-16,Region IV-A,Dengue,197
+2022-01-23,Region IV-A,Dengue,180
+2022-01-30,Region IV-A,Dengue,196
+2022-02-06,Region IV-A,Dengue,117
+2022-02-13,Region IV-A,Dengue,113
+2022-02-20,Region IV-A,Dengue,104
+2022-02-27,Region IV-A,Dengue,150
+2022-03-06,Region IV-A,Dengue,174
+2022-03-13,Region IV-A,Dengue,93
+2022-03-20,Region IV-A,Dengue,92
+2022-03-27,Region IV-A,Dengue,121
+2022-04-03,Region IV-A,Dengue,100
+2022-04-10,Region IV-A,Dengue,150
+2022-04-17,Region IV-A,Dengue,25
+2022-04-24,Region IV-A,Dengue,86
+2022-05-01,Region IV-A,Dengue,94
+2022-05-08,Region IV-A,Dengue,39
+2022-05-15,Region IV-A,Dengue,101
+2022-05-22,Region IV-A,Dengue,111
+2022-05-29,Region IV-A,Dengue,149
+2022-06-05,Region IV-A,Dengue,211
+2022-06-12,Region IV-A,Dengue,167
+2022-06-19,Region IV-A,Dengue,146
+2022-06-26,Region IV-A,Dengue,196
+2022-07-03,Region IV-A,Dengue,251
+2022-07-10,Region IV-A,Dengue,181
+2022-07-17,Region IV-A,Dengue,193
+2022-07-24,Region IV-A,Dengue,262
+2022-07-31,Region IV-A,Dengue,240
+2022-08-07,Region IV-A,Dengue,283
+2022-08-14,Region IV-A,Dengue,264
+2022-08-21,Region IV-A,Dengue,300
+2022-08-28,Region IV-A,Dengue,236
+2022-09-04,Region IV-A,Dengue,281
+2022-09-11,Region IV-A,Dengue,277
+2022-09-18,Region IV-A,Dengue,238
+2022-09-25,Region IV-A,Dengue,225
+2022-10-02,Region IV-A,Dengue,315
+2022-10-09,Region IV-A,Dengue,272
+2022-10-16,Region IV-A,Dengue,242
+2022-10-23,Region IV-A,Dengue,274
+2022-10-30,Region IV-A,Dengue,318
+2022-11-06,Region IV-A,Dengue,175
+2022-11-13,Region IV-A,Dengue,199
+2022-11-20,Region IV-A,Dengue,214
+2022-11-27,Region IV-A,Dengue,300
+2022-12-04,Region IV-A,Dengue,244
+2022-12-11,Region IV-A,Dengue,253
+2022-12-18,Region IV-A,Dengue,166
+2022-12-25,Region IV-A,Dengue,157
+2023-01-01,Region IV-A,Dengue,137
+2023-01-08,Region IV-A,Dengue,115
+2023-01-15,Region IV-A,Dengue,129
+2023-01-22,Region IV-A,Dengue,93
+2023-01-29,Region IV-A,Dengue,106
+2023-02-05,Region IV-A,Dengue,96
+2023-02-12,Region IV-A,Dengue,116
+2023-02-19,Region IV-A,Dengue,114
+2023-02-26,Region IV-A,Dengue,13
+2023-03-05,Region IV-A,Dengue,0
+2023-03-12,Region IV-A,Dengue,113
+2023-03-19,Region IV-A,Dengue,120
+2023-03-26,Region IV-A,Dengue,31
+2023-04-02,Region IV-A,Dengue,0
+2023-04-09,Region IV-A,Dengue,78
+2023-04-16,Region IV-A,Dengue,113
+2023-04-23,Region IV-A,Dengue,150
+2023-04-30,Region IV-A,Dengue,103
+2023-05-07,Region IV-A,Dengue,71
+2023-05-14,Region IV-A,Dengue,55
+2023-05-21,Region IV-A,Dengue,97
+2023-05-28,Region IV-A,Dengue,90
+2023-06-04,Region IV-A,Dengue,68
+2023-06-11,Region IV-A,Dengue,197
+2023-06-18,Region IV-A,Dengue,193
+2023-06-25,Region IV-A,Dengue,173
+2023-07-02,Region IV-A,Dengue,98
+2023-07-09,Region IV-A,Dengue,175
+2023-07-16,Region IV-A,Dengue,173
+2023-07-23,Region IV-A,Dengue,171
+2023-07-30,Region IV-A,Dengue,210
+2023-08-06,Region IV-A,Dengue,190
+2023-08-13,Region IV-A,Dengue,199
+2023-08-20,Region IV-A,Dengue,199
+2023-08-27,Region IV-A,Dengue,191
+2023-09-03,Region IV-A,Dengue,109
+2023-09-10,Region IV-A,Dengue,186
+2023-09-17,Region IV-A,Dengue,161
+2023-09-24,Region IV-A,Dengue,133
+2023-10-01,Region IV-A,Dengue,251
+2023-10-08,Region IV-A,Dengue,252
+2023-10-15,Region IV-A,Dengue,235
+2023-10-22,Region IV-A,Dengue,188
+2023-10-29,Region IV-A,Dengue,229
+2023-11-05,Region IV-A,Dengue,171
+2023-11-12,Region IV-A,Dengue,174
+2023-11-19,Region IV-A,Dengue,117
+2023-11-26,Region IV-A,Dengue,171
+2023-12-03,Region IV-A,Dengue,152
+2023-12-10,Region IV-A,Dengue,91
+2023-12-17,Region IV-A,Dengue,134
+2023-12-24,Region IV-A,Dengue,127
+2023-12-31,Region IV-A,Dengue,195
