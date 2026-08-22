@@ -2,7 +2,6 @@ import pandas as pd
 
 WET_SEASON_MONTHS = (6, 7, 8, 9, 10, 11)
 
-
 def add_season_flags(df, date_col="date"):
     out = df.copy()
     month = pd.to_datetime(out[date_col]).dt.month

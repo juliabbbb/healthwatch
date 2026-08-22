@@ -1,0 +1,4455 @@
+date,region,disease,cases
+2016-01-10,BARMM,Dengue,28
+2016-01-17,BARMM,Dengue,32
+2016-01-24,BARMM,Dengue,30
+2016-01-31,BARMM,Dengue,36
+2016-02-07,BARMM,Dengue,27
+2016-02-14,BARMM,Dengue,27
+2016-02-21,BARMM,Dengue,27
+2016-02-28,BARMM,Dengue,11
+2016-03-06,BARMM,Dengue,20
+2016-03-13,BARMM,Dengue,33
+2016-03-20,BARMM,Dengue,26
+2016-03-27,BARMM,Dengue,28
+2016-04-03,BARMM,Dengue,18
+2016-04-10,BARMM,Dengue,33
+2016-04-17,BARMM,Dengue,23
+2016-04-24,BARMM,Dengue,35
+2016-05-01,BARMM,Dengue,32
+2016-05-08,BARMM,Dengue,29
+2016-05-15,BARMM,Dengue,37
+2016-05-22,BARMM,Dengue,30
+2016-05-29,BARMM,Dengue,37
+2016-06-05,BARMM,Dengue,53
+2016-06-12,BARMM,Dengue,59
+2016-06-19,BARMM,Dengue,84
+2016-06-26,BARMM,Dengue,67
+2016-07-03,BARMM,Dengue,110
+2016-07-10,BARMM,Dengue,84
+2016-07-17,BARMM,Dengue,125
+2016-07-24,BARMM,Dengue,81
+2016-07-31,BARMM,Dengue,91
+2016-08-07,BARMM,Dengue,113
+2016-08-14,BARMM,Dengue,79
+2016-08-21,BARMM,Dengue,69
+2016-08-28,BARMM,Dengue,66
+2016-09-04,BARMM,Dengue,0
+2016-09-11,BARMM,Dengue,75
+2016-09-18,BARMM,Dengue,0
+2016-09-25,BARMM,Dengue,49
+2016-10-02,BARMM,Dengue,1
+2016-10-09,BARMM,Dengue,46
+2016-10-16,BARMM,Dengue,0
+2016-10-23,BARMM,Dengue,35
+2016-10-30,BARMM,Dengue,0
+2016-11-06,BARMM,Dengue,37
+2016-11-13,BARMM,Dengue,0
+2016-11-20,BARMM,Dengue,38
+2016-11-27,BARMM,Dengue,68
+2016-12-04,BARMM,Dengue,37
+2016-12-11,BARMM,Dengue,50
+2016-12-18,BARMM,Dengue,36
+2016-12-25,BARMM,Dengue,39
+2017-01-01,BARMM,Dengue,22
+2017-01-08,BARMM,Dengue,11
+2017-01-15,BARMM,Dengue,9
+2017-01-22,BARMM,Dengue,14
+2017-01-29,BARMM,Dengue,18
+2017-02-05,BARMM,Dengue,16
+2017-02-12,BARMM,Dengue,13
+2017-02-19,BARMM,Dengue,17
+2017-02-26,BARMM,Dengue,13
+2017-03-05,BARMM,Dengue,9
+2017-03-12,BARMM,Dengue,10
+2017-03-19,BARMM,Dengue,4
+2017-03-26,BARMM,Dengue,2
+2017-04-02,BARMM,Dengue,8
+2017-04-09,BARMM,Dengue,6
+2017-04-16,BARMM,Dengue,6
+2017-04-23,BARMM,Dengue,5
+2017-04-30,BARMM,Dengue,11
+2017-05-07,BARMM,Dengue,3
+2017-05-14,BARMM,Dengue,10
+2017-05-21,BARMM,Dengue,5
+2017-05-28,BARMM,Dengue,4
+2017-06-04,BARMM,Dengue,15
+2017-06-11,BARMM,Dengue,8
+2017-06-18,BARMM,Dengue,20
+2017-06-25,BARMM,Dengue,14
+2017-07-02,BARMM,Dengue,17
+2017-07-09,BARMM,Dengue,16
+2017-07-16,BARMM,Dengue,11
+2017-07-23,BARMM,Dengue,8
+2017-07-30,BARMM,Dengue,10
+2017-08-06,BARMM,Dengue,12
+2017-08-13,BARMM,Dengue,6
+2017-08-20,BARMM,Dengue,8
+2017-08-27,BARMM,Dengue,15
+2017-09-03,BARMM,Dengue,19
+2017-09-10,BARMM,Dengue,10
+2017-09-17,BARMM,Dengue,3
+2017-09-24,BARMM,Dengue,1
+2017-10-01,BARMM,Dengue,8
+2017-10-08,BARMM,Dengue,2
+2017-10-15,BARMM,Dengue,10
+2017-10-22,BARMM,Dengue,6
+2017-10-29,BARMM,Dengue,12
+2017-11-05,BARMM,Dengue,2
+2017-11-12,BARMM,Dengue,8
+2017-11-19,BARMM,Dengue,2
+2017-11-26,BARMM,Dengue,5
+2017-12-03,BARMM,Dengue,2
+2017-12-10,BARMM,Dengue,1
+2017-12-17,BARMM,Dengue,3
+2017-12-24,BARMM,Dengue,9
+2017-12-31,BARMM,Dengue,6
+2018-01-07,BARMM,Dengue,32
+2018-01-14,BARMM,Dengue,40
+2018-01-21,BARMM,Dengue,40
+2018-01-28,BARMM,Dengue,37
+2018-02-04,BARMM,Dengue,33
+2018-02-11,BARMM,Dengue,34
+2018-02-18,BARMM,Dengue,44
+2018-02-25,BARMM,Dengue,18
+2018-03-04,BARMM,Dengue,21
+2018-03-11,BARMM,Dengue,21
+2018-03-18,BARMM,Dengue,14
+2018-03-25,BARMM,Dengue,21
+2018-04-01,BARMM,Dengue,21
+2018-04-08,BARMM,Dengue,39
+2018-04-15,BARMM,Dengue,17
+2018-04-22,BARMM,Dengue,27
+2018-04-29,BARMM,Dengue,20
+2018-05-06,BARMM,Dengue,37
+2018-05-13,BARMM,Dengue,31
+2018-05-20,BARMM,Dengue,49
+2018-05-27,BARMM,Dengue,47
+2018-06-03,BARMM,Dengue,43
+2018-06-10,BARMM,Dengue,56
+2018-06-17,BARMM,Dengue,69
+2018-06-24,BARMM,Dengue,86
+2018-07-01,BARMM,Dengue,70
+2018-07-08,BARMM,Dengue,72
+2018-07-15,BARMM,Dengue,105
+2018-07-22,BARMM,Dengue,97
+2018-07-29,BARMM,Dengue,68
+2018-08-05,BARMM,Dengue,61
+2018-08-12,BARMM,Dengue,56
+2018-08-19,BARMM,Dengue,78
+2018-08-26,BARMM,Dengue,58
+2018-09-02,BARMM,Dengue,63
+2018-09-09,BARMM,Dengue,61
+2018-09-16,BARMM,Dengue,34
+2018-09-23,BARMM,Dengue,55
+2018-09-30,BARMM,Dengue,48
+2018-10-07,BARMM,Dengue,69
+2018-10-14,BARMM,Dengue,83
+2018-10-21,BARMM,Dengue,40
+2018-10-28,BARMM,Dengue,54
+2018-11-04,BARMM,Dengue,46
+2018-11-11,BARMM,Dengue,43
+2018-11-18,BARMM,Dengue,48
+2018-11-25,BARMM,Dengue,46
+2018-12-02,BARMM,Dengue,42
+2018-12-09,BARMM,Dengue,33
+2018-12-16,BARMM,Dengue,64
+2018-12-23,BARMM,Dengue,45
+2018-12-30,BARMM,Dengue,24
+2019-01-06,BARMM,Dengue,0
+2019-01-13,BARMM,Dengue,53
+2019-01-20,BARMM,Dengue,72
+2019-01-27,BARMM,Dengue,76
+2019-02-03,BARMM,Dengue,74
+2019-02-10,BARMM,Dengue,73
+2019-02-17,BARMM,Dengue,84
+2019-02-24,BARMM,Dengue,78
+2019-03-03,BARMM,Dengue,76
+2019-03-10,BARMM,Dengue,76
+2019-03-17,BARMM,Dengue,62
+2019-03-24,BARMM,Dengue,46
+2019-03-31,BARMM,Dengue,43
+2019-04-07,BARMM,Dengue,48
+2019-04-14,BARMM,Dengue,67
+2019-04-21,BARMM,Dengue,47
+2019-04-28,BARMM,Dengue,59
+2019-05-05,BARMM,Dengue,73
+2019-05-12,BARMM,Dengue,56
+2019-05-19,BARMM,Dengue,68
+2019-05-26,BARMM,Dengue,87
+2019-06-02,BARMM,Dengue,95
+2019-06-09,BARMM,Dengue,109
+2019-06-16,BARMM,Dengue,103
+2019-06-23,BARMM,Dengue,102
+2019-06-30,BARMM,Dengue,145
+2019-07-07,BARMM,Dengue,138
+2019-07-14,BARMM,Dengue,180
+2019-07-21,BARMM,Dengue,189
+2019-07-28,BARMM,Dengue,265
+2019-08-04,BARMM,Dengue,220
+2019-08-11,BARMM,Dengue,246
+2019-08-18,BARMM,Dengue,193
+2019-08-25,BARMM,Dengue,152
+2019-09-01,BARMM,Dengue,176
+2019-09-08,BARMM,Dengue,184
+2019-09-15,BARMM,Dengue,170
+2019-09-22,BARMM,Dengue,142
+2019-09-29,BARMM,Dengue,135
+2019-10-06,BARMM,Dengue,94
+2019-10-13,BARMM,Dengue,130
+2019-10-20,BARMM,Dengue,117
+2019-10-27,BARMM,Dengue,140
+2019-11-03,BARMM,Dengue,106
+2019-11-10,BARMM,Dengue,106
+2019-11-17,BARMM,Dengue,78
+2019-11-24,BARMM,Dengue,72
+2019-12-01,BARMM,Dengue,71
+2019-12-08,BARMM,Dengue,70
+2019-12-15,BARMM,Dengue,56
+2019-12-22,BARMM,Dengue,54
+2019-12-29,BARMM,Dengue,37
+2020-01-05,BARMM,Dengue,56
+2020-01-12,BARMM,Dengue,45
+2020-01-19,BARMM,Dengue,56
+2020-01-26,BARMM,Dengue,55
+2020-02-02,BARMM,Dengue,64
+2020-02-09,BARMM,Dengue,55
+2020-02-16,BARMM,Dengue,67
+2020-02-23,BARMM,Dengue,47
+2020-03-01,BARMM,Dengue,63
+2020-03-08,BARMM,Dengue,45
+2020-03-15,BARMM,Dengue,49
+2020-03-22,BARMM,Dengue,32
+2020-03-29,BARMM,Dengue,18
+2020-04-05,BARMM,Dengue,7
+2020-04-12,BARMM,Dengue,5
+2020-04-19,BARMM,Dengue,7
+2020-04-26,BARMM,Dengue,4
+2020-05-03,BARMM,Dengue,7
+2020-05-10,BARMM,Dengue,2
+2020-05-17,BARMM,Dengue,5
+2020-05-24,BARMM,Dengue,7
+2020-05-31,BARMM,Dengue,6
+2020-06-07,BARMM,Dengue,11
+2020-06-14,BARMM,Dengue,7
+2020-06-21,BARMM,Dengue,15
+2020-06-28,BARMM,Dengue,15
+2020-07-05,BARMM,Dengue,17
+2020-07-12,BARMM,Dengue,17
+2020-07-19,BARMM,Dengue,29
+2020-07-26,BARMM,Dengue,37
+2020-08-02,BARMM,Dengue,17
+2020-08-09,BARMM,Dengue,17
+2020-08-16,BARMM,Dengue,18
+2020-08-23,BARMM,Dengue,23
+2020-08-30,BARMM,Dengue,16
+2020-09-06,BARMM,Dengue,0
+2020-09-13,BARMM,Dengue,9
+2020-09-20,BARMM,Dengue,0
+2020-09-27,BARMM,Dengue,7
+2020-10-04,BARMM,Dengue,0
+2020-10-11,BARMM,Dengue,7
+2020-10-18,BARMM,Dengue,0
+2020-10-25,BARMM,Dengue,6
+2020-11-01,BARMM,Dengue,0
+2020-11-08,BARMM,Dengue,5
+2020-11-15,BARMM,Dengue,0
+2020-11-22,BARMM,Dengue,5
+2020-11-29,BARMM,Dengue,5
+2020-12-06,BARMM,Dengue,4
+2020-12-13,BARMM,Dengue,6
+2020-12-20,BARMM,Dengue,9
+2020-12-27,BARMM,Dengue,4
+2021-01-03,BARMM,Dengue,3
+2021-01-10,BARMM,Dengue,0
+2016-01-10,CAR,Dengue,201
+2016-01-17,CAR,Dengue,161
+2016-01-24,CAR,Dengue,102
+2016-01-31,CAR,Dengue,115
+2016-02-07,CAR,Dengue,80
+2016-02-14,CAR,Dengue,80
+2016-02-21,CAR,Dengue,75
+2016-02-28,CAR,Dengue,41
+2016-03-06,CAR,Dengue,41
+2016-03-13,CAR,Dengue,55
+2016-03-20,CAR,Dengue,59
+2016-03-27,CAR,Dengue,36
+2016-04-03,CAR,Dengue,49
+2016-04-10,CAR,Dengue,51
+2016-04-17,CAR,Dengue,59
+2016-04-24,CAR,Dengue,67
+2016-05-01,CAR,Dengue,76
+2016-05-08,CAR,Dengue,69
+2016-05-15,CAR,Dengue,85
+2016-05-22,CAR,Dengue,120
+2016-05-29,CAR,Dengue,154
+2016-06-05,CAR,Dengue,209
+2016-06-12,CAR,Dengue,317
+2016-06-19,CAR,Dengue,388
+2016-06-26,CAR,Dengue,444
+2016-07-03,CAR,Dengue,466
+2016-07-10,CAR,Dengue,372
+2016-07-17,CAR,Dengue,576
+2016-07-24,CAR,Dengue,580
+2016-07-31,CAR,Dengue,775
+2016-08-07,CAR,Dengue,654
+2016-08-14,CAR,Dengue,561
+2016-08-21,CAR,Dengue,516
+2016-08-28,CAR,Dengue,448
+2016-09-04,CAR,Dengue,1
+2016-09-11,CAR,Dengue,273
+2016-09-18,CAR,Dengue,0
+2016-09-25,CAR,Dengue,264
+2016-10-02,CAR,Dengue,0
+2016-10-09,CAR,Dengue,181
+2016-10-16,CAR,Dengue,0
+2016-10-23,CAR,Dengue,80
+2016-10-30,CAR,Dengue,0
+2016-11-06,CAR,Dengue,68
+2016-11-13,CAR,Dengue,0
+2016-11-20,CAR,Dengue,53
+2016-11-27,CAR,Dengue,40
+2016-12-04,CAR,Dengue,39
+2016-12-11,CAR,Dengue,17
+2016-12-18,CAR,Dengue,31
+2016-12-25,CAR,Dengue,35
+2017-01-01,CAR,Dengue,14
+2017-01-08,CAR,Dengue,31
+2017-01-15,CAR,Dengue,34
+2017-01-22,CAR,Dengue,44
+2017-01-29,CAR,Dengue,43
+2017-02-05,CAR,Dengue,33
+2017-02-12,CAR,Dengue,39
+2017-02-19,CAR,Dengue,28
+2017-02-26,CAR,Dengue,23
+2017-03-05,CAR,Dengue,26
+2017-03-12,CAR,Dengue,20
+2017-03-19,CAR,Dengue,21
+2017-03-26,CAR,Dengue,9
+2017-04-02,CAR,Dengue,14
+2017-04-09,CAR,Dengue,15
+2017-04-16,CAR,Dengue,23
+2017-04-23,CAR,Dengue,12
+2017-04-30,CAR,Dengue,12
+2017-05-07,CAR,Dengue,16
+2017-05-14,CAR,Dengue,14
+2017-05-21,CAR,Dengue,8
+2017-05-28,CAR,Dengue,19
+2017-06-04,CAR,Dengue,33
+2017-06-11,CAR,Dengue,37
+2017-06-18,CAR,Dengue,38
+2017-06-25,CAR,Dengue,38
+2017-07-02,CAR,Dengue,47
+2017-07-09,CAR,Dengue,85
+2017-07-16,CAR,Dengue,125
+2017-07-23,CAR,Dengue,115
+2017-07-30,CAR,Dengue,160
+2017-08-06,CAR,Dengue,162
+2017-08-13,CAR,Dengue,300
+2017-08-20,CAR,Dengue,225
+2017-08-27,CAR,Dengue,154
+2017-09-03,CAR,Dengue,178
+2017-09-10,CAR,Dengue,113
+2017-09-17,CAR,Dengue,179
+2017-09-24,CAR,Dengue,140
+2017-10-01,CAR,Dengue,145
+2017-10-08,CAR,Dengue,157
+2017-10-15,CAR,Dengue,125
+2017-10-22,CAR,Dengue,122
+2017-10-29,CAR,Dengue,112
+2017-11-05,CAR,Dengue,69
+2017-11-12,CAR,Dengue,114
+2017-11-19,CAR,Dengue,98
+2017-11-26,CAR,Dengue,110
+2017-12-03,CAR,Dengue,98
+2017-12-10,CAR,Dengue,99
+2017-12-17,CAR,Dengue,70
+2017-12-24,CAR,Dengue,62
+2017-12-31,CAR,Dengue,37
+2018-01-07,CAR,Dengue,77
+2018-01-14,CAR,Dengue,75
+2018-01-21,CAR,Dengue,77
+2018-01-28,CAR,Dengue,91
+2018-02-04,CAR,Dengue,63
+2018-02-11,CAR,Dengue,50
+2018-02-18,CAR,Dengue,59
+2018-02-25,CAR,Dengue,62
+2018-03-04,CAR,Dengue,49
+2018-03-11,CAR,Dengue,31
+2018-03-18,CAR,Dengue,52
+2018-03-25,CAR,Dengue,41
+2018-04-01,CAR,Dengue,31
+2018-04-08,CAR,Dengue,21
+2018-04-15,CAR,Dengue,27
+2018-04-22,CAR,Dengue,24
+2018-04-29,CAR,Dengue,25
+2018-05-06,CAR,Dengue,31
+2018-05-13,CAR,Dengue,31
+2018-05-20,CAR,Dengue,60
+2018-05-27,CAR,Dengue,66
+2018-06-03,CAR,Dengue,81
+2018-06-10,CAR,Dengue,105
+2018-06-17,CAR,Dengue,143
+2018-06-24,CAR,Dengue,138
+2018-07-01,CAR,Dengue,177
+2018-07-08,CAR,Dengue,189
+2018-07-15,CAR,Dengue,237
+2018-07-22,CAR,Dengue,322
+2018-07-29,CAR,Dengue,405
+2018-08-05,CAR,Dengue,331
+2018-08-12,CAR,Dengue,339
+2018-08-19,CAR,Dengue,324
+2018-08-26,CAR,Dengue,271
+2018-09-02,CAR,Dengue,237
+2018-09-09,CAR,Dengue,252
+2018-09-16,CAR,Dengue,225
+2018-09-23,CAR,Dengue,300
+2018-09-30,CAR,Dengue,207
+2018-10-07,CAR,Dengue,234
+2018-10-14,CAR,Dengue,265
+2018-10-21,CAR,Dengue,202
+2018-10-28,CAR,Dengue,214
+2018-11-04,CAR,Dengue,206
+2018-11-11,CAR,Dengue,146
+2018-11-18,CAR,Dengue,198
+2018-11-25,CAR,Dengue,99
+2018-12-02,CAR,Dengue,107
+2018-12-09,CAR,Dengue,134
+2018-12-16,CAR,Dengue,133
+2018-12-23,CAR,Dengue,169
+2018-12-30,CAR,Dengue,151
+2019-01-06,CAR,Dengue,0
+2019-01-13,CAR,Dengue,126
+2019-01-20,CAR,Dengue,173
+2019-01-27,CAR,Dengue,171
+2019-02-03,CAR,Dengue,148
+2019-02-10,CAR,Dengue,187
+2019-02-17,CAR,Dengue,200
+2019-02-24,CAR,Dengue,159
+2019-03-03,CAR,Dengue,119
+2019-03-10,CAR,Dengue,65
+2019-03-17,CAR,Dengue,89
+2019-03-24,CAR,Dengue,65
+2019-03-31,CAR,Dengue,60
+2019-04-07,CAR,Dengue,39
+2019-04-14,CAR,Dengue,53
+2019-04-21,CAR,Dengue,34
+2019-04-28,CAR,Dengue,37
+2019-05-05,CAR,Dengue,35
+2019-05-12,CAR,Dengue,56
+2019-05-19,CAR,Dengue,46
+2019-05-26,CAR,Dengue,50
+2019-06-02,CAR,Dengue,59
+2019-06-09,CAR,Dengue,75
+2019-06-16,CAR,Dengue,81
+2019-06-23,CAR,Dengue,145
+2019-06-30,CAR,Dengue,187
+2019-07-07,CAR,Dengue,233
+2019-07-14,CAR,Dengue,334
+2019-07-21,CAR,Dengue,333
+2019-07-28,CAR,Dengue,326
+2019-08-04,CAR,Dengue,421
+2019-08-11,CAR,Dengue,420
+2019-08-18,CAR,Dengue,389
+2019-08-25,CAR,Dengue,306
+2019-09-01,CAR,Dengue,337
+2019-09-08,CAR,Dengue,342
+2019-09-15,CAR,Dengue,322
+2019-09-22,CAR,Dengue,239
+2019-09-29,CAR,Dengue,232
+2019-10-06,CAR,Dengue,297
+2019-10-13,CAR,Dengue,220
+2019-10-20,CAR,Dengue,256
+2019-10-27,CAR,Dengue,219
+2019-11-03,CAR,Dengue,234
+2019-11-10,CAR,Dengue,203
+2019-11-17,CAR,Dengue,178
+2019-11-24,CAR,Dengue,141
+2019-12-01,CAR,Dengue,99
+2019-12-08,CAR,Dengue,72
+2019-12-15,CAR,Dengue,65
+2019-12-22,CAR,Dengue,57
+2019-12-29,CAR,Dengue,74
+2020-01-05,CAR,Dengue,70
+2020-01-12,CAR,Dengue,38
+2020-01-19,CAR,Dengue,72
+2020-01-26,CAR,Dengue,49
+2020-02-02,CAR,Dengue,69
+2020-02-09,CAR,Dengue,40
+2020-02-16,CAR,Dengue,37
+2020-02-23,CAR,Dengue,39
+2020-03-01,CAR,Dengue,41
+2020-03-08,CAR,Dengue,28
+2020-03-15,CAR,Dengue,31
+2020-03-22,CAR,Dengue,12
+2020-03-29,CAR,Dengue,9
+2020-04-05,CAR,Dengue,7
+2020-04-12,CAR,Dengue,2
+2020-04-19,CAR,Dengue,6
+2020-04-26,CAR,Dengue,4
+2020-05-03,CAR,Dengue,4
+2020-05-10,CAR,Dengue,3
+2020-05-17,CAR,Dengue,12
+2020-05-24,CAR,Dengue,6
+2020-05-31,CAR,Dengue,6
+2020-06-07,CAR,Dengue,6
+2020-06-14,CAR,Dengue,4
+2020-06-21,CAR,Dengue,48
+2020-06-28,CAR,Dengue,4
+2020-07-05,CAR,Dengue,17
+2020-07-12,CAR,Dengue,15
+2020-07-19,CAR,Dengue,20
+2020-07-26,CAR,Dengue,15
+2020-08-02,CAR,Dengue,14
+2020-08-09,CAR,Dengue,13
+2020-08-16,CAR,Dengue,16
+2020-08-23,CAR,Dengue,17
+2020-08-30,CAR,Dengue,12
+2020-09-06,CAR,Dengue,0
+2020-09-13,CAR,Dengue,25
+2020-09-20,CAR,Dengue,0
+2020-09-27,CAR,Dengue,14
+2020-10-04,CAR,Dengue,0
+2020-10-11,CAR,Dengue,15
+2020-10-18,CAR,Dengue,0
+2020-10-25,CAR,Dengue,25
+2020-11-01,CAR,Dengue,0
+2020-11-08,CAR,Dengue,15
+2020-11-15,CAR,Dengue,0
+2020-11-22,CAR,Dengue,10
+2020-11-29,CAR,Dengue,13
+2020-12-06,CAR,Dengue,21
+2020-12-13,CAR,Dengue,27
+2020-12-20,CAR,Dengue,15
+2020-12-27,CAR,Dengue,15
+2021-01-03,CAR,Dengue,24
+2021-01-10,CAR,Dengue,2
+2016-01-10,Caraga,Dengue,333
+2016-01-17,Caraga,Dengue,257
+2016-01-24,Caraga,Dengue,284
+2016-01-31,Caraga,Dengue,242
+2016-02-07,Caraga,Dengue,162
+2016-02-14,Caraga,Dengue,167
+2016-02-21,Caraga,Dengue,179
+2016-02-28,Caraga,Dengue,171
+2016-03-06,Caraga,Dengue,171
+2016-03-13,Caraga,Dengue,167
+2016-03-20,Caraga,Dengue,124
+2016-03-27,Caraga,Dengue,107
+2016-04-03,Caraga,Dengue,99
+2016-04-10,Caraga,Dengue,119
+2016-04-17,Caraga,Dengue,116
+2016-04-24,Caraga,Dengue,86
+2016-05-01,Caraga,Dengue,98
+2016-05-08,Caraga,Dengue,98
+2016-05-15,Caraga,Dengue,104
+2016-05-22,Caraga,Dengue,152
+2016-05-29,Caraga,Dengue,114
+2016-06-05,Caraga,Dengue,123
+2016-06-12,Caraga,Dengue,134
+2016-06-19,Caraga,Dengue,165
+2016-06-26,Caraga,Dengue,193
+2016-07-03,Caraga,Dengue,189
+2016-07-10,Caraga,Dengue,181
+2016-07-17,Caraga,Dengue,184
+2016-07-24,Caraga,Dengue,174
+2016-07-31,Caraga,Dengue,169
+2016-08-07,Caraga,Dengue,199
+2016-08-14,Caraga,Dengue,219
+2016-08-21,Caraga,Dengue,226
+2016-08-28,Caraga,Dengue,207
+2016-09-04,Caraga,Dengue,5
+2016-09-11,Caraga,Dengue,177
+2016-09-18,Caraga,Dengue,1
+2016-09-25,Caraga,Dengue,148
+2016-10-02,Caraga,Dengue,1
+2016-10-09,Caraga,Dengue,129
+2016-10-16,Caraga,Dengue,1
+2016-10-23,Caraga,Dengue,145
+2016-10-30,Caraga,Dengue,1
+2016-11-06,Caraga,Dengue,122
+2016-11-13,Caraga,Dengue,0
+2016-11-20,Caraga,Dengue,156
+2016-11-27,Caraga,Dengue,118
+2016-12-04,Caraga,Dengue,141
+2016-12-11,Caraga,Dengue,113
+2016-12-18,Caraga,Dengue,135
+2016-12-25,Caraga,Dengue,109
+2017-01-01,Caraga,Dengue,81
+2017-01-08,Caraga,Dengue,145
+2017-01-15,Caraga,Dengue,116
+2017-01-22,Caraga,Dengue,108
+2017-01-29,Caraga,Dengue,87
+2017-02-05,Caraga,Dengue,83
+2017-02-12,Caraga,Dengue,74
+2017-02-19,Caraga,Dengue,64
+2017-02-26,Caraga,Dengue,69
+2017-03-05,Caraga,Dengue,49
+2017-03-12,Caraga,Dengue,57
+2017-03-19,Caraga,Dengue,282
+2017-03-26,Caraga,Dengue,73
+2017-04-02,Caraga,Dengue,51
+2017-04-09,Caraga,Dengue,32
+2017-04-16,Caraga,Dengue,48
+2017-04-23,Caraga,Dengue,39
+2017-04-30,Caraga,Dengue,37
+2017-05-07,Caraga,Dengue,33
+2017-05-14,Caraga,Dengue,39
+2017-05-21,Caraga,Dengue,43
+2017-05-28,Caraga,Dengue,40
+2017-06-04,Caraga,Dengue,39
+2017-06-11,Caraga,Dengue,51
+2017-06-18,Caraga,Dengue,40
+2017-06-25,Caraga,Dengue,38
+2017-07-02,Caraga,Dengue,33
+2017-07-09,Caraga,Dengue,31
+2017-07-16,Caraga,Dengue,37
+2017-07-23,Caraga,Dengue,42
+2017-07-30,Caraga,Dengue,43
+2017-08-06,Caraga,Dengue,68
+2017-08-13,Caraga,Dengue,54
+2017-08-20,Caraga,Dengue,37
+2017-08-27,Caraga,Dengue,57
+2017-09-03,Caraga,Dengue,52
+2017-09-10,Caraga,Dengue,49
+2017-09-17,Caraga,Dengue,38
+2017-09-24,Caraga,Dengue,45
+2017-10-01,Caraga,Dengue,59
+2017-10-08,Caraga,Dengue,66
+2017-10-15,Caraga,Dengue,49
+2017-10-22,Caraga,Dengue,35
+2017-10-29,Caraga,Dengue,49
+2017-11-05,Caraga,Dengue,24
+2017-11-12,Caraga,Dengue,31
+2017-11-19,Caraga,Dengue,27
+2017-11-26,Caraga,Dengue,37
+2017-12-03,Caraga,Dengue,38
+2017-12-10,Caraga,Dengue,53
+2017-12-17,Caraga,Dengue,49
+2017-12-24,Caraga,Dengue,35
+2017-12-31,Caraga,Dengue,32
+2018-01-07,Caraga,Dengue,59
+2018-01-14,Caraga,Dengue,62
+2018-01-21,Caraga,Dengue,70
+2018-01-28,Caraga,Dengue,78
+2018-02-04,Caraga,Dengue,108
+2018-02-11,Caraga,Dengue,75
+2018-02-18,Caraga,Dengue,64
+2018-02-25,Caraga,Dengue,67
+2018-03-04,Caraga,Dengue,64
+2018-03-11,Caraga,Dengue,35
+2018-03-18,Caraga,Dengue,44
+2018-03-25,Caraga,Dengue,45
+2018-04-01,Caraga,Dengue,35
+2018-04-08,Caraga,Dengue,36
+2018-04-15,Caraga,Dengue,46
+2018-04-22,Caraga,Dengue,51
+2018-04-29,Caraga,Dengue,48
+2018-05-06,Caraga,Dengue,53
+2018-05-13,Caraga,Dengue,39
+2018-05-20,Caraga,Dengue,65
+2018-05-27,Caraga,Dengue,64
+2018-06-03,Caraga,Dengue,83
+2018-06-10,Caraga,Dengue,94
+2018-06-17,Caraga,Dengue,101
+2018-06-24,Caraga,Dengue,122
+2018-07-01,Caraga,Dengue,135
+2018-07-08,Caraga,Dengue,122
+2018-07-15,Caraga,Dengue,147
+2018-07-22,Caraga,Dengue,238
+2018-07-29,Caraga,Dengue,207
+2018-08-05,Caraga,Dengue,213
+2018-08-12,Caraga,Dengue,219
+2018-08-19,Caraga,Dengue,207
+2018-08-26,Caraga,Dengue,164
+2018-09-02,Caraga,Dengue,183
+2018-09-09,Caraga,Dengue,184
+2018-09-16,Caraga,Dengue,189
+2018-09-23,Caraga,Dengue,256
+2018-09-30,Caraga,Dengue,250
+2018-10-07,Caraga,Dengue,248
+2018-10-14,Caraga,Dengue,266
+2018-10-21,Caraga,Dengue,274
+2018-10-28,Caraga,Dengue,272
+2018-11-04,Caraga,Dengue,290
+2018-11-11,Caraga,Dengue,331
+2018-11-18,Caraga,Dengue,349
+2018-11-25,Caraga,Dengue,391
+2018-12-02,Caraga,Dengue,334
+2018-12-09,Caraga,Dengue,421
+2018-12-16,Caraga,Dengue,492
+2018-12-23,Caraga,Dengue,489
+2018-12-30,Caraga,Dengue,574
+2019-01-06,Caraga,Dengue,0
+2019-01-13,Caraga,Dengue,468
+2019-01-20,Caraga,Dengue,761
+2019-01-27,Caraga,Dengue,807
+2019-02-03,Caraga,Dengue,636
+2019-02-10,Caraga,Dengue,619
+2019-02-17,Caraga,Dengue,465
+2019-02-24,Caraga,Dengue,327
+2019-03-03,Caraga,Dengue,311
+2019-03-10,Caraga,Dengue,257
+2019-03-17,Caraga,Dengue,207
+2019-03-24,Caraga,Dengue,170
+2019-03-31,Caraga,Dengue,143
+2019-04-07,Caraga,Dengue,86
+2019-04-14,Caraga,Dengue,95
+2019-04-21,Caraga,Dengue,82
+2019-04-28,Caraga,Dengue,65
+2019-05-05,Caraga,Dengue,70
+2019-05-12,Caraga,Dengue,89
+2019-05-19,Caraga,Dengue,77
+2019-05-26,Caraga,Dengue,88
+2019-06-02,Caraga,Dengue,98
+2019-06-09,Caraga,Dengue,73
+2019-06-16,Caraga,Dengue,89
+2019-06-23,Caraga,Dengue,111
+2019-06-30,Caraga,Dengue,121
+2019-07-07,Caraga,Dengue,131
+2019-07-14,Caraga,Dengue,149
+2019-07-21,Caraga,Dengue,183
+2019-07-28,Caraga,Dengue,286
+2019-08-04,Caraga,Dengue,320
+2019-08-11,Caraga,Dengue,290
+2019-08-18,Caraga,Dengue,251
+2019-08-25,Caraga,Dengue,271
+2019-09-01,Caraga,Dengue,256
+2019-09-08,Caraga,Dengue,267
+2019-09-15,Caraga,Dengue,257
+2019-09-22,Caraga,Dengue,212
+2019-09-29,Caraga,Dengue,209
+2019-10-06,Caraga,Dengue,187
+2019-10-13,Caraga,Dengue,260
+2019-10-20,Caraga,Dengue,238
+2019-10-27,Caraga,Dengue,223
+2019-11-03,Caraga,Dengue,209
+2019-11-10,Caraga,Dengue,144
+2019-11-17,Caraga,Dengue,185
+2019-11-24,Caraga,Dengue,175
+2019-12-01,Caraga,Dengue,134
+2019-12-08,Caraga,Dengue,169
+2019-12-15,Caraga,Dengue,254
+2019-12-22,Caraga,Dengue,242
+2019-12-29,Caraga,Dengue,237
+2020-01-05,Caraga,Dengue,282
+2020-01-12,Caraga,Dengue,149
+2020-01-19,Caraga,Dengue,246
+2020-01-26,Caraga,Dengue,261
+2020-02-02,Caraga,Dengue,313
+2020-02-09,Caraga,Dengue,295
+2020-02-16,Caraga,Dengue,306
+2020-02-23,Caraga,Dengue,258
+2020-03-01,Caraga,Dengue,240
+2020-03-08,Caraga,Dengue,174
+2020-03-15,Caraga,Dengue,150
+2020-03-22,Caraga,Dengue,176
+2020-03-29,Caraga,Dengue,76
+2020-04-05,Caraga,Dengue,98
+2020-04-12,Caraga,Dengue,86
+2020-04-19,Caraga,Dengue,69
+2020-04-26,Caraga,Dengue,35
+2020-05-03,Caraga,Dengue,45
+2020-05-10,Caraga,Dengue,56
+2020-05-17,Caraga,Dengue,63
+2020-05-24,Caraga,Dengue,53
+2020-05-31,Caraga,Dengue,54
+2020-06-07,Caraga,Dengue,30
+2020-06-14,Caraga,Dengue,55
+2020-06-21,Caraga,Dengue,42
+2020-06-28,Caraga,Dengue,35
+2020-07-05,Caraga,Dengue,37
+2020-07-12,Caraga,Dengue,25
+2020-07-19,Caraga,Dengue,25
+2020-07-26,Caraga,Dengue,35
+2020-08-02,Caraga,Dengue,36
+2020-08-09,Caraga,Dengue,19
+2020-08-16,Caraga,Dengue,36
+2020-08-23,Caraga,Dengue,20
+2020-08-30,Caraga,Dengue,26
+2020-09-06,Caraga,Dengue,0
+2020-09-13,Caraga,Dengue,17
+2020-09-20,Caraga,Dengue,0
+2020-09-27,Caraga,Dengue,11
+2020-10-04,Caraga,Dengue,0
+2020-10-11,Caraga,Dengue,7
+2020-10-18,Caraga,Dengue,0
+2020-10-25,Caraga,Dengue,3
+2020-11-01,Caraga,Dengue,0
+2020-11-08,Caraga,Dengue,5
+2020-11-15,Caraga,Dengue,0
+2020-11-22,Caraga,Dengue,4
+2020-11-29,Caraga,Dengue,3
+2020-12-06,Caraga,Dengue,4
+2020-12-13,Caraga,Dengue,5
+2020-12-20,Caraga,Dengue,10
+2020-12-27,Caraga,Dengue,8
+2021-01-03,Caraga,Dengue,9
+2021-01-10,Caraga,Dengue,3
+2016-01-10,NCR,Dengue,307
+2016-01-17,NCR,Dengue,332
+2016-01-24,NCR,Dengue,353
+2016-01-31,NCR,Dengue,269
+2016-02-07,NCR,Dengue,250
+2016-02-14,NCR,Dengue,250
+2016-02-21,NCR,Dengue,265
+2016-02-28,NCR,Dengue,234
+2016-03-06,NCR,Dengue,234
+2016-03-13,NCR,Dengue,184
+2016-03-20,NCR,Dengue,165
+2016-03-27,NCR,Dengue,147
+2016-04-03,NCR,Dengue,153
+2016-04-10,NCR,Dengue,115
+2016-04-17,NCR,Dengue,83
+2016-04-24,NCR,Dengue,97
+2016-05-01,NCR,Dengue,88
+2016-05-08,NCR,Dengue,80
+2016-05-15,NCR,Dengue,93
+2016-05-22,NCR,Dengue,73
+2016-05-29,NCR,Dengue,80
+2016-06-05,NCR,Dengue,68
+2016-06-12,NCR,Dengue,97
+2016-06-19,NCR,Dengue,107
+2016-06-26,NCR,Dengue,134
+2016-07-03,NCR,Dengue,168
+2016-07-10,NCR,Dengue,212
+2016-07-17,NCR,Dengue,246
+2016-07-24,NCR,Dengue,371
+2016-07-31,NCR,Dengue,439
+2016-08-07,NCR,Dengue,584
+2016-08-14,NCR,Dengue,556
+2016-08-21,NCR,Dengue,501
+2016-08-28,NCR,Dengue,650
+2016-09-04,NCR,Dengue,3
+2016-09-11,NCR,Dengue,604
+2016-09-18,NCR,Dengue,5
+2016-09-25,NCR,Dengue,679
+2016-10-02,NCR,Dengue,2
+2016-10-09,NCR,Dengue,578
+2016-10-16,NCR,Dengue,2
+2016-10-23,NCR,Dengue,450
+2016-10-30,NCR,Dengue,1
+2016-11-06,NCR,Dengue,509
+2016-11-13,NCR,Dengue,0
+2016-11-20,NCR,Dengue,560
+2016-11-27,NCR,Dengue,403
+2016-12-04,NCR,Dengue,355
+2016-12-11,NCR,Dengue,302
+2016-12-18,NCR,Dengue,301
+2016-12-25,NCR,Dengue,263
+2017-01-01,NCR,Dengue,232
+2017-01-08,NCR,Dengue,310
+2017-01-15,NCR,Dengue,460
+2017-01-22,NCR,Dengue,329
+2017-01-29,NCR,Dengue,345
+2017-02-05,NCR,Dengue,311
+2017-02-12,NCR,Dengue,292
+2017-02-19,NCR,Dengue,292
+2017-02-26,NCR,Dengue,266
+2017-03-05,NCR,Dengue,264
+2017-03-12,NCR,Dengue,255
+2017-03-19,NCR,Dengue,211
+2017-03-26,NCR,Dengue,200
+2017-04-02,NCR,Dengue,200
+2017-04-09,NCR,Dengue,174
+2017-04-16,NCR,Dengue,143
+2017-04-23,NCR,Dengue,137
+2017-04-30,NCR,Dengue,113
+2017-05-07,NCR,Dengue,116
+2017-05-14,NCR,Dengue,131
+2017-05-21,NCR,Dengue,149
+2017-05-28,NCR,Dengue,147
+2017-06-04,NCR,Dengue,175
+2017-06-11,NCR,Dengue,215
+2017-06-18,NCR,Dengue,301
+2017-06-25,NCR,Dengue,336
+2017-07-02,NCR,Dengue,394
+2017-07-09,NCR,Dengue,421
+2017-07-16,NCR,Dengue,544
+2017-07-23,NCR,Dengue,914
+2017-07-30,NCR,Dengue,866
+2017-08-06,NCR,Dengue,855
+2017-08-13,NCR,Dengue,1253
+2017-08-20,NCR,Dengue,1299
+2017-08-27,NCR,Dengue,1148
+2017-09-03,NCR,Dengue,978
+2017-09-10,NCR,Dengue,1091
+2017-09-17,NCR,Dengue,870
+2017-09-24,NCR,Dengue,844
+2017-10-01,NCR,Dengue,854
+2017-10-08,NCR,Dengue,688
+2017-10-15,NCR,Dengue,735
+2017-10-22,NCR,Dengue,734
+2017-10-29,NCR,Dengue,822
+2017-11-05,NCR,Dengue,606
+2017-11-12,NCR,Dengue,734
+2017-11-19,NCR,Dengue,634
+2017-11-26,NCR,Dengue,614
+2017-12-03,NCR,Dengue,522
+2017-12-10,NCR,Dengue,407
+2017-12-17,NCR,Dengue,477
+2017-12-24,NCR,Dengue,386
+2017-12-31,NCR,Dengue,309
+2018-01-07,NCR,Dengue,447
+2018-01-14,NCR,Dengue,463
+2018-01-21,NCR,Dengue,580
+2018-01-28,NCR,Dengue,553
+2018-02-04,NCR,Dengue,510
+2018-02-11,NCR,Dengue,537
+2018-02-18,NCR,Dengue,430
+2018-02-25,NCR,Dengue,488
+2018-03-04,NCR,Dengue,442
+2018-03-11,NCR,Dengue,201
+2018-03-18,NCR,Dengue,305
+2018-03-25,NCR,Dengue,212
+2018-04-01,NCR,Dengue,201
+2018-04-08,NCR,Dengue,194
+2018-04-15,NCR,Dengue,177
+2018-04-22,NCR,Dengue,180
+2018-04-29,NCR,Dengue,145
+2018-05-06,NCR,Dengue,168
+2018-05-13,NCR,Dengue,126
+2018-05-20,NCR,Dengue,132
+2018-05-27,NCR,Dengue,177
+2018-06-03,NCR,Dengue,169
+2018-06-10,NCR,Dengue,216
+2018-06-17,NCR,Dengue,173
+2018-06-24,NCR,Dengue,274
+2018-07-01,NCR,Dengue,399
+2018-07-08,NCR,Dengue,441
+2018-07-15,NCR,Dengue,505
+2018-07-22,NCR,Dengue,620
+2018-07-29,NCR,Dengue,643
+2018-08-05,NCR,Dengue,809
+2018-08-12,NCR,Dengue,815
+2018-08-19,NCR,Dengue,771
+2018-08-26,NCR,Dengue,928
+2018-09-02,NCR,Dengue,1044
+2018-09-09,NCR,Dengue,1025
+2018-09-16,NCR,Dengue,944
+2018-09-23,NCR,Dengue,964
+2018-09-30,NCR,Dengue,1154
+2018-10-07,NCR,Dengue,1178
+2018-10-14,NCR,Dengue,1323
+2018-10-21,NCR,Dengue,1131
+2018-10-28,NCR,Dengue,840
+2018-11-04,NCR,Dengue,858
+2018-11-11,NCR,Dengue,826
+2018-11-18,NCR,Dengue,925
+2018-11-25,NCR,Dengue,726
+2018-12-02,NCR,Dengue,659
+2018-12-09,NCR,Dengue,556
+2018-12-16,NCR,Dengue,576
+2018-12-23,NCR,Dengue,521
+2018-12-30,NCR,Dengue,519
+2019-01-06,NCR,Dengue,0
+2019-01-13,NCR,Dengue,530
+2019-01-20,NCR,Dengue,819
+2019-01-27,NCR,Dengue,733
+2019-02-03,NCR,Dengue,707
+2019-02-10,NCR,Dengue,689
+2019-02-17,NCR,Dengue,518
+2019-02-24,NCR,Dengue,434
+2019-03-03,NCR,Dengue,384
+2019-03-10,NCR,Dengue,304
+2019-03-17,NCR,Dengue,279
+2019-03-24,NCR,Dengue,214
+2019-03-31,NCR,Dengue,196
+2019-04-07,NCR,Dengue,168
+2019-04-14,NCR,Dengue,157
+2019-04-21,NCR,Dengue,133
+2019-04-28,NCR,Dengue,74
+2019-05-05,NCR,Dengue,128
+2019-05-12,NCR,Dengue,129
+2019-05-19,NCR,Dengue,104
+2019-05-26,NCR,Dengue,81
+2019-06-02,NCR,Dengue,116
+2019-06-09,NCR,Dengue,117
+2019-06-16,NCR,Dengue,175
+2019-06-23,NCR,Dengue,165
+2019-06-30,NCR,Dengue,244
+2019-07-07,NCR,Dengue,305
+2019-07-14,NCR,Dengue,317
+2019-07-21,NCR,Dengue,515
+2019-07-28,NCR,Dengue,702
+2019-08-04,NCR,Dengue,1110
+2019-08-11,NCR,Dengue,1161
+2019-08-18,NCR,Dengue,1325
+2019-08-25,NCR,Dengue,1885
+2019-09-01,NCR,Dengue,2137
+2019-09-08,NCR,Dengue,2449
+2019-09-15,NCR,Dengue,2475
+2019-09-22,NCR,Dengue,1974
+2019-09-29,NCR,Dengue,1998
+2019-10-06,NCR,Dengue,1920
+2019-10-13,NCR,Dengue,1678
+2019-10-20,NCR,Dengue,1733
+2019-10-27,NCR,Dengue,1445
+2019-11-03,NCR,Dengue,1208
+2019-11-10,NCR,Dengue,1101
+2019-11-17,NCR,Dengue,1135
+2019-11-24,NCR,Dengue,1050
+2019-12-01,NCR,Dengue,833
+2019-12-08,NCR,Dengue,744
+2019-12-15,NCR,Dengue,675
+2019-12-22,NCR,Dengue,615
+2019-12-29,NCR,Dengue,390
+2020-01-05,NCR,Dengue,134
+2020-01-12,NCR,Dengue,565
+2020-01-19,NCR,Dengue,940
+2020-01-26,NCR,Dengue,689
+2020-02-02,NCR,Dengue,678
+2020-02-09,NCR,Dengue,511
+2020-02-16,NCR,Dengue,477
+2020-02-23,NCR,Dengue,325
+2020-03-01,NCR,Dengue,312
+2020-03-08,NCR,Dengue,289
+2020-03-15,NCR,Dengue,185
+2020-03-22,NCR,Dengue,159
+2020-03-29,NCR,Dengue,87
+2020-04-05,NCR,Dengue,42
+2020-04-12,NCR,Dengue,31
+2020-04-19,NCR,Dengue,13
+2020-04-26,NCR,Dengue,13
+2020-05-03,NCR,Dengue,16
+2020-05-10,NCR,Dengue,2
+2020-05-17,NCR,Dengue,21
+2020-05-24,NCR,Dengue,15
+2020-05-31,NCR,Dengue,11
+2020-06-07,NCR,Dengue,9
+2020-06-14,NCR,Dengue,9
+2020-06-21,NCR,Dengue,24
+2020-06-28,NCR,Dengue,15
+2020-07-05,NCR,Dengue,28
+2020-07-12,NCR,Dengue,25
+2020-07-19,NCR,Dengue,30
+2020-07-26,NCR,Dengue,29
+2020-08-02,NCR,Dengue,23
+2020-08-09,NCR,Dengue,27
+2020-08-16,NCR,Dengue,40
+2020-08-23,NCR,Dengue,39
+2020-08-30,NCR,Dengue,29
+2020-09-06,NCR,Dengue,0
+2020-09-13,NCR,Dengue,65
+2020-09-20,NCR,Dengue,0
+2020-09-27,NCR,Dengue,66
+2020-10-04,NCR,Dengue,0
+2020-10-11,NCR,Dengue,56
+2020-10-18,NCR,Dengue,0
+2020-10-25,NCR,Dengue,73
+2020-11-01,NCR,Dengue,0
+2020-11-08,NCR,Dengue,110
+2020-11-15,NCR,Dengue,0
+2020-11-22,NCR,Dengue,133
+2020-11-29,NCR,Dengue,180
+2020-12-06,NCR,Dengue,199
+2020-12-13,NCR,Dengue,195
+2020-12-20,NCR,Dengue,147
+2020-12-27,NCR,Dengue,117
+2021-01-03,NCR,Dengue,108
+2021-01-10,NCR,Dengue,73
+2016-01-10,Region I (Ilocos),Dengue,210
+2016-01-17,Region I (Ilocos),Dengue,167
+2016-01-24,Region I (Ilocos),Dengue,155
+2016-01-31,Region I (Ilocos),Dengue,173
+2016-02-07,Region I (Ilocos),Dengue,119
+2016-02-14,Region I (Ilocos),Dengue,94
+2016-02-21,Region I (Ilocos),Dengue,89
+2016-02-28,Region I (Ilocos),Dengue,72
+2016-03-06,Region I (Ilocos),Dengue,69
+2016-03-13,Region I (Ilocos),Dengue,80
+2016-03-20,Region I (Ilocos),Dengue,69
+2016-03-27,Region I (Ilocos),Dengue,58
+2016-04-03,Region I (Ilocos),Dengue,56
+2016-04-10,Region I (Ilocos),Dengue,73
+2016-04-17,Region I (Ilocos),Dengue,62
+2016-04-24,Region I (Ilocos),Dengue,49
+2016-05-01,Region I (Ilocos),Dengue,59
+2016-05-08,Region I (Ilocos),Dengue,47
+2016-05-15,Region I (Ilocos),Dengue,45
+2016-05-22,Region I (Ilocos),Dengue,46
+2016-05-29,Region I (Ilocos),Dengue,46
+2016-06-05,Region I (Ilocos),Dengue,64
+2016-06-12,Region I (Ilocos),Dengue,71
+2016-06-19,Region I (Ilocos),Dengue,82
+2016-06-26,Region I (Ilocos),Dengue,128
+2016-07-03,Region I (Ilocos),Dengue,138
+2016-07-10,Region I (Ilocos),Dengue,188
+2016-07-17,Region I (Ilocos),Dengue,241
+2016-07-24,Region I (Ilocos),Dengue,305
+2016-07-31,Region I (Ilocos),Dengue,423
+2016-08-07,Region I (Ilocos),Dengue,416
+2016-08-14,Region I (Ilocos),Dengue,427
+2016-08-21,Region I (Ilocos),Dengue,370
+2016-08-28,Region I (Ilocos),Dengue,385
+2016-09-04,Region I (Ilocos),Dengue,357
+2016-09-11,Region I (Ilocos),Dengue,420
+2016-09-18,Region I (Ilocos),Dengue,346
+2016-09-25,Region I (Ilocos),Dengue,292
+2016-10-02,Region I (Ilocos),Dengue,255
+2016-10-09,Region I (Ilocos),Dengue,238
+2016-10-16,Region I (Ilocos),Dengue,193
+2016-10-23,Region I (Ilocos),Dengue,154
+2016-10-30,Region I (Ilocos),Dengue,160
+2016-11-06,Region I (Ilocos),Dengue,132
+2016-11-13,Region I (Ilocos),Dengue,191
+2016-11-20,Region I (Ilocos),Dengue,131
+2016-11-27,Region I (Ilocos),Dengue,101
+2016-12-04,Region I (Ilocos),Dengue,73
+2016-12-11,Region I (Ilocos),Dengue,73
+2016-12-18,Region I (Ilocos),Dengue,51
+2016-12-25,Region I (Ilocos),Dengue,38
+2017-01-01,Region I (Ilocos),Dengue,30
+2017-01-08,Region I (Ilocos),Dengue,82
+2017-01-15,Region I (Ilocos),Dengue,64
+2017-01-22,Region I (Ilocos),Dengue,59
+2017-01-29,Region I (Ilocos),Dengue,50
+2017-02-05,Region I (Ilocos),Dengue,49
+2017-02-12,Region I (Ilocos),Dengue,54
+2017-02-19,Region I (Ilocos),Dengue,59
+2017-02-26,Region I (Ilocos),Dengue,40
+2017-03-05,Region I (Ilocos),Dengue,37
+2017-03-12,Region I (Ilocos),Dengue,41
+2017-03-19,Region I (Ilocos),Dengue,32
+2017-03-26,Region I (Ilocos),Dengue,41
+2017-04-02,Region I (Ilocos),Dengue,33
+2017-04-09,Region I (Ilocos),Dengue,35
+2017-04-16,Region I (Ilocos),Dengue,33
+2017-04-23,Region I (Ilocos),Dengue,44
+2017-04-30,Region I (Ilocos),Dengue,29
+2017-05-07,Region I (Ilocos),Dengue,33
+2017-05-14,Region I (Ilocos),Dengue,48
+2017-05-21,Region I (Ilocos),Dengue,50
+2017-05-28,Region I (Ilocos),Dengue,48
+2017-06-04,Region I (Ilocos),Dengue,45
+2017-06-11,Region I (Ilocos),Dengue,95
+2017-06-18,Region I (Ilocos),Dengue,96
+2017-06-25,Region I (Ilocos),Dengue,126
+2017-07-02,Region I (Ilocos),Dengue,164
+2017-07-09,Region I (Ilocos),Dengue,194
+2017-07-16,Region I (Ilocos),Dengue,206
+2017-07-23,Region I (Ilocos),Dengue,195
+2017-07-30,Region I (Ilocos),Dengue,273
+2017-08-06,Region I (Ilocos),Dengue,325
+2017-08-13,Region I (Ilocos),Dengue,470
+2017-08-20,Region I (Ilocos),Dengue,389
+2017-08-27,Region I (Ilocos),Dengue,425
+2017-09-03,Region I (Ilocos),Dengue,382
+2017-09-10,Region I (Ilocos),Dengue,334
+2017-09-17,Region I (Ilocos),Dengue,314
+2017-09-24,Region I (Ilocos),Dengue,303
+2017-10-01,Region I (Ilocos),Dengue,245
+2017-10-08,Region I (Ilocos),Dengue,243
+2017-10-15,Region I (Ilocos),Dengue,263
+2017-10-22,Region I (Ilocos),Dengue,224
+2017-10-29,Region I (Ilocos),Dengue,184
+2017-11-05,Region I (Ilocos),Dengue,199
+2017-11-12,Region I (Ilocos),Dengue,212
+2017-11-19,Region I (Ilocos),Dengue,218
+2017-11-26,Region I (Ilocos),Dengue,236
+2017-12-03,Region I (Ilocos),Dengue,208
+2017-12-10,Region I (Ilocos),Dengue,188
+2017-12-17,Region I (Ilocos),Dengue,214
+2017-12-24,Region I (Ilocos),Dengue,154
+2017-12-31,Region I (Ilocos),Dengue,121
+2018-01-07,Region I (Ilocos),Dengue,200
+2018-01-14,Region I (Ilocos),Dengue,203
+2018-01-21,Region I (Ilocos),Dengue,194
+2018-01-28,Region I (Ilocos),Dengue,102
+2018-02-04,Region I (Ilocos),Dengue,157
+2018-02-11,Region I (Ilocos),Dengue,121
+2018-02-18,Region I (Ilocos),Dengue,83
+2018-02-25,Region I (Ilocos),Dengue,87
+2018-03-04,Region I (Ilocos),Dengue,62
+2018-03-11,Region I (Ilocos),Dengue,71
+2018-03-18,Region I (Ilocos),Dengue,51
+2018-03-25,Region I (Ilocos),Dengue,51
+2018-04-01,Region I (Ilocos),Dengue,67
+2018-04-08,Region I (Ilocos),Dengue,78
+2018-04-15,Region I (Ilocos),Dengue,54
+2018-04-22,Region I (Ilocos),Dengue,70
+2018-04-29,Region I (Ilocos),Dengue,56
+2018-05-06,Region I (Ilocos),Dengue,58
+2018-05-13,Region I (Ilocos),Dengue,74
+2018-05-20,Region I (Ilocos),Dengue,112
+2018-05-27,Region I (Ilocos),Dengue,90
+2018-06-03,Region I (Ilocos),Dengue,107
+2018-06-10,Region I (Ilocos),Dengue,197
+2018-06-17,Region I (Ilocos),Dengue,201
+2018-06-24,Region I (Ilocos),Dengue,216
+2018-07-01,Region I (Ilocos),Dengue,455
+2018-07-08,Region I (Ilocos),Dengue,614
+2018-07-15,Region I (Ilocos),Dengue,635
+2018-07-22,Region I (Ilocos),Dengue,745
+2018-07-29,Region I (Ilocos),Dengue,925
+2018-08-05,Region I (Ilocos),Dengue,920
+2018-08-12,Region I (Ilocos),Dengue,912
+2018-08-19,Region I (Ilocos),Dengue,726
+2018-08-26,Region I (Ilocos),Dengue,708
+2018-09-02,Region I (Ilocos),Dengue,555
+2018-09-09,Region I (Ilocos),Dengue,524
+2018-09-16,Region I (Ilocos),Dengue,389
+2018-09-23,Region I (Ilocos),Dengue,429
+2018-09-30,Region I (Ilocos),Dengue,324
+2018-10-07,Region I (Ilocos),Dengue,268
+2018-10-14,Region I (Ilocos),Dengue,316
+2018-10-21,Region I (Ilocos),Dengue,267
+2018-10-28,Region I (Ilocos),Dengue,230
+2018-11-04,Region I (Ilocos),Dengue,205
+2018-11-11,Region I (Ilocos),Dengue,242
+2018-11-18,Region I (Ilocos),Dengue,560
+2018-11-25,Region I (Ilocos),Dengue,278
+2018-12-02,Region I (Ilocos),Dengue,752
+2018-12-09,Region I (Ilocos),Dengue,243
+2018-12-16,Region I (Ilocos),Dengue,188
+2018-12-23,Region I (Ilocos),Dengue,192
+2018-12-30,Region I (Ilocos),Dengue,147
+2019-01-06,Region I (Ilocos),Dengue,0
+2019-01-13,Region I (Ilocos),Dengue,165
+2019-01-20,Region I (Ilocos),Dengue,211
+2019-01-27,Region I (Ilocos),Dengue,220
+2019-02-03,Region I (Ilocos),Dengue,211
+2019-02-10,Region I (Ilocos),Dengue,156
+2019-02-17,Region I (Ilocos),Dengue,143
+2019-02-24,Region I (Ilocos),Dengue,123
+2019-03-03,Region I (Ilocos),Dengue,123
+2019-03-10,Region I (Ilocos),Dengue,90
+2019-03-17,Region I (Ilocos),Dengue,79
+2019-03-24,Region I (Ilocos),Dengue,53
+2019-03-31,Region I (Ilocos),Dengue,54
+2019-04-07,Region I (Ilocos),Dengue,55
+2019-04-14,Region I (Ilocos),Dengue,36
+2019-04-21,Region I (Ilocos),Dengue,56
+2019-04-28,Region I (Ilocos),Dengue,36
+2019-05-05,Region I (Ilocos),Dengue,54
+2019-05-12,Region I (Ilocos),Dengue,45
+2019-05-19,Region I (Ilocos),Dengue,54
+2019-05-26,Region I (Ilocos),Dengue,44
+2019-06-02,Region I (Ilocos),Dengue,51
+2019-06-09,Region I (Ilocos),Dengue,74
+2019-06-16,Region I (Ilocos),Dengue,132
+2019-06-23,Region I (Ilocos),Dengue,191
+2019-06-30,Region I (Ilocos),Dengue,295
+2019-07-07,Region I (Ilocos),Dengue,381
+2019-07-14,Region I (Ilocos),Dengue,598
+2019-07-21,Region I (Ilocos),Dengue,793
+2019-07-28,Region I (Ilocos),Dengue,815
+2019-08-04,Region I (Ilocos),Dengue,1021
+2019-08-11,Region I (Ilocos),Dengue,946
+2019-08-18,Region I (Ilocos),Dengue,1123
+2019-08-25,Region I (Ilocos),Dengue,1088
+2019-09-01,Region I (Ilocos),Dengue,1102
+2019-09-08,Region I (Ilocos),Dengue,1052
+2019-09-15,Region I (Ilocos),Dengue,978
+2019-09-22,Region I (Ilocos),Dengue,884
+2019-09-29,Region I (Ilocos),Dengue,798
+2019-10-06,Region I (Ilocos),Dengue,684
+2019-10-13,Region I (Ilocos),Dengue,591
+2019-10-20,Region I (Ilocos),Dengue,728
+2019-10-27,Region I (Ilocos),Dengue,582
+2019-11-03,Region I (Ilocos),Dengue,470
+2019-11-10,Region I (Ilocos),Dengue,993
+2019-11-17,Region I (Ilocos),Dengue,341
+2019-11-24,Region I (Ilocos),Dengue,329
+2019-12-01,Region I (Ilocos),Dengue,249
+2019-12-08,Region I (Ilocos),Dengue,190
+2019-12-15,Region I (Ilocos),Dengue,183
+2019-12-22,Region I (Ilocos),Dengue,123
+2019-12-29,Region I (Ilocos),Dengue,74
+2020-01-05,Region I (Ilocos),Dengue,13
+2020-01-12,Region I (Ilocos),Dengue,129
+2020-01-19,Region I (Ilocos),Dengue,170
+2020-01-26,Region I (Ilocos),Dengue,112
+2020-02-02,Region I (Ilocos),Dengue,123
+2020-02-09,Region I (Ilocos),Dengue,100
+2020-02-16,Region I (Ilocos),Dengue,101
+2020-02-23,Region I (Ilocos),Dengue,118
+2020-03-01,Region I (Ilocos),Dengue,122
+2020-03-08,Region I (Ilocos),Dengue,85
+2020-03-15,Region I (Ilocos),Dengue,58
+2020-03-22,Region I (Ilocos),Dengue,55
+2020-03-29,Region I (Ilocos),Dengue,32
+2020-04-05,Region I (Ilocos),Dengue,19
+2020-04-12,Region I (Ilocos),Dengue,10
+2020-04-19,Region I (Ilocos),Dengue,10
+2020-04-26,Region I (Ilocos),Dengue,7
+2020-05-03,Region I (Ilocos),Dengue,11
+2020-05-10,Region I (Ilocos),Dengue,18
+2020-05-17,Region I (Ilocos),Dengue,17
+2020-05-24,Region I (Ilocos),Dengue,19
+2020-05-31,Region I (Ilocos),Dengue,22
+2020-06-07,Region I (Ilocos),Dengue,19
+2020-06-14,Region I (Ilocos),Dengue,41
+2020-06-21,Region I (Ilocos),Dengue,51
+2020-06-28,Region I (Ilocos),Dengue,75
+2020-07-05,Region I (Ilocos),Dengue,96
+2020-07-12,Region I (Ilocos),Dengue,97
+2020-07-19,Region I (Ilocos),Dengue,127
+2020-07-26,Region I (Ilocos),Dengue,132
+2020-08-02,Region I (Ilocos),Dengue,169
+2020-08-09,Region I (Ilocos),Dengue,194
+2020-08-16,Region I (Ilocos),Dengue,217
+2020-08-23,Region I (Ilocos),Dengue,213
+2020-08-30,Region I (Ilocos),Dengue,237
+2020-09-06,Region I (Ilocos),Dengue,265
+2020-09-13,Region I (Ilocos),Dengue,255
+2020-09-20,Region I (Ilocos),Dengue,284
+2020-09-27,Region I (Ilocos),Dengue,248
+2020-10-04,Region I (Ilocos),Dengue,204
+2020-10-11,Region I (Ilocos),Dengue,160
+2020-10-18,Region I (Ilocos),Dengue,226
+2020-10-25,Region I (Ilocos),Dengue,217
+2020-11-01,Region I (Ilocos),Dengue,236
+2020-11-08,Region I (Ilocos),Dengue,216
+2020-11-15,Region I (Ilocos),Dengue,241
+2020-11-22,Region I (Ilocos),Dengue,258
+2020-11-29,Region I (Ilocos),Dengue,261
+2020-12-06,Region I (Ilocos),Dengue,287
+2020-12-13,Region I (Ilocos),Dengue,295
+2020-12-20,Region I (Ilocos),Dengue,259
+2020-12-27,Region I (Ilocos),Dengue,240
+2021-01-03,Region I (Ilocos),Dengue,201
+2021-01-10,Region I (Ilocos),Dengue,45
+2016-01-10,Region II (Cagayan Valley),Dengue,228
+2016-01-17,Region II (Cagayan Valley),Dengue,155
+2016-01-24,Region II (Cagayan Valley),Dengue,174
+2016-01-31,Region II (Cagayan Valley),Dengue,102
+2016-02-07,Region II (Cagayan Valley),Dengue,123
+2016-02-14,Region II (Cagayan Valley),Dengue,110
+2016-02-21,Region II (Cagayan Valley),Dengue,114
+2016-02-28,Region II (Cagayan Valley),Dengue,61
+2016-03-06,Region II (Cagayan Valley),Dengue,70
+2016-03-13,Region II (Cagayan Valley),Dengue,47
+2016-03-20,Region II (Cagayan Valley),Dengue,40
+2016-03-27,Region II (Cagayan Valley),Dengue,54
+2016-04-03,Region II (Cagayan Valley),Dengue,42
+2016-04-10,Region II (Cagayan Valley),Dengue,33
+2016-04-17,Region II (Cagayan Valley),Dengue,28
+2016-04-24,Region II (Cagayan Valley),Dengue,35
+2016-05-01,Region II (Cagayan Valley),Dengue,39
+2016-05-08,Region II (Cagayan Valley),Dengue,15
+2016-05-15,Region II (Cagayan Valley),Dengue,26
+2016-05-22,Region II (Cagayan Valley),Dengue,29
+2016-05-29,Region II (Cagayan Valley),Dengue,17
+2016-06-05,Region II (Cagayan Valley),Dengue,22
+2016-06-12,Region II (Cagayan Valley),Dengue,35
+2016-06-19,Region II (Cagayan Valley),Dengue,32
+2016-06-26,Region II (Cagayan Valley),Dengue,37
+2016-07-03,Region II (Cagayan Valley),Dengue,50
+2016-07-10,Region II (Cagayan Valley),Dengue,59
+2016-07-17,Region II (Cagayan Valley),Dengue,56
+2016-07-24,Region II (Cagayan Valley),Dengue,127
+2016-07-31,Region II (Cagayan Valley),Dengue,98
+2016-08-07,Region II (Cagayan Valley),Dengue,171
+2016-08-14,Region II (Cagayan Valley),Dengue,172
+2016-08-21,Region II (Cagayan Valley),Dengue,183
+2016-08-28,Region II (Cagayan Valley),Dengue,228
+2016-09-04,Region II (Cagayan Valley),Dengue,183
+2016-09-11,Region II (Cagayan Valley),Dengue,167
+2016-09-18,Region II (Cagayan Valley),Dengue,119
+2016-09-25,Region II (Cagayan Valley),Dengue,83
+2016-10-02,Region II (Cagayan Valley),Dengue,61
+2016-10-09,Region II (Cagayan Valley),Dengue,84
+2016-10-16,Region II (Cagayan Valley),Dengue,74
+2016-10-23,Region II (Cagayan Valley),Dengue,41
+2016-10-30,Region II (Cagayan Valley),Dengue,32
+2016-11-06,Region II (Cagayan Valley),Dengue,66
+2016-11-13,Region II (Cagayan Valley),Dengue,57
+2016-11-20,Region II (Cagayan Valley),Dengue,35
+2016-11-27,Region II (Cagayan Valley),Dengue,23
+2016-12-04,Region II (Cagayan Valley),Dengue,23
+2016-12-11,Region II (Cagayan Valley),Dengue,18
+2016-12-18,Region II (Cagayan Valley),Dengue,6
+2016-12-25,Region II (Cagayan Valley),Dengue,7
+2017-01-01,Region II (Cagayan Valley),Dengue,4
+2017-01-08,Region II (Cagayan Valley),Dengue,67
+2017-01-15,Region II (Cagayan Valley),Dengue,83
+2017-01-22,Region II (Cagayan Valley),Dengue,68
+2017-01-29,Region II (Cagayan Valley),Dengue,43
+2017-02-05,Region II (Cagayan Valley),Dengue,32
+2017-02-12,Region II (Cagayan Valley),Dengue,28
+2017-02-19,Region II (Cagayan Valley),Dengue,26
+2017-02-26,Region II (Cagayan Valley),Dengue,26
+2017-03-05,Region II (Cagayan Valley),Dengue,34
+2017-03-12,Region II (Cagayan Valley),Dengue,41
+2017-03-19,Region II (Cagayan Valley),Dengue,27
+2017-03-26,Region II (Cagayan Valley),Dengue,28
+2017-04-02,Region II (Cagayan Valley),Dengue,22
+2017-04-09,Region II (Cagayan Valley),Dengue,33
+2017-04-16,Region II (Cagayan Valley),Dengue,21
+2017-04-23,Region II (Cagayan Valley),Dengue,17
+2017-04-30,Region II (Cagayan Valley),Dengue,19
+2017-05-07,Region II (Cagayan Valley),Dengue,32
+2017-05-14,Region II (Cagayan Valley),Dengue,33
+2017-05-21,Region II (Cagayan Valley),Dengue,37
+2017-05-28,Region II (Cagayan Valley),Dengue,27
+2017-06-04,Region II (Cagayan Valley),Dengue,32
+2017-06-11,Region II (Cagayan Valley),Dengue,55
+2017-06-18,Region II (Cagayan Valley),Dengue,97
+2017-06-25,Region II (Cagayan Valley),Dengue,76
+2017-07-02,Region II (Cagayan Valley),Dengue,124
+2017-07-09,Region II (Cagayan Valley),Dengue,112
+2017-07-16,Region II (Cagayan Valley),Dengue,103
+2017-07-23,Region II (Cagayan Valley),Dengue,131
+2017-07-30,Region II (Cagayan Valley),Dengue,169
+2017-08-06,Region II (Cagayan Valley),Dengue,152
+2017-08-13,Region II (Cagayan Valley),Dengue,240
+2017-08-20,Region II (Cagayan Valley),Dengue,217
+2017-08-27,Region II (Cagayan Valley),Dengue,210
+2017-09-03,Region II (Cagayan Valley),Dengue,173
+2017-09-10,Region II (Cagayan Valley),Dengue,178
+2017-09-17,Region II (Cagayan Valley),Dengue,147
+2017-09-24,Region II (Cagayan Valley),Dengue,170
+2017-10-01,Region II (Cagayan Valley),Dengue,171
+2017-10-08,Region II (Cagayan Valley),Dengue,222
+2017-10-15,Region II (Cagayan Valley),Dengue,184
+2017-10-22,Region II (Cagayan Valley),Dengue,167
+2017-10-29,Region II (Cagayan Valley),Dengue,246
+2017-11-05,Region II (Cagayan Valley),Dengue,185
+2017-11-12,Region II (Cagayan Valley),Dengue,138
+2017-11-19,Region II (Cagayan Valley),Dengue,206
+2017-11-26,Region II (Cagayan Valley),Dengue,149
+2017-12-03,Region II (Cagayan Valley),Dengue,157
+2017-12-10,Region II (Cagayan Valley),Dengue,140
+2017-12-17,Region II (Cagayan Valley),Dengue,103
+2017-12-24,Region II (Cagayan Valley),Dengue,49
+2017-12-31,Region II (Cagayan Valley),Dengue,59
+2018-01-07,Region II (Cagayan Valley),Dengue,95
+2018-01-14,Region II (Cagayan Valley),Dengue,126
+2018-01-21,Region II (Cagayan Valley),Dengue,113
+2018-01-28,Region II (Cagayan Valley),Dengue,84
+2018-02-04,Region II (Cagayan Valley),Dengue,84
+2018-02-11,Region II (Cagayan Valley),Dengue,72
+2018-02-18,Region II (Cagayan Valley),Dengue,52
+2018-02-25,Region II (Cagayan Valley),Dengue,59
+2018-03-04,Region II (Cagayan Valley),Dengue,64
+2018-03-11,Region II (Cagayan Valley),Dengue,69
+2018-03-18,Region II (Cagayan Valley),Dengue,52
+2018-03-25,Region II (Cagayan Valley),Dengue,49
+2018-04-01,Region II (Cagayan Valley),Dengue,44
+2018-04-08,Region II (Cagayan Valley),Dengue,48
+2018-04-15,Region II (Cagayan Valley),Dengue,40
+2018-04-22,Region II (Cagayan Valley),Dengue,57
+2018-04-29,Region II (Cagayan Valley),Dengue,49
+2018-05-06,Region II (Cagayan Valley),Dengue,48
+2018-05-13,Region II (Cagayan Valley),Dengue,50
+2018-05-20,Region II (Cagayan Valley),Dengue,95
+2018-05-27,Region II (Cagayan Valley),Dengue,83
+2018-06-03,Region II (Cagayan Valley),Dengue,124
+2018-06-10,Region II (Cagayan Valley),Dengue,168
+2018-06-17,Region II (Cagayan Valley),Dengue,130
+2018-06-24,Region II (Cagayan Valley),Dengue,151
+2018-07-01,Region II (Cagayan Valley),Dengue,186
+2018-07-08,Region II (Cagayan Valley),Dengue,216
+2018-07-15,Region II (Cagayan Valley),Dengue,322
+2018-07-22,Region II (Cagayan Valley),Dengue,328
+2018-07-29,Region II (Cagayan Valley),Dengue,464
+2018-08-05,Region II (Cagayan Valley),Dengue,496
+2018-08-12,Region II (Cagayan Valley),Dengue,654
+2018-08-19,Region II (Cagayan Valley),Dengue,677
+2018-08-26,Region II (Cagayan Valley),Dengue,691
+2018-09-02,Region II (Cagayan Valley),Dengue,788
+2018-09-09,Region II (Cagayan Valley),Dengue,788
+2018-09-16,Region II (Cagayan Valley),Dengue,670
+2018-09-23,Region II (Cagayan Valley),Dengue,721
+2018-09-30,Region II (Cagayan Valley),Dengue,731
+2018-10-07,Region II (Cagayan Valley),Dengue,722
+2018-10-14,Region II (Cagayan Valley),Dengue,748
+2018-10-21,Region II (Cagayan Valley),Dengue,726
+2018-10-28,Region II (Cagayan Valley),Dengue,725
+2018-11-04,Region II (Cagayan Valley),Dengue,618
+2018-11-11,Region II (Cagayan Valley),Dengue,664
+2018-11-18,Region II (Cagayan Valley),Dengue,709
+2018-11-25,Region II (Cagayan Valley),Dengue,531
+2018-12-02,Region II (Cagayan Valley),Dengue,636
+2018-12-09,Region II (Cagayan Valley),Dengue,478
+2018-12-16,Region II (Cagayan Valley),Dengue,497
+2018-12-23,Region II (Cagayan Valley),Dengue,440
+2018-12-30,Region II (Cagayan Valley),Dengue,446
+2019-01-06,Region II (Cagayan Valley),Dengue,0
+2019-01-13,Region II (Cagayan Valley),Dengue,499
+2019-01-20,Region II (Cagayan Valley),Dengue,625
+2019-01-27,Region II (Cagayan Valley),Dengue,673
+2019-02-03,Region II (Cagayan Valley),Dengue,592
+2019-02-10,Region II (Cagayan Valley),Dengue,563
+2019-02-17,Region II (Cagayan Valley),Dengue,547
+2019-02-24,Region II (Cagayan Valley),Dengue,434
+2019-03-03,Region II (Cagayan Valley),Dengue,356
+2019-03-10,Region II (Cagayan Valley),Dengue,359
+2019-03-17,Region II (Cagayan Valley),Dengue,288
+2019-03-24,Region II (Cagayan Valley),Dengue,199
+2019-03-31,Region II (Cagayan Valley),Dengue,153
+2019-04-07,Region II (Cagayan Valley),Dengue,147
+2019-04-14,Region II (Cagayan Valley),Dengue,134
+2019-04-21,Region II (Cagayan Valley),Dengue,68
+2019-04-28,Region II (Cagayan Valley),Dengue,80
+2019-05-05,Region II (Cagayan Valley),Dengue,98
+2019-05-12,Region II (Cagayan Valley),Dengue,125
+2019-05-19,Region II (Cagayan Valley),Dengue,124
+2019-05-26,Region II (Cagayan Valley),Dengue,139
+2019-06-02,Region II (Cagayan Valley),Dengue,188
+2019-06-09,Region II (Cagayan Valley),Dengue,164
+2019-06-16,Region II (Cagayan Valley),Dengue,197
+2019-06-23,Region II (Cagayan Valley),Dengue,265
+2019-06-30,Region II (Cagayan Valley),Dengue,357
+2019-07-07,Region II (Cagayan Valley),Dengue,408
+2019-07-14,Region II (Cagayan Valley),Dengue,418
+2019-07-21,Region II (Cagayan Valley),Dengue,574
+2019-07-28,Region II (Cagayan Valley),Dengue,522
+2019-08-04,Region II (Cagayan Valley),Dengue,612
+2019-08-11,Region II (Cagayan Valley),Dengue,657
+2019-08-18,Region II (Cagayan Valley),Dengue,599
+2019-08-25,Region II (Cagayan Valley),Dengue,578
+2019-09-01,Region II (Cagayan Valley),Dengue,568
+2019-09-08,Region II (Cagayan Valley),Dengue,485
+2019-09-15,Region II (Cagayan Valley),Dengue,481
+2019-09-22,Region II (Cagayan Valley),Dengue,306
+2019-09-29,Region II (Cagayan Valley),Dengue,312
+2019-10-06,Region II (Cagayan Valley),Dengue,309
+2019-10-13,Region II (Cagayan Valley),Dengue,322
+2019-10-20,Region II (Cagayan Valley),Dengue,281
+2019-10-27,Region II (Cagayan Valley),Dengue,290
+2019-11-03,Region II (Cagayan Valley),Dengue,246
+2019-11-10,Region II (Cagayan Valley),Dengue,246
+2019-11-17,Region II (Cagayan Valley),Dengue,280
+2019-11-24,Region II (Cagayan Valley),Dengue,185
+2019-12-01,Region II (Cagayan Valley),Dengue,179
+2019-12-08,Region II (Cagayan Valley),Dengue,129
+2019-12-15,Region II (Cagayan Valley),Dengue,109
+2019-12-22,Region II (Cagayan Valley),Dengue,81
+2019-12-29,Region II (Cagayan Valley),Dengue,83
+2020-01-05,Region II (Cagayan Valley),Dengue,108
+2020-01-12,Region II (Cagayan Valley),Dengue,30
+2020-01-19,Region II (Cagayan Valley),Dengue,89
+2020-01-26,Region II (Cagayan Valley),Dengue,97
+2020-02-02,Region II (Cagayan Valley),Dengue,79
+2020-02-09,Region II (Cagayan Valley),Dengue,258
+2020-02-16,Region II (Cagayan Valley),Dengue,57
+2020-02-23,Region II (Cagayan Valley),Dengue,42
+2020-03-01,Region II (Cagayan Valley),Dengue,41
+2020-03-08,Region II (Cagayan Valley),Dengue,34
+2020-03-15,Region II (Cagayan Valley),Dengue,21
+2020-03-22,Region II (Cagayan Valley),Dengue,11
+2020-03-29,Region II (Cagayan Valley),Dengue,10
+2020-04-05,Region II (Cagayan Valley),Dengue,6
+2020-04-12,Region II (Cagayan Valley),Dengue,4
+2020-04-19,Region II (Cagayan Valley),Dengue,2
+2020-04-26,Region II (Cagayan Valley),Dengue,6
+2020-05-03,Region II (Cagayan Valley),Dengue,3
+2020-05-10,Region II (Cagayan Valley),Dengue,5
+2020-05-17,Region II (Cagayan Valley),Dengue,4
+2020-05-24,Region II (Cagayan Valley),Dengue,3
+2020-05-31,Region II (Cagayan Valley),Dengue,2
+2020-06-07,Region II (Cagayan Valley),Dengue,8
+2020-06-14,Region II (Cagayan Valley),Dengue,3
+2020-06-21,Region II (Cagayan Valley),Dengue,9
+2020-06-28,Region II (Cagayan Valley),Dengue,10
+2020-07-05,Region II (Cagayan Valley),Dengue,10
+2020-07-12,Region II (Cagayan Valley),Dengue,12
+2020-07-19,Region II (Cagayan Valley),Dengue,15
+2020-07-26,Region II (Cagayan Valley),Dengue,17
+2020-08-02,Region II (Cagayan Valley),Dengue,25
+2020-08-09,Region II (Cagayan Valley),Dengue,24
+2020-08-16,Region II (Cagayan Valley),Dengue,24
+2020-08-23,Region II (Cagayan Valley),Dengue,19
+2020-08-30,Region II (Cagayan Valley),Dengue,16
+2020-09-06,Region II (Cagayan Valley),Dengue,16
+2020-09-13,Region II (Cagayan Valley),Dengue,17
+2020-09-20,Region II (Cagayan Valley),Dengue,33
+2020-09-27,Region II (Cagayan Valley),Dengue,43
+2020-10-04,Region II (Cagayan Valley),Dengue,24
+2020-10-11,Region II (Cagayan Valley),Dengue,45
+2020-10-18,Region II (Cagayan Valley),Dengue,45
+2020-10-25,Region II (Cagayan Valley),Dengue,44
+2020-11-01,Region II (Cagayan Valley),Dengue,34
+2020-11-08,Region II (Cagayan Valley),Dengue,31
+2020-11-15,Region II (Cagayan Valley),Dengue,31
+2020-11-22,Region II (Cagayan Valley),Dengue,22
+2020-11-29,Region II (Cagayan Valley),Dengue,43
+2020-12-06,Region II (Cagayan Valley),Dengue,31
+2020-12-13,Region II (Cagayan Valley),Dengue,27
+2020-12-20,Region II (Cagayan Valley),Dengue,16
+2020-12-27,Region II (Cagayan Valley),Dengue,22
+2021-01-03,Region II (Cagayan Valley),Dengue,13
+2021-01-10,Region II (Cagayan Valley),Dengue,4
+2016-01-10,Region III (Central Luzon),Dengue,552
+2016-01-17,Region III (Central Luzon),Dengue,407
+2016-01-24,Region III (Central Luzon),Dengue,484
+2016-01-31,Region III (Central Luzon),Dengue,533
+2016-02-07,Region III (Central Luzon),Dengue,531
+2016-02-14,Region III (Central Luzon),Dengue,497
+2016-02-21,Region III (Central Luzon),Dengue,399
+2016-02-28,Region III (Central Luzon),Dengue,321
+2016-03-06,Region III (Central Luzon),Dengue,282
+2016-03-13,Region III (Central Luzon),Dengue,246
+2016-03-20,Region III (Central Luzon),Dengue,195
+2016-03-27,Region III (Central Luzon),Dengue,160
+2016-04-03,Region III (Central Luzon),Dengue,162
+2016-04-10,Region III (Central Luzon),Dengue,167
+2016-04-17,Region III (Central Luzon),Dengue,118
+2016-04-24,Region III (Central Luzon),Dengue,102
+2016-05-01,Region III (Central Luzon),Dengue,97
+2016-05-08,Region III (Central Luzon),Dengue,66
+2016-05-15,Region III (Central Luzon),Dengue,83
+2016-05-22,Region III (Central Luzon),Dengue,60
+2016-05-29,Region III (Central Luzon),Dengue,59
+2016-06-05,Region III (Central Luzon),Dengue,65
+2016-06-12,Region III (Central Luzon),Dengue,72
+2016-06-19,Region III (Central Luzon),Dengue,98
+2016-06-26,Region III (Central Luzon),Dengue,128
+2016-07-03,Region III (Central Luzon),Dengue,202
+2016-07-10,Region III (Central Luzon),Dengue,230
+2016-07-17,Region III (Central Luzon),Dengue,290
+2016-07-24,Region III (Central Luzon),Dengue,418
+2016-07-31,Region III (Central Luzon),Dengue,561
+2016-08-07,Region III (Central Luzon),Dengue,616
+2016-08-14,Region III (Central Luzon),Dengue,751
+2016-08-21,Region III (Central Luzon),Dengue,761
+2016-08-28,Region III (Central Luzon),Dengue,749
+2016-09-04,Region III (Central Luzon),Dengue,843
+2016-09-11,Region III (Central Luzon),Dengue,832
+2016-09-18,Region III (Central Luzon),Dengue,752
+2016-09-25,Region III (Central Luzon),Dengue,767
+2016-10-02,Region III (Central Luzon),Dengue,717
+2016-10-09,Region III (Central Luzon),Dengue,624
+2016-10-16,Region III (Central Luzon),Dengue,642
+2016-10-23,Region III (Central Luzon),Dengue,542
+2016-10-30,Region III (Central Luzon),Dengue,630
+2016-11-06,Region III (Central Luzon),Dengue,639
+2016-11-13,Region III (Central Luzon),Dengue,564
+2016-11-20,Region III (Central Luzon),Dengue,538
+2016-11-27,Region III (Central Luzon),Dengue,466
+2016-12-04,Region III (Central Luzon),Dengue,524
+2016-12-11,Region III (Central Luzon),Dengue,587
+2016-12-18,Region III (Central Luzon),Dengue,420
+2016-12-25,Region III (Central Luzon),Dengue,440
+2017-01-01,Region III (Central Luzon),Dengue,395
+2017-01-08,Region III (Central Luzon),Dengue,580
+2017-01-15,Region III (Central Luzon),Dengue,499
+2017-01-22,Region III (Central Luzon),Dengue,430
+2017-01-29,Region III (Central Luzon),Dengue,397
+2017-02-05,Region III (Central Luzon),Dengue,368
+2017-02-12,Region III (Central Luzon),Dengue,369
+2017-02-19,Region III (Central Luzon),Dengue,286
+2017-02-26,Region III (Central Luzon),Dengue,241
+2017-03-05,Region III (Central Luzon),Dengue,303
+2017-03-12,Region III (Central Luzon),Dengue,283
+2017-03-19,Region III (Central Luzon),Dengue,201
+2017-03-26,Region III (Central Luzon),Dengue,219
+2017-04-02,Region III (Central Luzon),Dengue,162
+2017-04-09,Region III (Central Luzon),Dengue,166
+2017-04-16,Region III (Central Luzon),Dengue,105
+2017-04-23,Region III (Central Luzon),Dengue,101
+2017-04-30,Region III (Central Luzon),Dengue,110
+2017-05-07,Region III (Central Luzon),Dengue,93
+2017-05-14,Region III (Central Luzon),Dengue,98
+2017-05-21,Region III (Central Luzon),Dengue,121
+2017-05-28,Region III (Central Luzon),Dengue,118
+2017-06-04,Region III (Central Luzon),Dengue,123
+2017-06-11,Region III (Central Luzon),Dengue,170
+2017-06-18,Region III (Central Luzon),Dengue,226
+2017-06-25,Region III (Central Luzon),Dengue,237
+2017-07-02,Region III (Central Luzon),Dengue,362
+2017-07-09,Region III (Central Luzon),Dengue,559
+2017-07-16,Region III (Central Luzon),Dengue,626
+2017-07-23,Region III (Central Luzon),Dengue,769
+2017-07-30,Region III (Central Luzon),Dengue,947
+2017-08-06,Region III (Central Luzon),Dengue,952
+2017-08-13,Region III (Central Luzon),Dengue,1354
+2017-08-20,Region III (Central Luzon),Dengue,1369
+2017-08-27,Region III (Central Luzon),Dengue,1089
+2017-09-03,Region III (Central Luzon),Dengue,905
+2017-09-10,Region III (Central Luzon),Dengue,929
+2017-09-17,Region III (Central Luzon),Dengue,748
+2017-09-24,Region III (Central Luzon),Dengue,681
+2017-10-01,Region III (Central Luzon),Dengue,518
+2017-10-08,Region III (Central Luzon),Dengue,540
+2017-10-15,Region III (Central Luzon),Dengue,589
+2017-10-22,Region III (Central Luzon),Dengue,530
+2017-10-29,Region III (Central Luzon),Dengue,634
+2017-11-05,Region III (Central Luzon),Dengue,569
+2017-11-12,Region III (Central Luzon),Dengue,609
+2017-11-19,Region III (Central Luzon),Dengue,615
+2017-11-26,Region III (Central Luzon),Dengue,517
+2017-12-03,Region III (Central Luzon),Dengue,482
+2017-12-10,Region III (Central Luzon),Dengue,592
+2017-12-17,Region III (Central Luzon),Dengue,559
+2017-12-24,Region III (Central Luzon),Dengue,471
+2017-12-31,Region III (Central Luzon),Dengue,284
+2018-01-07,Region III (Central Luzon),Dengue,590
+2018-01-14,Region III (Central Luzon),Dengue,616
+2018-01-21,Region III (Central Luzon),Dengue,638
+2018-01-28,Region III (Central Luzon),Dengue,653
+2018-02-04,Region III (Central Luzon),Dengue,513
+2018-02-11,Region III (Central Luzon),Dengue,507
+2018-02-18,Region III (Central Luzon),Dengue,368
+2018-02-25,Region III (Central Luzon),Dengue,441
+2018-03-04,Region III (Central Luzon),Dengue,404
+2018-03-11,Region III (Central Luzon),Dengue,343
+2018-03-18,Region III (Central Luzon),Dengue,277
+2018-03-25,Region III (Central Luzon),Dengue,213
+2018-04-01,Region III (Central Luzon),Dengue,163
+2018-04-08,Region III (Central Luzon),Dengue,172
+2018-04-15,Region III (Central Luzon),Dengue,126
+2018-04-22,Region III (Central Luzon),Dengue,134
+2018-04-29,Region III (Central Luzon),Dengue,129
+2018-05-06,Region III (Central Luzon),Dengue,139
+2018-05-13,Region III (Central Luzon),Dengue,158
+2018-05-20,Region III (Central Luzon),Dengue,201
+2018-05-27,Region III (Central Luzon),Dengue,197
+2018-06-03,Region III (Central Luzon),Dengue,216
+2018-06-10,Region III (Central Luzon),Dengue,280
+2018-06-17,Region III (Central Luzon),Dengue,257
+2018-06-24,Region III (Central Luzon),Dengue,421
+2018-07-01,Region III (Central Luzon),Dengue,537
+2018-07-08,Region III (Central Luzon),Dengue,736
+2018-07-15,Region III (Central Luzon),Dengue,1015
+2018-07-22,Region III (Central Luzon),Dengue,1038
+2018-07-29,Region III (Central Luzon),Dengue,1250
+2018-08-05,Region III (Central Luzon),Dengue,1450
+2018-08-12,Region III (Central Luzon),Dengue,1612
+2018-08-19,Region III (Central Luzon),Dengue,1353
+2018-08-26,Region III (Central Luzon),Dengue,1166
+2018-09-02,Region III (Central Luzon),Dengue,1145
+2018-09-09,Region III (Central Luzon),Dengue,1047
+2018-09-16,Region III (Central Luzon),Dengue,971
+2018-09-23,Region III (Central Luzon),Dengue,947
+2018-09-30,Region III (Central Luzon),Dengue,916
+2018-10-07,Region III (Central Luzon),Dengue,881
+2018-10-14,Region III (Central Luzon),Dengue,884
+2018-10-21,Region III (Central Luzon),Dengue,758
+2018-10-28,Region III (Central Luzon),Dengue,779
+2018-11-04,Region III (Central Luzon),Dengue,844
+2018-11-11,Region III (Central Luzon),Dengue,795
+2018-11-18,Region III (Central Luzon),Dengue,638
+2018-11-25,Region III (Central Luzon),Dengue,582
+2018-12-02,Region III (Central Luzon),Dengue,533
+2018-12-09,Region III (Central Luzon),Dengue,562
+2018-12-16,Region III (Central Luzon),Dengue,443
+2018-12-23,Region III (Central Luzon),Dengue,442
+2018-12-30,Region III (Central Luzon),Dengue,246
+2019-01-06,Region III (Central Luzon),Dengue,0
+2019-01-13,Region III (Central Luzon),Dengue,520
+2019-01-20,Region III (Central Luzon),Dengue,644
+2019-01-27,Region III (Central Luzon),Dengue,649
+2019-02-03,Region III (Central Luzon),Dengue,582
+2019-02-10,Region III (Central Luzon),Dengue,513
+2019-02-17,Region III (Central Luzon),Dengue,328
+2019-02-24,Region III (Central Luzon),Dengue,417
+2019-03-03,Region III (Central Luzon),Dengue,323
+2019-03-10,Region III (Central Luzon),Dengue,313
+2019-03-17,Region III (Central Luzon),Dengue,212
+2019-03-24,Region III (Central Luzon),Dengue,202
+2019-03-31,Region III (Central Luzon),Dengue,180
+2019-04-07,Region III (Central Luzon),Dengue,149
+2019-04-14,Region III (Central Luzon),Dengue,108
+2019-04-21,Region III (Central Luzon),Dengue,115
+2019-04-28,Region III (Central Luzon),Dengue,88
+2019-05-05,Region III (Central Luzon),Dengue,87
+2019-05-12,Region III (Central Luzon),Dengue,94
+2019-05-19,Region III (Central Luzon),Dengue,100
+2019-05-26,Region III (Central Luzon),Dengue,147
+2019-06-02,Region III (Central Luzon),Dengue,131
+2019-06-09,Region III (Central Luzon),Dengue,245
+2019-06-16,Region III (Central Luzon),Dengue,265
+2019-06-23,Region III (Central Luzon),Dengue,291
+2019-06-30,Region III (Central Luzon),Dengue,439
+2019-07-07,Region III (Central Luzon),Dengue,592
+2019-07-14,Region III (Central Luzon),Dengue,564
+2019-07-21,Region III (Central Luzon),Dengue,553
+2019-07-28,Region III (Central Luzon),Dengue,519
+2019-08-04,Region III (Central Luzon),Dengue,1320
+2019-08-11,Region III (Central Luzon),Dengue,1460
+2019-08-18,Region III (Central Luzon),Dengue,1925
+2019-08-25,Region III (Central Luzon),Dengue,1888
+2019-09-01,Region III (Central Luzon),Dengue,2252
+2019-09-08,Region III (Central Luzon),Dengue,2196
+2019-09-15,Region III (Central Luzon),Dengue,2137
+2019-09-22,Region III (Central Luzon),Dengue,1727
+2019-09-29,Region III (Central Luzon),Dengue,1401
+2019-10-06,Region III (Central Luzon),Dengue,1665
+2019-10-13,Region III (Central Luzon),Dengue,1495
+2019-10-20,Region III (Central Luzon),Dengue,1490
+2019-10-27,Region III (Central Luzon),Dengue,1032
+2019-11-03,Region III (Central Luzon),Dengue,521
+2019-11-10,Region III (Central Luzon),Dengue,1072
+2019-11-17,Region III (Central Luzon),Dengue,678
+2019-11-24,Region III (Central Luzon),Dengue,732
+2019-12-01,Region III (Central Luzon),Dengue,574
+2019-12-08,Region III (Central Luzon),Dengue,650
+2019-12-15,Region III (Central Luzon),Dengue,577
+2019-12-22,Region III (Central Luzon),Dengue,572
+2019-12-29,Region III (Central Luzon),Dengue,424
+2020-01-05,Region III (Central Luzon),Dengue,258
+2020-01-12,Region III (Central Luzon),Dengue,622
+2020-01-19,Region III (Central Luzon),Dengue,1119
+2020-01-26,Region III (Central Luzon),Dengue,860
+2020-02-02,Region III (Central Luzon),Dengue,984
+2020-02-09,Region III (Central Luzon),Dengue,927
+2020-02-16,Region III (Central Luzon),Dengue,612
+2020-02-23,Region III (Central Luzon),Dengue,568
+2020-03-01,Region III (Central Luzon),Dengue,428
+2020-03-08,Region III (Central Luzon),Dengue,334
+2020-03-15,Region III (Central Luzon),Dengue,339
+2020-03-22,Region III (Central Luzon),Dengue,193
+2020-03-29,Region III (Central Luzon),Dengue,110
+2020-04-05,Region III (Central Luzon),Dengue,72
+2020-04-12,Region III (Central Luzon),Dengue,49
+2020-04-19,Region III (Central Luzon),Dengue,44
+2020-04-26,Region III (Central Luzon),Dengue,42
+2020-05-03,Region III (Central Luzon),Dengue,34
+2020-05-10,Region III (Central Luzon),Dengue,38
+2020-05-17,Region III (Central Luzon),Dengue,48
+2020-05-24,Region III (Central Luzon),Dengue,34
+2020-05-31,Region III (Central Luzon),Dengue,47
+2020-06-07,Region III (Central Luzon),Dengue,35
+2020-06-14,Region III (Central Luzon),Dengue,71
+2020-06-21,Region III (Central Luzon),Dengue,77
+2020-06-28,Region III (Central Luzon),Dengue,97
+2020-07-05,Region III (Central Luzon),Dengue,132
+2020-07-12,Region III (Central Luzon),Dengue,142
+2020-07-19,Region III (Central Luzon),Dengue,193
+2020-07-26,Region III (Central Luzon),Dengue,231
+2020-08-02,Region III (Central Luzon),Dengue,251
+2020-08-09,Region III (Central Luzon),Dengue,271
+2020-08-16,Region III (Central Luzon),Dengue,264
+2020-08-23,Region III (Central Luzon),Dengue,220
+2020-08-30,Region III (Central Luzon),Dengue,266
+2020-09-06,Region III (Central Luzon),Dengue,274
+2020-09-13,Region III (Central Luzon),Dengue,259
+2020-09-20,Region III (Central Luzon),Dengue,269
+2020-09-27,Region III (Central Luzon),Dengue,271
+2020-10-04,Region III (Central Luzon),Dengue,254
+2020-10-11,Region III (Central Luzon),Dengue,251
+2020-10-18,Region III (Central Luzon),Dengue,257
+2020-10-25,Region III (Central Luzon),Dengue,251
+2020-11-01,Region III (Central Luzon),Dengue,264
+2020-11-08,Region III (Central Luzon),Dengue,317
+2020-11-15,Region III (Central Luzon),Dengue,319
+2020-11-22,Region III (Central Luzon),Dengue,354
+2020-11-29,Region III (Central Luzon),Dengue,477
+2020-12-06,Region III (Central Luzon),Dengue,561
+2020-12-13,Region III (Central Luzon),Dengue,506
+2020-12-20,Region III (Central Luzon),Dengue,511
+2020-12-27,Region III (Central Luzon),Dengue,584
+2021-01-03,Region III (Central Luzon),Dengue,638
+2021-01-10,Region III (Central Luzon),Dengue,456
+2016-01-10,Region IV-A (CALABARZON),Dengue,900
+2016-01-17,Region IV-A (CALABARZON),Dengue,689
+2016-01-24,Region IV-A (CALABARZON),Dengue,728
+2016-01-31,Region IV-A (CALABARZON),Dengue,676
+2016-02-07,Region IV-A (CALABARZON),Dengue,607
+2016-02-14,Region IV-A (CALABARZON),Dengue,542
+2016-02-21,Region IV-A (CALABARZON),Dengue,466
+2016-02-28,Region IV-A (CALABARZON),Dengue,420
+2016-03-06,Region IV-A (CALABARZON),Dengue,385
+2016-03-13,Region IV-A (CALABARZON),Dengue,340
+2016-03-20,Region IV-A (CALABARZON),Dengue,347
+2016-03-27,Region IV-A (CALABARZON),Dengue,255
+2016-04-03,Region IV-A (CALABARZON),Dengue,226
+2016-04-10,Region IV-A (CALABARZON),Dengue,226
+2016-04-17,Region IV-A (CALABARZON),Dengue,212
+2016-04-24,Region IV-A (CALABARZON),Dengue,174
+2016-05-01,Region IV-A (CALABARZON),Dengue,147
+2016-05-08,Region IV-A (CALABARZON),Dengue,160
+2016-05-15,Region IV-A (CALABARZON),Dengue,144
+2016-05-22,Region IV-A (CALABARZON),Dengue,124
+2016-05-29,Region IV-A (CALABARZON),Dengue,139
+2016-06-05,Region IV-A (CALABARZON),Dengue,146
+2016-06-12,Region IV-A (CALABARZON),Dengue,154
+2016-06-19,Region IV-A (CALABARZON),Dengue,185
+2016-06-26,Region IV-A (CALABARZON),Dengue,293
+2016-07-03,Region IV-A (CALABARZON),Dengue,276
+2016-07-10,Region IV-A (CALABARZON),Dengue,345
+2016-07-17,Region IV-A (CALABARZON),Dengue,419
+2016-07-24,Region IV-A (CALABARZON),Dengue,548
+2016-07-31,Region IV-A (CALABARZON),Dengue,682
+2016-08-07,Region IV-A (CALABARZON),Dengue,768
+2016-08-14,Region IV-A (CALABARZON),Dengue,801
+2016-08-21,Region IV-A (CALABARZON),Dengue,840
+2016-08-28,Region IV-A (CALABARZON),Dengue,809
+2016-09-04,Region IV-A (CALABARZON),Dengue,996
+2016-09-11,Region IV-A (CALABARZON),Dengue,815
+2016-09-18,Region IV-A (CALABARZON),Dengue,831
+2016-09-25,Region IV-A (CALABARZON),Dengue,812
+2016-10-02,Region IV-A (CALABARZON),Dengue,641
+2016-10-09,Region IV-A (CALABARZON),Dengue,738
+2016-10-16,Region IV-A (CALABARZON),Dengue,642
+2016-10-23,Region IV-A (CALABARZON),Dengue,575
+2016-10-30,Region IV-A (CALABARZON),Dengue,579
+2016-11-06,Region IV-A (CALABARZON),Dengue,516
+2016-11-13,Region IV-A (CALABARZON),Dengue,592
+2016-11-20,Region IV-A (CALABARZON),Dengue,459
+2016-11-27,Region IV-A (CALABARZON),Dengue,456
+2016-12-04,Region IV-A (CALABARZON),Dengue,433
+2016-12-11,Region IV-A (CALABARZON),Dengue,438
+2016-12-18,Region IV-A (CALABARZON),Dengue,344
+2016-12-25,Region IV-A (CALABARZON),Dengue,242
+2017-01-01,Region IV-A (CALABARZON),Dengue,234
+2017-01-08,Region IV-A (CALABARZON),Dengue,460
+2017-01-15,Region IV-A (CALABARZON),Dengue,398
+2017-01-22,Region IV-A (CALABARZON),Dengue,322
+2017-01-29,Region IV-A (CALABARZON),Dengue,350
+2017-02-05,Region IV-A (CALABARZON),Dengue,323
+2017-02-12,Region IV-A (CALABARZON),Dengue,342
+2017-02-19,Region IV-A (CALABARZON),Dengue,273
+2017-02-26,Region IV-A (CALABARZON),Dengue,305
+2017-03-05,Region IV-A (CALABARZON),Dengue,251
+2017-03-12,Region IV-A (CALABARZON),Dengue,248
+2017-03-19,Region IV-A (CALABARZON),Dengue,224
+2017-03-26,Region IV-A (CALABARZON),Dengue,204
+2017-04-02,Region IV-A (CALABARZON),Dengue,179
+2017-04-09,Region IV-A (CALABARZON),Dengue,137
+2017-04-16,Region IV-A (CALABARZON),Dengue,102
+2017-04-23,Region IV-A (CALABARZON),Dengue,140
+2017-04-30,Region IV-A (CALABARZON),Dengue,89
+2017-05-07,Region IV-A (CALABARZON),Dengue,104
+2017-05-14,Region IV-A (CALABARZON),Dengue,121
+2017-05-21,Region IV-A (CALABARZON),Dengue,89
+2017-05-28,Region IV-A (CALABARZON),Dengue,121
+2017-06-04,Region IV-A (CALABARZON),Dengue,134
+2017-06-11,Region IV-A (CALABARZON),Dengue,139
+2017-06-18,Region IV-A (CALABARZON),Dengue,231
+2017-06-25,Region IV-A (CALABARZON),Dengue,311
+2017-07-02,Region IV-A (CALABARZON),Dengue,379
+2017-07-09,Region IV-A (CALABARZON),Dengue,429
+2017-07-16,Region IV-A (CALABARZON),Dengue,564
+2017-07-23,Region IV-A (CALABARZON),Dengue,696
+2017-07-30,Region IV-A (CALABARZON),Dengue,659
+2017-08-06,Region IV-A (CALABARZON),Dengue,709
+2017-08-13,Region IV-A (CALABARZON),Dengue,772
+2017-08-20,Region IV-A (CALABARZON),Dengue,775
+2017-08-27,Region IV-A (CALABARZON),Dengue,865
+2017-09-03,Region IV-A (CALABARZON),Dengue,627
+2017-09-10,Region IV-A (CALABARZON),Dengue,697
+2017-09-17,Region IV-A (CALABARZON),Dengue,584
+2017-09-24,Region IV-A (CALABARZON),Dengue,612
+2017-10-01,Region IV-A (CALABARZON),Dengue,529
+2017-10-08,Region IV-A (CALABARZON),Dengue,513
+2017-10-15,Region IV-A (CALABARZON),Dengue,532
+2017-10-22,Region IV-A (CALABARZON),Dengue,546
+2017-10-29,Region IV-A (CALABARZON),Dengue,639
+2017-11-05,Region IV-A (CALABARZON),Dengue,625
+2017-11-12,Region IV-A (CALABARZON),Dengue,679
+2017-11-19,Region IV-A (CALABARZON),Dengue,613
+2017-11-26,Region IV-A (CALABARZON),Dengue,718
+2017-12-03,Region IV-A (CALABARZON),Dengue,668
+2017-12-10,Region IV-A (CALABARZON),Dengue,709
+2017-12-17,Region IV-A (CALABARZON),Dengue,634
+2017-12-24,Region IV-A (CALABARZON),Dengue,439
+2017-12-31,Region IV-A (CALABARZON),Dengue,378
+2018-01-07,Region IV-A (CALABARZON),Dengue,558
+2018-01-14,Region IV-A (CALABARZON),Dengue,623
+2018-01-21,Region IV-A (CALABARZON),Dengue,633
+2018-01-28,Region IV-A (CALABARZON),Dengue,643
+2018-02-04,Region IV-A (CALABARZON),Dengue,608
+2018-02-11,Region IV-A (CALABARZON),Dengue,522
+2018-02-18,Region IV-A (CALABARZON),Dengue,410
+2018-02-25,Region IV-A (CALABARZON),Dengue,435
+2018-03-04,Region IV-A (CALABARZON),Dengue,511
+2018-03-11,Region IV-A (CALABARZON),Dengue,373
+2018-03-18,Region IV-A (CALABARZON),Dengue,372
+2018-03-25,Region IV-A (CALABARZON),Dengue,238
+2018-04-01,Region IV-A (CALABARZON),Dengue,229
+2018-04-08,Region IV-A (CALABARZON),Dengue,198
+2018-04-15,Region IV-A (CALABARZON),Dengue,171
+2018-04-22,Region IV-A (CALABARZON),Dengue,178
+2018-04-29,Region IV-A (CALABARZON),Dengue,170
+2018-05-06,Region IV-A (CALABARZON),Dengue,145
+2018-05-13,Region IV-A (CALABARZON),Dengue,158
+2018-05-20,Region IV-A (CALABARZON),Dengue,167
+2018-05-27,Region IV-A (CALABARZON),Dengue,205
+2018-06-03,Region IV-A (CALABARZON),Dengue,215
+2018-06-10,Region IV-A (CALABARZON),Dengue,213
+2018-06-17,Region IV-A (CALABARZON),Dengue,238
+2018-06-24,Region IV-A (CALABARZON),Dengue,325
+2018-07-01,Region IV-A (CALABARZON),Dengue,408
+2018-07-08,Region IV-A (CALABARZON),Dengue,454
+2018-07-15,Region IV-A (CALABARZON),Dengue,588
+2018-07-22,Region IV-A (CALABARZON),Dengue,586
+2018-07-29,Region IV-A (CALABARZON),Dengue,757
+2018-08-05,Region IV-A (CALABARZON),Dengue,896
+2018-08-12,Region IV-A (CALABARZON),Dengue,971
+2018-08-19,Region IV-A (CALABARZON),Dengue,912
+2018-08-26,Region IV-A (CALABARZON),Dengue,977
+2018-09-02,Region IV-A (CALABARZON),Dengue,1030
+2018-09-09,Region IV-A (CALABARZON),Dengue,1024
+2018-09-16,Region IV-A (CALABARZON),Dengue,895
+2018-09-23,Region IV-A (CALABARZON),Dengue,870
+2018-09-30,Region IV-A (CALABARZON),Dengue,878
+2018-10-07,Region IV-A (CALABARZON),Dengue,942
+2018-10-14,Region IV-A (CALABARZON),Dengue,997
+2018-10-21,Region IV-A (CALABARZON),Dengue,994
+2018-10-28,Region IV-A (CALABARZON),Dengue,981
+2018-11-04,Region IV-A (CALABARZON),Dengue,878
+2018-11-11,Region IV-A (CALABARZON),Dengue,962
+2018-11-18,Region IV-A (CALABARZON),Dengue,912
+2018-11-25,Region IV-A (CALABARZON),Dengue,823
+2018-12-02,Region IV-A (CALABARZON),Dengue,723
+2018-12-09,Region IV-A (CALABARZON),Dengue,802
+2018-12-16,Region IV-A (CALABARZON),Dengue,564
+2018-12-23,Region IV-A (CALABARZON),Dengue,520
+2018-12-30,Region IV-A (CALABARZON),Dengue,528
+2019-01-06,Region IV-A (CALABARZON),Dengue,0
+2019-01-13,Region IV-A (CALABARZON),Dengue,316
+2019-01-20,Region IV-A (CALABARZON),Dengue,919
+2019-01-27,Region IV-A (CALABARZON),Dengue,922
+2019-02-03,Region IV-A (CALABARZON),Dengue,934
+2019-02-10,Region IV-A (CALABARZON),Dengue,803
+2019-02-17,Region IV-A (CALABARZON),Dengue,786
+2019-02-24,Region IV-A (CALABARZON),Dengue,729
+2019-03-03,Region IV-A (CALABARZON),Dengue,585
+2019-03-10,Region IV-A (CALABARZON),Dengue,495
+2019-03-17,Region IV-A (CALABARZON),Dengue,459
+2019-03-24,Region IV-A (CALABARZON),Dengue,381
+2019-03-31,Region IV-A (CALABARZON),Dengue,332
+2019-04-07,Region IV-A (CALABARZON),Dengue,270
+2019-04-14,Region IV-A (CALABARZON),Dengue,223
+2019-04-21,Region IV-A (CALABARZON),Dengue,198
+2019-04-28,Region IV-A (CALABARZON),Dengue,201
+2019-05-05,Region IV-A (CALABARZON),Dengue,208
+2019-05-12,Region IV-A (CALABARZON),Dengue,210
+2019-05-19,Region IV-A (CALABARZON),Dengue,231
+2019-05-26,Region IV-A (CALABARZON),Dengue,260
+2019-06-02,Region IV-A (CALABARZON),Dengue,232
+2019-06-09,Region IV-A (CALABARZON),Dengue,329
+2019-06-16,Region IV-A (CALABARZON),Dengue,449
+2019-06-23,Region IV-A (CALABARZON),Dengue,614
+2019-06-30,Region IV-A (CALABARZON),Dengue,907
+2019-07-07,Region IV-A (CALABARZON),Dengue,1113
+2019-07-14,Region IV-A (CALABARZON),Dengue,1223
+2019-07-21,Region IV-A (CALABARZON),Dengue,1731
+2019-07-28,Region IV-A (CALABARZON),Dengue,2298
+2019-08-04,Region IV-A (CALABARZON),Dengue,3354
+2019-08-11,Region IV-A (CALABARZON),Dengue,3941
+2019-08-18,Region IV-A (CALABARZON),Dengue,3651
+2019-08-25,Region IV-A (CALABARZON),Dengue,4101
+2019-09-01,Region IV-A (CALABARZON),Dengue,4722
+2019-09-08,Region IV-A (CALABARZON),Dengue,4693
+2019-09-15,Region IV-A (CALABARZON),Dengue,4920
+2019-09-22,Region IV-A (CALABARZON),Dengue,3899
+2019-09-29,Region IV-A (CALABARZON),Dengue,3424
+2019-10-06,Region IV-A (CALABARZON),Dengue,2907
+2019-10-13,Region IV-A (CALABARZON),Dengue,2690
+2019-10-20,Region IV-A (CALABARZON),Dengue,2573
+2019-10-27,Region IV-A (CALABARZON),Dengue,2195
+2019-11-03,Region IV-A (CALABARZON),Dengue,1819
+2019-11-10,Region IV-A (CALABARZON),Dengue,1548
+2019-11-17,Region IV-A (CALABARZON),Dengue,1339
+2019-11-24,Region IV-A (CALABARZON),Dengue,1193
+2019-12-01,Region IV-A (CALABARZON),Dengue,1081
+2019-12-08,Region IV-A (CALABARZON),Dengue,1066
+2019-12-15,Region IV-A (CALABARZON),Dengue,865
+2019-12-22,Region IV-A (CALABARZON),Dengue,1172
+2019-12-29,Region IV-A (CALABARZON),Dengue,684
+2020-01-05,Region IV-A (CALABARZON),Dengue,913
+2020-01-12,Region IV-A (CALABARZON),Dengue,414
+2020-01-19,Region IV-A (CALABARZON),Dengue,1052
+2020-01-26,Region IV-A (CALABARZON),Dengue,796
+2020-02-02,Region IV-A (CALABARZON),Dengue,822
+2020-02-09,Region IV-A (CALABARZON),Dengue,775
+2020-02-16,Region IV-A (CALABARZON),Dengue,532
+2020-02-23,Region IV-A (CALABARZON),Dengue,452
+2020-03-01,Region IV-A (CALABARZON),Dengue,420
+2020-03-08,Region IV-A (CALABARZON),Dengue,384
+2020-03-15,Region IV-A (CALABARZON),Dengue,357
+2020-03-22,Region IV-A (CALABARZON),Dengue,229
+2020-03-29,Region IV-A (CALABARZON),Dengue,114
+2020-04-05,Region IV-A (CALABARZON),Dengue,50
+2020-04-12,Region IV-A (CALABARZON),Dengue,32
+2020-04-19,Region IV-A (CALABARZON),Dengue,42
+2020-04-26,Region IV-A (CALABARZON),Dengue,27
+2020-05-03,Region IV-A (CALABARZON),Dengue,19
+2020-05-10,Region IV-A (CALABARZON),Dengue,12
+2020-05-17,Region IV-A (CALABARZON),Dengue,9
+2020-05-24,Region IV-A (CALABARZON),Dengue,29
+2020-05-31,Region IV-A (CALABARZON),Dengue,8
+2020-06-07,Region IV-A (CALABARZON),Dengue,22
+2020-06-14,Region IV-A (CALABARZON),Dengue,19
+2020-06-21,Region IV-A (CALABARZON),Dengue,28
+2020-06-28,Region IV-A (CALABARZON),Dengue,36
+2020-07-05,Region IV-A (CALABARZON),Dengue,50
+2020-07-12,Region IV-A (CALABARZON),Dengue,39
+2020-07-19,Region IV-A (CALABARZON),Dengue,62
+2020-07-26,Region IV-A (CALABARZON),Dengue,61
+2020-08-02,Region IV-A (CALABARZON),Dengue,50
+2020-08-09,Region IV-A (CALABARZON),Dengue,67
+2020-08-16,Region IV-A (CALABARZON),Dengue,45
+2020-08-23,Region IV-A (CALABARZON),Dengue,78
+2020-08-30,Region IV-A (CALABARZON),Dengue,51
+2020-09-06,Region IV-A (CALABARZON),Dengue,61
+2020-09-13,Region IV-A (CALABARZON),Dengue,44
+2020-09-20,Region IV-A (CALABARZON),Dengue,73
+2020-09-27,Region IV-A (CALABARZON),Dengue,53
+2020-10-04,Region IV-A (CALABARZON),Dengue,68
+2020-10-11,Region IV-A (CALABARZON),Dengue,72
+2020-10-18,Region IV-A (CALABARZON),Dengue,94
+2020-10-25,Region IV-A (CALABARZON),Dengue,91
+2020-11-01,Region IV-A (CALABARZON),Dengue,83
+2020-11-08,Region IV-A (CALABARZON),Dengue,97
+2020-11-15,Region IV-A (CALABARZON),Dengue,117
+2020-11-22,Region IV-A (CALABARZON),Dengue,123
+2020-11-29,Region IV-A (CALABARZON),Dengue,122
+2020-12-06,Region IV-A (CALABARZON),Dengue,123
+2020-12-13,Region IV-A (CALABARZON),Dengue,125
+2020-12-20,Region IV-A (CALABARZON),Dengue,137
+2020-12-27,Region IV-A (CALABARZON),Dengue,142
+2021-01-03,Region IV-A (CALABARZON),Dengue,79
+2021-01-10,Region IV-A (CALABARZON),Dengue,69
+2016-01-10,Region IV-B (MIMAROPA),Dengue,33
+2016-01-17,Region IV-B (MIMAROPA),Dengue,52
+2016-01-24,Region IV-B (MIMAROPA),Dengue,64
+2016-01-31,Region IV-B (MIMAROPA),Dengue,54
+2016-02-07,Region IV-B (MIMAROPA),Dengue,74
+2016-02-14,Region IV-B (MIMAROPA),Dengue,49
+2016-02-21,Region IV-B (MIMAROPA),Dengue,52
+2016-02-28,Region IV-B (MIMAROPA),Dengue,44
+2016-03-06,Region IV-B (MIMAROPA),Dengue,41
+2016-03-13,Region IV-B (MIMAROPA),Dengue,52
+2016-03-20,Region IV-B (MIMAROPA),Dengue,72
+2016-03-27,Region IV-B (MIMAROPA),Dengue,46
+2016-04-03,Region IV-B (MIMAROPA),Dengue,43
+2016-04-10,Region IV-B (MIMAROPA),Dengue,43
+2016-04-17,Region IV-B (MIMAROPA),Dengue,50
+2016-04-24,Region IV-B (MIMAROPA),Dengue,45
+2016-05-01,Region IV-B (MIMAROPA),Dengue,51
+2016-05-08,Region IV-B (MIMAROPA),Dengue,35
+2016-05-15,Region IV-B (MIMAROPA),Dengue,34
+2016-05-22,Region IV-B (MIMAROPA),Dengue,42
+2016-05-29,Region IV-B (MIMAROPA),Dengue,41
+2016-06-05,Region IV-B (MIMAROPA),Dengue,51
+2016-06-12,Region IV-B (MIMAROPA),Dengue,56
+2016-06-19,Region IV-B (MIMAROPA),Dengue,71
+2016-06-26,Region IV-B (MIMAROPA),Dengue,85
+2016-07-03,Region IV-B (MIMAROPA),Dengue,97
+2016-07-10,Region IV-B (MIMAROPA),Dengue,114
+2016-07-17,Region IV-B (MIMAROPA),Dengue,161
+2016-07-24,Region IV-B (MIMAROPA),Dengue,193
+2016-07-31,Region IV-B (MIMAROPA),Dengue,170
+2016-08-07,Region IV-B (MIMAROPA),Dengue,222
+2016-08-14,Region IV-B (MIMAROPA),Dengue,178
+2016-08-21,Region IV-B (MIMAROPA),Dengue,166
+2016-08-28,Region IV-B (MIMAROPA),Dengue,212
+2016-09-04,Region IV-B (MIMAROPA),Dengue,166
+2016-09-11,Region IV-B (MIMAROPA),Dengue,91
+2016-09-18,Region IV-B (MIMAROPA),Dengue,101
+2016-09-25,Region IV-B (MIMAROPA),Dengue,111
+2016-10-02,Region IV-B (MIMAROPA),Dengue,98
+2016-10-09,Region IV-B (MIMAROPA),Dengue,87
+2016-10-16,Region IV-B (MIMAROPA),Dengue,77
+2016-10-23,Region IV-B (MIMAROPA),Dengue,66
+2016-10-30,Region IV-B (MIMAROPA),Dengue,60
+2016-11-06,Region IV-B (MIMAROPA),Dengue,57
+2016-11-13,Region IV-B (MIMAROPA),Dengue,48
+2016-11-20,Region IV-B (MIMAROPA),Dengue,69
+2016-11-27,Region IV-B (MIMAROPA),Dengue,40
+2016-12-04,Region IV-B (MIMAROPA),Dengue,37
+2016-12-11,Region IV-B (MIMAROPA),Dengue,35
+2016-12-18,Region IV-B (MIMAROPA),Dengue,33
+2016-12-25,Region IV-B (MIMAROPA),Dengue,30
+2017-01-01,Region IV-B (MIMAROPA),Dengue,37
+2017-01-08,Region IV-B (MIMAROPA),Dengue,30
+2017-01-15,Region IV-B (MIMAROPA),Dengue,47
+2017-01-22,Region IV-B (MIMAROPA),Dengue,48
+2017-01-29,Region IV-B (MIMAROPA),Dengue,81
+2017-02-05,Region IV-B (MIMAROPA),Dengue,92
+2017-02-12,Region IV-B (MIMAROPA),Dengue,64
+2017-02-19,Region IV-B (MIMAROPA),Dengue,50
+2017-02-26,Region IV-B (MIMAROPA),Dengue,49
+2017-03-05,Region IV-B (MIMAROPA),Dengue,38
+2017-03-12,Region IV-B (MIMAROPA),Dengue,56
+2017-03-19,Region IV-B (MIMAROPA),Dengue,31
+2017-03-26,Region IV-B (MIMAROPA),Dengue,22
+2017-04-02,Region IV-B (MIMAROPA),Dengue,23
+2017-04-09,Region IV-B (MIMAROPA),Dengue,12
+2017-04-16,Region IV-B (MIMAROPA),Dengue,14
+2017-04-23,Region IV-B (MIMAROPA),Dengue,14
+2017-04-30,Region IV-B (MIMAROPA),Dengue,6
+2017-05-07,Region IV-B (MIMAROPA),Dengue,25
+2017-05-14,Region IV-B (MIMAROPA),Dengue,16
+2017-05-21,Region IV-B (MIMAROPA),Dengue,27
+2017-05-28,Region IV-B (MIMAROPA),Dengue,26
+2017-06-04,Region IV-B (MIMAROPA),Dengue,27
+2017-06-11,Region IV-B (MIMAROPA),Dengue,52
+2017-06-18,Region IV-B (MIMAROPA),Dengue,64
+2017-06-25,Region IV-B (MIMAROPA),Dengue,89
+2017-07-02,Region IV-B (MIMAROPA),Dengue,46
+2017-07-09,Region IV-B (MIMAROPA),Dengue,76
+2017-07-16,Region IV-B (MIMAROPA),Dengue,70
+2017-07-23,Region IV-B (MIMAROPA),Dengue,95
+2017-07-30,Region IV-B (MIMAROPA),Dengue,106
+2017-08-06,Region IV-B (MIMAROPA),Dengue,95
+2017-08-13,Region IV-B (MIMAROPA),Dengue,120
+2017-08-20,Region IV-B (MIMAROPA),Dengue,102
+2017-08-27,Region IV-B (MIMAROPA),Dengue,95
+2017-09-03,Region IV-B (MIMAROPA),Dengue,70
+2017-09-10,Region IV-B (MIMAROPA),Dengue,86
+2017-09-17,Region IV-B (MIMAROPA),Dengue,74
+2017-09-24,Region IV-B (MIMAROPA),Dengue,56
+2017-10-01,Region IV-B (MIMAROPA),Dengue,66
+2017-10-08,Region IV-B (MIMAROPA),Dengue,51
+2017-10-15,Region IV-B (MIMAROPA),Dengue,40
+2017-10-22,Region IV-B (MIMAROPA),Dengue,43
+2017-10-29,Region IV-B (MIMAROPA),Dengue,47
+2017-11-05,Region IV-B (MIMAROPA),Dengue,46
+2017-11-12,Region IV-B (MIMAROPA),Dengue,35
+2017-11-19,Region IV-B (MIMAROPA),Dengue,58
+2017-11-26,Region IV-B (MIMAROPA),Dengue,64
+2017-12-03,Region IV-B (MIMAROPA),Dengue,66
+2017-12-10,Region IV-B (MIMAROPA),Dengue,36
+2017-12-17,Region IV-B (MIMAROPA),Dengue,30
+2017-12-24,Region IV-B (MIMAROPA),Dengue,26
+2017-12-31,Region IV-B (MIMAROPA),Dengue,31
+2018-01-07,Region IV-B (MIMAROPA),Dengue,27
+2018-01-14,Region IV-B (MIMAROPA),Dengue,72
+2018-01-21,Region IV-B (MIMAROPA),Dengue,64
+2018-01-28,Region IV-B (MIMAROPA),Dengue,51
+2018-02-04,Region IV-B (MIMAROPA),Dengue,76
+2018-02-11,Region IV-B (MIMAROPA),Dengue,104
+2018-02-18,Region IV-B (MIMAROPA),Dengue,50
+2018-02-25,Region IV-B (MIMAROPA),Dengue,47
+2018-03-04,Region IV-B (MIMAROPA),Dengue,52
+2018-03-11,Region IV-B (MIMAROPA),Dengue,58
+2018-03-18,Region IV-B (MIMAROPA),Dengue,50
+2018-03-25,Region IV-B (MIMAROPA),Dengue,43
+2018-04-01,Region IV-B (MIMAROPA),Dengue,43
+2018-04-08,Region IV-B (MIMAROPA),Dengue,50
+2018-04-15,Region IV-B (MIMAROPA),Dengue,28
+2018-04-22,Region IV-B (MIMAROPA),Dengue,40
+2018-04-29,Region IV-B (MIMAROPA),Dengue,37
+2018-05-06,Region IV-B (MIMAROPA),Dengue,45
+2018-05-13,Region IV-B (MIMAROPA),Dengue,61
+2018-05-20,Region IV-B (MIMAROPA),Dengue,58
+2018-05-27,Region IV-B (MIMAROPA),Dengue,74
+2018-06-03,Region IV-B (MIMAROPA),Dengue,74
+2018-06-10,Region IV-B (MIMAROPA),Dengue,103
+2018-06-17,Region IV-B (MIMAROPA),Dengue,140
+2018-06-24,Region IV-B (MIMAROPA),Dengue,154
+2018-07-01,Region IV-B (MIMAROPA),Dengue,212
+2018-07-08,Region IV-B (MIMAROPA),Dengue,560
+2018-07-15,Region IV-B (MIMAROPA),Dengue,257
+2018-07-22,Region IV-B (MIMAROPA),Dengue,293
+2018-07-29,Region IV-B (MIMAROPA),Dengue,328
+2018-08-05,Region IV-B (MIMAROPA),Dengue,362
+2018-08-12,Region IV-B (MIMAROPA),Dengue,399
+2018-08-19,Region IV-B (MIMAROPA),Dengue,380
+2018-08-26,Region IV-B (MIMAROPA),Dengue,348
+2018-09-02,Region IV-B (MIMAROPA),Dengue,374
+2018-09-09,Region IV-B (MIMAROPA),Dengue,377
+2018-09-16,Region IV-B (MIMAROPA),Dengue,302
+2018-09-23,Region IV-B (MIMAROPA),Dengue,308
+2018-09-30,Region IV-B (MIMAROPA),Dengue,221
+2018-10-07,Region IV-B (MIMAROPA),Dengue,177
+2018-10-14,Region IV-B (MIMAROPA),Dengue,183
+2018-10-21,Region IV-B (MIMAROPA),Dengue,155
+2018-10-28,Region IV-B (MIMAROPA),Dengue,122
+2018-11-04,Region IV-B (MIMAROPA),Dengue,129
+2018-11-11,Region IV-B (MIMAROPA),Dengue,121
+2018-11-18,Region IV-B (MIMAROPA),Dengue,98
+2018-11-25,Region IV-B (MIMAROPA),Dengue,122
+2018-12-02,Region IV-B (MIMAROPA),Dengue,102
+2018-12-09,Region IV-B (MIMAROPA),Dengue,139
+2018-12-16,Region IV-B (MIMAROPA),Dengue,144
+2018-12-23,Region IV-B (MIMAROPA),Dengue,99
+2018-12-30,Region IV-B (MIMAROPA),Dengue,106
+2019-01-06,Region IV-B (MIMAROPA),Dengue,0
+2019-01-13,Region IV-B (MIMAROPA),Dengue,47
+2019-01-20,Region IV-B (MIMAROPA),Dengue,194
+2019-01-27,Region IV-B (MIMAROPA),Dengue,194
+2019-02-03,Region IV-B (MIMAROPA),Dengue,166
+2019-02-10,Region IV-B (MIMAROPA),Dengue,179
+2019-02-17,Region IV-B (MIMAROPA),Dengue,158
+2019-02-24,Region IV-B (MIMAROPA),Dengue,207
+2019-03-03,Region IV-B (MIMAROPA),Dengue,176
+2019-03-10,Region IV-B (MIMAROPA),Dengue,180
+2019-03-17,Region IV-B (MIMAROPA),Dengue,134
+2019-03-24,Region IV-B (MIMAROPA),Dengue,181
+2019-03-31,Region IV-B (MIMAROPA),Dengue,128
+2019-04-07,Region IV-B (MIMAROPA),Dengue,116
+2019-04-14,Region IV-B (MIMAROPA),Dengue,98
+2019-04-21,Region IV-B (MIMAROPA),Dengue,84
+2019-04-28,Region IV-B (MIMAROPA),Dengue,66
+2019-05-05,Region IV-B (MIMAROPA),Dengue,45
+2019-05-12,Region IV-B (MIMAROPA),Dengue,50
+2019-05-19,Region IV-B (MIMAROPA),Dengue,81
+2019-05-26,Region IV-B (MIMAROPA),Dengue,72
+2019-06-02,Region IV-B (MIMAROPA),Dengue,73
+2019-06-09,Region IV-B (MIMAROPA),Dengue,75
+2019-06-16,Region IV-B (MIMAROPA),Dengue,110
+2019-06-23,Region IV-B (MIMAROPA),Dengue,153
+2019-06-30,Region IV-B (MIMAROPA),Dengue,530
+2019-07-07,Region IV-B (MIMAROPA),Dengue,257
+2019-07-14,Region IV-B (MIMAROPA),Dengue,468
+2019-07-21,Region IV-B (MIMAROPA),Dengue,505
+2019-07-28,Region IV-B (MIMAROPA),Dengue,398
+2019-08-04,Region IV-B (MIMAROPA),Dengue,567
+2019-08-11,Region IV-B (MIMAROPA),Dengue,603
+2019-08-18,Region IV-B (MIMAROPA),Dengue,521
+2019-08-25,Region IV-B (MIMAROPA),Dengue,434
+2019-09-01,Region IV-B (MIMAROPA),Dengue,450
+2019-09-08,Region IV-B (MIMAROPA),Dengue,370
+2019-09-15,Region IV-B (MIMAROPA),Dengue,486
+2019-09-22,Region IV-B (MIMAROPA),Dengue,391
+2019-09-29,Region IV-B (MIMAROPA),Dengue,298
+2019-10-06,Region IV-B (MIMAROPA),Dengue,207
+2019-10-13,Region IV-B (MIMAROPA),Dengue,157
+2019-10-20,Region IV-B (MIMAROPA),Dengue,209
+2019-10-27,Region IV-B (MIMAROPA),Dengue,137
+2019-11-03,Region IV-B (MIMAROPA),Dengue,150
+2019-11-10,Region IV-B (MIMAROPA),Dengue,147
+2019-11-17,Region IV-B (MIMAROPA),Dengue,228
+2019-11-24,Region IV-B (MIMAROPA),Dengue,91
+2019-12-01,Region IV-B (MIMAROPA),Dengue,115
+2019-12-08,Region IV-B (MIMAROPA),Dengue,87
+2019-12-15,Region IV-B (MIMAROPA),Dengue,96
+2019-12-22,Region IV-B (MIMAROPA),Dengue,65
+2019-12-29,Region IV-B (MIMAROPA),Dengue,50
+2020-01-05,Region IV-B (MIMAROPA),Dengue,1
+2020-01-12,Region IV-B (MIMAROPA),Dengue,29
+2020-01-19,Region IV-B (MIMAROPA),Dengue,164
+2020-01-26,Region IV-B (MIMAROPA),Dengue,126
+2020-02-02,Region IV-B (MIMAROPA),Dengue,131
+2020-02-09,Region IV-B (MIMAROPA),Dengue,164
+2020-02-16,Region IV-B (MIMAROPA),Dengue,178
+2020-02-23,Region IV-B (MIMAROPA),Dengue,134
+2020-03-01,Region IV-B (MIMAROPA),Dengue,145
+2020-03-08,Region IV-B (MIMAROPA),Dengue,112
+2020-03-15,Region IV-B (MIMAROPA),Dengue,135
+2020-03-22,Region IV-B (MIMAROPA),Dengue,102
+2020-03-29,Region IV-B (MIMAROPA),Dengue,43
+2020-04-05,Region IV-B (MIMAROPA),Dengue,24
+2020-04-12,Region IV-B (MIMAROPA),Dengue,22
+2020-04-19,Region IV-B (MIMAROPA),Dengue,14
+2020-04-26,Region IV-B (MIMAROPA),Dengue,17
+2020-05-03,Region IV-B (MIMAROPA),Dengue,13
+2020-05-10,Region IV-B (MIMAROPA),Dengue,14
+2020-05-17,Region IV-B (MIMAROPA),Dengue,29
+2020-05-24,Region IV-B (MIMAROPA),Dengue,32
+2020-05-31,Region IV-B (MIMAROPA),Dengue,23
+2020-06-07,Region IV-B (MIMAROPA),Dengue,37
+2020-06-14,Region IV-B (MIMAROPA),Dengue,35
+2020-06-21,Region IV-B (MIMAROPA),Dengue,48
+2020-06-28,Region IV-B (MIMAROPA),Dengue,76
+2020-07-05,Region IV-B (MIMAROPA),Dengue,82
+2020-07-12,Region IV-B (MIMAROPA),Dengue,87
+2020-07-19,Region IV-B (MIMAROPA),Dengue,140
+2020-07-26,Region IV-B (MIMAROPA),Dengue,158
+2020-08-02,Region IV-B (MIMAROPA),Dengue,248
+2020-08-09,Region IV-B (MIMAROPA),Dengue,226
+2020-08-16,Region IV-B (MIMAROPA),Dengue,230
+2020-08-23,Region IV-B (MIMAROPA),Dengue,215
+2020-08-30,Region IV-B (MIMAROPA),Dengue,129
+2020-09-06,Region IV-B (MIMAROPA),Dengue,175
+2020-09-13,Region IV-B (MIMAROPA),Dengue,186
+2020-09-20,Region IV-B (MIMAROPA),Dengue,167
+2020-09-27,Region IV-B (MIMAROPA),Dengue,166
+2020-10-04,Region IV-B (MIMAROPA),Dengue,107
+2020-10-11,Region IV-B (MIMAROPA),Dengue,122
+2020-10-18,Region IV-B (MIMAROPA),Dengue,122
+2020-10-25,Region IV-B (MIMAROPA),Dengue,87
+2020-11-01,Region IV-B (MIMAROPA),Dengue,100
+2020-11-08,Region IV-B (MIMAROPA),Dengue,66
+2020-11-15,Region IV-B (MIMAROPA),Dengue,66
+2020-11-22,Region IV-B (MIMAROPA),Dengue,69
+2020-11-29,Region IV-B (MIMAROPA),Dengue,89
+2020-12-06,Region IV-B (MIMAROPA),Dengue,68
+2020-12-13,Region IV-B (MIMAROPA),Dengue,46
+2020-12-20,Region IV-B (MIMAROPA),Dengue,43
+2020-12-27,Region IV-B (MIMAROPA),Dengue,35
+2021-01-03,Region IV-B (MIMAROPA),Dengue,29
+2021-01-10,Region IV-B (MIMAROPA),Dengue,9
+2016-01-10,Region IX (Zamboanga Peninsula),Dengue,207
+2016-01-17,Region IX (Zamboanga Peninsula),Dengue,124
+2016-01-24,Region IX (Zamboanga Peninsula),Dengue,130
+2016-01-31,Region IX (Zamboanga Peninsula),Dengue,135
+2016-02-07,Region IX (Zamboanga Peninsula),Dengue,115
+2016-02-14,Region IX (Zamboanga Peninsula),Dengue,123
+2016-02-21,Region IX (Zamboanga Peninsula),Dengue,100
+2016-02-28,Region IX (Zamboanga Peninsula),Dengue,94
+2016-03-06,Region IX (Zamboanga Peninsula),Dengue,97
+2016-03-13,Region IX (Zamboanga Peninsula),Dengue,121
+2016-03-20,Region IX (Zamboanga Peninsula),Dengue,102
+2016-03-27,Region IX (Zamboanga Peninsula),Dengue,94
+2016-04-03,Region IX (Zamboanga Peninsula),Dengue,64
+2016-04-10,Region IX (Zamboanga Peninsula),Dengue,70
+2016-04-17,Region IX (Zamboanga Peninsula),Dengue,78
+2016-04-24,Region IX (Zamboanga Peninsula),Dengue,74
+2016-05-01,Region IX (Zamboanga Peninsula),Dengue,80
+2016-05-08,Region IX (Zamboanga Peninsula),Dengue,68
+2016-05-15,Region IX (Zamboanga Peninsula),Dengue,99
+2016-05-22,Region IX (Zamboanga Peninsula),Dengue,107
+2016-05-29,Region IX (Zamboanga Peninsula),Dengue,97
+2016-06-05,Region IX (Zamboanga Peninsula),Dengue,161
+2016-06-12,Region IX (Zamboanga Peninsula),Dengue,133
+2016-06-19,Region IX (Zamboanga Peninsula),Dengue,169
+2016-06-26,Region IX (Zamboanga Peninsula),Dengue,178
+2016-07-03,Region IX (Zamboanga Peninsula),Dengue,160
+2016-07-10,Region IX (Zamboanga Peninsula),Dengue,191
+2016-07-17,Region IX (Zamboanga Peninsula),Dengue,179
+2016-07-24,Region IX (Zamboanga Peninsula),Dengue,206
+2016-07-31,Region IX (Zamboanga Peninsula),Dengue,289
+2016-08-07,Region IX (Zamboanga Peninsula),Dengue,290
+2016-08-14,Region IX (Zamboanga Peninsula),Dengue,283
+2016-08-21,Region IX (Zamboanga Peninsula),Dengue,248
+2016-08-28,Region IX (Zamboanga Peninsula),Dengue,195
+2016-09-04,Region IX (Zamboanga Peninsula),Dengue,215
+2016-09-11,Region IX (Zamboanga Peninsula),Dengue,176
+2016-09-18,Region IX (Zamboanga Peninsula),Dengue,140
+2016-09-25,Region IX (Zamboanga Peninsula),Dengue,162
+2016-10-02,Region IX (Zamboanga Peninsula),Dengue,159
+2016-10-09,Region IX (Zamboanga Peninsula),Dengue,123
+2016-10-16,Region IX (Zamboanga Peninsula),Dengue,139
+2016-10-23,Region IX (Zamboanga Peninsula),Dengue,132
+2016-10-30,Region IX (Zamboanga Peninsula),Dengue,137
+2016-11-06,Region IX (Zamboanga Peninsula),Dengue,131
+2016-11-13,Region IX (Zamboanga Peninsula),Dengue,139
+2016-11-20,Region IX (Zamboanga Peninsula),Dengue,117
+2016-11-27,Region IX (Zamboanga Peninsula),Dengue,133
+2016-12-04,Region IX (Zamboanga Peninsula),Dengue,142
+2016-12-11,Region IX (Zamboanga Peninsula),Dengue,118
+2016-12-18,Region IX (Zamboanga Peninsula),Dengue,110
+2016-12-25,Region IX (Zamboanga Peninsula),Dengue,81
+2017-01-01,Region IX (Zamboanga Peninsula),Dengue,63
+2017-01-08,Region IX (Zamboanga Peninsula),Dengue,107
+2017-01-15,Region IX (Zamboanga Peninsula),Dengue,128
+2017-01-22,Region IX (Zamboanga Peninsula),Dengue,109
+2017-01-29,Region IX (Zamboanga Peninsula),Dengue,120
+2017-02-05,Region IX (Zamboanga Peninsula),Dengue,112
+2017-02-12,Region IX (Zamboanga Peninsula),Dengue,106
+2017-02-19,Region IX (Zamboanga Peninsula),Dengue,105
+2017-02-26,Region IX (Zamboanga Peninsula),Dengue,81
+2017-03-05,Region IX (Zamboanga Peninsula),Dengue,83
+2017-03-12,Region IX (Zamboanga Peninsula),Dengue,58
+2017-03-19,Region IX (Zamboanga Peninsula),Dengue,51
+2017-03-26,Region IX (Zamboanga Peninsula),Dengue,69
+2017-04-02,Region IX (Zamboanga Peninsula),Dengue,66
+2017-04-09,Region IX (Zamboanga Peninsula),Dengue,54
+2017-04-16,Region IX (Zamboanga Peninsula),Dengue,52
+2017-04-23,Region IX (Zamboanga Peninsula),Dengue,61
+2017-04-30,Region IX (Zamboanga Peninsula),Dengue,58
+2017-05-07,Region IX (Zamboanga Peninsula),Dengue,62
+2017-05-14,Region IX (Zamboanga Peninsula),Dengue,72
+2017-05-21,Region IX (Zamboanga Peninsula),Dengue,84
+2017-05-28,Region IX (Zamboanga Peninsula),Dengue,75
+2017-06-04,Region IX (Zamboanga Peninsula),Dengue,89
+2017-06-11,Region IX (Zamboanga Peninsula),Dengue,108
+2017-06-18,Region IX (Zamboanga Peninsula),Dengue,137
+2017-06-25,Region IX (Zamboanga Peninsula),Dengue,187
+2017-07-02,Region IX (Zamboanga Peninsula),Dengue,229
+2017-07-09,Region IX (Zamboanga Peninsula),Dengue,190
+2017-07-16,Region IX (Zamboanga Peninsula),Dengue,128
+2017-07-23,Region IX (Zamboanga Peninsula),Dengue,159
+2017-07-30,Region IX (Zamboanga Peninsula),Dengue,176
+2017-08-06,Region IX (Zamboanga Peninsula),Dengue,120
+2017-08-13,Region IX (Zamboanga Peninsula),Dengue,114
+2017-08-20,Region IX (Zamboanga Peninsula),Dengue,110
+2017-08-27,Region IX (Zamboanga Peninsula),Dengue,124
+2017-09-03,Region IX (Zamboanga Peninsula),Dengue,2
+2017-09-10,Region IX (Zamboanga Peninsula),Dengue,76
+2017-09-17,Region IX (Zamboanga Peninsula),Dengue,0
+2017-09-24,Region IX (Zamboanga Peninsula),Dengue,37
+2017-10-01,Region IX (Zamboanga Peninsula),Dengue,0
+2017-10-08,Region IX (Zamboanga Peninsula),Dengue,61
+2017-10-15,Region IX (Zamboanga Peninsula),Dengue,0
+2017-10-22,Region IX (Zamboanga Peninsula),Dengue,47
+2017-10-29,Region IX (Zamboanga Peninsula),Dengue,0
+2017-11-05,Region IX (Zamboanga Peninsula),Dengue,70
+2017-11-12,Region IX (Zamboanga Peninsula),Dengue,0
+2017-11-19,Region IX (Zamboanga Peninsula),Dengue,57
+2017-11-26,Region IX (Zamboanga Peninsula),Dengue,69
+2017-12-03,Region IX (Zamboanga Peninsula),Dengue,41
+2017-12-10,Region IX (Zamboanga Peninsula),Dengue,27
+2017-12-17,Region IX (Zamboanga Peninsula),Dengue,66
+2017-12-24,Region IX (Zamboanga Peninsula),Dengue,47
+2017-12-31,Region IX (Zamboanga Peninsula),Dengue,27
+2018-01-07,Region IX (Zamboanga Peninsula),Dengue,69
+2018-01-14,Region IX (Zamboanga Peninsula),Dengue,80
+2018-01-21,Region IX (Zamboanga Peninsula),Dengue,67
+2018-01-28,Region IX (Zamboanga Peninsula),Dengue,83
+2018-02-04,Region IX (Zamboanga Peninsula),Dengue,97
+2018-02-11,Region IX (Zamboanga Peninsula),Dengue,102
+2018-02-18,Region IX (Zamboanga Peninsula),Dengue,67
+2018-02-25,Region IX (Zamboanga Peninsula),Dengue,75
+2018-03-04,Region IX (Zamboanga Peninsula),Dengue,83
+2018-03-11,Region IX (Zamboanga Peninsula),Dengue,89
+2018-03-18,Region IX (Zamboanga Peninsula),Dengue,58
+2018-03-25,Region IX (Zamboanga Peninsula),Dengue,58
+2018-04-01,Region IX (Zamboanga Peninsula),Dengue,65
+2018-04-08,Region IX (Zamboanga Peninsula),Dengue,28
+2018-04-15,Region IX (Zamboanga Peninsula),Dengue,29
+2018-04-22,Region IX (Zamboanga Peninsula),Dengue,39
+2018-04-29,Region IX (Zamboanga Peninsula),Dengue,59
+2018-05-06,Region IX (Zamboanga Peninsula),Dengue,58
+2018-05-13,Region IX (Zamboanga Peninsula),Dengue,66
+2018-05-20,Region IX (Zamboanga Peninsula),Dengue,79
+2018-05-27,Region IX (Zamboanga Peninsula),Dengue,112
+2018-06-03,Region IX (Zamboanga Peninsula),Dengue,121
+2018-06-10,Region IX (Zamboanga Peninsula),Dengue,99
+2018-06-17,Region IX (Zamboanga Peninsula),Dengue,72
+2018-06-24,Region IX (Zamboanga Peninsula),Dengue,74
+2018-07-01,Region IX (Zamboanga Peninsula),Dengue,79
+2018-07-08,Region IX (Zamboanga Peninsula),Dengue,95
+2018-07-15,Region IX (Zamboanga Peninsula),Dengue,168
+2018-07-22,Region IX (Zamboanga Peninsula),Dengue,183
+2018-07-29,Region IX (Zamboanga Peninsula),Dengue,229
+2018-08-05,Region IX (Zamboanga Peninsula),Dengue,198
+2018-08-12,Region IX (Zamboanga Peninsula),Dengue,187
+2018-08-19,Region IX (Zamboanga Peninsula),Dengue,213
+2018-08-26,Region IX (Zamboanga Peninsula),Dengue,182
+2018-09-02,Region IX (Zamboanga Peninsula),Dengue,160
+2018-09-09,Region IX (Zamboanga Peninsula),Dengue,138
+2018-09-16,Region IX (Zamboanga Peninsula),Dengue,89
+2018-09-23,Region IX (Zamboanga Peninsula),Dengue,125
+2018-09-30,Region IX (Zamboanga Peninsula),Dengue,146
+2018-10-07,Region IX (Zamboanga Peninsula),Dengue,147
+2018-10-14,Region IX (Zamboanga Peninsula),Dengue,176
+2018-10-21,Region IX (Zamboanga Peninsula),Dengue,165
+2018-10-28,Region IX (Zamboanga Peninsula),Dengue,142
+2018-11-04,Region IX (Zamboanga Peninsula),Dengue,141
+2018-11-11,Region IX (Zamboanga Peninsula),Dengue,180
+2018-11-18,Region IX (Zamboanga Peninsula),Dengue,164
+2018-11-25,Region IX (Zamboanga Peninsula),Dengue,215
+2018-12-02,Region IX (Zamboanga Peninsula),Dengue,211
+2018-12-09,Region IX (Zamboanga Peninsula),Dengue,231
+2018-12-16,Region IX (Zamboanga Peninsula),Dengue,164
+2018-12-23,Region IX (Zamboanga Peninsula),Dengue,82
+2018-12-30,Region IX (Zamboanga Peninsula),Dengue,122
+2019-01-06,Region IX (Zamboanga Peninsula),Dengue,0
+2019-01-13,Region IX (Zamboanga Peninsula),Dengue,221
+2019-01-20,Region IX (Zamboanga Peninsula),Dengue,269
+2019-01-27,Region IX (Zamboanga Peninsula),Dengue,285
+2019-02-03,Region IX (Zamboanga Peninsula),Dengue,258
+2019-02-10,Region IX (Zamboanga Peninsula),Dengue,259
+2019-02-17,Region IX (Zamboanga Peninsula),Dengue,257
+2019-02-24,Region IX (Zamboanga Peninsula),Dengue,229
+2019-03-03,Region IX (Zamboanga Peninsula),Dengue,192
+2019-03-10,Region IX (Zamboanga Peninsula),Dengue,190
+2019-03-17,Region IX (Zamboanga Peninsula),Dengue,204
+2019-03-24,Region IX (Zamboanga Peninsula),Dengue,279
+2019-03-31,Region IX (Zamboanga Peninsula),Dengue,240
+2019-04-07,Region IX (Zamboanga Peninsula),Dengue,221
+2019-04-14,Region IX (Zamboanga Peninsula),Dengue,213
+2019-04-21,Region IX (Zamboanga Peninsula),Dengue,238
+2019-04-28,Region IX (Zamboanga Peninsula),Dengue,276
+2019-05-05,Region IX (Zamboanga Peninsula),Dengue,392
+2019-05-12,Region IX (Zamboanga Peninsula),Dengue,425
+2019-05-19,Region IX (Zamboanga Peninsula),Dengue,406
+2019-05-26,Region IX (Zamboanga Peninsula),Dengue,379
+2019-06-02,Region IX (Zamboanga Peninsula),Dengue,403
+2019-06-09,Region IX (Zamboanga Peninsula),Dengue,558
+2019-06-16,Region IX (Zamboanga Peninsula),Dengue,689
+2019-06-23,Region IX (Zamboanga Peninsula),Dengue,749
+2019-06-30,Region IX (Zamboanga Peninsula),Dengue,802
+2019-07-07,Region IX (Zamboanga Peninsula),Dengue,841
+2019-07-14,Region IX (Zamboanga Peninsula),Dengue,928
+2019-07-21,Region IX (Zamboanga Peninsula),Dengue,1003
+2019-07-28,Region IX (Zamboanga Peninsula),Dengue,4252
+2019-08-04,Region IX (Zamboanga Peninsula),Dengue,1155
+2019-08-11,Region IX (Zamboanga Peninsula),Dengue,1060
+2019-08-18,Region IX (Zamboanga Peninsula),Dengue,1033
+2019-08-25,Region IX (Zamboanga Peninsula),Dengue,985
+2019-09-01,Region IX (Zamboanga Peninsula),Dengue,888
+2019-09-08,Region IX (Zamboanga Peninsula),Dengue,722
+2019-09-15,Region IX (Zamboanga Peninsula),Dengue,680
+2019-09-22,Region IX (Zamboanga Peninsula),Dengue,548
+2019-09-29,Region IX (Zamboanga Peninsula),Dengue,466
+2019-10-06,Region IX (Zamboanga Peninsula),Dengue,491
+2019-10-13,Region IX (Zamboanga Peninsula),Dengue,461
+2019-10-20,Region IX (Zamboanga Peninsula),Dengue,420
+2019-10-27,Region IX (Zamboanga Peninsula),Dengue,401
+2019-11-03,Region IX (Zamboanga Peninsula),Dengue,468
+2019-11-10,Region IX (Zamboanga Peninsula),Dengue,334
+2019-11-17,Region IX (Zamboanga Peninsula),Dengue,344
+2019-11-24,Region IX (Zamboanga Peninsula),Dengue,361
+2019-12-01,Region IX (Zamboanga Peninsula),Dengue,262
+2019-12-08,Region IX (Zamboanga Peninsula),Dengue,219
+2019-12-15,Region IX (Zamboanga Peninsula),Dengue,216
+2019-12-22,Region IX (Zamboanga Peninsula),Dengue,154
+2019-12-29,Region IX (Zamboanga Peninsula),Dengue,121
+2020-01-05,Region IX (Zamboanga Peninsula),Dengue,120
+2020-01-12,Region IX (Zamboanga Peninsula),Dengue,91
+2020-01-19,Region IX (Zamboanga Peninsula),Dengue,190
+2020-01-26,Region IX (Zamboanga Peninsula),Dengue,176
+2020-02-02,Region IX (Zamboanga Peninsula),Dengue,145
+2020-02-09,Region IX (Zamboanga Peninsula),Dengue,159
+2020-02-16,Region IX (Zamboanga Peninsula),Dengue,160
+2020-02-23,Region IX (Zamboanga Peninsula),Dengue,129
+2020-03-01,Region IX (Zamboanga Peninsula),Dengue,112
+2020-03-08,Region IX (Zamboanga Peninsula),Dengue,102
+2020-03-15,Region IX (Zamboanga Peninsula),Dengue,83
+2020-03-22,Region IX (Zamboanga Peninsula),Dengue,92
+2020-03-29,Region IX (Zamboanga Peninsula),Dengue,44
+2020-04-05,Region IX (Zamboanga Peninsula),Dengue,31
+2020-04-12,Region IX (Zamboanga Peninsula),Dengue,18
+2020-04-19,Region IX (Zamboanga Peninsula),Dengue,29
+2020-04-26,Region IX (Zamboanga Peninsula),Dengue,37
+2020-05-03,Region IX (Zamboanga Peninsula),Dengue,28
+2020-05-10,Region IX (Zamboanga Peninsula),Dengue,39
+2020-05-17,Region IX (Zamboanga Peninsula),Dengue,25
+2020-05-24,Region IX (Zamboanga Peninsula),Dengue,34
+2020-05-31,Region IX (Zamboanga Peninsula),Dengue,38
+2020-06-07,Region IX (Zamboanga Peninsula),Dengue,19
+2020-06-14,Region IX (Zamboanga Peninsula),Dengue,37
+2020-06-21,Region IX (Zamboanga Peninsula),Dengue,32
+2020-06-28,Region IX (Zamboanga Peninsula),Dengue,36
+2020-07-05,Region IX (Zamboanga Peninsula),Dengue,50
+2020-07-12,Region IX (Zamboanga Peninsula),Dengue,36
+2020-07-19,Region IX (Zamboanga Peninsula),Dengue,38
+2020-07-26,Region IX (Zamboanga Peninsula),Dengue,44
+2020-08-02,Region IX (Zamboanga Peninsula),Dengue,44
+2020-08-09,Region IX (Zamboanga Peninsula),Dengue,43
+2020-08-16,Region IX (Zamboanga Peninsula),Dengue,56
+2020-08-23,Region IX (Zamboanga Peninsula),Dengue,34
+2020-08-30,Region IX (Zamboanga Peninsula),Dengue,36
+2020-09-06,Region IX (Zamboanga Peninsula),Dengue,32
+2020-09-13,Region IX (Zamboanga Peninsula),Dengue,22
+2020-09-20,Region IX (Zamboanga Peninsula),Dengue,26
+2020-09-27,Region IX (Zamboanga Peninsula),Dengue,27
+2020-10-04,Region IX (Zamboanga Peninsula),Dengue,30
+2020-10-11,Region IX (Zamboanga Peninsula),Dengue,20
+2020-10-18,Region IX (Zamboanga Peninsula),Dengue,21
+2020-10-25,Region IX (Zamboanga Peninsula),Dengue,8
+2020-11-01,Region IX (Zamboanga Peninsula),Dengue,11
+2020-11-08,Region IX (Zamboanga Peninsula),Dengue,14
+2020-11-15,Region IX (Zamboanga Peninsula),Dengue,15
+2020-11-22,Region IX (Zamboanga Peninsula),Dengue,9
+2020-11-29,Region IX (Zamboanga Peninsula),Dengue,11
+2020-12-06,Region IX (Zamboanga Peninsula),Dengue,14
+2020-12-13,Region IX (Zamboanga Peninsula),Dengue,14
+2020-12-20,Region IX (Zamboanga Peninsula),Dengue,16
+2020-12-27,Region IX (Zamboanga Peninsula),Dengue,7
+2021-01-03,Region IX (Zamboanga Peninsula),Dengue,8
+2021-01-10,Region IX (Zamboanga Peninsula),Dengue,5
+2016-01-10,Region V (Bicol),Dengue,84
+2016-01-17,Region V (Bicol),Dengue,56
+2016-01-24,Region V (Bicol),Dengue,43
+2016-01-31,Region V (Bicol),Dengue,54
+2016-02-07,Region V (Bicol),Dengue,43
+2016-02-14,Region V (Bicol),Dengue,46
+2016-02-21,Region V (Bicol),Dengue,26
+2016-02-28,Region V (Bicol),Dengue,46
+2016-03-06,Region V (Bicol),Dengue,35
+2016-03-13,Region V (Bicol),Dengue,34
+2016-03-20,Region V (Bicol),Dengue,26
+2016-03-27,Region V (Bicol),Dengue,23
+2016-04-03,Region V (Bicol),Dengue,18
+2016-04-10,Region V (Bicol),Dengue,18
+2016-04-17,Region V (Bicol),Dengue,33
+2016-04-24,Region V (Bicol),Dengue,25
+2016-05-01,Region V (Bicol),Dengue,17
+2016-05-08,Region V (Bicol),Dengue,16
+2016-05-15,Region V (Bicol),Dengue,19
+2016-05-22,Region V (Bicol),Dengue,19
+2016-05-29,Region V (Bicol),Dengue,25
+2016-06-05,Region V (Bicol),Dengue,27
+2016-06-12,Region V (Bicol),Dengue,20
+2016-06-19,Region V (Bicol),Dengue,37
+2016-06-26,Region V (Bicol),Dengue,22
+2016-07-03,Region V (Bicol),Dengue,41
+2016-07-10,Region V (Bicol),Dengue,39
+2016-07-17,Region V (Bicol),Dengue,53
+2016-07-24,Region V (Bicol),Dengue,56
+2016-07-31,Region V (Bicol),Dengue,59
+2016-08-07,Region V (Bicol),Dengue,92
+2016-08-14,Region V (Bicol),Dengue,102
+2016-08-21,Region V (Bicol),Dengue,78
+2016-08-28,Region V (Bicol),Dengue,74
+2016-09-04,Region V (Bicol),Dengue,112
+2016-09-11,Region V (Bicol),Dengue,93
+2016-09-18,Region V (Bicol),Dengue,84
+2016-09-25,Region V (Bicol),Dengue,89
+2016-10-02,Region V (Bicol),Dengue,70
+2016-10-09,Region V (Bicol),Dengue,70
+2016-10-16,Region V (Bicol),Dengue,57
+2016-10-23,Region V (Bicol),Dengue,59
+2016-10-30,Region V (Bicol),Dengue,63
+2016-11-06,Region V (Bicol),Dengue,54
+2016-11-13,Region V (Bicol),Dengue,59
+2016-11-20,Region V (Bicol),Dengue,60
+2016-11-27,Region V (Bicol),Dengue,69
+2016-12-04,Region V (Bicol),Dengue,67
+2016-12-11,Region V (Bicol),Dengue,31
+2016-12-18,Region V (Bicol),Dengue,43
+2016-12-25,Region V (Bicol),Dengue,46
+2017-01-01,Region V (Bicol),Dengue,35
+2017-01-08,Region V (Bicol),Dengue,53
+2017-01-15,Region V (Bicol),Dengue,37
+2017-01-22,Region V (Bicol),Dengue,68
+2017-01-29,Region V (Bicol),Dengue,39
+2017-02-05,Region V (Bicol),Dengue,58
+2017-02-12,Region V (Bicol),Dengue,40
+2017-02-19,Region V (Bicol),Dengue,45
+2017-02-26,Region V (Bicol),Dengue,35
+2017-03-05,Region V (Bicol),Dengue,40
+2017-03-12,Region V (Bicol),Dengue,32
+2017-03-19,Region V (Bicol),Dengue,16
+2017-03-26,Region V (Bicol),Dengue,23
+2017-04-02,Region V (Bicol),Dengue,27
+2017-04-09,Region V (Bicol),Dengue,33
+2017-04-16,Region V (Bicol),Dengue,20
+2017-04-23,Region V (Bicol),Dengue,30
+2017-04-30,Region V (Bicol),Dengue,20
+2017-05-07,Region V (Bicol),Dengue,19
+2017-05-14,Region V (Bicol),Dengue,11
+2017-05-21,Region V (Bicol),Dengue,17
+2017-05-28,Region V (Bicol),Dengue,19
+2017-06-04,Region V (Bicol),Dengue,27
+2017-06-11,Region V (Bicol),Dengue,40
+2017-06-18,Region V (Bicol),Dengue,42
+2017-06-25,Region V (Bicol),Dengue,54
+2017-07-02,Region V (Bicol),Dengue,55
+2017-07-09,Region V (Bicol),Dengue,50
+2017-07-16,Region V (Bicol),Dengue,84
+2017-07-23,Region V (Bicol),Dengue,84
+2017-07-30,Region V (Bicol),Dengue,100
+2017-08-06,Region V (Bicol),Dengue,108
+2017-08-13,Region V (Bicol),Dengue,118
+2017-08-20,Region V (Bicol),Dengue,115
+2017-08-27,Region V (Bicol),Dengue,94
+2017-09-03,Region V (Bicol),Dengue,104
+2017-09-10,Region V (Bicol),Dengue,99
+2017-09-17,Region V (Bicol),Dengue,90
+2017-09-24,Region V (Bicol),Dengue,74
+2017-10-01,Region V (Bicol),Dengue,68
+2017-10-08,Region V (Bicol),Dengue,109
+2017-10-15,Region V (Bicol),Dengue,117
+2017-10-22,Region V (Bicol),Dengue,97
+2017-10-29,Region V (Bicol),Dengue,117
+2017-11-05,Region V (Bicol),Dengue,87
+2017-11-12,Region V (Bicol),Dengue,69
+2017-11-19,Region V (Bicol),Dengue,84
+2017-11-26,Region V (Bicol),Dengue,83
+2017-12-03,Region V (Bicol),Dengue,86
+2017-12-10,Region V (Bicol),Dengue,116
+2017-12-17,Region V (Bicol),Dengue,87
+2017-12-24,Region V (Bicol),Dengue,33
+2017-12-31,Region V (Bicol),Dengue,17
+2018-01-07,Region V (Bicol),Dengue,75
+2018-01-14,Region V (Bicol),Dengue,79
+2018-01-21,Region V (Bicol),Dengue,93
+2018-01-28,Region V (Bicol),Dengue,50
+2018-02-04,Region V (Bicol),Dengue,46
+2018-02-11,Region V (Bicol),Dengue,35
+2018-02-18,Region V (Bicol),Dengue,46
+2018-02-25,Region V (Bicol),Dengue,41
+2018-03-04,Region V (Bicol),Dengue,42
+2018-03-11,Region V (Bicol),Dengue,50
+2018-03-18,Region V (Bicol),Dengue,37
+2018-03-25,Region V (Bicol),Dengue,28
+2018-04-01,Region V (Bicol),Dengue,49
+2018-04-08,Region V (Bicol),Dengue,31
+2018-04-15,Region V (Bicol),Dengue,40
+2018-04-22,Region V (Bicol),Dengue,32
+2018-04-29,Region V (Bicol),Dengue,21
+2018-05-06,Region V (Bicol),Dengue,29
+2018-05-13,Region V (Bicol),Dengue,39
+2018-05-20,Region V (Bicol),Dengue,36
+2018-05-27,Region V (Bicol),Dengue,32
+2018-06-03,Region V (Bicol),Dengue,50
+2018-06-10,Region V (Bicol),Dengue,63
+2018-06-17,Region V (Bicol),Dengue,54
+2018-06-24,Region V (Bicol),Dengue,68
+2018-07-01,Region V (Bicol),Dengue,64
+2018-07-08,Region V (Bicol),Dengue,108
+2018-07-15,Region V (Bicol),Dengue,101
+2018-07-22,Region V (Bicol),Dengue,72
+2018-07-29,Region V (Bicol),Dengue,63
+2018-08-05,Region V (Bicol),Dengue,71
+2018-08-12,Region V (Bicol),Dengue,86
+2018-08-19,Region V (Bicol),Dengue,89
+2018-08-26,Region V (Bicol),Dengue,109
+2018-09-02,Region V (Bicol),Dengue,100
+2018-09-09,Region V (Bicol),Dengue,65
+2018-09-16,Region V (Bicol),Dengue,71
+2018-09-23,Region V (Bicol),Dengue,82
+2018-09-30,Region V (Bicol),Dengue,79
+2018-10-07,Region V (Bicol),Dengue,83
+2018-10-14,Region V (Bicol),Dengue,65
+2018-10-21,Region V (Bicol),Dengue,96
+2018-10-28,Region V (Bicol),Dengue,76
+2018-11-04,Region V (Bicol),Dengue,82
+2018-11-11,Region V (Bicol),Dengue,109
+2018-11-18,Region V (Bicol),Dengue,79
+2018-11-25,Region V (Bicol),Dengue,85
+2018-12-02,Region V (Bicol),Dengue,111
+2018-12-09,Region V (Bicol),Dengue,138
+2018-12-16,Region V (Bicol),Dengue,109
+2018-12-23,Region V (Bicol),Dengue,98
+2018-12-30,Region V (Bicol),Dengue,91
+2019-01-06,Region V (Bicol),Dengue,0
+2019-01-13,Region V (Bicol),Dengue,68
+2019-01-20,Region V (Bicol),Dengue,143
+2019-01-27,Region V (Bicol),Dengue,131
+2019-02-03,Region V (Bicol),Dengue,118
+2019-02-10,Region V (Bicol),Dengue,115
+2019-02-17,Region V (Bicol),Dengue,83
+2019-02-24,Region V (Bicol),Dengue,71
+2019-03-03,Region V (Bicol),Dengue,108
+2019-03-10,Region V (Bicol),Dengue,88
+2019-03-17,Region V (Bicol),Dengue,82
+2019-03-24,Region V (Bicol),Dengue,89
+2019-03-31,Region V (Bicol),Dengue,69
+2019-04-07,Region V (Bicol),Dengue,51
+2019-04-14,Region V (Bicol),Dengue,60
+2019-04-21,Region V (Bicol),Dengue,60
+2019-04-28,Region V (Bicol),Dengue,52
+2019-05-05,Region V (Bicol),Dengue,47
+2019-05-12,Region V (Bicol),Dengue,46
+2019-05-19,Region V (Bicol),Dengue,68
+2019-05-26,Region V (Bicol),Dengue,44
+2019-06-02,Region V (Bicol),Dengue,56
+2019-06-09,Region V (Bicol),Dengue,62
+2019-06-16,Region V (Bicol),Dengue,116
+2019-06-23,Region V (Bicol),Dengue,143
+2019-06-30,Region V (Bicol),Dengue,170
+2019-07-07,Region V (Bicol),Dengue,257
+2019-07-14,Region V (Bicol),Dengue,360
+2019-07-21,Region V (Bicol),Dengue,362
+2019-07-28,Region V (Bicol),Dengue,392
+2019-08-04,Region V (Bicol),Dengue,531
+2019-08-11,Region V (Bicol),Dengue,567
+2019-08-18,Region V (Bicol),Dengue,597
+2019-08-25,Region V (Bicol),Dengue,586
+2019-09-01,Region V (Bicol),Dengue,697
+2019-09-08,Region V (Bicol),Dengue,658
+2019-09-15,Region V (Bicol),Dengue,639
+2019-09-22,Region V (Bicol),Dengue,473
+2019-09-29,Region V (Bicol),Dengue,379
+2019-10-06,Region V (Bicol),Dengue,407
+2019-10-13,Region V (Bicol),Dengue,342
+2019-10-20,Region V (Bicol),Dengue,281
+2019-10-27,Region V (Bicol),Dengue,262
+2019-11-03,Region V (Bicol),Dengue,196
+2019-11-10,Region V (Bicol),Dengue,219
+2019-11-17,Region V (Bicol),Dengue,108
+2019-11-24,Region V (Bicol),Dengue,125
+2019-12-01,Region V (Bicol),Dengue,131
+2019-12-08,Region V (Bicol),Dengue,121
+2019-12-15,Region V (Bicol),Dengue,117
+2019-12-22,Region V (Bicol),Dengue,105
+2019-12-29,Region V (Bicol),Dengue,89
+2020-01-05,Region V (Bicol),Dengue,116
+2020-01-12,Region V (Bicol),Dengue,78
+2020-01-19,Region V (Bicol),Dengue,108
+2020-01-26,Region V (Bicol),Dengue,102
+2020-02-02,Region V (Bicol),Dengue,95
+2020-02-09,Region V (Bicol),Dengue,107
+2020-02-16,Region V (Bicol),Dengue,102
+2020-02-23,Region V (Bicol),Dengue,90
+2020-03-01,Region V (Bicol),Dengue,96
+2020-03-08,Region V (Bicol),Dengue,76
+2020-03-15,Region V (Bicol),Dengue,71
+2020-03-22,Region V (Bicol),Dengue,57
+2020-03-29,Region V (Bicol),Dengue,35
+2020-04-05,Region V (Bicol),Dengue,20
+2020-04-12,Region V (Bicol),Dengue,28
+2020-04-19,Region V (Bicol),Dengue,10
+2020-04-26,Region V (Bicol),Dengue,28
+2020-05-03,Region V (Bicol),Dengue,17
+2020-05-10,Region V (Bicol),Dengue,17
+2020-05-17,Region V (Bicol),Dengue,14
+2020-05-24,Region V (Bicol),Dengue,14
+2020-05-31,Region V (Bicol),Dengue,12
+2020-06-07,Region V (Bicol),Dengue,14
+2020-06-14,Region V (Bicol),Dengue,19
+2020-06-21,Region V (Bicol),Dengue,9
+2020-06-28,Region V (Bicol),Dengue,13
+2020-07-05,Region V (Bicol),Dengue,11
+2020-07-12,Region V (Bicol),Dengue,12
+2020-07-19,Region V (Bicol),Dengue,13
+2020-07-26,Region V (Bicol),Dengue,11
+2020-08-02,Region V (Bicol),Dengue,21
+2020-08-09,Region V (Bicol),Dengue,16
+2020-08-16,Region V (Bicol),Dengue,16
+2020-08-23,Region V (Bicol),Dengue,17
+2020-08-30,Region V (Bicol),Dengue,13
+2020-09-06,Region V (Bicol),Dengue,12
+2020-09-13,Region V (Bicol),Dengue,17
+2020-09-20,Region V (Bicol),Dengue,16
+2020-09-27,Region V (Bicol),Dengue,15
+2020-10-04,Region V (Bicol),Dengue,16
+2020-10-11,Region V (Bicol),Dengue,19
+2020-10-18,Region V (Bicol),Dengue,10
+2020-10-25,Region V (Bicol),Dengue,8
+2020-11-01,Region V (Bicol),Dengue,13
+2020-11-08,Region V (Bicol),Dengue,10
+2020-11-15,Region V (Bicol),Dengue,18
+2020-11-22,Region V (Bicol),Dengue,10
+2020-11-29,Region V (Bicol),Dengue,10
+2020-12-06,Region V (Bicol),Dengue,16
+2020-12-13,Region V (Bicol),Dengue,16
+2020-12-20,Region V (Bicol),Dengue,17
+2020-12-27,Region V (Bicol),Dengue,20
+2021-01-03,Region V (Bicol),Dengue,10
+2021-01-10,Region V (Bicol),Dengue,18
+2016-01-10,Region VI (Western Visayas),Dengue,283
+2016-01-17,Region VI (Western Visayas),Dengue,227
+2016-01-24,Region VI (Western Visayas),Dengue,243
+2016-01-31,Region VI (Western Visayas),Dengue,218
+2016-02-07,Region VI (Western Visayas),Dengue,164
+2016-02-14,Region VI (Western Visayas),Dengue,174
+2016-02-21,Region VI (Western Visayas),Dengue,156
+2016-02-28,Region VI (Western Visayas),Dengue,180
+2016-03-06,Region VI (Western Visayas),Dengue,156
+2016-03-13,Region VI (Western Visayas),Dengue,146
+2016-03-20,Region VI (Western Visayas),Dengue,147
+2016-03-27,Region VI (Western Visayas),Dengue,147
+2016-04-03,Region VI (Western Visayas),Dengue,153
+2016-04-10,Region VI (Western Visayas),Dengue,146
+2016-04-17,Region VI (Western Visayas),Dengue,124
+2016-04-24,Region VI (Western Visayas),Dengue,137
+2016-05-01,Region VI (Western Visayas),Dengue,143
+2016-05-08,Region VI (Western Visayas),Dengue,139
+2016-05-15,Region VI (Western Visayas),Dengue,154
+2016-05-22,Region VI (Western Visayas),Dengue,177
+2016-05-29,Region VI (Western Visayas),Dengue,169
+2016-06-05,Region VI (Western Visayas),Dengue,192
+2016-06-12,Region VI (Western Visayas),Dengue,243
+2016-06-19,Region VI (Western Visayas),Dengue,303
+2016-06-26,Region VI (Western Visayas),Dengue,399
+2016-07-03,Region VI (Western Visayas),Dengue,546
+2016-07-10,Region VI (Western Visayas),Dengue,696
+2016-07-17,Region VI (Western Visayas),Dengue,909
+2016-07-24,Region VI (Western Visayas),Dengue,1260
+2016-07-31,Region VI (Western Visayas),Dengue,1582
+2016-08-07,Region VI (Western Visayas),Dengue,1890
+2016-08-14,Region VI (Western Visayas),Dengue,1718
+2016-08-21,Region VI (Western Visayas),Dengue,1701
+2016-08-28,Region VI (Western Visayas),Dengue,1846
+2016-09-04,Region VI (Western Visayas),Dengue,1647
+2016-09-11,Region VI (Western Visayas),Dengue,1184
+2016-09-18,Region VI (Western Visayas),Dengue,1203
+2016-09-25,Region VI (Western Visayas),Dengue,1005
+2016-10-02,Region VI (Western Visayas),Dengue,762
+2016-10-09,Region VI (Western Visayas),Dengue,620
+2016-10-16,Region VI (Western Visayas),Dengue,466
+2016-10-23,Region VI (Western Visayas),Dengue,377
+2016-10-30,Region VI (Western Visayas),Dengue,337
+2016-11-06,Region VI (Western Visayas),Dengue,262
+2016-11-13,Region VI (Western Visayas),Dengue,309
+2016-11-20,Region VI (Western Visayas),Dengue,210
+2016-11-27,Region VI (Western Visayas),Dengue,277
+2016-12-04,Region VI (Western Visayas),Dengue,215
+2016-12-11,Region VI (Western Visayas),Dengue,188
+2016-12-18,Region VI (Western Visayas),Dengue,116
+2016-12-25,Region VI (Western Visayas),Dengue,124
+2017-01-01,Region VI (Western Visayas),Dengue,81
+2017-01-08,Region VI (Western Visayas),Dengue,194
+2017-01-15,Region VI (Western Visayas),Dengue,145
+2017-01-22,Region VI (Western Visayas),Dengue,142
+2017-01-29,Region VI (Western Visayas),Dengue,165
+2017-02-05,Region VI (Western Visayas),Dengue,140
+2017-02-12,Region VI (Western Visayas),Dengue,122
+2017-02-19,Region VI (Western Visayas),Dengue,109
+2017-02-26,Region VI (Western Visayas),Dengue,83
+2017-03-05,Region VI (Western Visayas),Dengue,100
+2017-03-12,Region VI (Western Visayas),Dengue,89
+2017-03-19,Region VI (Western Visayas),Dengue,82
+2017-03-26,Region VI (Western Visayas),Dengue,65
+2017-04-02,Region VI (Western Visayas),Dengue,64
+2017-04-09,Region VI (Western Visayas),Dengue,68
+2017-04-16,Region VI (Western Visayas),Dengue,62
+2017-04-23,Region VI (Western Visayas),Dengue,53
+2017-04-30,Region VI (Western Visayas),Dengue,63
+2017-05-07,Region VI (Western Visayas),Dengue,133
+2017-05-14,Region VI (Western Visayas),Dengue,59
+2017-05-21,Region VI (Western Visayas),Dengue,74
+2017-05-28,Region VI (Western Visayas),Dengue,80
+2017-06-04,Region VI (Western Visayas),Dengue,87
+2017-06-11,Region VI (Western Visayas),Dengue,152
+2017-06-18,Region VI (Western Visayas),Dengue,150
+2017-06-25,Region VI (Western Visayas),Dengue,241
+2017-07-02,Region VI (Western Visayas),Dengue,248
+2017-07-09,Region VI (Western Visayas),Dengue,340
+2017-07-16,Region VI (Western Visayas),Dengue,313
+2017-07-23,Region VI (Western Visayas),Dengue,320
+2017-07-30,Region VI (Western Visayas),Dengue,356
+2017-08-06,Region VI (Western Visayas),Dengue,368
+2017-08-13,Region VI (Western Visayas),Dengue,1064
+2017-08-20,Region VI (Western Visayas),Dengue,494
+2017-08-27,Region VI (Western Visayas),Dengue,365
+2017-09-03,Region VI (Western Visayas),Dengue,4
+2017-09-10,Region VI (Western Visayas),Dengue,355
+2017-09-17,Region VI (Western Visayas),Dengue,4
+2017-09-24,Region VI (Western Visayas),Dengue,323
+2017-10-01,Region VI (Western Visayas),Dengue,2
+2017-10-08,Region VI (Western Visayas),Dengue,262
+2017-10-15,Region VI (Western Visayas),Dengue,1
+2017-10-22,Region VI (Western Visayas),Dengue,220
+2017-10-29,Region VI (Western Visayas),Dengue,3
+2017-11-05,Region VI (Western Visayas),Dengue,199
+2017-11-12,Region VI (Western Visayas),Dengue,0
+2017-11-19,Region VI (Western Visayas),Dengue,187
+2017-11-26,Region VI (Western Visayas),Dengue,241
+2017-12-03,Region VI (Western Visayas),Dengue,217
+2017-12-10,Region VI (Western Visayas),Dengue,179
+2017-12-17,Region VI (Western Visayas),Dengue,178
+2017-12-24,Region VI (Western Visayas),Dengue,123
+2017-12-31,Region VI (Western Visayas),Dengue,114
+2018-01-07,Region VI (Western Visayas),Dengue,270
+2018-01-14,Region VI (Western Visayas),Dengue,180
+2018-01-21,Region VI (Western Visayas),Dengue,150
+2018-01-28,Region VI (Western Visayas),Dengue,155
+2018-02-04,Region VI (Western Visayas),Dengue,185
+2018-02-11,Region VI (Western Visayas),Dengue,159
+2018-02-18,Region VI (Western Visayas),Dengue,116
+2018-02-25,Region VI (Western Visayas),Dengue,114
+2018-03-04,Region VI (Western Visayas),Dengue,129
+2018-03-11,Region VI (Western Visayas),Dengue,125
+2018-03-18,Region VI (Western Visayas),Dengue,109
+2018-03-25,Region VI (Western Visayas),Dengue,93
+2018-04-01,Region VI (Western Visayas),Dengue,91
+2018-04-08,Region VI (Western Visayas),Dengue,94
+2018-04-15,Region VI (Western Visayas),Dengue,109
+2018-04-22,Region VI (Western Visayas),Dengue,86
+2018-04-29,Region VI (Western Visayas),Dengue,107
+2018-05-06,Region VI (Western Visayas),Dengue,128
+2018-05-13,Region VI (Western Visayas),Dengue,124
+2018-05-20,Region VI (Western Visayas),Dengue,119
+2018-05-27,Region VI (Western Visayas),Dengue,174
+2018-06-03,Region VI (Western Visayas),Dengue,178
+2018-06-10,Region VI (Western Visayas),Dengue,185
+2018-06-17,Region VI (Western Visayas),Dengue,271
+2018-06-24,Region VI (Western Visayas),Dengue,383
+2018-07-01,Region VI (Western Visayas),Dengue,459
+2018-07-08,Region VI (Western Visayas),Dengue,477
+2018-07-15,Region VI (Western Visayas),Dengue,557
+2018-07-22,Region VI (Western Visayas),Dengue,601
+2018-07-29,Region VI (Western Visayas),Dengue,607
+2018-08-05,Region VI (Western Visayas),Dengue,614
+2018-08-12,Region VI (Western Visayas),Dengue,697
+2018-08-19,Region VI (Western Visayas),Dengue,651
+2018-08-26,Region VI (Western Visayas),Dengue,677
+2018-09-02,Region VI (Western Visayas),Dengue,633
+2018-09-09,Region VI (Western Visayas),Dengue,619
+2018-09-16,Region VI (Western Visayas),Dengue,535
+2018-09-23,Region VI (Western Visayas),Dengue,528
+2018-09-30,Region VI (Western Visayas),Dengue,531
+2018-10-07,Region VI (Western Visayas),Dengue,455
+2018-10-14,Region VI (Western Visayas),Dengue,569
+2018-10-21,Region VI (Western Visayas),Dengue,451
+2018-10-28,Region VI (Western Visayas),Dengue,428
+2018-11-04,Region VI (Western Visayas),Dengue,423
+2018-11-11,Region VI (Western Visayas),Dengue,449
+2018-11-18,Region VI (Western Visayas),Dengue,439
+2018-11-25,Region VI (Western Visayas),Dengue,413
+2018-12-02,Region VI (Western Visayas),Dengue,367
+2018-12-09,Region VI (Western Visayas),Dengue,339
+2018-12-16,Region VI (Western Visayas),Dengue,654
+2018-12-23,Region VI (Western Visayas),Dengue,278
+2018-12-30,Region VI (Western Visayas),Dengue,297
+2019-01-06,Region VI (Western Visayas),Dengue,0
+2019-01-13,Region VI (Western Visayas),Dengue,378
+2019-01-20,Region VI (Western Visayas),Dengue,525
+2019-01-27,Region VI (Western Visayas),Dengue,523
+2019-02-03,Region VI (Western Visayas),Dengue,516
+2019-02-10,Region VI (Western Visayas),Dengue,586
+2019-02-17,Region VI (Western Visayas),Dengue,483
+2019-02-24,Region VI (Western Visayas),Dengue,418
+2019-03-03,Region VI (Western Visayas),Dengue,477
+2019-03-10,Region VI (Western Visayas),Dengue,468
+2019-03-17,Region VI (Western Visayas),Dengue,445
+2019-03-24,Region VI (Western Visayas),Dengue,452
+2019-03-31,Region VI (Western Visayas),Dengue,420
+2019-04-07,Region VI (Western Visayas),Dengue,330
+2019-04-14,Region VI (Western Visayas),Dengue,333
+2019-04-21,Region VI (Western Visayas),Dengue,257
+2019-04-28,Region VI (Western Visayas),Dengue,279
+2019-05-05,Region VI (Western Visayas),Dengue,311
+2019-05-12,Region VI (Western Visayas),Dengue,286
+2019-05-19,Region VI (Western Visayas),Dengue,377
+2019-05-26,Region VI (Western Visayas),Dengue,412
+2019-06-02,Region VI (Western Visayas),Dengue,506
+2019-06-09,Region VI (Western Visayas),Dengue,557
+2019-06-16,Region VI (Western Visayas),Dengue,902
+2019-06-23,Region VI (Western Visayas),Dengue,1139
+2019-06-30,Region VI (Western Visayas),Dengue,1755
+2019-07-07,Region VI (Western Visayas),Dengue,2231
+2019-07-14,Region VI (Western Visayas),Dengue,3004
+2019-07-21,Region VI (Western Visayas),Dengue,3799
+2019-07-28,Region VI (Western Visayas),Dengue,4530
+2019-08-04,Region VI (Western Visayas),Dengue,4753
+2019-08-11,Region VI (Western Visayas),Dengue,6655
+2019-08-18,Region VI (Western Visayas),Dengue,3626
+2019-08-25,Region VI (Western Visayas),Dengue,3056
+2019-09-01,Region VI (Western Visayas),Dengue,2563
+2019-09-08,Region VI (Western Visayas),Dengue,1913
+2019-09-15,Region VI (Western Visayas),Dengue,1970
+2019-09-22,Region VI (Western Visayas),Dengue,1322
+2019-09-29,Region VI (Western Visayas),Dengue,1280
+2019-10-06,Region VI (Western Visayas),Dengue,1033
+2019-10-13,Region VI (Western Visayas),Dengue,866
+2019-10-20,Region VI (Western Visayas),Dengue,844
+2019-10-27,Region VI (Western Visayas),Dengue,732
+2019-11-03,Region VI (Western Visayas),Dengue,535
+2019-11-10,Region VI (Western Visayas),Dengue,433
+2019-11-17,Region VI (Western Visayas),Dengue,466
+2019-11-24,Region VI (Western Visayas),Dengue,447
+2019-12-01,Region VI (Western Visayas),Dengue,323
+2019-12-08,Region VI (Western Visayas),Dengue,317
+2019-12-15,Region VI (Western Visayas),Dengue,268
+2019-12-22,Region VI (Western Visayas),Dengue,201
+2019-12-29,Region VI (Western Visayas),Dengue,55
+2020-01-05,Region VI (Western Visayas),Dengue,0
+2020-01-12,Region VI (Western Visayas),Dengue,172
+2020-01-19,Region VI (Western Visayas),Dengue,249
+2020-01-26,Region VI (Western Visayas),Dengue,239
+2020-02-02,Region VI (Western Visayas),Dengue,219
+2020-02-09,Region VI (Western Visayas),Dengue,187
+2020-02-16,Region VI (Western Visayas),Dengue,194
+2020-02-23,Region VI (Western Visayas),Dengue,184
+2020-03-01,Region VI (Western Visayas),Dengue,162
+2020-03-08,Region VI (Western Visayas),Dengue,162
+2020-03-15,Region VI (Western Visayas),Dengue,143
+2020-03-22,Region VI (Western Visayas),Dengue,93
+2020-03-29,Region VI (Western Visayas),Dengue,70
+2020-04-05,Region VI (Western Visayas),Dengue,57
+2020-04-12,Region VI (Western Visayas),Dengue,44
+2020-04-19,Region VI (Western Visayas),Dengue,34
+2020-04-26,Region VI (Western Visayas),Dengue,32
+2020-05-03,Region VI (Western Visayas),Dengue,34
+2020-05-10,Region VI (Western Visayas),Dengue,14
+2020-05-17,Region VI (Western Visayas),Dengue,34
+2020-05-24,Region VI (Western Visayas),Dengue,32
+2020-05-31,Region VI (Western Visayas),Dengue,24
+2020-06-07,Region VI (Western Visayas),Dengue,60
+2020-06-14,Region VI (Western Visayas),Dengue,54
+2020-06-21,Region VI (Western Visayas),Dengue,72
+2020-06-28,Region VI (Western Visayas),Dengue,86
+2020-07-05,Region VI (Western Visayas),Dengue,77
+2020-07-12,Region VI (Western Visayas),Dengue,105
+2020-07-19,Region VI (Western Visayas),Dengue,108
+2020-07-26,Region VI (Western Visayas),Dengue,98
+2020-08-02,Region VI (Western Visayas),Dengue,131
+2020-08-09,Region VI (Western Visayas),Dengue,116
+2020-08-16,Region VI (Western Visayas),Dengue,86
+2020-08-23,Region VI (Western Visayas),Dengue,77
+2020-08-30,Region VI (Western Visayas),Dengue,63
+2020-09-06,Region VI (Western Visayas),Dengue,41
+2020-09-13,Region VI (Western Visayas),Dengue,45
+2020-09-20,Region VI (Western Visayas),Dengue,57
+2020-09-27,Region VI (Western Visayas),Dengue,26
+2020-10-04,Region VI (Western Visayas),Dengue,32
+2020-10-11,Region VI (Western Visayas),Dengue,21
+2020-10-18,Region VI (Western Visayas),Dengue,23
+2020-10-25,Region VI (Western Visayas),Dengue,39
+2020-11-01,Region VI (Western Visayas),Dengue,38
+2020-11-08,Region VI (Western Visayas),Dengue,37
+2020-11-15,Region VI (Western Visayas),Dengue,38
+2020-11-22,Region VI (Western Visayas),Dengue,32
+2020-11-29,Region VI (Western Visayas),Dengue,52
+2020-12-06,Region VI (Western Visayas),Dengue,32
+2020-12-13,Region VI (Western Visayas),Dengue,32
+2020-12-20,Region VI (Western Visayas),Dengue,38
+2020-12-27,Region VI (Western Visayas),Dengue,36
+2021-01-03,Region VI (Western Visayas),Dengue,31
+2021-01-10,Region VI (Western Visayas),Dengue,9
+2016-01-10,Region VII (Central Visayas),Dengue,485
+2016-01-17,Region VII (Central Visayas),Dengue,394
+2016-01-24,Region VII (Central Visayas),Dengue,445
+2016-01-31,Region VII (Central Visayas),Dengue,366
+2016-02-07,Region VII (Central Visayas),Dengue,328
+2016-02-14,Region VII (Central Visayas),Dengue,314
+2016-02-21,Region VII (Central Visayas),Dengue,263
+2016-02-28,Region VII (Central Visayas),Dengue,270
+2016-03-06,Region VII (Central Visayas),Dengue,295
+2016-03-13,Region VII (Central Visayas),Dengue,323
+2016-03-20,Region VII (Central Visayas),Dengue,328
+2016-03-27,Region VII (Central Visayas),Dengue,274
+2016-04-03,Region VII (Central Visayas),Dengue,310
+2016-04-10,Region VII (Central Visayas),Dengue,284
+2016-04-17,Region VII (Central Visayas),Dengue,220
+2016-04-24,Region VII (Central Visayas),Dengue,170
+2016-05-01,Region VII (Central Visayas),Dengue,177
+2016-05-08,Region VII (Central Visayas),Dengue,174
+2016-05-15,Region VII (Central Visayas),Dengue,276
+2016-05-22,Region VII (Central Visayas),Dengue,151
+2016-05-29,Region VII (Central Visayas),Dengue,138
+2016-06-05,Region VII (Central Visayas),Dengue,129
+2016-06-12,Region VII (Central Visayas),Dengue,176
+2016-06-19,Region VII (Central Visayas),Dengue,198
+2016-06-26,Region VII (Central Visayas),Dengue,253
+2016-07-03,Region VII (Central Visayas),Dengue,260
+2016-07-10,Region VII (Central Visayas),Dengue,359
+2016-07-17,Region VII (Central Visayas),Dengue,472
+2016-07-24,Region VII (Central Visayas),Dengue,603
+2016-07-31,Region VII (Central Visayas),Dengue,779
+2016-08-07,Region VII (Central Visayas),Dengue,931
+2016-08-14,Region VII (Central Visayas),Dengue,1204
+2016-08-21,Region VII (Central Visayas),Dengue,1150
+2016-08-28,Region VII (Central Visayas),Dengue,1139
+2016-09-04,Region VII (Central Visayas),Dengue,1048
+2016-09-11,Region VII (Central Visayas),Dengue,1708
+2016-09-18,Region VII (Central Visayas),Dengue,877
+2016-09-25,Region VII (Central Visayas),Dengue,825
+2016-10-02,Region VII (Central Visayas),Dengue,765
+2016-10-09,Region VII (Central Visayas),Dengue,890
+2016-10-16,Region VII (Central Visayas),Dengue,945
+2016-10-23,Region VII (Central Visayas),Dengue,957
+2016-10-30,Region VII (Central Visayas),Dengue,974
+2016-11-06,Region VII (Central Visayas),Dengue,954
+2016-11-13,Region VII (Central Visayas),Dengue,1054
+2016-11-20,Region VII (Central Visayas),Dengue,933
+2016-11-27,Region VII (Central Visayas),Dengue,830
+2016-12-04,Region VII (Central Visayas),Dengue,838
+2016-12-11,Region VII (Central Visayas),Dengue,822
+2016-12-18,Region VII (Central Visayas),Dengue,733
+2016-12-25,Region VII (Central Visayas),Dengue,604
+2017-01-01,Region VII (Central Visayas),Dengue,513
+2017-01-08,Region VII (Central Visayas),Dengue,699
+2017-01-15,Region VII (Central Visayas),Dengue,560
+2017-01-22,Region VII (Central Visayas),Dengue,486
+2017-01-29,Region VII (Central Visayas),Dengue,492
+2017-02-05,Region VII (Central Visayas),Dengue,429
+2017-02-12,Region VII (Central Visayas),Dengue,460
+2017-02-19,Region VII (Central Visayas),Dengue,401
+2017-02-26,Region VII (Central Visayas),Dengue,308
+2017-03-05,Region VII (Central Visayas),Dengue,376
+2017-03-12,Region VII (Central Visayas),Dengue,260
+2017-03-19,Region VII (Central Visayas),Dengue,204
+2017-03-26,Region VII (Central Visayas),Dengue,218
+2017-04-02,Region VII (Central Visayas),Dengue,157
+2017-04-09,Region VII (Central Visayas),Dengue,174
+2017-04-16,Region VII (Central Visayas),Dengue,128
+2017-04-23,Region VII (Central Visayas),Dengue,140
+2017-04-30,Region VII (Central Visayas),Dengue,151
+2017-05-07,Region VII (Central Visayas),Dengue,116
+2017-05-14,Region VII (Central Visayas),Dengue,128
+2017-05-21,Region VII (Central Visayas),Dengue,152
+2017-05-28,Region VII (Central Visayas),Dengue,141
+2017-06-04,Region VII (Central Visayas),Dengue,146
+2017-06-11,Region VII (Central Visayas),Dengue,172
+2017-06-18,Region VII (Central Visayas),Dengue,179
+2017-06-25,Region VII (Central Visayas),Dengue,221
+2017-07-02,Region VII (Central Visayas),Dengue,170
+2017-07-09,Region VII (Central Visayas),Dengue,240
+2017-07-16,Region VII (Central Visayas),Dengue,246
+2017-07-23,Region VII (Central Visayas),Dengue,261
+2017-07-30,Region VII (Central Visayas),Dengue,317
+2017-08-06,Region VII (Central Visayas),Dengue,1463
+2017-08-13,Region VII (Central Visayas),Dengue,407
+2017-08-20,Region VII (Central Visayas),Dengue,395
+2017-08-27,Region VII (Central Visayas),Dengue,382
+2017-09-03,Region VII (Central Visayas),Dengue,2
+2017-09-10,Region VII (Central Visayas),Dengue,2302
+2017-09-17,Region VII (Central Visayas),Dengue,1
+2017-09-24,Region VII (Central Visayas),Dengue,265
+2017-10-01,Region VII (Central Visayas),Dengue,1
+2017-10-08,Region VII (Central Visayas),Dengue,226
+2017-10-15,Region VII (Central Visayas),Dengue,3
+2017-10-22,Region VII (Central Visayas),Dengue,190
+2017-10-29,Region VII (Central Visayas),Dengue,1
+2017-11-05,Region VII (Central Visayas),Dengue,184
+2017-11-12,Region VII (Central Visayas),Dengue,0
+2017-11-19,Region VII (Central Visayas),Dengue,261
+2017-11-26,Region VII (Central Visayas),Dengue,246
+2017-12-03,Region VII (Central Visayas),Dengue,217
+2017-12-10,Region VII (Central Visayas),Dengue,244
+2017-12-17,Region VII (Central Visayas),Dengue,193
+2017-12-24,Region VII (Central Visayas),Dengue,158
+2017-12-31,Region VII (Central Visayas),Dengue,154
+2018-01-07,Region VII (Central Visayas),Dengue,148
+2018-01-14,Region VII (Central Visayas),Dengue,191
+2018-01-21,Region VII (Central Visayas),Dengue,158
+2018-01-28,Region VII (Central Visayas),Dengue,162
+2018-02-04,Region VII (Central Visayas),Dengue,159
+2018-02-11,Region VII (Central Visayas),Dengue,151
+2018-02-18,Region VII (Central Visayas),Dengue,129
+2018-02-25,Region VII (Central Visayas),Dengue,128
+2018-03-04,Region VII (Central Visayas),Dengue,131
+2018-03-11,Region VII (Central Visayas),Dengue,130
+2018-03-18,Region VII (Central Visayas),Dengue,115
+2018-03-25,Region VII (Central Visayas),Dengue,102
+2018-04-01,Region VII (Central Visayas),Dengue,72
+2018-04-08,Region VII (Central Visayas),Dengue,78
+2018-04-15,Region VII (Central Visayas),Dengue,109
+2018-04-22,Region VII (Central Visayas),Dengue,64
+2018-04-29,Region VII (Central Visayas),Dengue,79
+2018-05-06,Region VII (Central Visayas),Dengue,70
+2018-05-13,Region VII (Central Visayas),Dengue,78
+2018-05-20,Region VII (Central Visayas),Dengue,96
+2018-05-27,Region VII (Central Visayas),Dengue,84
+2018-06-03,Region VII (Central Visayas),Dengue,119
+2018-06-10,Region VII (Central Visayas),Dengue,134
+2018-06-17,Region VII (Central Visayas),Dengue,165
+2018-06-24,Region VII (Central Visayas),Dengue,218
+2018-07-01,Region VII (Central Visayas),Dengue,199
+2018-07-08,Region VII (Central Visayas),Dengue,260
+2018-07-15,Region VII (Central Visayas),Dengue,300
+2018-07-22,Region VII (Central Visayas),Dengue,361
+2018-07-29,Region VII (Central Visayas),Dengue,419
+2018-08-05,Region VII (Central Visayas),Dengue,506
+2018-08-12,Region VII (Central Visayas),Dengue,621
+2018-08-19,Region VII (Central Visayas),Dengue,673
+2018-08-26,Region VII (Central Visayas),Dengue,617
+2018-09-02,Region VII (Central Visayas),Dengue,643
+2018-09-09,Region VII (Central Visayas),Dengue,549
+2018-09-16,Region VII (Central Visayas),Dengue,475
+2018-09-23,Region VII (Central Visayas),Dengue,504
+2018-09-30,Region VII (Central Visayas),Dengue,659
+2018-10-07,Region VII (Central Visayas),Dengue,630
+2018-10-14,Region VII (Central Visayas),Dengue,734
+2018-10-21,Region VII (Central Visayas),Dengue,867
+2018-10-28,Region VII (Central Visayas),Dengue,954
+2018-11-04,Region VII (Central Visayas),Dengue,1035
+2018-11-11,Region VII (Central Visayas),Dengue,1112
+2018-11-18,Region VII (Central Visayas),Dengue,1207
+2018-11-25,Region VII (Central Visayas),Dengue,769
+2018-12-02,Region VII (Central Visayas),Dengue,1056
+2018-12-09,Region VII (Central Visayas),Dengue,1113
+2018-12-16,Region VII (Central Visayas),Dengue,966
+2018-12-23,Region VII (Central Visayas),Dengue,799
+2018-12-30,Region VII (Central Visayas),Dengue,791
+2019-01-06,Region VII (Central Visayas),Dengue,0
+2019-01-13,Region VII (Central Visayas),Dengue,612
+2019-01-20,Region VII (Central Visayas),Dengue,987
+2019-01-27,Region VII (Central Visayas),Dengue,862
+2019-02-03,Region VII (Central Visayas),Dengue,643
+2019-02-10,Region VII (Central Visayas),Dengue,665
+2019-02-17,Region VII (Central Visayas),Dengue,965
+2019-02-24,Region VII (Central Visayas),Dengue,542
+2019-03-03,Region VII (Central Visayas),Dengue,429
+2019-03-10,Region VII (Central Visayas),Dengue,412
+2019-03-17,Region VII (Central Visayas),Dengue,418
+2019-03-24,Region VII (Central Visayas),Dengue,301
+2019-03-31,Region VII (Central Visayas),Dengue,271
+2019-04-07,Region VII (Central Visayas),Dengue,152
+2019-04-14,Region VII (Central Visayas),Dengue,172
+2019-04-21,Region VII (Central Visayas),Dengue,126
+2019-04-28,Region VII (Central Visayas),Dengue,121
+2019-05-05,Region VII (Central Visayas),Dengue,147
+2019-05-12,Region VII (Central Visayas),Dengue,144
+2019-05-19,Region VII (Central Visayas),Dengue,121
+2019-05-26,Region VII (Central Visayas),Dengue,123
+2019-06-02,Region VII (Central Visayas),Dengue,137
+2019-06-09,Region VII (Central Visayas),Dengue,155
+2019-06-16,Region VII (Central Visayas),Dengue,173
+2019-06-23,Region VII (Central Visayas),Dengue,238
+2019-06-30,Region VII (Central Visayas),Dengue,327
+2019-07-07,Region VII (Central Visayas),Dengue,375
+2019-07-14,Region VII (Central Visayas),Dengue,468
+2019-07-21,Region VII (Central Visayas),Dengue,572
+2019-07-28,Region VII (Central Visayas),Dengue,709
+2019-08-04,Region VII (Central Visayas),Dengue,793
+2019-08-11,Region VII (Central Visayas),Dengue,872
+2019-08-18,Region VII (Central Visayas),Dengue,1081
+2019-08-25,Region VII (Central Visayas),Dengue,1112
+2019-09-01,Region VII (Central Visayas),Dengue,1174
+2019-09-08,Region VII (Central Visayas),Dengue,1115
+2019-09-15,Region VII (Central Visayas),Dengue,1293
+2019-09-22,Region VII (Central Visayas),Dengue,1018
+2019-09-29,Region VII (Central Visayas),Dengue,934
+2019-10-06,Region VII (Central Visayas),Dengue,1057
+2019-10-13,Region VII (Central Visayas),Dengue,995
+2019-10-20,Region VII (Central Visayas),Dengue,983
+2019-10-27,Region VII (Central Visayas),Dengue,756
+2019-11-03,Region VII (Central Visayas),Dengue,642
+2019-11-10,Region VII (Central Visayas),Dengue,661
+2019-11-17,Region VII (Central Visayas),Dengue,763
+2019-11-24,Region VII (Central Visayas),Dengue,757
+2019-12-01,Region VII (Central Visayas),Dengue,692
+2019-12-08,Region VII (Central Visayas),Dengue,615
+2019-12-15,Region VII (Central Visayas),Dengue,827
+2019-12-22,Region VII (Central Visayas),Dengue,791
+2019-12-29,Region VII (Central Visayas),Dengue,755
+2020-01-05,Region VII (Central Visayas),Dengue,927
+2020-01-12,Region VII (Central Visayas),Dengue,492
+2020-01-19,Region VII (Central Visayas),Dengue,996
+2020-01-26,Region VII (Central Visayas),Dengue,974
+2020-02-02,Region VII (Central Visayas),Dengue,1017
+2020-02-09,Region VII (Central Visayas),Dengue,990
+2020-02-16,Region VII (Central Visayas),Dengue,889
+2020-02-23,Region VII (Central Visayas),Dengue,568
+2020-03-01,Region VII (Central Visayas),Dengue,456
+2020-03-08,Region VII (Central Visayas),Dengue,488
+2020-03-15,Region VII (Central Visayas),Dengue,484
+2020-03-22,Region VII (Central Visayas),Dengue,398
+2020-03-29,Region VII (Central Visayas),Dengue,293
+2020-04-05,Region VII (Central Visayas),Dengue,186
+2020-04-12,Region VII (Central Visayas),Dengue,174
+2020-04-19,Region VII (Central Visayas),Dengue,134
+2020-04-26,Region VII (Central Visayas),Dengue,84
+2020-05-03,Region VII (Central Visayas),Dengue,82
+2020-05-10,Region VII (Central Visayas),Dengue,62
+2020-05-17,Region VII (Central Visayas),Dengue,53
+2020-05-24,Region VII (Central Visayas),Dengue,52
+2020-05-31,Region VII (Central Visayas),Dengue,41
+2020-06-07,Region VII (Central Visayas),Dengue,60
+2020-06-14,Region VII (Central Visayas),Dengue,58
+2020-06-21,Region VII (Central Visayas),Dengue,59
+2020-06-28,Region VII (Central Visayas),Dengue,75
+2020-07-05,Region VII (Central Visayas),Dengue,52
+2020-07-12,Region VII (Central Visayas),Dengue,90
+2020-07-19,Region VII (Central Visayas),Dengue,96
+2020-07-26,Region VII (Central Visayas),Dengue,117
+2020-08-02,Region VII (Central Visayas),Dengue,118
+2020-08-09,Region VII (Central Visayas),Dengue,140
+2020-08-16,Region VII (Central Visayas),Dengue,118
+2020-08-23,Region VII (Central Visayas),Dengue,106
+2020-08-30,Region VII (Central Visayas),Dengue,144
+2020-09-06,Region VII (Central Visayas),Dengue,137
+2020-09-13,Region VII (Central Visayas),Dengue,117
+2020-09-20,Region VII (Central Visayas),Dengue,106
+2020-09-27,Region VII (Central Visayas),Dengue,113
+2020-10-04,Region VII (Central Visayas),Dengue,105
+2020-10-11,Region VII (Central Visayas),Dengue,91
+2020-10-18,Region VII (Central Visayas),Dengue,85
+2020-10-25,Region VII (Central Visayas),Dengue,69
+2020-11-01,Region VII (Central Visayas),Dengue,66
+2020-11-08,Region VII (Central Visayas),Dengue,63
+2020-11-15,Region VII (Central Visayas),Dengue,67
+2020-11-22,Region VII (Central Visayas),Dengue,53
+2020-11-29,Region VII (Central Visayas),Dengue,54
+2020-12-06,Region VII (Central Visayas),Dengue,68
+2020-12-13,Region VII (Central Visayas),Dengue,46
+2020-12-20,Region VII (Central Visayas),Dengue,42
+2020-12-27,Region VII (Central Visayas),Dengue,51
+2021-01-03,Region VII (Central Visayas),Dengue,34
+2021-01-10,Region VII (Central Visayas),Dengue,9
+2016-01-10,Region VIII (Eastern Visayas),Dengue,146
+2016-01-17,Region VIII (Eastern Visayas),Dengue,96
+2016-01-24,Region VIII (Eastern Visayas),Dengue,118
+2016-01-31,Region VIII (Eastern Visayas),Dengue,109
+2016-02-07,Region VIII (Eastern Visayas),Dengue,92
+2016-02-14,Region VIII (Eastern Visayas),Dengue,111
+2016-02-21,Region VIII (Eastern Visayas),Dengue,93
+2016-02-28,Region VIII (Eastern Visayas),Dengue,80
+2016-03-06,Region VIII (Eastern Visayas),Dengue,84
+2016-03-13,Region VIII (Eastern Visayas),Dengue,75
+2016-03-20,Region VIII (Eastern Visayas),Dengue,64
+2016-03-27,Region VIII (Eastern Visayas),Dengue,50
+2016-04-03,Region VIII (Eastern Visayas),Dengue,58
+2016-04-10,Region VIII (Eastern Visayas),Dengue,41
+2016-04-17,Region VIII (Eastern Visayas),Dengue,67
+2016-04-24,Region VIII (Eastern Visayas),Dengue,51
+2016-05-01,Region VIII (Eastern Visayas),Dengue,81
+2016-05-08,Region VIII (Eastern Visayas),Dengue,47
+2016-05-15,Region VIII (Eastern Visayas),Dengue,77
+2016-05-22,Region VIII (Eastern Visayas),Dengue,89
+2016-05-29,Region VIII (Eastern Visayas),Dengue,70
+2016-06-05,Region VIII (Eastern Visayas),Dengue,90
+2016-06-12,Region VIII (Eastern Visayas),Dengue,91
+2016-06-19,Region VIII (Eastern Visayas),Dengue,115
+2016-06-26,Region VIII (Eastern Visayas),Dengue,130
+2016-07-03,Region VIII (Eastern Visayas),Dengue,157
+2016-07-10,Region VIII (Eastern Visayas),Dengue,134
+2016-07-17,Region VIII (Eastern Visayas),Dengue,170
+2016-07-24,Region VIII (Eastern Visayas),Dengue,224
+2016-07-31,Region VIII (Eastern Visayas),Dengue,236
+2016-08-07,Region VIII (Eastern Visayas),Dengue,219
+2016-08-14,Region VIII (Eastern Visayas),Dengue,238
+2016-08-21,Region VIII (Eastern Visayas),Dengue,190
+2016-08-28,Region VIII (Eastern Visayas),Dengue,192
+2016-09-04,Region VIII (Eastern Visayas),Dengue,151
+2016-09-11,Region VIII (Eastern Visayas),Dengue,141
+2016-09-18,Region VIII (Eastern Visayas),Dengue,145
+2016-09-25,Region VIII (Eastern Visayas),Dengue,138
+2016-10-02,Region VIII (Eastern Visayas),Dengue,91
+2016-10-09,Region VIII (Eastern Visayas),Dengue,122
+2016-10-16,Region VIII (Eastern Visayas),Dengue,74
+2016-10-23,Region VIII (Eastern Visayas),Dengue,64
+2016-10-30,Region VIII (Eastern Visayas),Dengue,70
+2016-11-06,Region VIII (Eastern Visayas),Dengue,50
+2016-11-13,Region VIII (Eastern Visayas),Dengue,65
+2016-11-20,Region VIII (Eastern Visayas),Dengue,88
+2016-11-27,Region VIII (Eastern Visayas),Dengue,75
+2016-12-04,Region VIII (Eastern Visayas),Dengue,92
+2016-12-11,Region VIII (Eastern Visayas),Dengue,78
+2016-12-18,Region VIII (Eastern Visayas),Dengue,40
+2016-12-25,Region VIII (Eastern Visayas),Dengue,19
+2017-01-01,Region VIII (Eastern Visayas),Dengue,16
+2017-01-08,Region VIII (Eastern Visayas),Dengue,198
+2017-01-15,Region VIII (Eastern Visayas),Dengue,152
+2017-01-22,Region VIII (Eastern Visayas),Dengue,127
+2017-01-29,Region VIII (Eastern Visayas),Dengue,127
+2017-02-05,Region VIII (Eastern Visayas),Dengue,129
+2017-02-12,Region VIII (Eastern Visayas),Dengue,110
+2017-02-19,Region VIII (Eastern Visayas),Dengue,113
+2017-02-26,Region VIII (Eastern Visayas),Dengue,86
+2017-03-05,Region VIII (Eastern Visayas),Dengue,91
+2017-03-12,Region VIII (Eastern Visayas),Dengue,87
+2017-03-19,Region VIII (Eastern Visayas),Dengue,81
+2017-03-26,Region VIII (Eastern Visayas),Dengue,64
+2017-04-02,Region VIII (Eastern Visayas),Dengue,72
+2017-04-09,Region VIII (Eastern Visayas),Dengue,62
+2017-04-16,Region VIII (Eastern Visayas),Dengue,59
+2017-04-23,Region VIII (Eastern Visayas),Dengue,76
+2017-04-30,Region VIII (Eastern Visayas),Dengue,87
+2017-05-07,Region VIII (Eastern Visayas),Dengue,59
+2017-05-14,Region VIII (Eastern Visayas),Dengue,40
+2017-05-21,Region VIII (Eastern Visayas),Dengue,60
+2017-05-28,Region VIII (Eastern Visayas),Dengue,61
+2017-06-04,Region VIII (Eastern Visayas),Dengue,70
+2017-06-11,Region VIII (Eastern Visayas),Dengue,53
+2017-06-18,Region VIII (Eastern Visayas),Dengue,48
+2017-06-25,Region VIII (Eastern Visayas),Dengue,65
+2017-07-02,Region VIII (Eastern Visayas),Dengue,63
+2017-07-09,Region VIII (Eastern Visayas),Dengue,72
+2017-07-16,Region VIII (Eastern Visayas),Dengue,85
+2017-07-23,Region VIII (Eastern Visayas),Dengue,97
+2017-07-30,Region VIII (Eastern Visayas),Dengue,116
+2017-08-06,Region VIII (Eastern Visayas),Dengue,153
+2017-08-13,Region VIII (Eastern Visayas),Dengue,119
+2017-08-20,Region VIII (Eastern Visayas),Dengue,76
+2017-08-27,Region VIII (Eastern Visayas),Dengue,69
+2017-09-03,Region VIII (Eastern Visayas),Dengue,1
+2017-09-10,Region VIII (Eastern Visayas),Dengue,54
+2017-09-17,Region VIII (Eastern Visayas),Dengue,1
+2017-09-24,Region VIII (Eastern Visayas),Dengue,142
+2017-10-01,Region VIII (Eastern Visayas),Dengue,0
+2017-10-08,Region VIII (Eastern Visayas),Dengue,71
+2017-10-15,Region VIII (Eastern Visayas),Dengue,2
+2017-10-22,Region VIII (Eastern Visayas),Dengue,71
+2017-10-29,Region VIII (Eastern Visayas),Dengue,0
+2017-11-05,Region VIII (Eastern Visayas),Dengue,61
+2017-11-12,Region VIII (Eastern Visayas),Dengue,0
+2017-11-19,Region VIII (Eastern Visayas),Dengue,72
+2017-11-26,Region VIII (Eastern Visayas),Dengue,58
+2017-12-03,Region VIII (Eastern Visayas),Dengue,129
+2017-12-10,Region VIII (Eastern Visayas),Dengue,90
+2017-12-17,Region VIII (Eastern Visayas),Dengue,71
+2017-12-24,Region VIII (Eastern Visayas),Dengue,35
+2017-12-31,Region VIII (Eastern Visayas),Dengue,15
+2018-01-07,Region VIII (Eastern Visayas),Dengue,97
+2018-01-14,Region VIII (Eastern Visayas),Dengue,157
+2018-01-21,Region VIII (Eastern Visayas),Dengue,112
+2018-01-28,Region VIII (Eastern Visayas),Dengue,119
+2018-02-04,Region VIII (Eastern Visayas),Dengue,99
+2018-02-11,Region VIII (Eastern Visayas),Dengue,85
+2018-02-18,Region VIII (Eastern Visayas),Dengue,61
+2018-02-25,Region VIII (Eastern Visayas),Dengue,68
+2018-03-04,Region VIII (Eastern Visayas),Dengue,68
+2018-03-11,Region VIII (Eastern Visayas),Dengue,56
+2018-03-18,Region VIII (Eastern Visayas),Dengue,54
+2018-03-25,Region VIII (Eastern Visayas),Dengue,63
+2018-04-01,Region VIII (Eastern Visayas),Dengue,56
+2018-04-08,Region VIII (Eastern Visayas),Dengue,53
+2018-04-15,Region VIII (Eastern Visayas),Dengue,52
+2018-04-22,Region VIII (Eastern Visayas),Dengue,42
+2018-04-29,Region VIII (Eastern Visayas),Dengue,67
+2018-05-06,Region VIII (Eastern Visayas),Dengue,63
+2018-05-13,Region VIII (Eastern Visayas),Dengue,64
+2018-05-20,Region VIII (Eastern Visayas),Dengue,109
+2018-05-27,Region VIII (Eastern Visayas),Dengue,89
+2018-06-03,Region VIII (Eastern Visayas),Dengue,101
+2018-06-10,Region VIII (Eastern Visayas),Dengue,107
+2018-06-17,Region VIII (Eastern Visayas),Dengue,121
+2018-06-24,Region VIII (Eastern Visayas),Dengue,174
+2018-07-01,Region VIII (Eastern Visayas),Dengue,140
+2018-07-08,Region VIII (Eastern Visayas),Dengue,124
+2018-07-15,Region VIII (Eastern Visayas),Dengue,173
+2018-07-22,Region VIII (Eastern Visayas),Dengue,195
+2018-07-29,Region VIII (Eastern Visayas),Dengue,181
+2018-08-05,Region VIII (Eastern Visayas),Dengue,251
+2018-08-12,Region VIII (Eastern Visayas),Dengue,318
+2018-08-19,Region VIII (Eastern Visayas),Dengue,291
+2018-08-26,Region VIII (Eastern Visayas),Dengue,246
+2018-09-02,Region VIII (Eastern Visayas),Dengue,246
+2018-09-09,Region VIII (Eastern Visayas),Dengue,298
+2018-09-16,Region VIII (Eastern Visayas),Dengue,244
+2018-09-23,Region VIII (Eastern Visayas),Dengue,266
+2018-09-30,Region VIII (Eastern Visayas),Dengue,261
+2018-10-07,Region VIII (Eastern Visayas),Dengue,336
+2018-10-14,Region VIII (Eastern Visayas),Dengue,369
+2018-10-21,Region VIII (Eastern Visayas),Dengue,433
+2018-10-28,Region VIII (Eastern Visayas),Dengue,425
+2018-11-04,Region VIII (Eastern Visayas),Dengue,422
+2018-11-11,Region VIII (Eastern Visayas),Dengue,426
+2018-11-18,Region VIII (Eastern Visayas),Dengue,486
+2018-11-25,Region VIII (Eastern Visayas),Dengue,447
+2018-12-02,Region VIII (Eastern Visayas),Dengue,414
+2018-12-09,Region VIII (Eastern Visayas),Dengue,506
+2018-12-16,Region VIII (Eastern Visayas),Dengue,523
+2018-12-23,Region VIII (Eastern Visayas),Dengue,430
+2018-12-30,Region VIII (Eastern Visayas),Dengue,388
+2019-01-06,Region VIII (Eastern Visayas),Dengue,0
+2019-01-13,Region VIII (Eastern Visayas),Dengue,284
+2019-01-20,Region VIII (Eastern Visayas),Dengue,363
+2019-01-27,Region VIII (Eastern Visayas),Dengue,353
+2019-02-03,Region VIII (Eastern Visayas),Dengue,327
+2019-02-10,Region VIII (Eastern Visayas),Dengue,393
+2019-02-17,Region VIII (Eastern Visayas),Dengue,241
+2019-02-24,Region VIII (Eastern Visayas),Dengue,217
+2019-03-03,Region VIII (Eastern Visayas),Dengue,184
+2019-03-10,Region VIII (Eastern Visayas),Dengue,211
+2019-03-17,Region VIII (Eastern Visayas),Dengue,134
+2019-03-24,Region VIII (Eastern Visayas),Dengue,148
+2019-03-31,Region VIII (Eastern Visayas),Dengue,138
+2019-04-07,Region VIII (Eastern Visayas),Dengue,145
+2019-04-14,Region VIII (Eastern Visayas),Dengue,113
+2019-04-21,Region VIII (Eastern Visayas),Dengue,136
+2019-04-28,Region VIII (Eastern Visayas),Dengue,94
+2019-05-05,Region VIII (Eastern Visayas),Dengue,102
+2019-05-12,Region VIII (Eastern Visayas),Dengue,101
+2019-05-19,Region VIII (Eastern Visayas),Dengue,112
+2019-05-26,Region VIII (Eastern Visayas),Dengue,112
+2019-06-02,Region VIII (Eastern Visayas),Dengue,124
+2019-06-09,Region VIII (Eastern Visayas),Dengue,167
+2019-06-16,Region VIII (Eastern Visayas),Dengue,221
+2019-06-23,Region VIII (Eastern Visayas),Dengue,243
+2019-06-30,Region VIII (Eastern Visayas),Dengue,276
+2019-07-07,Region VIII (Eastern Visayas),Dengue,361
+2019-07-14,Region VIII (Eastern Visayas),Dengue,718
+2019-07-21,Region VIII (Eastern Visayas),Dengue,1062
+2019-07-28,Region VIII (Eastern Visayas),Dengue,1558
+2019-08-04,Region VIII (Eastern Visayas),Dengue,1795
+2019-08-11,Region VIII (Eastern Visayas),Dengue,1963
+2019-08-18,Region VIII (Eastern Visayas),Dengue,1969
+2019-08-25,Region VIII (Eastern Visayas),Dengue,1830
+2019-09-01,Region VIII (Eastern Visayas),Dengue,1457
+2019-09-08,Region VIII (Eastern Visayas),Dengue,1100
+2019-09-15,Region VIII (Eastern Visayas),Dengue,1295
+2019-09-22,Region VIII (Eastern Visayas),Dengue,1498
+2019-09-29,Region VIII (Eastern Visayas),Dengue,734
+2019-10-06,Region VIII (Eastern Visayas),Dengue,785
+2019-10-13,Region VIII (Eastern Visayas),Dengue,686
+2019-10-20,Region VIII (Eastern Visayas),Dengue,626
+2019-10-27,Region VIII (Eastern Visayas),Dengue,537
+2019-11-03,Region VIII (Eastern Visayas),Dengue,369
+2019-11-10,Region VIII (Eastern Visayas),Dengue,235
+2019-11-17,Region VIII (Eastern Visayas),Dengue,310
+2019-11-24,Region VIII (Eastern Visayas),Dengue,304
+2019-12-01,Region VIII (Eastern Visayas),Dengue,194
+2019-12-08,Region VIII (Eastern Visayas),Dengue,123
+2019-12-15,Region VIII (Eastern Visayas),Dengue,136
+2019-12-22,Region VIII (Eastern Visayas),Dengue,173
+2019-12-29,Region VIII (Eastern Visayas),Dengue,114
+2020-01-05,Region VIII (Eastern Visayas),Dengue,26
+2020-01-12,Region VIII (Eastern Visayas),Dengue,144
+2020-01-19,Region VIII (Eastern Visayas),Dengue,404
+2020-01-26,Region VIII (Eastern Visayas),Dengue,323
+2020-02-02,Region VIII (Eastern Visayas),Dengue,386
+2020-02-09,Region VIII (Eastern Visayas),Dengue,388
+2020-02-16,Region VIII (Eastern Visayas),Dengue,403
+2020-02-23,Region VIII (Eastern Visayas),Dengue,323
+2020-03-01,Region VIII (Eastern Visayas),Dengue,298
+2020-03-08,Region VIII (Eastern Visayas),Dengue,274
+2020-03-15,Region VIII (Eastern Visayas),Dengue,252
+2020-03-22,Region VIII (Eastern Visayas),Dengue,246
+2020-03-29,Region VIII (Eastern Visayas),Dengue,140
+2020-04-05,Region VIII (Eastern Visayas),Dengue,84
+2020-04-12,Region VIII (Eastern Visayas),Dengue,94
+2020-04-19,Region VIII (Eastern Visayas),Dengue,49
+2020-04-26,Region VIII (Eastern Visayas),Dengue,52
+2020-05-03,Region VIII (Eastern Visayas),Dengue,51
+2020-05-10,Region VIII (Eastern Visayas),Dengue,38
+2020-05-17,Region VIII (Eastern Visayas),Dengue,47
+2020-05-24,Region VIII (Eastern Visayas),Dengue,33
+2020-05-31,Region VIII (Eastern Visayas),Dengue,23
+2020-06-07,Region VIII (Eastern Visayas),Dengue,37
+2020-06-14,Region VIII (Eastern Visayas),Dengue,42
+2020-06-21,Region VIII (Eastern Visayas),Dengue,30
+2020-06-28,Region VIII (Eastern Visayas),Dengue,20
+2020-07-05,Region VIII (Eastern Visayas),Dengue,28
+2020-07-12,Region VIII (Eastern Visayas),Dengue,23
+2020-07-19,Region VIII (Eastern Visayas),Dengue,37
+2020-07-26,Region VIII (Eastern Visayas),Dengue,33
+2020-08-02,Region VIII (Eastern Visayas),Dengue,26
+2020-08-09,Region VIII (Eastern Visayas),Dengue,31
+2020-08-16,Region VIII (Eastern Visayas),Dengue,23
+2020-08-23,Region VIII (Eastern Visayas),Dengue,26
+2020-08-30,Region VIII (Eastern Visayas),Dengue,32
+2020-09-06,Region VIII (Eastern Visayas),Dengue,31
+2020-09-13,Region VIII (Eastern Visayas),Dengue,37
+2020-09-20,Region VIII (Eastern Visayas),Dengue,25
+2020-09-27,Region VIII (Eastern Visayas),Dengue,27
+2020-10-04,Region VIII (Eastern Visayas),Dengue,19
+2020-10-11,Region VIII (Eastern Visayas),Dengue,19
+2020-10-18,Region VIII (Eastern Visayas),Dengue,18
+2020-10-25,Region VIII (Eastern Visayas),Dengue,39
+2020-11-01,Region VIII (Eastern Visayas),Dengue,18
+2020-11-08,Region VIII (Eastern Visayas),Dengue,20
+2020-11-15,Region VIII (Eastern Visayas),Dengue,35
+2020-11-22,Region VIII (Eastern Visayas),Dengue,24
+2020-11-29,Region VIII (Eastern Visayas),Dengue,13
+2020-12-06,Region VIII (Eastern Visayas),Dengue,11
+2020-12-13,Region VIII (Eastern Visayas),Dengue,13
+2020-12-20,Region VIII (Eastern Visayas),Dengue,11
+2020-12-27,Region VIII (Eastern Visayas),Dengue,6
+2021-01-03,Region VIII (Eastern Visayas),Dengue,4
+2021-01-10,Region VIII (Eastern Visayas),Dengue,3
+2016-01-10,Region X (Northern Mindanao),Dengue,437
+2016-01-17,Region X (Northern Mindanao),Dengue,301
+2016-01-24,Region X (Northern Mindanao),Dengue,383
+2016-01-31,Region X (Northern Mindanao),Dengue,329
+2016-02-07,Region X (Northern Mindanao),Dengue,329
+2016-02-14,Region X (Northern Mindanao),Dengue,330
+2016-02-21,Region X (Northern Mindanao),Dengue,288
+2016-02-28,Region X (Northern Mindanao),Dengue,237
+2016-03-06,Region X (Northern Mindanao),Dengue,281
+2016-03-13,Region X (Northern Mindanao),Dengue,235
+2016-03-20,Region X (Northern Mindanao),Dengue,227
+2016-03-27,Region X (Northern Mindanao),Dengue,201
+2016-04-03,Region X (Northern Mindanao),Dengue,217
+2016-04-10,Region X (Northern Mindanao),Dengue,189
+2016-04-17,Region X (Northern Mindanao),Dengue,161
+2016-04-24,Region X (Northern Mindanao),Dengue,201
+2016-05-01,Region X (Northern Mindanao),Dengue,180
+2016-05-08,Region X (Northern Mindanao),Dengue,149
+2016-05-15,Region X (Northern Mindanao),Dengue,192
+2016-05-22,Region X (Northern Mindanao),Dengue,142
+2016-05-29,Region X (Northern Mindanao),Dengue,162
+2016-06-05,Region X (Northern Mindanao),Dengue,167
+2016-06-12,Region X (Northern Mindanao),Dengue,220
+2016-06-19,Region X (Northern Mindanao),Dengue,268
+2016-06-26,Region X (Northern Mindanao),Dengue,318
+2016-07-03,Region X (Northern Mindanao),Dengue,348
+2016-07-10,Region X (Northern Mindanao),Dengue,408
+2016-07-17,Region X (Northern Mindanao),Dengue,466
+2016-07-24,Region X (Northern Mindanao),Dengue,560
+2016-07-31,Region X (Northern Mindanao),Dengue,737
+2016-08-07,Region X (Northern Mindanao),Dengue,699
+2016-08-14,Region X (Northern Mindanao),Dengue,778
+2016-08-21,Region X (Northern Mindanao),Dengue,777
+2016-08-28,Region X (Northern Mindanao),Dengue,643
+2016-09-04,Region X (Northern Mindanao),Dengue,673
+2016-09-11,Region X (Northern Mindanao),Dengue,588
+2016-09-18,Region X (Northern Mindanao),Dengue,570
+2016-09-25,Region X (Northern Mindanao),Dengue,555
+2016-10-02,Region X (Northern Mindanao),Dengue,387
+2016-10-09,Region X (Northern Mindanao),Dengue,472
+2016-10-16,Region X (Northern Mindanao),Dengue,370
+2016-10-23,Region X (Northern Mindanao),Dengue,308
+2016-10-30,Region X (Northern Mindanao),Dengue,257
+2016-11-06,Region X (Northern Mindanao),Dengue,265
+2016-11-13,Region X (Northern Mindanao),Dengue,275
+2016-11-20,Region X (Northern Mindanao),Dengue,246
+2016-11-27,Region X (Northern Mindanao),Dengue,280
+2016-12-04,Region X (Northern Mindanao),Dengue,231
+2016-12-11,Region X (Northern Mindanao),Dengue,246
+2016-12-18,Region X (Northern Mindanao),Dengue,196
+2016-12-25,Region X (Northern Mindanao),Dengue,201
+2017-01-01,Region X (Northern Mindanao),Dengue,157
+2017-01-08,Region X (Northern Mindanao),Dengue,307
+2017-01-15,Region X (Northern Mindanao),Dengue,241
+2017-01-22,Region X (Northern Mindanao),Dengue,205
+2017-01-29,Region X (Northern Mindanao),Dengue,187
+2017-02-05,Region X (Northern Mindanao),Dengue,186
+2017-02-12,Region X (Northern Mindanao),Dengue,155
+2017-02-19,Region X (Northern Mindanao),Dengue,122
+2017-02-26,Region X (Northern Mindanao),Dengue,137
+2017-03-05,Region X (Northern Mindanao),Dengue,127
+2017-03-12,Region X (Northern Mindanao),Dengue,111
+2017-03-19,Region X (Northern Mindanao),Dengue,111
+2017-03-26,Region X (Northern Mindanao),Dengue,133
+2017-04-02,Region X (Northern Mindanao),Dengue,112
+2017-04-09,Region X (Northern Mindanao),Dengue,102
+2017-04-16,Region X (Northern Mindanao),Dengue,75
+2017-04-23,Region X (Northern Mindanao),Dengue,94
+2017-04-30,Region X (Northern Mindanao),Dengue,68
+2017-05-07,Region X (Northern Mindanao),Dengue,86
+2017-05-14,Region X (Northern Mindanao),Dengue,88
+2017-05-21,Region X (Northern Mindanao),Dengue,87
+2017-05-28,Region X (Northern Mindanao),Dengue,95
+2017-06-04,Region X (Northern Mindanao),Dengue,86
+2017-06-11,Region X (Northern Mindanao),Dengue,117
+2017-06-18,Region X (Northern Mindanao),Dengue,132
+2017-06-25,Region X (Northern Mindanao),Dengue,116
+2017-07-02,Region X (Northern Mindanao),Dengue,134
+2017-07-09,Region X (Northern Mindanao),Dengue,139
+2017-07-16,Region X (Northern Mindanao),Dengue,140
+2017-07-23,Region X (Northern Mindanao),Dengue,115
+2017-07-30,Region X (Northern Mindanao),Dengue,158
+2017-08-06,Region X (Northern Mindanao),Dengue,737
+2017-08-13,Region X (Northern Mindanao),Dengue,211
+2017-08-20,Region X (Northern Mindanao),Dengue,222
+2017-08-27,Region X (Northern Mindanao),Dengue,184
+2017-09-03,Region X (Northern Mindanao),Dengue,1
+2017-09-10,Region X (Northern Mindanao),Dengue,160
+2017-09-17,Region X (Northern Mindanao),Dengue,0
+2017-09-24,Region X (Northern Mindanao),Dengue,129
+2017-10-01,Region X (Northern Mindanao),Dengue,0
+2017-10-08,Region X (Northern Mindanao),Dengue,125
+2017-10-15,Region X (Northern Mindanao),Dengue,1
+2017-10-22,Region X (Northern Mindanao),Dengue,101
+2017-10-29,Region X (Northern Mindanao),Dengue,0
+2017-11-05,Region X (Northern Mindanao),Dengue,84
+2017-11-12,Region X (Northern Mindanao),Dengue,0
+2017-11-19,Region X (Northern Mindanao),Dengue,105
+2017-11-26,Region X (Northern Mindanao),Dengue,87
+2017-12-03,Region X (Northern Mindanao),Dengue,134
+2017-12-10,Region X (Northern Mindanao),Dengue,104
+2017-12-17,Region X (Northern Mindanao),Dengue,85
+2017-12-24,Region X (Northern Mindanao),Dengue,64
+2017-12-31,Region X (Northern Mindanao),Dengue,22
+2018-01-07,Region X (Northern Mindanao),Dengue,111
+2018-01-14,Region X (Northern Mindanao),Dengue,103
+2018-01-21,Region X (Northern Mindanao),Dengue,101
+2018-01-28,Region X (Northern Mindanao),Dengue,114
+2018-02-04,Region X (Northern Mindanao),Dengue,118
+2018-02-11,Region X (Northern Mindanao),Dengue,119
+2018-02-18,Region X (Northern Mindanao),Dengue,112
+2018-02-25,Region X (Northern Mindanao),Dengue,133
+2018-03-04,Region X (Northern Mindanao),Dengue,149
+2018-03-11,Region X (Northern Mindanao),Dengue,181
+2018-03-18,Region X (Northern Mindanao),Dengue,165
+2018-03-25,Region X (Northern Mindanao),Dengue,160
+2018-04-01,Region X (Northern Mindanao),Dengue,130
+2018-04-08,Region X (Northern Mindanao),Dengue,147
+2018-04-15,Region X (Northern Mindanao),Dengue,122
+2018-04-22,Region X (Northern Mindanao),Dengue,199
+2018-04-29,Region X (Northern Mindanao),Dengue,215
+2018-05-06,Region X (Northern Mindanao),Dengue,166
+2018-05-13,Region X (Northern Mindanao),Dengue,214
+2018-05-20,Region X (Northern Mindanao),Dengue,221
+2018-05-27,Region X (Northern Mindanao),Dengue,232
+2018-06-03,Region X (Northern Mindanao),Dengue,267
+2018-06-10,Region X (Northern Mindanao),Dengue,381
+2018-06-17,Region X (Northern Mindanao),Dengue,379
+2018-06-24,Region X (Northern Mindanao),Dengue,508
+2018-07-01,Region X (Northern Mindanao),Dengue,601
+2018-07-08,Region X (Northern Mindanao),Dengue,565
+2018-07-15,Region X (Northern Mindanao),Dengue,602
+2018-07-22,Region X (Northern Mindanao),Dengue,621
+2018-07-29,Region X (Northern Mindanao),Dengue,673
+2018-08-05,Region X (Northern Mindanao),Dengue,682
+2018-08-12,Region X (Northern Mindanao),Dengue,713
+2018-08-19,Region X (Northern Mindanao),Dengue,743
+2018-08-26,Region X (Northern Mindanao),Dengue,718
+2018-09-02,Region X (Northern Mindanao),Dengue,640
+2018-09-09,Region X (Northern Mindanao),Dengue,646
+2018-09-16,Region X (Northern Mindanao),Dengue,577
+2018-09-23,Region X (Northern Mindanao),Dengue,1422
+2018-09-30,Region X (Northern Mindanao),Dengue,579
+2018-10-07,Region X (Northern Mindanao),Dengue,503
+2018-10-14,Region X (Northern Mindanao),Dengue,641
+2018-10-21,Region X (Northern Mindanao),Dengue,630
+2018-10-28,Region X (Northern Mindanao),Dengue,567
+2018-11-04,Region X (Northern Mindanao),Dengue,542
+2018-11-11,Region X (Northern Mindanao),Dengue,1230
+2018-11-18,Region X (Northern Mindanao),Dengue,1291
+2018-11-25,Region X (Northern Mindanao),Dengue,609
+2018-12-02,Region X (Northern Mindanao),Dengue,576
+2018-12-09,Region X (Northern Mindanao),Dengue,610
+2018-12-16,Region X (Northern Mindanao),Dengue,637
+2018-12-23,Region X (Northern Mindanao),Dengue,595
+2018-12-30,Region X (Northern Mindanao),Dengue,537
+2019-01-06,Region X (Northern Mindanao),Dengue,0
+2019-01-13,Region X (Northern Mindanao),Dengue,452
+2019-01-20,Region X (Northern Mindanao),Dengue,548
+2019-01-27,Region X (Northern Mindanao),Dengue,476
+2019-02-03,Region X (Northern Mindanao),Dengue,510
+2019-02-10,Region X (Northern Mindanao),Dengue,424
+2019-02-17,Region X (Northern Mindanao),Dengue,374
+2019-02-24,Region X (Northern Mindanao),Dengue,402
+2019-03-03,Region X (Northern Mindanao),Dengue,367
+2019-03-10,Region X (Northern Mindanao),Dengue,351
+2019-03-17,Region X (Northern Mindanao),Dengue,344
+2019-03-24,Region X (Northern Mindanao),Dengue,332
+2019-03-31,Region X (Northern Mindanao),Dengue,290
+2019-04-07,Region X (Northern Mindanao),Dengue,267
+2019-04-14,Region X (Northern Mindanao),Dengue,260
+2019-04-21,Region X (Northern Mindanao),Dengue,219
+2019-04-28,Region X (Northern Mindanao),Dengue,246
+2019-05-05,Region X (Northern Mindanao),Dengue,271
+2019-05-12,Region X (Northern Mindanao),Dengue,264
+2019-05-19,Region X (Northern Mindanao),Dengue,324
+2019-05-26,Region X (Northern Mindanao),Dengue,325
+2019-06-02,Region X (Northern Mindanao),Dengue,351
+2019-06-09,Region X (Northern Mindanao),Dengue,390
+2019-06-16,Region X (Northern Mindanao),Dengue,437
+2019-06-23,Region X (Northern Mindanao),Dengue,505
+2019-06-30,Region X (Northern Mindanao),Dengue,732
+2019-07-07,Region X (Northern Mindanao),Dengue,735
+2019-07-14,Region X (Northern Mindanao),Dengue,879
+2019-07-21,Region X (Northern Mindanao),Dengue,1090
+2019-07-28,Region X (Northern Mindanao),Dengue,1189
+2019-08-04,Region X (Northern Mindanao),Dengue,1231
+2019-08-11,Region X (Northern Mindanao),Dengue,1310
+2019-08-18,Region X (Northern Mindanao),Dengue,1102
+2019-08-25,Region X (Northern Mindanao),Dengue,1164
+2019-09-01,Region X (Northern Mindanao),Dengue,1054
+2019-09-08,Region X (Northern Mindanao),Dengue,999
+2019-09-15,Region X (Northern Mindanao),Dengue,966
+2019-09-22,Region X (Northern Mindanao),Dengue,707
+2019-09-29,Region X (Northern Mindanao),Dengue,680
+2019-10-06,Region X (Northern Mindanao),Dengue,607
+2019-10-13,Region X (Northern Mindanao),Dengue,496
+2019-10-20,Region X (Northern Mindanao),Dengue,465
+2019-10-27,Region X (Northern Mindanao),Dengue,455
+2019-11-03,Region X (Northern Mindanao),Dengue,438
+2019-11-10,Region X (Northern Mindanao),Dengue,460
+2019-11-17,Region X (Northern Mindanao),Dengue,495
+2019-11-24,Region X (Northern Mindanao),Dengue,504
+2019-12-01,Region X (Northern Mindanao),Dengue,468
+2019-12-08,Region X (Northern Mindanao),Dengue,466
+2019-12-15,Region X (Northern Mindanao),Dengue,377
+2019-12-22,Region X (Northern Mindanao),Dengue,289
+2019-12-29,Region X (Northern Mindanao),Dengue,269
+2020-01-05,Region X (Northern Mindanao),Dengue,80
+2020-01-12,Region X (Northern Mindanao),Dengue,205
+2020-01-19,Region X (Northern Mindanao),Dengue,356
+2020-01-26,Region X (Northern Mindanao),Dengue,304
+2020-02-02,Region X (Northern Mindanao),Dengue,314
+2020-02-09,Region X (Northern Mindanao),Dengue,304
+2020-02-16,Region X (Northern Mindanao),Dengue,268
+2020-02-23,Region X (Northern Mindanao),Dengue,264
+2020-03-01,Region X (Northern Mindanao),Dengue,171
+2020-03-08,Region X (Northern Mindanao),Dengue,206
+2020-03-15,Region X (Northern Mindanao),Dengue,209
+2020-03-22,Region X (Northern Mindanao),Dengue,226
+2020-03-29,Region X (Northern Mindanao),Dengue,154
+2020-04-05,Region X (Northern Mindanao),Dengue,106
+2020-04-12,Region X (Northern Mindanao),Dengue,72
+2020-04-19,Region X (Northern Mindanao),Dengue,83
+2020-04-26,Region X (Northern Mindanao),Dengue,62
+2020-05-03,Region X (Northern Mindanao),Dengue,75
+2020-05-10,Region X (Northern Mindanao),Dengue,55
+2020-05-17,Region X (Northern Mindanao),Dengue,63
+2020-05-24,Region X (Northern Mindanao),Dengue,79
+2020-05-31,Region X (Northern Mindanao),Dengue,58
+2020-06-07,Region X (Northern Mindanao),Dengue,69
+2020-06-14,Region X (Northern Mindanao),Dengue,78
+2020-06-21,Region X (Northern Mindanao),Dengue,82
+2020-06-28,Region X (Northern Mindanao),Dengue,80
+2020-07-05,Region X (Northern Mindanao),Dengue,99
+2020-07-12,Region X (Northern Mindanao),Dengue,115
+2020-07-19,Region X (Northern Mindanao),Dengue,122
+2020-07-26,Region X (Northern Mindanao),Dengue,129
+2020-08-02,Region X (Northern Mindanao),Dengue,122
+2020-08-09,Region X (Northern Mindanao),Dengue,143
+2020-08-16,Region X (Northern Mindanao),Dengue,118
+2020-08-23,Region X (Northern Mindanao),Dengue,123
+2020-08-30,Region X (Northern Mindanao),Dengue,91
+2020-09-06,Region X (Northern Mindanao),Dengue,100
+2020-09-13,Region X (Northern Mindanao),Dengue,82
+2020-09-20,Region X (Northern Mindanao),Dengue,88
+2020-09-27,Region X (Northern Mindanao),Dengue,87
+2020-10-04,Region X (Northern Mindanao),Dengue,55
+2020-10-11,Region X (Northern Mindanao),Dengue,66
+2020-10-18,Region X (Northern Mindanao),Dengue,49
+2020-10-25,Region X (Northern Mindanao),Dengue,51
+2020-11-01,Region X (Northern Mindanao),Dengue,53
+2020-11-08,Region X (Northern Mindanao),Dengue,62
+2020-11-15,Region X (Northern Mindanao),Dengue,51
+2020-11-22,Region X (Northern Mindanao),Dengue,50
+2020-11-29,Region X (Northern Mindanao),Dengue,65
+2020-12-06,Region X (Northern Mindanao),Dengue,76
+2020-12-13,Region X (Northern Mindanao),Dengue,67
+2020-12-20,Region X (Northern Mindanao),Dengue,72
+2020-12-27,Region X (Northern Mindanao),Dengue,66
+2021-01-03,Region X (Northern Mindanao),Dengue,49
+2021-01-10,Region X (Northern Mindanao),Dengue,42
+2016-01-10,Region XI (Davao),Dengue,167
+2016-01-17,Region XI (Davao),Dengue,194
+2016-01-24,Region XI (Davao),Dengue,225
+2016-01-31,Region XI (Davao),Dengue,204
+2016-02-07,Region XI (Davao),Dengue,228
+2016-02-14,Region XI (Davao),Dengue,167
+2016-02-21,Region XI (Davao),Dengue,166
+2016-02-28,Region XI (Davao),Dengue,150
+2016-03-06,Region XI (Davao),Dengue,137
+2016-03-13,Region XI (Davao),Dengue,164
+2016-03-20,Region XI (Davao),Dengue,131
+2016-03-27,Region XI (Davao),Dengue,132
+2016-04-03,Region XI (Davao),Dengue,159
+2016-04-10,Region XI (Davao),Dengue,143
+2016-04-17,Region XI (Davao),Dengue,125
+2016-04-24,Region XI (Davao),Dengue,130
+2016-05-01,Region XI (Davao),Dengue,132
+2016-05-08,Region XI (Davao),Dengue,141
+2016-05-15,Region XI (Davao),Dengue,111
+2016-05-22,Region XI (Davao),Dengue,113
+2016-05-29,Region XI (Davao),Dengue,131
+2016-06-05,Region XI (Davao),Dengue,217
+2016-06-12,Region XI (Davao),Dengue,232
+2016-06-19,Region XI (Davao),Dengue,234
+2016-06-26,Region XI (Davao),Dengue,332
+2016-07-03,Region XI (Davao),Dengue,352
+2016-07-10,Region XI (Davao),Dengue,397
+2016-07-17,Region XI (Davao),Dengue,485
+2016-07-24,Region XI (Davao),Dengue,489
+2016-07-31,Region XI (Davao),Dengue,607
+2016-08-07,Region XI (Davao),Dengue,591
+2016-08-14,Region XI (Davao),Dengue,537
+2016-08-21,Region XI (Davao),Dengue,480
+2016-08-28,Region XI (Davao),Dengue,455
+2016-09-04,Region XI (Davao),Dengue,304
+2016-09-11,Region XI (Davao),Dengue,151
+2016-09-18,Region XI (Davao),Dengue,289
+2016-09-25,Region XI (Davao),Dengue,266
+2016-10-02,Region XI (Davao),Dengue,262
+2016-10-09,Region XI (Davao),Dengue,227
+2016-10-16,Region XI (Davao),Dengue,208
+2016-10-23,Region XI (Davao),Dengue,149
+2016-10-30,Region XI (Davao),Dengue,189
+2016-11-06,Region XI (Davao),Dengue,188
+2016-11-13,Region XI (Davao),Dengue,193
+2016-11-20,Region XI (Davao),Dengue,174
+2016-11-27,Region XI (Davao),Dengue,194
+2016-12-04,Region XI (Davao),Dengue,208
+2016-12-11,Region XI (Davao),Dengue,175
+2016-12-18,Region XI (Davao),Dengue,151
+2016-12-25,Region XI (Davao),Dengue,151
+2017-01-01,Region XI (Davao),Dengue,126
+2017-01-08,Region XI (Davao),Dengue,80
+2017-01-15,Region XI (Davao),Dengue,145
+2017-01-22,Region XI (Davao),Dengue,163
+2017-01-29,Region XI (Davao),Dengue,333
+2017-02-05,Region XI (Davao),Dengue,136
+2017-02-12,Region XI (Davao),Dengue,148
+2017-02-19,Region XI (Davao),Dengue,107
+2017-02-26,Region XI (Davao),Dengue,88
+2017-03-05,Region XI (Davao),Dengue,102
+2017-03-12,Region XI (Davao),Dengue,72
+2017-03-19,Region XI (Davao),Dengue,75
+2017-03-26,Region XI (Davao),Dengue,55
+2017-04-02,Region XI (Davao),Dengue,54
+2017-04-09,Region XI (Davao),Dengue,64
+2017-04-16,Region XI (Davao),Dengue,58
+2017-04-23,Region XI (Davao),Dengue,40
+2017-04-30,Region XI (Davao),Dengue,37
+2017-05-07,Region XI (Davao),Dengue,43
+2017-05-14,Region XI (Davao),Dengue,63
+2017-05-21,Region XI (Davao),Dengue,57
+2017-05-28,Region XI (Davao),Dengue,70
+2017-06-04,Region XI (Davao),Dengue,63
+2017-06-11,Region XI (Davao),Dengue,56
+2017-06-18,Region XI (Davao),Dengue,51
+2017-06-25,Region XI (Davao),Dengue,71
+2017-07-02,Region XI (Davao),Dengue,71
+2017-07-09,Region XI (Davao),Dengue,75
+2017-07-16,Region XI (Davao),Dengue,69
+2017-07-23,Region XI (Davao),Dengue,67
+2017-07-30,Region XI (Davao),Dengue,129
+2017-08-06,Region XI (Davao),Dengue,70
+2017-08-13,Region XI (Davao),Dengue,75
+2017-08-20,Region XI (Davao),Dengue,85
+2017-08-27,Region XI (Davao),Dengue,86
+2017-09-03,Region XI (Davao),Dengue,0
+2017-09-10,Region XI (Davao),Dengue,98
+2017-09-17,Region XI (Davao),Dengue,0
+2017-09-24,Region XI (Davao),Dengue,55
+2017-10-01,Region XI (Davao),Dengue,1
+2017-10-08,Region XI (Davao),Dengue,26
+2017-10-15,Region XI (Davao),Dengue,0
+2017-10-22,Region XI (Davao),Dengue,31
+2017-10-29,Region XI (Davao),Dengue,0
+2017-11-05,Region XI (Davao),Dengue,24
+2017-11-12,Region XI (Davao),Dengue,0
+2017-11-19,Region XI (Davao),Dengue,44
+2017-11-26,Region XI (Davao),Dengue,26
+2017-12-03,Region XI (Davao),Dengue,37
+2017-12-10,Region XI (Davao),Dengue,77
+2017-12-17,Region XI (Davao),Dengue,62
+2017-12-24,Region XI (Davao),Dengue,53
+2017-12-31,Region XI (Davao),Dengue,49
+2018-01-07,Region XI (Davao),Dengue,31
+2018-01-14,Region XI (Davao),Dengue,80
+2018-01-21,Region XI (Davao),Dengue,72
+2018-01-28,Region XI (Davao),Dengue,51
+2018-02-04,Region XI (Davao),Dengue,65
+2018-02-11,Region XI (Davao),Dengue,47
+2018-02-18,Region XI (Davao),Dengue,46
+2018-02-25,Region XI (Davao),Dengue,47
+2018-03-04,Region XI (Davao),Dengue,39
+2018-03-11,Region XI (Davao),Dengue,55
+2018-03-18,Region XI (Davao),Dengue,58
+2018-03-25,Region XI (Davao),Dengue,39
+2018-04-01,Region XI (Davao),Dengue,45
+2018-04-08,Region XI (Davao),Dengue,47
+2018-04-15,Region XI (Davao),Dengue,46
+2018-04-22,Region XI (Davao),Dengue,39
+2018-04-29,Region XI (Davao),Dengue,46
+2018-05-06,Region XI (Davao),Dengue,50
+2018-05-13,Region XI (Davao),Dengue,52
+2018-05-20,Region XI (Davao),Dengue,65
+2018-05-27,Region XI (Davao),Dengue,61
+2018-06-03,Region XI (Davao),Dengue,87
+2018-06-10,Region XI (Davao),Dengue,101
+2018-06-17,Region XI (Davao),Dengue,129
+2018-06-24,Region XI (Davao),Dengue,160
+2018-07-01,Region XI (Davao),Dengue,173
+2018-07-08,Region XI (Davao),Dengue,145
+2018-07-15,Region XI (Davao),Dengue,108
+2018-07-22,Region XI (Davao),Dengue,205
+2018-07-29,Region XI (Davao),Dengue,152
+2018-08-05,Region XI (Davao),Dengue,246
+2018-08-12,Region XI (Davao),Dengue,224
+2018-08-19,Region XI (Davao),Dengue,211
+2018-08-26,Region XI (Davao),Dengue,195
+2018-09-02,Region XI (Davao),Dengue,167
+2018-09-09,Region XI (Davao),Dengue,141
+2018-09-16,Region XI (Davao),Dengue,167
+2018-09-23,Region XI (Davao),Dengue,148
+2018-09-30,Region XI (Davao),Dengue,169
+2018-10-07,Region XI (Davao),Dengue,149
+2018-10-14,Region XI (Davao),Dengue,154
+2018-10-21,Region XI (Davao),Dengue,149
+2018-10-28,Region XI (Davao),Dengue,157
+2018-11-04,Region XI (Davao),Dengue,173
+2018-11-11,Region XI (Davao),Dengue,174
+2018-11-18,Region XI (Davao),Dengue,177
+2018-11-25,Region XI (Davao),Dengue,218
+2018-12-02,Region XI (Davao),Dengue,144
+2018-12-09,Region XI (Davao),Dengue,186
+2018-12-16,Region XI (Davao),Dengue,238
+2018-12-23,Region XI (Davao),Dengue,167
+2018-12-30,Region XI (Davao),Dengue,221
+2019-01-06,Region XI (Davao),Dengue,0
+2019-01-13,Region XI (Davao),Dengue,134
+2019-01-20,Region XI (Davao),Dengue,257
+2019-01-27,Region XI (Davao),Dengue,236
+2019-02-03,Region XI (Davao),Dengue,207
+2019-02-10,Region XI (Davao),Dengue,195
+2019-02-17,Region XI (Davao),Dengue,226
+2019-02-24,Region XI (Davao),Dengue,213
+2019-03-03,Region XI (Davao),Dengue,199
+2019-03-10,Region XI (Davao),Dengue,182
+2019-03-17,Region XI (Davao),Dengue,150
+2019-03-24,Region XI (Davao),Dengue,169
+2019-03-31,Region XI (Davao),Dengue,106
+2019-04-07,Region XI (Davao),Dengue,88
+2019-04-14,Region XI (Davao),Dengue,103
+2019-04-21,Region XI (Davao),Dengue,72
+2019-04-28,Region XI (Davao),Dengue,76
+2019-05-05,Region XI (Davao),Dengue,66
+2019-05-12,Region XI (Davao),Dengue,58
+2019-05-19,Region XI (Davao),Dengue,66
+2019-05-26,Region XI (Davao),Dengue,67
+2019-06-02,Region XI (Davao),Dengue,61
+2019-06-09,Region XI (Davao),Dengue,91
+2019-06-16,Region XI (Davao),Dengue,85
+2019-06-23,Region XI (Davao),Dengue,147
+2019-06-30,Region XI (Davao),Dengue,200
+2019-07-07,Region XI (Davao),Dengue,231
+2019-07-14,Region XI (Davao),Dengue,205
+2019-07-21,Region XI (Davao),Dengue,301
+2019-07-28,Region XI (Davao),Dengue,378
+2019-08-04,Region XI (Davao),Dengue,275
+2019-08-11,Region XI (Davao),Dengue,342
+2019-08-18,Region XI (Davao),Dengue,340
+2019-08-25,Region XI (Davao),Dengue,327
+2019-09-01,Region XI (Davao),Dengue,307
+2019-09-08,Region XI (Davao),Dengue,238
+2019-09-15,Region XI (Davao),Dengue,246
+2019-09-22,Region XI (Davao),Dengue,197
+2019-09-29,Region XI (Davao),Dengue,153
+2019-10-06,Region XI (Davao),Dengue,143
+2019-10-13,Region XI (Davao),Dengue,131
+2019-10-20,Region XI (Davao),Dengue,144
+2019-10-27,Region XI (Davao),Dengue,116
+2019-11-03,Region XI (Davao),Dengue,123
+2019-11-10,Region XI (Davao),Dengue,99
+2019-11-17,Region XI (Davao),Dengue,127
+2019-11-24,Region XI (Davao),Dengue,88
+2019-12-01,Region XI (Davao),Dengue,92
+2019-12-08,Region XI (Davao),Dengue,109
+2019-12-15,Region XI (Davao),Dengue,118
+2019-12-22,Region XI (Davao),Dengue,125
+2019-12-29,Region XI (Davao),Dengue,57
+2020-01-05,Region XI (Davao),Dengue,3
+2020-01-12,Region XI (Davao),Dengue,15
+2020-01-19,Region XI (Davao),Dengue,102
+2020-01-26,Region XI (Davao),Dengue,100
+2020-02-02,Region XI (Davao),Dengue,82
+2020-02-09,Region XI (Davao),Dengue,74
+2020-02-16,Region XI (Davao),Dengue,75
+2020-02-23,Region XI (Davao),Dengue,81
+2020-03-01,Region XI (Davao),Dengue,85
+2020-03-08,Region XI (Davao),Dengue,88
+2020-03-15,Region XI (Davao),Dengue,66
+2020-03-22,Region XI (Davao),Dengue,81
+2020-03-29,Region XI (Davao),Dengue,32
+2020-04-05,Region XI (Davao),Dengue,18
+2020-04-12,Region XI (Davao),Dengue,22
+2020-04-19,Region XI (Davao),Dengue,20
+2020-04-26,Region XI (Davao),Dengue,20
+2020-05-03,Region XI (Davao),Dengue,10
+2020-05-10,Region XI (Davao),Dengue,8
+2020-05-17,Region XI (Davao),Dengue,19
+2020-05-24,Region XI (Davao),Dengue,18
+2020-05-31,Region XI (Davao),Dengue,15
+2020-06-07,Region XI (Davao),Dengue,9
+2020-06-14,Region XI (Davao),Dengue,10
+2020-06-21,Region XI (Davao),Dengue,16
+2020-06-28,Region XI (Davao),Dengue,16
+2020-07-05,Region XI (Davao),Dengue,26
+2020-07-12,Region XI (Davao),Dengue,21
+2020-07-19,Region XI (Davao),Dengue,47
+2020-07-26,Region XI (Davao),Dengue,32
+2020-08-02,Region XI (Davao),Dengue,32
+2020-08-09,Region XI (Davao),Dengue,33
+2020-08-16,Region XI (Davao),Dengue,40
+2020-08-23,Region XI (Davao),Dengue,38
+2020-08-30,Region XI (Davao),Dengue,42
+2020-09-06,Region XI (Davao),Dengue,33
+2020-09-13,Region XI (Davao),Dengue,35
+2020-09-20,Region XI (Davao),Dengue,41
+2020-09-27,Region XI (Davao),Dengue,37
+2020-10-04,Region XI (Davao),Dengue,28
+2020-10-11,Region XI (Davao),Dengue,37
+2020-10-18,Region XI (Davao),Dengue,30
+2020-10-25,Region XI (Davao),Dengue,18
+2020-11-01,Region XI (Davao),Dengue,28
+2020-11-08,Region XI (Davao),Dengue,27
+2020-11-15,Region XI (Davao),Dengue,29
+2020-11-22,Region XI (Davao),Dengue,39
+2020-11-29,Region XI (Davao),Dengue,31
+2020-12-06,Region XI (Davao),Dengue,31
+2020-12-13,Region XI (Davao),Dengue,37
+2020-12-20,Region XI (Davao),Dengue,26
+2020-12-27,Region XI (Davao),Dengue,33
+2021-01-03,Region XI (Davao),Dengue,27
+2021-01-10,Region XI (Davao),Dengue,15
+2016-01-10,Region XII (SOCCSKSARGEN),Dengue,447
+2016-01-17,Region XII (SOCCSKSARGEN),Dengue,284
+2016-01-24,Region XII (SOCCSKSARGEN),Dengue,248
+2016-01-31,Region XII (SOCCSKSARGEN),Dengue,252
+2016-02-07,Region XII (SOCCSKSARGEN),Dengue,212
+2016-02-14,Region XII (SOCCSKSARGEN),Dengue,212
+2016-02-21,Region XII (SOCCSKSARGEN),Dengue,240
+2016-02-28,Region XII (SOCCSKSARGEN),Dengue,179
+2016-03-06,Region XII (SOCCSKSARGEN),Dengue,179
+2016-03-13,Region XII (SOCCSKSARGEN),Dengue,208
+2016-03-20,Region XII (SOCCSKSARGEN),Dengue,105
+2016-03-27,Region XII (SOCCSKSARGEN),Dengue,174
+2016-04-03,Region XII (SOCCSKSARGEN),Dengue,136
+2016-04-10,Region XII (SOCCSKSARGEN),Dengue,184
+2016-04-17,Region XII (SOCCSKSARGEN),Dengue,202
+2016-04-24,Region XII (SOCCSKSARGEN),Dengue,132
+2016-05-01,Region XII (SOCCSKSARGEN),Dengue,99
+2016-05-08,Region XII (SOCCSKSARGEN),Dengue,151
+2016-05-15,Region XII (SOCCSKSARGEN),Dengue,141
+2016-05-22,Region XII (SOCCSKSARGEN),Dengue,147
+2016-05-29,Region XII (SOCCSKSARGEN),Dengue,192
+2016-06-05,Region XII (SOCCSKSARGEN),Dengue,236
+2016-06-12,Region XII (SOCCSKSARGEN),Dengue,281
+2016-06-19,Region XII (SOCCSKSARGEN),Dengue,349
+2016-06-26,Region XII (SOCCSKSARGEN),Dengue,394
+2016-07-03,Region XII (SOCCSKSARGEN),Dengue,484
+2016-07-10,Region XII (SOCCSKSARGEN),Dengue,593
+2016-07-17,Region XII (SOCCSKSARGEN),Dengue,626
+2016-07-24,Region XII (SOCCSKSARGEN),Dengue,756
+2016-07-31,Region XII (SOCCSKSARGEN),Dengue,792
+2016-08-07,Region XII (SOCCSKSARGEN),Dengue,666
+2016-08-14,Region XII (SOCCSKSARGEN),Dengue,640
+2016-08-21,Region XII (SOCCSKSARGEN),Dengue,650
+2016-08-28,Region XII (SOCCSKSARGEN),Dengue,626
+2016-09-04,Region XII (SOCCSKSARGEN),Dengue,1
+2016-09-11,Region XII (SOCCSKSARGEN),Dengue,581
+2016-09-18,Region XII (SOCCSKSARGEN),Dengue,2
+2016-09-25,Region XII (SOCCSKSARGEN),Dengue,499
+2016-10-02,Region XII (SOCCSKSARGEN),Dengue,1
+2016-10-09,Region XII (SOCCSKSARGEN),Dengue,476
+2016-10-16,Region XII (SOCCSKSARGEN),Dengue,1
+2016-10-23,Region XII (SOCCSKSARGEN),Dengue,446
+2016-10-30,Region XII (SOCCSKSARGEN),Dengue,4
+2016-11-06,Region XII (SOCCSKSARGEN),Dengue,366
+2016-11-13,Region XII (SOCCSKSARGEN),Dengue,0
+2016-11-20,Region XII (SOCCSKSARGEN),Dengue,424
+2016-11-27,Region XII (SOCCSKSARGEN),Dengue,426
+2016-12-04,Region XII (SOCCSKSARGEN),Dengue,477
+2016-12-11,Region XII (SOCCSKSARGEN),Dengue,401
+2016-12-18,Region XII (SOCCSKSARGEN),Dengue,387
+2016-12-25,Region XII (SOCCSKSARGEN),Dengue,304
+2017-01-01,Region XII (SOCCSKSARGEN),Dengue,196
+2017-01-08,Region XII (SOCCSKSARGEN),Dengue,369
+2017-01-15,Region XII (SOCCSKSARGEN),Dengue,356
+2017-01-22,Region XII (SOCCSKSARGEN),Dengue,333
+2017-01-29,Region XII (SOCCSKSARGEN),Dengue,258
+2017-02-05,Region XII (SOCCSKSARGEN),Dengue,284
+2017-02-12,Region XII (SOCCSKSARGEN),Dengue,200
+2017-02-19,Region XII (SOCCSKSARGEN),Dengue,220
+2017-02-26,Region XII (SOCCSKSARGEN),Dengue,308
+2017-03-05,Region XII (SOCCSKSARGEN),Dengue,264
+2017-03-12,Region XII (SOCCSKSARGEN),Dengue,235
+2017-03-19,Region XII (SOCCSKSARGEN),Dengue,248
+2017-03-26,Region XII (SOCCSKSARGEN),Dengue,221
+2017-04-02,Region XII (SOCCSKSARGEN),Dengue,173
+2017-04-09,Region XII (SOCCSKSARGEN),Dengue,256
+2017-04-16,Region XII (SOCCSKSARGEN),Dengue,184
+2017-04-23,Region XII (SOCCSKSARGEN),Dengue,212
+2017-04-30,Region XII (SOCCSKSARGEN),Dengue,245
+2017-05-07,Region XII (SOCCSKSARGEN),Dengue,193
+2017-05-14,Region XII (SOCCSKSARGEN),Dengue,204
+2017-05-21,Region XII (SOCCSKSARGEN),Dengue,189
+2017-05-28,Region XII (SOCCSKSARGEN),Dengue,172
+2017-06-04,Region XII (SOCCSKSARGEN),Dengue,185
+2017-06-11,Region XII (SOCCSKSARGEN),Dengue,236
+2017-06-18,Region XII (SOCCSKSARGEN),Dengue,181
+2017-06-25,Region XII (SOCCSKSARGEN),Dengue,204
+2017-07-02,Region XII (SOCCSKSARGEN),Dengue,158
+2017-07-09,Region XII (SOCCSKSARGEN),Dengue,154
+2017-07-16,Region XII (SOCCSKSARGEN),Dengue,122
+2017-07-23,Region XII (SOCCSKSARGEN),Dengue,159
+2017-07-30,Region XII (SOCCSKSARGEN),Dengue,178
+2017-08-06,Region XII (SOCCSKSARGEN),Dengue,167
+2017-08-13,Region XII (SOCCSKSARGEN),Dengue,183
+2017-08-20,Region XII (SOCCSKSARGEN),Dengue,184
+2017-08-27,Region XII (SOCCSKSARGEN),Dengue,199
+2017-09-03,Region XII (SOCCSKSARGEN),Dengue,206
+2017-09-10,Region XII (SOCCSKSARGEN),Dengue,207
+2017-09-17,Region XII (SOCCSKSARGEN),Dengue,159
+2017-09-24,Region XII (SOCCSKSARGEN),Dengue,122
+2017-10-01,Region XII (SOCCSKSARGEN),Dengue,143
+2017-10-08,Region XII (SOCCSKSARGEN),Dengue,97
+2017-10-15,Region XII (SOCCSKSARGEN),Dengue,121
+2017-10-22,Region XII (SOCCSKSARGEN),Dengue,84
+2017-10-29,Region XII (SOCCSKSARGEN),Dengue,104
+2017-11-05,Region XII (SOCCSKSARGEN),Dengue,76
+2017-11-12,Region XII (SOCCSKSARGEN),Dengue,88
+2017-11-19,Region XII (SOCCSKSARGEN),Dengue,93
+2017-11-26,Region XII (SOCCSKSARGEN),Dengue,92
+2017-12-03,Region XII (SOCCSKSARGEN),Dengue,77
+2017-12-10,Region XII (SOCCSKSARGEN),Dengue,88
+2017-12-17,Region XII (SOCCSKSARGEN),Dengue,73
+2017-12-24,Region XII (SOCCSKSARGEN),Dengue,68
+2017-12-31,Region XII (SOCCSKSARGEN),Dengue,85
+2018-01-07,Region XII (SOCCSKSARGEN),Dengue,102
+2018-01-14,Region XII (SOCCSKSARGEN),Dengue,107
+2018-01-21,Region XII (SOCCSKSARGEN),Dengue,99
+2018-01-28,Region XII (SOCCSKSARGEN),Dengue,125
+2018-02-04,Region XII (SOCCSKSARGEN),Dengue,112
+2018-02-11,Region XII (SOCCSKSARGEN),Dengue,79
+2018-02-18,Region XII (SOCCSKSARGEN),Dengue,89
+2018-02-25,Region XII (SOCCSKSARGEN),Dengue,98
+2018-03-04,Region XII (SOCCSKSARGEN),Dengue,115
+2018-03-11,Region XII (SOCCSKSARGEN),Dengue,104
+2018-03-18,Region XII (SOCCSKSARGEN),Dengue,138
+2018-03-25,Region XII (SOCCSKSARGEN),Dengue,120
+2018-04-01,Region XII (SOCCSKSARGEN),Dengue,104
+2018-04-08,Region XII (SOCCSKSARGEN),Dengue,76
+2018-04-15,Region XII (SOCCSKSARGEN),Dengue,89
+2018-04-22,Region XII (SOCCSKSARGEN),Dengue,109
+2018-04-29,Region XII (SOCCSKSARGEN),Dengue,98
+2018-05-06,Region XII (SOCCSKSARGEN),Dengue,126
+2018-05-13,Region XII (SOCCSKSARGEN),Dengue,121
+2018-05-20,Region XII (SOCCSKSARGEN),Dengue,110
+2018-05-27,Region XII (SOCCSKSARGEN),Dengue,133
+2018-06-03,Region XII (SOCCSKSARGEN),Dengue,182
+2018-06-10,Region XII (SOCCSKSARGEN),Dengue,200
+2018-06-17,Region XII (SOCCSKSARGEN),Dengue,235
+2018-06-24,Region XII (SOCCSKSARGEN),Dengue,233
+2018-07-01,Region XII (SOCCSKSARGEN),Dengue,240
+2018-07-08,Region XII (SOCCSKSARGEN),Dengue,209
+2018-07-15,Region XII (SOCCSKSARGEN),Dengue,245
+2018-07-22,Region XII (SOCCSKSARGEN),Dengue,276
+2018-07-29,Region XII (SOCCSKSARGEN),Dengue,225
+2018-08-05,Region XII (SOCCSKSARGEN),Dengue,229
+2018-08-12,Region XII (SOCCSKSARGEN),Dengue,245
+2018-08-19,Region XII (SOCCSKSARGEN),Dengue,240
+2018-08-26,Region XII (SOCCSKSARGEN),Dengue,213
+2018-09-02,Region XII (SOCCSKSARGEN),Dengue,198
+2018-09-09,Region XII (SOCCSKSARGEN),Dengue,194
+2018-09-16,Region XII (SOCCSKSARGEN),Dengue,203
+2018-09-23,Region XII (SOCCSKSARGEN),Dengue,206
+2018-09-30,Region XII (SOCCSKSARGEN),Dengue,215
+2018-10-07,Region XII (SOCCSKSARGEN),Dengue,254
+2018-10-14,Region XII (SOCCSKSARGEN),Dengue,247
+2018-10-21,Region XII (SOCCSKSARGEN),Dengue,236
+2018-10-28,Region XII (SOCCSKSARGEN),Dengue,190
+2018-11-04,Region XII (SOCCSKSARGEN),Dengue,205
+2018-11-11,Region XII (SOCCSKSARGEN),Dengue,190
+2018-11-18,Region XII (SOCCSKSARGEN),Dengue,239
+2018-11-25,Region XII (SOCCSKSARGEN),Dengue,221
+2018-12-02,Region XII (SOCCSKSARGEN),Dengue,235
+2018-12-09,Region XII (SOCCSKSARGEN),Dengue,220
+2018-12-16,Region XII (SOCCSKSARGEN),Dengue,226
+2018-12-23,Region XII (SOCCSKSARGEN),Dengue,192
+2018-12-30,Region XII (SOCCSKSARGEN),Dengue,276
+2019-01-06,Region XII (SOCCSKSARGEN),Dengue,0
+2019-01-13,Region XII (SOCCSKSARGEN),Dengue,243
+2019-01-20,Region XII (SOCCSKSARGEN),Dengue,362
+2019-01-27,Region XII (SOCCSKSARGEN),Dengue,373
+2019-02-03,Region XII (SOCCSKSARGEN),Dengue,365
+2019-02-10,Region XII (SOCCSKSARGEN),Dengue,392
+2019-02-17,Region XII (SOCCSKSARGEN),Dengue,438
+2019-02-24,Region XII (SOCCSKSARGEN),Dengue,393
+2019-03-03,Region XII (SOCCSKSARGEN),Dengue,390
+2019-03-10,Region XII (SOCCSKSARGEN),Dengue,341
+2019-03-17,Region XII (SOCCSKSARGEN),Dengue,328
+2019-03-24,Region XII (SOCCSKSARGEN),Dengue,331
+2019-03-31,Region XII (SOCCSKSARGEN),Dengue,268
+2019-04-07,Region XII (SOCCSKSARGEN),Dengue,252
+2019-04-14,Region XII (SOCCSKSARGEN),Dengue,214
+2019-04-21,Region XII (SOCCSKSARGEN),Dengue,226
+2019-04-28,Region XII (SOCCSKSARGEN),Dengue,228
+2019-05-05,Region XII (SOCCSKSARGEN),Dengue,274
+2019-05-12,Region XII (SOCCSKSARGEN),Dengue,276
+2019-05-19,Region XII (SOCCSKSARGEN),Dengue,349
+2019-05-26,Region XII (SOCCSKSARGEN),Dengue,387
+2019-06-02,Region XII (SOCCSKSARGEN),Dengue,369
+2019-06-09,Region XII (SOCCSKSARGEN),Dengue,490
+2019-06-16,Region XII (SOCCSKSARGEN),Dengue,529
+2019-06-23,Region XII (SOCCSKSARGEN),Dengue,607
+2019-06-30,Region XII (SOCCSKSARGEN),Dengue,694
+2019-07-07,Region XII (SOCCSKSARGEN),Dengue,690
+2019-07-14,Region XII (SOCCSKSARGEN),Dengue,826
+2019-07-21,Region XII (SOCCSKSARGEN),Dengue,783
+2019-07-28,Region XII (SOCCSKSARGEN),Dengue,815
+2019-08-04,Region XII (SOCCSKSARGEN),Dengue,846
+2019-08-11,Region XII (SOCCSKSARGEN),Dengue,1015
+2019-08-18,Region XII (SOCCSKSARGEN),Dengue,915
+2019-08-25,Region XII (SOCCSKSARGEN),Dengue,803
+2019-09-01,Region XII (SOCCSKSARGEN),Dengue,680
+2019-09-08,Region XII (SOCCSKSARGEN),Dengue,570
+2019-09-15,Region XII (SOCCSKSARGEN),Dengue,531
+2019-09-22,Region XII (SOCCSKSARGEN),Dengue,373
+2019-09-29,Region XII (SOCCSKSARGEN),Dengue,280
+2019-10-06,Region XII (SOCCSKSARGEN),Dengue,316
+2019-10-13,Region XII (SOCCSKSARGEN),Dengue,342
+2019-10-20,Region XII (SOCCSKSARGEN),Dengue,276
+2019-10-27,Region XII (SOCCSKSARGEN),Dengue,225
+2019-11-03,Region XII (SOCCSKSARGEN),Dengue,198
+2019-11-10,Region XII (SOCCSKSARGEN),Dengue,178
+2019-11-17,Region XII (SOCCSKSARGEN),Dengue,202
+2019-11-24,Region XII (SOCCSKSARGEN),Dengue,175
+2019-12-01,Region XII (SOCCSKSARGEN),Dengue,134
+2019-12-08,Region XII (SOCCSKSARGEN),Dengue,133
+2019-12-15,Region XII (SOCCSKSARGEN),Dengue,117
+2019-12-22,Region XII (SOCCSKSARGEN),Dengue,91
+2019-12-29,Region XII (SOCCSKSARGEN),Dengue,7
+2020-01-05,Region XII (SOCCSKSARGEN),Dengue,0
+2020-01-12,Region XII (SOCCSKSARGEN),Dengue,83
+2020-01-19,Region XII (SOCCSKSARGEN),Dengue,155
+2020-01-26,Region XII (SOCCSKSARGEN),Dengue,185
+2020-02-02,Region XII (SOCCSKSARGEN),Dengue,168
+2020-02-09,Region XII (SOCCSKSARGEN),Dengue,158
+2020-02-16,Region XII (SOCCSKSARGEN),Dengue,185
+2020-02-23,Region XII (SOCCSKSARGEN),Dengue,137
+2020-03-01,Region XII (SOCCSKSARGEN),Dengue,153
+2020-03-08,Region XII (SOCCSKSARGEN),Dengue,159
+2020-03-15,Region XII (SOCCSKSARGEN),Dengue,135
+2020-03-22,Region XII (SOCCSKSARGEN),Dengue,151
+2020-03-29,Region XII (SOCCSKSARGEN),Dengue,105
+2020-04-05,Region XII (SOCCSKSARGEN),Dengue,76
+2020-04-12,Region XII (SOCCSKSARGEN),Dengue,68
+2020-04-19,Region XII (SOCCSKSARGEN),Dengue,40
+2020-04-26,Region XII (SOCCSKSARGEN),Dengue,44
+2020-05-03,Region XII (SOCCSKSARGEN),Dengue,66
+2020-05-10,Region XII (SOCCSKSARGEN),Dengue,41
+2020-05-17,Region XII (SOCCSKSARGEN),Dengue,62
+2020-05-24,Region XII (SOCCSKSARGEN),Dengue,84
+2020-05-31,Region XII (SOCCSKSARGEN),Dengue,63
+2020-06-07,Region XII (SOCCSKSARGEN),Dengue,78
+2020-06-14,Region XII (SOCCSKSARGEN),Dengue,70
+2020-06-21,Region XII (SOCCSKSARGEN),Dengue,83
+2020-06-28,Region XII (SOCCSKSARGEN),Dengue,116
+2020-07-05,Region XII (SOCCSKSARGEN),Dengue,115
+2020-07-12,Region XII (SOCCSKSARGEN),Dengue,230
+2020-07-19,Region XII (SOCCSKSARGEN),Dengue,137
+2020-07-26,Region XII (SOCCSKSARGEN),Dengue,139
+2020-08-02,Region XII (SOCCSKSARGEN),Dengue,154
+2020-08-09,Region XII (SOCCSKSARGEN),Dengue,100
+2020-08-16,Region XII (SOCCSKSARGEN),Dengue,107
+2020-08-23,Region XII (SOCCSKSARGEN),Dengue,90
+2020-08-30,Region XII (SOCCSKSARGEN),Dengue,99
+2020-09-06,Region XII (SOCCSKSARGEN),Dengue,0
+2020-09-13,Region XII (SOCCSKSARGEN),Dengue,77
+2020-09-20,Region XII (SOCCSKSARGEN),Dengue,1
+2020-09-27,Region XII (SOCCSKSARGEN),Dengue,58
+2020-10-04,Region XII (SOCCSKSARGEN),Dengue,0
+2020-10-11,Region XII (SOCCSKSARGEN),Dengue,51
+2020-10-18,Region XII (SOCCSKSARGEN),Dengue,0
+2020-10-25,Region XII (SOCCSKSARGEN),Dengue,25
+2020-11-01,Region XII (SOCCSKSARGEN),Dengue,0
+2020-11-08,Region XII (SOCCSKSARGEN),Dengue,30
+2020-11-15,Region XII (SOCCSKSARGEN),Dengue,0
+2020-11-22,Region XII (SOCCSKSARGEN),Dengue,39
+2020-11-29,Region XII (SOCCSKSARGEN),Dengue,48
+2020-12-06,Region XII (SOCCSKSARGEN),Dengue,52
+2020-12-13,Region XII (SOCCSKSARGEN),Dengue,53
+2020-12-20,Region XII (SOCCSKSARGEN),Dengue,49
+2020-12-27,Region XII (SOCCSKSARGEN),Dengue,44
+2021-01-03,Region XII (SOCCSKSARGEN),Dengue,36
+2021-01-10,Region XII (SOCCSKSARGEN),Dengue,22

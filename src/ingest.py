@@ -1,6 +1,5 @@
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 RAW_DIR = Path("data/raw")
@@ -84,32 +83,6 @@ def to_weekly(df, fill_missing="zero"):
     elif fill_missing != "drop":
         raise ValueError(f"fill_missing must be 'zero' or 'drop', got '{fill_missing}'")
     return weekly
-
-
-def make_demo_data(start="2019-01-06", end="2023-12-31", seed=42):
-    rng = np.random.default_rng(seed)
-    weeks = pd.date_range(start, end, freq="W-SUN")
-    week_of_year = weeks.isocalendar().week.to_numpy(dtype=float)
-    year_factor = np.where(weeks.year == 2022, 1.6, 1.0)
-    t = np.arange(len(weeks), dtype=float)
-    trend_bump = 4.0 * t / 52.0
-    seasonal = 55.0 * np.cos(2.0 * np.pi * (week_of_year - 38) / 52.0)
-    profiles = {"NCR": (120, 45), "Region III": (90, 35), "Region IV-A": (110, 40)}
-    frames = []
-    for region, (base, noise_sd) in profiles.items():
-        level = base + trend_bump + seasonal
-        cases = np.round(level * year_factor + rng.normal(0, noise_sd, len(weeks))).clip(min=0)
-        frames.append(
-            pd.DataFrame(
-                {
-                    "date": weeks,
-                    "region": region,
-                    "disease": "Dengue",
-                    "cases": cases.astype(int),
-                }
-            )
-        )
-    return pd.concat(frames, ignore_index=True)
 
 
 def save_processed(df, name):
