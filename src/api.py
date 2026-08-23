@@ -32,8 +32,6 @@ REGION_META = [
     {"code": "150000000", "name": "Bangsamoro (BARMM)", "short": "BARMM", "island": "Mindanao", "geoName": "Autonomous Region of Muslim Mindanao (ARMM)", "lat": 7.2, "lng": 124.2},
 ]
 
-VALID_REGIONS = {r["short"] for r in REGION_META} | {"National"}
-
 _NATIONAL = db.read_table("weekly_cases_national")
 _REGIONAL = db.read_table("weekly_cases_regional")
 _FORECASTS = db.read_table("forecasts")
@@ -48,6 +46,40 @@ for _df, _col in (
     (_CLASSIFICATION, "date"),
 ):
     _df[_col] = pd.to_datetime(_df[_col])
+
+
+def _build_region_aliases():
+    """Maps case-insensitive identifiers (API short names and raw pipeline
+    labels like 'Region IV-A (CALABARZON)') onto the labels stored in the DB."""
+    aliases = {"national": "National"}
+    labels = (
+        set(_REGIONAL["region"].unique())
+        | set(_NATIONAL["region"].unique())
+        | set(_FORECASTS["region"].unique())
+        | set(_METRICS["region"].unique())
+    )
+    for label in labels:
+        aliases[label.strip().lower()] = label
+        aliases[label.split(" (")[0].strip().lower()] = label
+    # Fallback for shorts whose DB label shares no prefix (e.g. 'Region XIII' -> 'Caraga').
+    for meta in REGION_META:
+        short_key = meta["short"].strip().lower()
+        if short_key in aliases:
+            continue
+        for candidate in (meta["name"], meta["geoName"], meta["name"].replace(" (BARMM)", "")):
+            hit = aliases.get(candidate.strip().lower())
+            if hit is not None and hit != "National":
+                aliases[short_key] = hit
+                break
+    return aliases
+
+
+_DB_REGION_ALIASES = _build_region_aliases()
+
+
+def _resolve_region(region):
+    """Returns the DB-stored label for a region identifier, or None."""
+    return _DB_REGION_ALIASES.get(region.strip().lower())
 
 
 def _season(dt):
@@ -127,6 +159,7 @@ _origins = os.environ.get(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
+    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_methods=["GET"],
     allow_headers=["*"],
 )
@@ -160,16 +193,17 @@ def series(
     include_forecast: bool = Query(default=True),
 ):
     _check_disease(disease)
-    if region != "National" and region not in VALID_REGIONS:
+    db_region = _resolve_region(region)
+    if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    hist = _history(region)
+    hist = _history(db_region)
     points = [
         _week_point(i, dt, cases, False)
         for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
     ]
     if include_forecast:
         fcst = _FORECASTS[
-            (_FORECASTS["region"] == region) & (_FORECASTS["disease"] == disease)
+            (_FORECASTS["region"] == db_region) & (_FORECASTS["disease"] == disease)
         ].sort_values("target_date")
         for k, row in enumerate(fcst.itertuples(index=False)):
             points.append(
@@ -190,7 +224,10 @@ def forecast(disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
     df = _FORECASTS[_FORECASTS["disease"] == disease]
     if region:
-        df = df[df["region"] == region]
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     df = df.sort_values(["region", "target_date"])
@@ -203,7 +240,10 @@ def risk_classification(disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
     df = _CLASSIFICATION[_CLASSIFICATION["disease"] == disease]
     if region:
-        df = df[df["region"] == region]
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     df = df.sort_values(["region", "date"])
@@ -216,7 +256,10 @@ def thresholds(disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
     df = _THRESHOLDS[_THRESHOLDS["disease"] == disease]
     if region:
-        df = df[df["region"] == region]
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     return {"disease": disease, "region": region, "items": df.to_dict(orient="records")}
@@ -229,9 +272,10 @@ def metrics(
     window: str = Query(default=PRIMARY_WINDOW),
 ):
     _check_disease(disease)
-    if region != "National" and region not in VALID_REGIONS:
+    db_region = _resolve_region(region)
+    if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    rows = _METRICS[(_METRICS["region"] == region) & (_METRICS["disease"] == disease)]
+    rows = _METRICS[(_METRICS["region"] == db_region) & (_METRICS["disease"] == disease)]
     if rows.empty:
         raise HTTPException(status_code=404, detail=f"No validation metrics for '{region}'")
     items = rows.to_dict(orient="records")

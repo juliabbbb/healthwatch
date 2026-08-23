@@ -3,36 +3,87 @@
 Regional time-series analysis system for seasonal illness outbreak prediction and hotspot classification.
 Capstone project, PLM BSIT — Dela Cruz, Santiago, Villanueva.
 
-## Setup
+Forecasting dengue outbreaks per Philippine region (Prophet), classifying weekly risk tiers
+(<P50 Low · P50–75 Moderate · >P75 High), served by a FastAPI backend over SQLite and visualized
+in a React dashboard with an interactive choropleth map.
+
+## Prerequisites
+
+| Tool | Version |
+|---|---|
+| Git | any recent |
+| Python | 3.10+ (3.12 recommended) |
+| Node.js | 20.19+ or 22.12+ (required by Vite 8) |
+
+## One-time setup
 
 ```powershell
+git clone https://github.com/juliabbbb/healthwatch.git
+cd healthwatch
+
+# Backend
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+.venv\Scripts\pip install -r requirements.txt
+
+# Frontend
+cd frontend
+npm install
+cd ..
 ```
 
-## Week 1 pipeline
+No pipeline run is needed — all data ships in the repo (`data/raw` source CSVs,
+`data/processed` cleaned outputs, and `healthwatch.db`).
+
+## Running the app
+
+One-shot launcher (opens two windows: API + dashboard):
 
 ```powershell
-.venv\Scripts\python notebooks\week1_pipeline.py
+powershell -ExecutionPolicy Bypass -File run-dev.ps1
 ```
 
-Runs on synthetic dengue-like demo data until real DOH/Mendeley CSVs are placed in `data/raw/`.
+…or manually in two terminals from the repo root:
+
+```powershell
+# terminal 1 — backend on :8000
+.venv\Scripts\python -m uvicorn src.api:app --port 8000
+
+# terminal 2 — frontend
+cd frontend
+npm run dev
+```
+
+Open whichever URL Vite prints (`localhost:5173`, `8080`, `8081`… — any localhost port works).
+Interactive API docs: <http://localhost:8000/docs>
+
+## Troubleshooting
+
+- **"Address already in use" on port 8000** — an old uvicorn window is still open serving stale
+  code. Close it and start again.
+- **PowerShell blocked `run-dev.ps1`** — use the `-ExecutionPolicy Bypass` flag shown above.
+- **Frontend shows "Surveillance API unreachable"** — the backend isn't running; start terminal 1
+  first, then reload.
+- **`npm install` fails on Node version** — check `node -v`; Vite 8 needs 20.19+/22.12+.
+
+## Rebuilding data from scratch
+
+Only needed if the raw CSVs in `data/raw/` change. Re-run the pipeline modules in `src/`
+(ingest → features → forecast → classify → db) to regenerate everything in `data/processed/`.
 
 ## Structure
 
 | Path | Purpose |
 |---|---|
-| `data/raw/` | Untouched DOH / Mendeley downloads |
-| `data/processed/` | Cleaned weekly series (modeling input) |
-| `src/ingest.py` | Column alias matching, cleaning, weekly resample, demo data |
-| `src/features.py` | Wet/dry season flags, lag + rolling features, non-negativity clipping |
-| `notebooks/week1_pipeline.py` | Ingest -> STL decomposition -> seasonal profile -> feature preview |
+| `data/raw/` | Untouched DOH Epidemiology Bureau dengue surveillance CSVs (2016–2021) |
+| `data/processed/` | Cleaned weekly series, forecasts, risk tiers, validation metrics + SQLite DB |
+| `data/geo/` | PSGC region GeoJSON for the choropleth map |
+| `src/` | Pipeline (ingest, features, forecast, classify, db) + FastAPI app (`api.py`) |
+| `frontend/` | React + Vite + TanStack Router dashboard (map, charts, risk classification views) |
 
 ## Locked scope
 
+- Disease: dengue (architecture supports adding more DOH diseases later)
 - Prediction: Prophet only
 - Risk classes: percentile thresholds (<50 Low, 50–75 Moderate, >75 High)
-- Rules: deterministic post-processing only
-- Dashboard: Streamlit · Map: Folium + PSGC GeoJSON (table fallback)
-- API: FastAPI `/forecast`, `/risk-classification`
+- Rules: deterministic post-processing only (non-negativity clipping, wet/dry season regressor)
+- Training window: pre-COVID weeks (≤2019); 2020–2021 kept only as a stress-test window
