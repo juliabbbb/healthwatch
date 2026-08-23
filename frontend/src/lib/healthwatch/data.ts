@@ -326,7 +326,7 @@ export function seasonForWeek(week: number): Season {
 /* Data loading — live FastAPI server over SQLite                      */
 /* ------------------------------------------------------------------ */
 
-const API_BASE = import.meta.env["VITE_API_URL"] ?? "http://localhost:8000";
+const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const DISEASE = "dengue";
 
 const seriesCache = new Map<string, WeekPoint[]>();
