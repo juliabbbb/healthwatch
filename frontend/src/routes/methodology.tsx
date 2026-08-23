@@ -186,6 +186,13 @@ function Methodology() {
             stress-test window.
           </li>
           <li>
+            <strong>Negative-skill regions.</strong> In 6 of 36 region-window validation runs —
+            CAR, Caraga, NCR and Regions I, III and IV-B in the pre-COVID window — a seasonal-naive
+            baseline outperformed the model by 11–22% MAPE. Outbreak timing in these areas was too
+            irregular for the available history to learn reliably; the metrics panel surfaces each
+            region's skill so low-confidence forecasts are visible rather than hidden.
+          </li>
+          <li>
             <strong>No intervention logs.</strong> LGU/DOH response activities are not published as
             structured open weekly data, so intervention panels are intentionally empty rather than
             showing estimated events.
