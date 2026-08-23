@@ -11,7 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { dataReady } from "@/lib/healthwatch/data";
+import { dataReady, fetchPipelineStatus } from "@/lib/healthwatch/data";
 
 function NotFoundComponent() {
   return (
@@ -162,6 +162,42 @@ function DataGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+function StatusChip() {
+  const [status, setStatus] = useState<{ through: string; built: string } | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    fetchPipelineStatus()
+      .then((s) => {
+        if (!alive) return;
+        const day = new Date(s.data_through.date + "T00:00:00");
+        setStatus({
+          through: day.toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+          built: new Date(s.generated_at).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          }),
+        });
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  if (!status) return null;
+  return (
+    <div className="pointer-events-none fixed right-3 bottom-3 z-40 glass-panel rounded-full px-3 py-1.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
+      Case data through {status.through} · Forecasts built {status.built}
+    </div>
+  );
+}
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
@@ -169,7 +205,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <DataGate>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <Outlet />
+        <>
+          <Outlet />
+          <StatusChip />
+        </>
       </DataGate>
     </QueryClientProvider>
   );

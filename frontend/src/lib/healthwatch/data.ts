@@ -779,3 +779,17 @@ export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2021-W0
 export function weekLabel(index: number) {
   return weekMeta(index).label;
 }
+
+/* ------------------------------------------------------------------ */
+/* Pipeline freshness                                                  */
+/* ------------------------------------------------------------------ */
+
+export interface PipelineStatus {
+  generated_at: string;
+  data_through: { date: string; epi_week: string };
+  supported_diseases: string[];
+}
+
+export async function fetchPipelineStatus(): Promise<PipelineStatus> {
+  return fetchJson(`${API_BASE}/status`);
+}

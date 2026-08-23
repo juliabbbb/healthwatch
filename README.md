@@ -76,7 +76,7 @@ Only needed if the raw CSVs in `data/raw/` change. Re-run the pipeline modules i
 |---|---|
 | `data/raw/` | Untouched DOH Epidemiology Bureau dengue surveillance CSVs (2016–2021) |
 | `data/processed/` | Cleaned weekly series, forecasts, risk tiers, validation metrics + SQLite DB |
-| `data/geo/` | PSGC region GeoJSON for the choropleth map |
+| `frontend/public/geo/` | PSGC region GeoJSON for the choropleth map |
 | `src/` | Pipeline (ingest, features, forecast, classify, db) + FastAPI app (`api.py`) |
 | `frontend/` | React + Vite + TanStack Router dashboard (map, charts, risk classification views) |
 
