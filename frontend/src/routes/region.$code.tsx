@@ -11,8 +11,6 @@ import {
   ILLNESSES,
   REGION_BY_CODE,
   assessRegion,
-  climate,
-  interventions,
   seriesFor,
   weekMeta,
 } from "@/lib/healthwatch/data";
@@ -63,8 +61,6 @@ function RegionDetail() {
   const forecastRows = series
     .slice(HIST_WEEKS, HIST_WEEKS + horizon)
     .filter((p) => seasonFilter === "all" || p.season === seasonFilter);
-  const events = interventions(code).slice(-8).reverse();
-  const clim = climate(code);
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-6 py-8">
@@ -208,90 +204,11 @@ function RegionDetail() {
         </div>
       </Panel>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Intervention recommendations">
-          <InterventionPanel assessment={a} />
-        </Panel>
-
-        <Panel
-          title="Intervention history"
-          subtitle="Recorded LGU and DOH response activities."
-        >
-          {events.length === 0 ? (
-            <p className="text-xs text-muted-foreground">
-              No public intervention logs are available for this region. DOH and LGU response
-              activities are not published as structured weekly open data, so this panel is left
-              empty rather than showing estimated events.
-            </p>
-          ) : (
-            <ul className="space-y-2">
-              {events.map((e) => (
-                <li
-                  key={`${e.weekIndex}-${e.type}`}
-                  className="flex gap-3 border-b border-border pb-2 text-xs last:border-0"
-                >
-                  <span className="w-20 shrink-0 text-muted-foreground">{e.date}</span>
-                  <span>
-                    <span className="font-medium">{e.type}</span>
-                    <span className="block text-muted-foreground">{e.detail}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </Panel>
-      </div>
-
-      <Panel
-        title="Environmental indicators"
-        subtitle="PAGASA climatological normals used as exogenous seasonal drivers."
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-xs">
-            <thead className="label-caps">
-              <tr>
-                <th className="py-1.5">Month</th>
-                {clim.map((c) => (
-                  <th key={c.month} className="text-right">
-                    {c.month}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              <Row label="Rainfall (mm)" values={clim.map((c) => c.rainfall)} />
-              <Row label="Mean temp (°C)" values={clim.map((c) => c.temp)} />
-              <Row label="Humidity (%)" values={clim.map((c) => c.humidity)} />
-              <tr className="border-t border-border">
-                <td className="py-1.5 text-muted-foreground">Season</td>
-                {clim.map((c) => (
-                  <td
-                    key={c.month}
-                    className="text-right capitalize"
-                    style={{ color: c.season === "wet" ? "var(--wet)" : "var(--dry)" }}
-                  >
-                    {c.season}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <Panel title="Intervention recommendations">
+        <InterventionPanel assessment={a} />
       </Panel>
-    </main>
-  );
-}
 
-function Row({ label, values }: { label: string; values: number[] }) {
-  return (
-    <tr className="border-t border-border">
-      <td className="py-1.5 text-muted-foreground">{label}</td>
-      {values.map((v, i) => (
-        <td key={i} className="text-right tabular-nums">
-          {v}
-        </td>
-      ))}
-    </tr>
+    </main>
   );
 }
 

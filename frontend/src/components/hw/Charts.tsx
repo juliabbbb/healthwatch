@@ -18,11 +18,9 @@ import {
   REGION_BY_CODE,
   acf,
   decompose,
-  interventions,
   metricValue,
   seriesFor,
   weekMeta,
-  type Intervention,
   type MetricMode,
 } from "@/lib/healthwatch/data";
 
@@ -93,13 +91,12 @@ function ForecastTooltip({
   );
 }
 
-/** Forecast chart with confidence band, season shading and intervention markers. */
+/** Forecast chart with confidence band and season shading. */
 export function ForecastChart({
   regionCode,
   illness,
   horizon,
   weeksBack = 78,
-  showInterventions = true,
   height = 300,
   mode = "raw",
 }: {
@@ -107,7 +104,6 @@ export function ForecastChart({
   illness: string;
   horizon: number;
   weeksBack?: number;
-  showInterventions?: boolean;
   height?: number;
   mode?: MetricMode;
 }) {
@@ -125,10 +121,6 @@ export function ForecastChart({
     season: p.season,
     index: p.index,
   }));
-
-  const events: Intervention[] = showInterventions
-    ? interventions(regionCode).filter((e) => e.weekIndex >= start)
-    : [];
 
   const wetBands: { x1: string; x2: string }[] = [];
   let open: string | null = null;
@@ -208,16 +200,6 @@ export function ForecastChart({
             position: "insideTopRight",
           }}
         />
-        {events.map((e) => (
-          <ReferenceLine
-            key={e.weekIndex}
-            x={e.weekLabel}
-            stroke="var(--chart-5)"
-            strokeOpacity={0.7}
-            strokeWidth={1}
-            label={{ value: "◆", fill: "var(--chart-5)", fontSize: 9, position: "top" }}
-          />
-        ))}
       </ComposedChart>
     </ResponsiveContainer>
   );

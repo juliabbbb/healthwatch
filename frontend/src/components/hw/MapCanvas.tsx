@@ -3,14 +3,12 @@ import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, Layer, PathOptions }
 import {
   REGION_BY_GEONAME,
   assessRegion,
-  climate,
-  weekMeta,
   RISK_META,
   type MetricMode,
   type Region,
 } from "@/lib/healthwatch/data";
 
-export type DataLayer = "hotspot" | "density" | "precipitation" | "temperature" | "humidity";
+export type DataLayer = "hotspot" | "density";
 
 interface Props {
   illness: string;
@@ -40,17 +38,9 @@ function fillFor(
   if (layer === "hotspot") {
     return RISK_META[assessRegion(region.code, illness, weekIndex, mode).risk].color;
   }
-  if (layer === "density") {
-    const a = assessRegion(region.code, illness, weekIndex, mode);
-    const per100k = (a.point.cases / region.population) * 100000;
-    return ramp(Math.min(1, per100k / 12));
-  }
-  const meta = weekMeta(weekIndex);
-  const month = Math.min(11, Math.floor(((meta.week - 1) / 52) * 12));
-  const c = climate(region.code)[month]!;
-  if (layer === "precipitation") return ramp(Math.min(1, c.rainfall / 480));
-  if (layer === "temperature") return ramp(Math.min(1, Math.max(0, (c.temp - 24) / 8)));
-  return ramp(Math.min(1, Math.max(0, (c.humidity - 65) / 25)));
+  const a = assessRegion(region.code, illness, weekIndex, mode);
+  const per100k = (a.point.cases / region.population) * 100000;
+  return ramp(Math.min(1, per100k / 12));
 }
 
 export default function MapCanvas({

@@ -5,14 +5,27 @@ import { AcfChart, DecompositionChart } from "@/components/hw/Charts";
 import { SeasonTag } from "@/components/hw/RiskBadge";
 import {
   ILLNESSES,
-  MONTHS,
   REGIONS,
   REGION_BY_CODE,
   acf,
-  climate,
   decompose,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 export const Route = createFileRoute("/seasonality")({
   head: () => ({
@@ -80,8 +93,8 @@ function SeasonalityPage() {
     return { strength, lag52, lag26, peak, peakWeek, peakMonth, trendChange };
   }, [code, illness]);
 
-  const clim = climate(code);
-  const wetMonths = clim.filter((c) => c.season === "wet").length;
+  // PAGASA defines the wet season as June–November (6 months).
+  const wetMonths = 6;
 
   return (
     <main className="mx-auto min-h-screen w-full max-w-7xl px-6 py-8">

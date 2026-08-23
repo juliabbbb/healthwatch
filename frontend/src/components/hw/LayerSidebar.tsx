@@ -1,14 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import {
-  Activity,
-  CloudRain,
-  Droplets,
-  Flame,
-  Layers,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Thermometer,
-} from "lucide-react";
+import { Activity, Flame, Layers, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import {
   ILLNESSES,
@@ -23,14 +14,6 @@ import { cn } from "@/lib/utils";
 const LAYERS: { id: DataLayer; label: string; icon: typeof Activity; hint: string }[] = [
   { id: "hotspot", label: "Hotspot classification", icon: Flame, hint: "Low / Moderate / High" },
   { id: "density", label: "Case density", icon: Activity, hint: "Cases per 100k" },
-  {
-    id: "precipitation",
-    label: "Precipitation risk",
-    icon: CloudRain,
-    hint: "PAGASA monthly rainfall",
-  },
-  { id: "temperature", label: "Temperature", icon: Thermometer, hint: "Mean seasonal °C" },
-  { id: "humidity", label: "Humidity", icon: Droplets, hint: "Relative humidity %" },
 ];
 
 export function LayerSidebar({
@@ -169,7 +152,7 @@ export function LayerSidebar({
             </ul>
             <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
               Thresholds: &lt;50th pct = Low, 50–75th = Moderate, &gt;75th = High of the national
-              2017–2023 distribution ({METRIC_META[mode].unit}) for the same ±6-week calendar
+              2016–2021 distribution ({METRIC_META[mode].unit}) for the same ±6-week calendar
               window.
             </p>
           </div>

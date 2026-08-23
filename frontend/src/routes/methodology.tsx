@@ -191,9 +191,9 @@ function Methodology() {
             showing estimated events.
           </li>
           <li>
-            <strong>Climate context is illustrative.</strong> Monthly rainfall/temperature/humidity
-            tables show climatological normals for orientation; the model itself uses the calendar
-            wet/dry flag, not live weather feeds.
+            <strong>No weather map layers.</strong> Precipitation, temperature and humidity
+            overlays were removed because they are not live feeds; the model's only
+            weather-adjacent signal is the deterministic PAGASA wet/dry season flag.
           </li>
           <li>
             Region-level resolution only — province and city-level hotspots are a later phase.
