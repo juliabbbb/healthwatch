@@ -12,4 +12,9 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Target a standard Node HTTP server instead of the Lovable-default Cloudflare
+  // Worker, so the built app can run on any Node host (Render, Railway, VPS...).
+  nitro: {
+    preset: "node-server",
+  },
 });
