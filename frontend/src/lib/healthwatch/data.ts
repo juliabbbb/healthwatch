@@ -332,7 +332,7 @@ const DISEASE = "dengue";
 const seriesCache = new Map<string, WeekPoint[]>();
 const metricsCache = new Map<string, ModelMetrics>();
 
-async function fetchJson<T>(path: string, attempts = 4): Promise<T> {
+async function fetchJson<T>(path: string, attempts = 10): Promise<T> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
@@ -342,8 +342,9 @@ async function fetchJson<T>(path: string, attempts = 4): Promise<T> {
     } catch (err) {
       lastErr = err;
       // Back off and retry: tolerates the backend still booting when the
-      // dev page first loads.
-      await new Promise((r) => setTimeout(r, 700 * (i + 1)));
+      // dev page first loads, and free-tier hosts that sleep between demos
+      // (Render cold starts can take ~60s).
+      await new Promise((r) => setTimeout(r, 1200 * Math.min(i + 1, 6)));
     }
   }
   throw lastErr;
