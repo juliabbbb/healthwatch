@@ -636,19 +636,24 @@ export function decompose(regionCode: string, illnessId: string | "all"): Decomp
   });
   const detrended = values.map((v, i) => v - trend[i]!);
   const byWeek: number[][] = Array.from({ length: WEEKS_PER_YEAR }, () => []);
-  series.forEach((p, i) => byWeek[p.week - 1]!.push(detrended[i]!));
+  series.forEach((p, i) =>
+    byWeek[(p.week - 1) % WEEKS_PER_YEAR]!.push(detrended[i]!),
+  );
   const seasonalIdx = byWeek.map((arr) =>
     arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0,
   );
-  return series.map((p, i) => ({
-    label: p.label,
-    index: i,
-    observed: values[i]!,
-    trend: Math.round(trend[i]!),
-    seasonal: Math.round(seasonalIdx[p.week - 1]!),
-    residual: Math.round(values[i]! - trend[i]! - seasonalIdx[p.week - 1]!),
-    season: p.season,
-  }));
+  return series.map((p, i) => {
+    const wk = (p.week - 1) % WEEKS_PER_YEAR;
+    return {
+      label: p.label,
+      index: i,
+      observed: values[i]!,
+      trend: Math.round(trend[i]!),
+      seasonal: Math.round(seasonalIdx[wk]!),
+      residual: Math.round(values[i]! - trend[i]! - seasonalIdx[wk]!),
+      season: p.season,
+    };
+  });
 }
 
 /** Autocorrelation function up to `maxLag` weeks — reveals the 52-week cycle. */
