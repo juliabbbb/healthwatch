@@ -147,7 +147,7 @@ function RegionDetail() {
       {/* Forecast */}
       <Panel
         title="Case volume forecast"
-        subtitle={`Reported 2017–2023 with ${horizon}-week predicted horizon, 95% interval, wet-season shading and intervention markers (◆).`}
+        subtitle={`Reported 2016–2021 with ${horizon}-week predicted horizon and 95% interval, wet-season shading.`}
       >
         <ForecastChart regionCode={code} illness={illness} horizon={horizon} />
         <div className="mt-3 overflow-x-auto">
@@ -215,22 +215,30 @@ function RegionDetail() {
 
         <Panel
           title="Intervention history"
-          subtitle="Recorded LGU and DOH activities annotated on the forecast chart."
+          subtitle="Recorded LGU and DOH response activities."
         >
-          <ul className="space-y-2">
-            {events.map((e) => (
-              <li
-                key={`${e.weekIndex}-${e.type}`}
-                className="flex gap-3 border-b border-border pb-2 text-xs last:border-0"
-              >
-                <span className="w-20 shrink-0 text-muted-foreground">{e.date}</span>
-                <span>
-                  <span className="font-medium">{e.type}</span>
-                  <span className="block text-muted-foreground">{e.detail}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          {events.length === 0 ? (
+            <p className="text-xs text-muted-foreground">
+              No public intervention logs are available for this region. DOH and LGU response
+              activities are not published as structured weekly open data, so this panel is left
+              empty rather than showing estimated events.
+            </p>
+          ) : (
+            <ul className="space-y-2">
+              {events.map((e) => (
+                <li
+                  key={`${e.weekIndex}-${e.type}`}
+                  className="flex gap-3 border-b border-border pb-2 text-xs last:border-0"
+                >
+                  <span className="w-20 shrink-0 text-muted-foreground">{e.date}</span>
+                  <span>
+                    <span className="font-medium">{e.type}</span>
+                    <span className="block text-muted-foreground">{e.detail}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </Panel>
       </div>
 
