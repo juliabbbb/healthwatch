@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Download, Minus, Plus, Search, Settings2, Share2 } from "lucide-react";
+import { Download, Minus, Plus, Search, Share2 } from "lucide-react";
 import { REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -73,9 +73,6 @@ export function TopToolbar({
         </IconButton>
         <IconButton label="Export snapshot" onClick={() => window.print()}>
           <Download className="size-4" />
-        </IconButton>
-        <IconButton label="Settings">
-          <Settings2 className="size-4" />
         </IconButton>
         {onZoom && (
           <>
