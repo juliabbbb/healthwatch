@@ -40,7 +40,7 @@ export function LayerSidebar({
   return (
     <aside
       className={cn(
-        "glass-panel hw-scroll pointer-events-auto flex max-h-[calc(100vh-8.5rem)] flex-col overflow-y-auto rounded-xl transition-all duration-300",
+        "glass-panel hw-scroll pointer-events-auto flex max-h-[calc(100vh-15rem)] flex-col overflow-y-auto rounded-xl transition-all duration-300",
         open ? "w-64" : "w-14",
       )}
     >

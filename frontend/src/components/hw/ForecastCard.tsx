@@ -59,7 +59,7 @@ export function ForecastCard({
             <p className="label-caps">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
-            <p className="font-display text-3xl leading-none">{formatMetric(a.value, mode)}</p>
+            <p className="font-mono text-3xl leading-none tabular-nums">{formatMetric(a.value, mode)}</p>
             <p className="mt-1 text-[11px] text-muted-foreground">
               {meta.label}
               {mode === "percapita" ? ` · ${a.point.cases.toLocaleString()} cases` : ""}
@@ -108,7 +108,7 @@ export function ForecastCard({
           ].map((m) => (
             <div key={m.k} className="rounded-md bg-secondary/50 px-2 py-1.5">
               <p className="label-caps text-[9px]">{m.k}</p>
-              <p className="font-display text-sm tabular-nums">{m.v}</p>
+              <p className="font-mono text-sm tabular-nums">{m.v}</p>
             </div>
           ))}
         </div>

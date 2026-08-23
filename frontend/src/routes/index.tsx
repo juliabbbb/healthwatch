@@ -6,16 +6,11 @@ import { LayerSidebar } from "@/components/hw/LayerSidebar";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
-import { RiskDot } from "@/components/hw/RiskBadge";
-import {
-  CURRENT_WEEK_INDEX,
-  METRIC_META,
-  assessAll,
-  formatMetric,
-  weekMeta,
-  type MetricMode,
-  type RiskLevel,
-} from "@/lib/healthwatch/data";
+import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
+import { AlertsPanel } from "@/components/hw/AlertsPanel";
+import { NotificationBell } from "@/components/hw/NotificationBell";
+import { CURRENT_WEEK_INDEX, assessAll, weekMeta, type MetricMode } from "@/lib/healthwatch/data";
+import { deriveAlerts } from "@/lib/healthwatch/alerts";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -59,10 +54,12 @@ function MapView() {
     [illness, weekIndex, mode],
   );
   const counts = useMemo(() => {
-    const c: Record<RiskLevel, number> = { low: 0, moderate: 0, high: 0 };
+    const c = { high: 0, moderate: 0, low: 0 };
     assessments.forEach((a) => (c[a.risk] += 1));
     return c;
   }, [assessments]);
+  const alerts = useMemo(() => deriveAlerts(assessments, illness), [assessments, illness]);
+
   const totalCases = assessments.reduce((a, r) => a + r.point.cases, 0);
   const nationalPer100k =
     (totalCases / assessments.reduce((s, a) => s + a.region.population, 0)) * 100000;
@@ -70,6 +67,10 @@ function MapView() {
   const meta = weekMeta(weekIndex);
 
   const handleSelect = useCallback((code: string) => setSelected(code), []);
+  const handleFocusRegion = useCallback((code: string) => {
+    setSelected(code);
+    setFlyTo(code);
+  }, []);
 
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
@@ -89,8 +90,8 @@ function MapView() {
         )}
       </div>
 
-      {/* Brand */}
-      <div className="pointer-events-none absolute left-4 top-4 z-[500]">
+      {/* Left dock: brand → national snapshot → layers */}
+      <div className="pointer-events-none absolute left-4 top-4 z-[500] flex max-h-[calc(100vh-8.5rem)] flex-col items-start gap-2">
         <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3 py-2">
           <Activity className="size-5 text-primary" />
           <div>
@@ -100,21 +101,16 @@ function MapView() {
             </p>
           </div>
         </div>
-      </div>
 
-      {/* Toolbar */}
-      <div className="absolute right-4 top-4 z-[500]">
-        <TopToolbar
-          onPick={(code) => {
-            setSelected(code);
-            setFlyTo(code + ":" + Date.now());
-            setFlyTo(code);
-          }}
+        <NationalSnapshot
+          weekLabel={meta.label}
+          isForecast={meta.forecast}
+          value={mode === "raw" ? totalCases : nationalPer100k}
+          mode={mode}
+          counts={counts}
+          dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
         />
-      </div>
 
-      {/* Layers sidebar */}
-      <div className="absolute left-4 top-[5.5rem] z-[500]">
         <LayerSidebar
           open={sidebarOpen}
           onToggle={() => setSidebarOpen((o) => !o)}
@@ -126,6 +122,11 @@ function MapView() {
           mode={mode}
           onModeChange={setMode}
         />
+      </div>
+
+      {/* Toolbar + notifications */}
+      <div className="absolute right-4 top-4 z-[500]">
+        <TopToolbar trailing={<NotificationBell items={alerts} />} onPick={handleFocusRegion} />
       </div>
 
       {/* Forecast card */}
@@ -141,31 +142,9 @@ function MapView() {
         </div>
       )}
 
-      {/* National summary strip */}
-      <div className="pointer-events-none absolute bottom-[7.5rem] left-4 z-[500]">
-        <div className="glass-panel pointer-events-auto rounded-xl px-3 py-2 text-xs">
-          <p className="label-caps mb-1.5">National snapshot · {meta.label}</p>
-          <div className="flex items-center gap-4">
-            <span className="font-display text-lg">
-              {mode === "raw" ? totalCases.toLocaleString() : formatMetric(nationalPer100k, mode)}
-            </span>
-            <span className="text-muted-foreground">
-              {meta.forecast ? "predicted" : "reported"} · {METRIC_META[mode].unit}
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="flex items-center gap-1">
-                <RiskDot risk="high" /> {counts.high}
-              </span>
-              <span className="flex items-center gap-1">
-                <RiskDot risk="moderate" /> {counts.moderate}
-              </span>
-              <span className="flex items-center gap-1">
-                <RiskDot risk="low" /> {counts.low}
-              </span>
-            </span>
-          </div>
-        </div>
+      {/* Active alerts */}
+      <div className="absolute bottom-[4.75rem] left-4 z-[500]">
+        <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
       </div>
 
       {/* Timeline */}

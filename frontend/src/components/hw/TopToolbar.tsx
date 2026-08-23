@@ -7,9 +7,12 @@ import { cn } from "@/lib/utils";
 export function TopToolbar({
   onPick,
   onZoom,
+  trailing,
 }: {
   onPick: (code: string) => void;
   onZoom?: (dir: 1 | -1) => void;
+  /** Extra icon affordances (e.g. the notification bell) shown first in the actions cluster. */
+  trailing?: React.ReactNode;
 }) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
@@ -68,6 +71,7 @@ export function TopToolbar({
       </nav>
 
       <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
+        {trailing}
         <IconButton label="Share view" onClick={() => shareView()}>
           <Share2 className="size-4" />
         </IconButton>
