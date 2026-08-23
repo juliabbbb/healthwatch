@@ -5,3 +5,5 @@ matplotlib
 openpyxl
 jupyter
 prophet
+fastapi
+uvicorn

@@ -1,0 +1,167 @@
+import { Link } from "@tanstack/react-router";
+import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
+import {
+  METRIC_META,
+  RISK_META,
+  assessRegion,
+  classify,
+  formatMetric,
+  metricValue,
+  modelMetrics,
+  recommendations,
+  weekMeta,
+  type MetricMode,
+  type RiskLevel,
+} from "@/lib/healthwatch/data";
+import { RiskBadge, SeasonTag } from "./RiskBadge";
+
+export function ForecastCard({
+  regionCode,
+  illness,
+  weekIndex,
+  mode = "percapita",
+  onClose,
+}: {
+  regionCode: string;
+  illness: string;
+  weekIndex: number;
+  mode?: MetricMode;
+  onClose: () => void;
+}) {
+  const a = assessRegion(regionCode, illness, weekIndex, mode);
+  const meta = weekMeta(weekIndex);
+  const recs = recommendations(a);
+  const validation = modelMetrics(regionCode, illness);
+  const unit = METRIC_META[mode].unit;
+
+  return (
+    <div className="glass-panel w-[21rem] max-w-[calc(100vw-2rem)] rounded-xl">
+      <div className="flex items-start justify-between gap-2 border-b border-border px-4 py-3">
+        <div>
+          <p className="label-caps">{a.region.short}</p>
+          <h2 className="font-display text-lg leading-tight">{a.region.name}</h2>
+          <p className="mt-1 text-[11px] text-muted-foreground">
+            {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          aria-label="Close region card"
+          className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+
+      <div className="px-4 py-3">
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="label-caps">
+              {meta.forecast ? "Predicted" : "Reported"} · {unit}
+            </p>
+            <p className="font-display text-3xl leading-none">{formatMetric(a.value, mode)}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {meta.label}
+              {mode === "percapita" ? ` · ${a.point.cases.toLocaleString()} cases` : ""}
+              {meta.forecast
+                ? ` · CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
+                : " · PIDSR reported"}
+            </p>
+          </div>
+          <div className="flex flex-col items-end gap-1.5">
+            <RiskBadge risk={a.risk} />
+            <SeasonTag season={meta.season} />
+          </div>
+        </div>
+
+        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
+          {a.changePct >= 0 ? (
+            <TrendingUp className="size-3.5" style={{ color: "var(--risk-high)" }} />
+          ) : (
+            <TrendingDown className="size-3.5" style={{ color: "var(--risk-low)" }} />
+          )}
+          <span>
+            {a.changePct >= 0 ? "+" : ""}
+            {a.changePct}% vs 4 weeks ago · {a.percentileRank}th national percentile
+          </span>
+        </div>
+      </div>
+
+      <div className="border-t border-border px-4 py-3">
+        <div className="mb-2 flex items-center justify-between">
+          <p className="label-caps">Model validation</p>
+          <span
+            className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+            style={{
+              color: RISK_META[validation.tone].color,
+              backgroundColor: `color-mix(in oklab, ${RISK_META[validation.tone].color} 18%, transparent)`,
+            }}
+          >
+            {validation.label}
+          </span>
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-center">
+          {[
+            { k: "MAE", v: validation.mae.toLocaleString() },
+            { k: "RMSE", v: validation.rmse.toLocaleString() },
+            { k: "MAPE", v: `${validation.mape}%` },
+          ].map((m) => (
+            <div key={m.k} className="rounded-md bg-secondary/50 px-2 py-1.5">
+              <p className="label-caps text-[9px]">{m.k}</p>
+              <p className="font-display text-sm tabular-nums">{m.v}</p>
+            </div>
+          ))}
+        </div>
+        <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
+      </div>
+
+      <div className="border-t border-border px-4 py-3">
+        <p className="label-caps mb-2">4-week forecast</p>
+        <ul className="space-y-1.5">
+          {a.fourWeek.map((p) => {
+            const v = metricValue(p.cases, a.region, mode);
+            const risk: RiskLevel = classify(v, a.thresholds);
+            return (
+              <li key={p.index} className="flex items-center gap-3 text-xs">
+                <span className="w-16 text-muted-foreground">{p.label}</span>
+                <span className="relative h-1.5 flex-1 overflow-hidden rounded-full bg-secondary">
+                  <span
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    style={{
+                      width: `${Math.min(100, (v / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
+                      backgroundColor: RISK_META[risk].color,
+                    }}
+                  />
+                </span>
+                <span className="w-24 text-right tabular-nums">
+                  {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
+                  {formatMetric(metricValue(p.upper, a.region, mode), mode)}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+
+      <div className="border-t border-border px-4 py-3">
+        <p className="label-caps mb-1">Dominant illness</p>
+        <p className="text-sm font-medium">{a.dominantIllness.name}</p>
+        <p className="mt-0.5 text-[11px] text-muted-foreground">{a.dominantIllness.driver}</p>
+        <p className="label-caps mt-3 mb-1">Recommended intervention</p>
+        <p className="text-xs leading-relaxed text-foreground/85">
+          <span className="font-medium">{recs[0]!.title}.</span> {recs[0]!.detail}
+        </p>
+      </div>
+
+      <div className="border-t border-border px-4 py-3">
+        <Link
+          to="/region/$code"
+          params={{ code: regionCode }}
+          className="inline-flex w-full items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-2 text-xs font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          Open region analysis <ArrowUpRight className="size-3.5" />
+        </Link>
+      </div>
+    </div>
+  );
+}
