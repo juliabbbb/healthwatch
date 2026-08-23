@@ -1,10 +1,11 @@
 import os
+from datetime import datetime, timezone
 
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import db
+from . import db, ingest
 
 SUPPORTED_DISEASES = ["Dengue"]
 DISEASE_DEFAULT = "Dengue"
@@ -184,6 +185,32 @@ def root():
 @app.get("/regions", tags=["objective_4_dashboard"])
 def regions():
     return REGION_META
+
+
+@app.get("/status", tags=["objective_4_dashboard"])
+def status():
+    """Pipeline freshness: when outputs were generated and how far data reaches."""
+    output_csvs = (
+        ingest.PROCESSED_DIR / "forecasts.csv",
+        ingest.PROCESSED_DIR / "risk_classification.csv",
+        ingest.PROCESSED_DIR / "risk_thresholds.csv",
+    )
+    stamps = [p.stat().st_mtime for p in output_csvs if p.exists()]
+    if not stamps:
+        raise HTTPException(status_code=404, detail="No pipeline outputs found")
+    generated = datetime.fromtimestamp(max(stamps), tz=timezone.utc)
+
+    # The regional table defines what the dashboard plots (national runs later).
+    last_date = _REGIONAL["date"].max()
+    iso = last_date.isocalendar()
+    return {
+        "generated_at": generated.isoformat(),
+        "data_through": {
+            "date": last_date.date().isoformat(),
+            "epi_week": f"{iso.year}-W{iso.week:02d}",
+        },
+        "supported_diseases": SUPPORTED_DISEASES,
+    }
 
 
 @app.get("/series/{region}", tags=["objective_1_patterns", "objective_2_forecast"])
