@@ -120,7 +120,10 @@ function Methodology() {
           <strong>skill versus a seasonal-naïve baseline</strong> (“same week last year”). The
           Prophet models beat the naïve baseline in 18 of 18 region-series during the COVID
           stress window and 12 of 18 pre-COVID. The confidence chip shown on each region page is
-          derived from MAPE (&lt;15% high · 15–30% moderate · &gt;30% low).
+          driven by that skill score — High = beats the baseline by ≥15% with MAPE ≤100%, Low =
+          no improvement over the baseline, Moderate = everything between. Raw MAPE alone is not
+          used for tiering because near-zero case weeks inflate it into triple digits even when
+          forecasts are epidemiologically useful.
         </p>
       </Section>
 

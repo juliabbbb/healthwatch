@@ -122,23 +122,34 @@ def _history(region):
     return out
 
 
-def _confidence(mape, folds):
-    if mape < 15:
+def _confidence(mape, skill_vs_naive, folds):
+    """Calibrated on data/processed/validation_metrics.csv.
+
+    Raw MAPE alone is misleading for low-incidence weekly counts: a forecast
+    of 4 against an actual of 1 reads as 300% error, so near-zero weeks push
+    regional MAPE into triple digits even when the model beats its baseline.
+    Skill vs the seasonal-naive baseline is a ratio of two errors and stays
+    meaningful, so it drives the tiers:
+      High     - clearly beats the naive baseline (skill >= 15%) with MAPE <= 100%
+      Low      - fails to beat the naive baseline (skill <= 0%)
+      Moderate - everything in between
+    """
+    if skill_vs_naive >= 15 and mape <= 100:
         return {
             "label": "High confidence",
             "tone": "low",
-            "note": f"MAPE under 15% across {folds} walk-forward weeks - the seasonal signal is stable enough to plan against.",
+            "note": f"Beats the seasonal-naive baseline by {skill_vs_naive:.0f}% across {folds} walk-forward weeks - the seasonal signal is stable enough to plan against.",
         }
-    if mape < 30:
+    if skill_vs_naive <= 0:
         return {
-            "label": "Moderate confidence - limited historical data",
-            "tone": "moderate",
-            "note": f"MAPE between 15% and 30% across {folds} walk-forward weeks. Direction of change is reliable; exact case volume is not.",
+            "label": "Low confidence - volatile series",
+            "tone": "high",
+            "note": f"Does not beat the seasonal-naive baseline ({skill_vs_naive:+.0f}% skill) over {folds} walk-forward weeks: week-to-week case counts swing more than the seasonal signal explains. Treat the point forecast as a range, not a target.",
         }
     return {
-        "label": "Low confidence - volatile series",
-        "tone": "high",
-        "note": f"MAPE above 30% across {folds} walk-forward weeks: week-to-week case counts swing more than the seasonal signal explains. Treat the point forecast as a range, not a target.",
+        "label": "Moderate confidence",
+        "tone": "moderate",
+        "note": f"Beats the naive baseline by {skill_vs_naive:+.0f}% (MAPE {mape:.0f}%, inflated by near-zero weeks) over {folds} walk-forward weeks. Direction of change is reliable; exact case volume is not.",
     }
 
 
@@ -310,7 +321,7 @@ def metrics(
     if primary.empty:
         raise HTTPException(status_code=404, detail=f"Window '{window}' not found")
     row = primary.iloc[0]
-    confidence = _confidence(row["MAPE"], int(row["weeks"]))
+    confidence = _confidence(row["MAPE"], float(row["skill_vs_naive_pct"]), int(row["weeks"]))
     return {
         "region": region,
         "disease": disease,
