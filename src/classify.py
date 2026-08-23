@@ -21,6 +21,9 @@ def load_history():
 def with_iso_week(df, date_col="date"):
     out = df.copy()
     out["iso_week"] = pd.to_datetime(out[date_col]).dt.isocalendar().week.astype(int)
+    # ISO calendars occasionally produce a 53rd week; fold it into week 1 so
+    # threshold lookups always hit (mirrors the frontend's modulo bucketing).
+    out.loc[out["iso_week"] > 52, "iso_week"] = 1
     return out
 
 

@@ -1,37 +1,37 @@
 disease,region,window,tier_accuracy_pct,severe_miss_pct,weeks
-Dengue,BARMM,last_52w,68.6,21.6,51
+Dengue,BARMM,last_52w,69.2,21.2,52
 Dengue,BARMM,pre_covid_52w,84.6,1.9,52
-Dengue,CAR,last_52w,49.0,39.2,51
+Dengue,CAR,last_52w,50.0,38.5,52
 Dengue,CAR,pre_covid_52w,34.6,19.2,52
-Dengue,Caraga,last_52w,64.7,21.6,51
+Dengue,Caraga,last_52w,65.4,21.2,52
 Dengue,Caraga,pre_covid_52w,36.5,11.5,52
-Dengue,NCR,last_52w,45.1,43.1,51
+Dengue,NCR,last_52w,46.2,42.3,52
 Dengue,NCR,pre_covid_52w,28.8,32.7,52
 Dengue,National,last_52w,78.8,5.8,52
 Dengue,National,pre_covid_52w,51.9,9.6,52
-Dengue,Region I (Ilocos),last_52w,25.5,45.1,51
+Dengue,Region I (Ilocos),last_52w,25.0,44.2,52
 Dengue,Region I (Ilocos),pre_covid_52w,40.4,28.8,52
-Dengue,Region II (Cagayan Valley),last_52w,70.6,19.6,51
+Dengue,Region II (Cagayan Valley),last_52w,71.2,19.2,52
 Dengue,Region II (Cagayan Valley),pre_covid_52w,55.8,3.8,52
-Dengue,Region III (Central Luzon),last_52w,45.1,39.2,51
+Dengue,Region III (Central Luzon),last_52w,44.2,40.4,52
 Dengue,Region III (Central Luzon),pre_covid_52w,28.8,26.9,52
-Dengue,Region IV-A (CALABARZON),last_52w,37.3,49.0,51
+Dengue,Region IV-A (CALABARZON),last_52w,38.5,48.1,52
 Dengue,Region IV-A (CALABARZON),pre_covid_52w,76.9,3.8,52
-Dengue,Region IV-B (MIMAROPA),last_52w,49.0,23.5,51
+Dengue,Region IV-B (MIMAROPA),last_52w,48.1,23.1,52
 Dengue,Region IV-B (MIMAROPA),pre_covid_52w,51.9,3.8,52
-Dengue,Region IX (Zamboanga Peninsula),last_52w,52.9,29.4,51
+Dengue,Region IX (Zamboanga Peninsula),last_52w,53.8,28.8,52
 Dengue,Region IX (Zamboanga Peninsula),pre_covid_52w,84.6,0.0,52
-Dengue,Region V (Bicol),last_52w,47.1,41.2,51
+Dengue,Region V (Bicol),last_52w,48.1,40.4,52
 Dengue,Region V (Bicol),pre_covid_52w,67.3,0.0,52
-Dengue,Region VI (Western Visayas),last_52w,37.3,29.4,51
+Dengue,Region VI (Western Visayas),last_52w,38.5,28.8,52
 Dengue,Region VI (Western Visayas),pre_covid_52w,50.0,13.5,52
-Dengue,Region VII (Central Visayas),last_52w,54.9,33.3,51
+Dengue,Region VII (Central Visayas),last_52w,55.8,32.7,52
 Dengue,Region VII (Central Visayas),pre_covid_52w,30.8,30.8,52
-Dengue,Region VIII (Eastern Visayas),last_52w,51.0,37.3,51
+Dengue,Region VIII (Eastern Visayas),last_52w,51.9,36.5,52
 Dengue,Region VIII (Eastern Visayas),pre_covid_52w,69.2,1.9,52
-Dengue,Region X (Northern Mindanao),last_52w,58.8,23.5,51
+Dengue,Region X (Northern Mindanao),last_52w,59.6,23.1,52
 Dengue,Region X (Northern Mindanao),pre_covid_52w,71.2,1.9,52
-Dengue,Region XI (Davao),last_52w,66.7,3.9,51
+Dengue,Region XI (Davao),last_52w,67.3,3.8,52
 Dengue,Region XI (Davao),pre_covid_52w,25.0,48.1,52
-Dengue,Region XII (SOCCSKSARGEN),last_52w,35.3,39.2,51
+Dengue,Region XII (SOCCSKSARGEN),last_52w,36.5,38.5,52
 Dengue,Region XII (SOCCSKSARGEN),pre_covid_52w,17.3,44.2,52
