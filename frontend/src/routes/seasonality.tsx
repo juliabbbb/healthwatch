@@ -9,6 +9,7 @@ import {
   type ContextMenuAnchor,
 } from "@/components/hw/SeasonalityContextMenu";
 import { SeasonTag } from "@/components/hw/RiskBadge";
+import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import { ILLNESSES, REGIONS, REGION_BY_CODE, acf, decompose } from "@/lib/healthwatch/data";
@@ -138,6 +139,11 @@ function SeasonalityPage() {
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
+          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+            <StatusChipRow
+              items={["Prophet", "Centered MA trend", "ACF · lags 1–60", "Weekly data"]}
+            />
+          </div>
           <h1 className="text-3xl">Seasonal pattern identification</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Decompose any regional illness series into trend, seasonality and noise, then confirm
@@ -275,7 +281,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub: string 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-4">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 text-2xl">{value}</p>
+      <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sub}</p>
     </div>
   );

@@ -149,14 +149,14 @@ export default function ComparePage() {
                 <td>
                   <RiskBadge risk={a.risk} />
                 </td>
-                <td className="text-right tabular-nums">{formatMetric(a.value, mode)}</td>
-                <td className="text-right tabular-nums text-muted-foreground">
+                <td className="text-right font-mono tabular-nums">{formatMetric(a.value, mode)}</td>
+                <td className="text-right font-mono tabular-nums text-muted-foreground">
                   {formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–
                   {formatMetric(metricValue(a.point.upper, a.region, mode), mode)}
                 </td>
-                <td className="text-right tabular-nums">{a.percentileRank}th</td>
+                <td className="text-right font-mono tabular-nums">{a.percentileRank}th</td>
                 <td
-                  className="text-right tabular-nums"
+                  className="text-right font-mono tabular-nums"
                   style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
                 >
                   {a.changePct >= 0 ? "+" : ""}

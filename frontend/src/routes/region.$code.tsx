@@ -165,11 +165,11 @@ function RegionDetail() {
                 <tr key={p.index} className="border-t border-border">
                   <td className="py-1.5">{p.label}</td>
                   <td className="capitalize text-muted-foreground">{p.season}</td>
-                  <td className="text-right tabular-nums">{p.cases.toLocaleString()}</td>
-                  <td className="text-right tabular-nums text-muted-foreground">
+                  <td className="text-right font-mono tabular-nums">{p.cases.toLocaleString()}</td>
+                  <td className="text-right font-mono tabular-nums text-muted-foreground">
                     {p.lower.toLocaleString()}
                   </td>
-                  <td className="text-right tabular-nums text-muted-foreground">
+                  <td className="text-right font-mono tabular-nums text-muted-foreground">
                     {p.upper.toLocaleString()}
                   </td>
                 </tr>
@@ -229,7 +229,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub: string 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-4">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 text-2xl">{value}</p>
+      <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{sub}</p>
     </div>
   );

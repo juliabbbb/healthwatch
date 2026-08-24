@@ -45,6 +45,9 @@
   --color-risk-low: var(--risk-low);
   --color-risk-moderate: var(--risk-moderate);
   --color-risk-high: var(--risk-high);
+  --color-risk-low-solid: var(--risk-low-solid);
+  --color-risk-moderate-solid: var(--risk-moderate-solid);
+  --color-risk-high-solid: var(--risk-high-solid);
   --color-wet: var(--wet);
   --color-dry: var(--dry);
   --color-panel: var(--panel);
@@ -94,6 +97,11 @@
   --risk-low: oklch(0.62 0.129 162);
   --risk-moderate: oklch(0.75 0.152 80);
   --risk-high: oklch(0.59 0.188 32);
+  /* deeper variants for solid badges carrying white text (WCAG AA ≥4.5:1);
+     maps/legends keep the brighter tokens above */
+  --risk-low-solid: oklch(0.508 0.118 165);    /* ≈ emerald-700 */
+  --risk-moderate-solid: oklch(0.555 0.116 66); /* ≈ amber-700 */
+  --risk-high-solid: oklch(0.517 0.176 27);     /* ≈ red-700 */
   --wet: oklch(0.64 0.117 234);
   --dry: oklch(0.68 0.129 72);
 

@@ -14,17 +14,16 @@ export function RiskBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-medium uppercase tracking-wider",
+        "inline-flex items-center gap-1.5 rounded-full font-medium uppercase tracking-wider",
         size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs",
         className,
       )}
       style={{
-        color: meta.color,
-        borderColor: `color-mix(in oklab, ${meta.color}, transparent 60%)`,
-        backgroundColor: `color-mix(in oklab, ${meta.color}, transparent 88%)`,
+        color: "oklch(0.99 0.003 95)",
+        backgroundColor: meta.solidColor,
       }}
     >
-      <span className="size-1.5 rounded-full" style={{ backgroundColor: meta.color }} />
+      <span className="size-1.5 rounded-full bg-white/80" />
       {meta.label} risk
     </span>
   );
