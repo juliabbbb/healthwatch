@@ -1,7 +1,6 @@
 # HEALTHWATCH
 
 Regional time-series analysis system for seasonal illness outbreak prediction and hotspot classification.
-Capstone project, PLM BSIT — Dela Cruz, Santiago, Villanueva.
 
 Forecasting dengue outbreaks per Philippine region (Prophet), classifying weekly risk tiers
 (<P50 Low · P50–75 Moderate · >P75 High), served by a FastAPI backend over SQLite and visualized
@@ -82,7 +81,13 @@ Only needed if the raw CSVs in `data/raw/` change. Re-run the pipeline modules i
 
 ## Locked scope
 
-- Disease: dengue (architecture supports adding more DOH diseases later)
+- **Disease: dengue only, for this release.** The original proposal covered five illnesses
+  (dengue, leptospirosis, influenza-like illness, acute gastroenteritis, heat-related illness).
+  Regional forecasting and the choropleth are scoped to dengue only because it's the only disease
+  with a usable regional-breakdown dataset (HDX DOH-Epidemiology Bureau, 2016–2021); the other four
+  are **deferred**, not implemented — no national-level fallback is wired in either. The pipeline
+  and schema aren't disease-locked, so adding another disease later is an extension, not a rewrite,
+  but it isn't scheduled work right now.
 - Prediction: Prophet only
 - Risk classes: percentile thresholds (<50 Low, 50–75 Moderate, >75 High)
 - Rules: deterministic post-processing only (non-negativity clipping, wet/dry season regressor)
