@@ -1,32 +1,69 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import type { AlertItem } from "@/lib/healthwatch/alerts";
+
+const SEEN_KEY = "healthwatch:alerts-seen";
+
+function readSeenCount(): number {
+  try {
+    const raw = window.localStorage.getItem(SEEN_KEY);
+    const parsed = raw === null ? NaN : Number(raw);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+  } catch {
+    return 0;
+  }
+}
 
 /**
  * Forecast notification bell: badge shows active alert count; entries
  * deep-link to the region's own detail route (the HEALTHWATCH equivalent of
  * the reference design's "click an alert → land on region detail" pattern).
+ * Opening the panel marks everything as seen, clearing the badge until new
+ * alerts push the count above what was last seen.
  */
 export function NotificationBell({ items }: { items: AlertItem[] }) {
   const [open, setOpen] = useState(false);
+  // Initialized to 0 so SSR and hydration agree; synced from storage after mount.
+  const [seenCount, setSeenCount] = useState(0);
+
+  useEffect(() => {
+    setSeenCount(readSeenCount());
+  }, []);
+
+  const unseen = Math.max(0, items.length - seenCount);
+
+  const toggle = () => {
+    setOpen((prev) => {
+      const next = !prev;
+      if (next) {
+        setSeenCount(items.length);
+        try {
+          window.localStorage.setItem(SEEN_KEY, String(items.length));
+        } catch {
+          // Storage unavailable: badge just reappears after reload.
+        }
+      }
+      return next;
+    });
+  };
 
   return (
     <div className="relative">
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={toggle}
         aria-label={`Notifications, ${items.length} active`}
         aria-expanded={open}
         title="Forecast alerts"
         className="relative rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
       >
         <Bell className="size-4" />
-        {items.length > 0 && (
+        {unseen > 0 && (
           <span
             className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-0.5 font-mono text-[9px] font-semibold leading-none"
             style={{ backgroundColor: "var(--risk-high)", color: "oklch(0.98 0.005 248)" }}
           >
-            {items.length > 9 ? "9+" : items.length}
+            {unseen > 9 ? "9+" : unseen}
           </span>
         )}
       </button>
