@@ -119,6 +119,14 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            // Apply the persisted theme before first paint to avoid a flash
+            // of the wrong palette (React syncs the icon after hydration).
+            __html:
+              'try{if(localStorage.getItem("healthwatch:theme")==="dark"){document.documentElement.classList.add("dark")}}catch(e){}',
+          }}
+        />
         <HeadContent />
       </head>
       <body>
