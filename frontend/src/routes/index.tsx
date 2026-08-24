@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Activity } from "lucide-react";
 import type { DataLayer } from "@/components/hw/MapCanvas";
-import { LayerSidebar } from "@/components/hw/LayerSidebar";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
@@ -42,7 +41,6 @@ function MapView() {
   const [layer, setLayer] = useState<DataLayer>("hotspot");
   const [weekIndex, setWeekIndex] = useState(CURRENT_WEEK_INDEX + 4);
   const [playing, setPlaying] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [selected, setSelected] = useState<string | null>("130000000");
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
@@ -90,38 +88,21 @@ function MapView() {
         )}
       </div>
 
-      {/* Left dock: brand → national snapshot → layers */}
-      <div className="pointer-events-none absolute left-4 top-4 z-[500] flex max-h-[calc(100vh-8.5rem)] flex-col items-start gap-2">
-        <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3 py-2">
-          <Activity className="size-5 text-primary" />
-          <div>
-            <p className="text-sm leading-none tracking-wide">HEALTHWATCH</p>
-            <p className="mt-1 text-[10px] text-muted-foreground">
-              DOH · LGU outbreak decision support
-            </p>
-          </div>
-        </div>
-
+      {/* Top-Left Dock: National Snapshot (top) → Active Alerts */}
+      <div className="pointer-events-none absolute left-4 top-4 z-[500] flex max-h-[calc(100vh-8.5rem)] flex-col items-start gap-2.5">
         <NationalSnapshot
           weekLabel={meta.label}
           isForecast={meta.forecast}
           value={mode === "raw" ? totalCases : nationalPer100k}
           mode={mode}
+          onModeChange={setMode}
+          illness={illness}
+          onIllnessChange={setIllness}
           counts={counts}
           dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
         />
 
-        <LayerSidebar
-          open={sidebarOpen}
-          onToggle={() => setSidebarOpen((o) => !o)}
-          layer={layer}
-          onLayerChange={setLayer}
-          illness={illness}
-          onIllnessChange={setIllness}
-          counts={counts}
-          mode={mode}
-          onModeChange={setMode}
-        />
+        <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
       </div>
 
       {/* Toolbar + notifications */}
@@ -129,7 +110,7 @@ function MapView() {
         <TopToolbar trailing={<NotificationBell items={alerts} />} onPick={handleFocusRegion} />
       </div>
 
-      {/* Forecast card */}
+      {/* Forecast card (Regional Data side panel with Data Layers & Metric Controls) */}
       {selected && (
         <div className="absolute right-4 top-[5.5rem] z-[500] max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
           <ForecastCard
@@ -137,14 +118,25 @@ function MapView() {
             illness={illness}
             weekIndex={weekIndex}
             mode={mode}
+            onModeChange={setMode}
+            layer={layer}
+            onLayerChange={setLayer}
             onClose={() => setSelected(null)}
           />
         </div>
       )}
 
-      {/* Active alerts */}
-      <div className="absolute bottom-[4.75rem] left-4 z-[500]">
-        <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
+      {/* Repositioned Logo (Bottom-Left) */}
+      <div className="pointer-events-none absolute left-4 bottom-20 z-[500]">
+        <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3 py-2">
+          <Activity className="size-5 text-primary" />
+          <div>
+            <p className="text-sm font-semibold leading-none tracking-wide">HEALTHWATCH</p>
+            <p className="mt-1 text-[10px] text-muted-foreground">
+              DOH · LGU outbreak decision support
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Timeline */}
