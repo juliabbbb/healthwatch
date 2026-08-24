@@ -56,7 +56,7 @@ export function TimelineScrubber({
   );
 
   return (
-    <div className="glass-panel pointer-events-auto rounded-xl px-3.5 py-2.5">
+    <div className="glass-panel pointer-events-auto rounded-xl px-4 py-3">
       <div className="flex items-center gap-3">
         {/* Transport — icon-only cluster */}
         <div className="flex items-center gap-1">

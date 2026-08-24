@@ -131,7 +131,7 @@ export function AIExplanationModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        overlayClassName="z-[600] bg-black/50 backdrop-blur-md"
+        overlayClassName="z-[600] bg-black/40 backdrop-blur-sm dark:bg-black/60"
         className="z-[600] glass-panel max-w-xl gap-0 rounded-xl border-border/70 p-5"
       >
         <div className="flex items-start justify-between gap-3 pr-6">

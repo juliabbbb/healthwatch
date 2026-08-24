@@ -218,21 +218,30 @@
   color: var(--color-muted-foreground);
 }
 
-/* Leaflet dark treatment */
+/* Leaflet — CartoDB raster basemaps (Positron light / Dark Matter dark) */
 .leaflet-container {
-  background: oklch(0.13 0.014 248);
+  background: var(--color-muted);
   font-family: var(--font-sans);
   outline: none;
 }
 
+/* Basemaps arrive well-tuned; only a gentle calm-down is needed. */
 .leaflet-tile-pane {
-  filter: brightness(0.62) saturate(0.55) contrast(1.08) hue-rotate(178deg) invert(1);
+  filter: saturate(0.9) brightness(1.02);
+}
+
+.dark .leaflet-tile-pane {
+  filter: brightness(0.94) saturate(0.92);
 }
 
 .leaflet-control-attribution {
-  background: oklch(0.16 0.014 248 / 75%) !important;
+  background: oklch(1 0 0 / 70%) !important;
   color: var(--color-muted-foreground) !important;
   font-size: 10px !important;
+}
+
+.dark .leaflet-control-attribution {
+  background: oklch(0.16 0.014 248 / 75%) !important;
 }
 
 .leaflet-control-attribution a {
@@ -244,14 +253,20 @@
 }
 
 .hw-tooltip {
-  background: oklch(0.16 0.014 248 / 88%) !important;
+  background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
   font-size: 10px !important;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 6px !important;
-  box-shadow: none !important;
+  box-shadow: 0 4px 12px oklch(0.24 0.008 85 / 12%) !important;
+}
+
+.dark .hw-tooltip {
+  box-shadow: 0 4px 12px oklch(0 0 0 / 45%) !important;
 }
 
 .hw-tooltip::before {

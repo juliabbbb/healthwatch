@@ -35,7 +35,7 @@ export function TopToolbar({
   return (
     <div className="pointer-events-auto flex items-start gap-2">
       <div className="relative">
-        <div className="glass-panel flex items-center gap-2 rounded-xl px-3 py-2">
+        <div className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2.5">
           <Search className="size-4 text-muted-foreground" />
           <input
             value={q}

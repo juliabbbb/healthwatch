@@ -29,7 +29,7 @@ export function NationalSnapshot({
   dominantIllness: string;
 }) {
   return (
-    <div className="glass-panel pointer-events-auto rounded-xl px-3.5 py-2.5">
+    <div className="glass-panel pointer-events-auto rounded-xl px-4 py-3">
       <p className="label-caps mb-1.5">
         National snapshot · {weekLabel} ·{" "}
         <span style={{ color: isForecast ? "var(--risk-moderate)" : undefined }}>
