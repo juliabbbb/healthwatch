@@ -1,31 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Waves } from "lucide-react";
+import { ArrowLeft, Bot, Waves } from "lucide-react";
 import { AcfChart, DecompositionChart } from "@/components/hw/Charts";
-import { SeasonTag } from "@/components/hw/RiskBadge";
+import { AIExplanationModal, type SeasonalityComponent } from "@/components/hw/AIExplanationModal";
 import {
-  ILLNESSES,
-  REGIONS,
-  REGION_BY_CODE,
-  acf,
-  decompose,
-} from "@/lib/healthwatch/data";
+  SeasonalityContextMenu,
+  type ContextMenuAction,
+  type ContextMenuAnchor,
+} from "@/components/hw/SeasonalityContextMenu";
+import { SeasonTag } from "@/components/hw/RiskBadge";
+import { SettingsModal } from "@/components/hw/SettingsModal";
+import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { ILLNESSES, REGIONS, REGION_BY_CODE, acf, decompose } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export const Route = createFileRoute("/seasonality")({
   head: () => ({
@@ -59,6 +48,49 @@ function SeasonalityPage() {
   const [code, setCode] = useState("130000000");
   const [illness, setIllness] = useState("all");
   const region = REGION_BY_CODE[code]!;
+
+  // Right-click → AI explanation workflow. Opt-in: when the setting is off,
+  // choosing an AI action opens Settings instead and makes zero requests.
+  const [aiEnabled] = useAiAnalysisSetting();
+  const [menu, setMenu] = useState<ContextMenuAnchor | null>(null);
+  const [explainComponent, setExplainComponent] = useState<SeasonalityComponent | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const openMenu = (e: React.MouseEvent, section: string) => {
+    e.preventDefault();
+    setMenu({ x: e.clientX, y: e.clientY, section });
+  };
+
+  const requestExplain = (component: SeasonalityComponent) => {
+    if (!aiEnabled) {
+      setSettingsOpen(true);
+      return;
+    }
+    setExplainComponent(component);
+  };
+
+  const sectionComponent: Record<string, SeasonalityComponent> = {
+    kpis: "observed",
+    decomposition: "observed",
+    acf: "acf",
+  };
+
+  const menuActions: ContextMenuAction[] = [
+    {
+      id: "explain",
+      label: "Explain chart with AI",
+      hint: aiEnabled ? undefined : "Opens settings — AI is off",
+      icon: Bot,
+      run: () => requestExplain(menu ? (sectionComponent[menu.section] ?? "observed") : "observed"),
+    },
+    {
+      id: "pattern",
+      label: "Analyze seasonal pattern",
+      hint: aiEnabled ? undefined : "Opens settings — AI is off",
+      icon: Waves,
+      run: () => requestExplain("seasonal"),
+    },
+  ];
 
   const stats = useMemo(() => {
     const d = decompose(code, illness);
@@ -137,7 +169,10 @@ function SeasonalityPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+        onContextMenu={(e) => openMenu(e, "kpis")}
+      >
         <Kpi
           label="Seasonality strength"
           value={`${Math.round(stats.strength * 100)}%`}
@@ -164,7 +199,10 @@ function SeasonalityPage() {
         />
       </div>
 
-      <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
+      <section
+        className="mt-6 rounded-xl border border-border bg-card/40 p-4"
+        onContextMenu={(e) => openMenu(e, "decomposition")}
+      >
         <h2 className="font-display text-lg">Trend / seasonality / noise</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
           {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2017–2023 split
@@ -188,7 +226,10 @@ function SeasonalityPage() {
         </div>
       </section>
 
-      <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
+      <section
+        className="mt-6 rounded-xl border border-border bg-card/40 p-4"
+        onContextMenu={(e) => openMenu(e, "acf")}
+      >
         <h2 className="font-display text-lg">52-week cycle indicators</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
           Autocorrelation of the observed series against itself at increasing lags. A pronounced
@@ -214,6 +255,18 @@ function SeasonalityPage() {
           Open {region.short} forecast detail
         </Link>
       </div>
+
+      <SeasonalityContextMenu anchor={menu} actions={menuActions} onClose={() => setMenu(null)} />
+      <AIExplanationModal
+        open={explainComponent !== null}
+        onOpenChange={(open) => {
+          if (!open) setExplainComponent(null);
+        }}
+        regionShort={region.short}
+        regionName={region.name}
+        component={explainComponent ?? "seasonal"}
+      />
+      <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </main>
   );
 }

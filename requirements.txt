@@ -7,3 +7,4 @@ jupyter
 prophet
 fastapi
 uvicorn
+anthropic
