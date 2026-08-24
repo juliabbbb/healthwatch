@@ -136,7 +136,7 @@ export function AIExplanationModal({
       >
         <div className="flex items-start justify-between gap-3 pr-6">
           <div>
-            <DialogTitle className="flex items-center gap-2 font-display text-base">
+            <DialogTitle className="flex items-center gap-2 text-base">
               <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider text-primary">
                 <Bot className="size-3" /> AI-generated
               </span>

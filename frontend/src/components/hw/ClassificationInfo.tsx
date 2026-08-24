@@ -35,7 +35,7 @@ export function ClassificationInfo({
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-display text-lg">Hotspot classification</DialogTitle>
+          <DialogTitle className="text-lg">Hotspot classification</DialogTitle>
           <DialogDescription>
             Active metric: <span className="text-foreground">{meta.label}</span> ({meta.unit})
           </DialogDescription>

@@ -75,7 +75,7 @@ function RegionDetail() {
           >
             <ArrowLeft className="size-3.5" /> Back to map
           </Link>
-          <h1 className="font-display text-3xl">{region.name}</h1>
+          <h1 className="text-3xl">{region.name}</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             PSGC {region.code} · {region.short} · {region.island} · {region.classification} ·{" "}
             {region.population.toLocaleString()} population · {region.density.toLocaleString()}{" "}
@@ -229,7 +229,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub: string 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-4">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 font-display text-2xl">{value}</p>
+      <p className="mt-1 text-2xl">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{sub}</p>
     </div>
   );
@@ -246,7 +246,7 @@ function Panel({
 }) {
   return (
     <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
-      <h2 className="font-display text-lg">{title}</h2>
+      <h2 className="text-lg">{title}</h2>
       {subtitle && <p className="mb-3 mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
       {children}
     </section>

@@ -46,7 +46,7 @@ export function LayerSidebar({
     >
       <div className="flex items-center justify-between gap-2 border-b border-border px-3 py-2.5">
         {open && (
-          <span className="flex items-center gap-2 font-display text-sm">
+          <span className="flex items-center gap-2 text-sm">
             <Layers className="size-4 text-primary" /> Data layers
           </span>
         )}

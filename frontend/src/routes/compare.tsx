@@ -72,7 +72,7 @@ export default function ComparePage() {
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl">Comparative dashboard</h1>
+          <h1 className="text-3xl">Comparative dashboard</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Benchmark up to four regions on forecast load, risk tier and intervention priority ·{" "}
             {weekMeta(weekIndex).label} ({weekMeta(weekIndex).season} season) · ranked on{" "}
@@ -185,7 +185,7 @@ export default function ComparePage() {
         {rows.map((a) => (
           <section key={a.region.code} className="rounded-xl border border-border bg-card/40 p-4">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h2 className="font-display text-base">{a.region.name}</h2>
+              <h2 className="text-base">{a.region.name}</h2>
               <RiskBadge risk={a.risk} />
             </div>
             <ForecastChart

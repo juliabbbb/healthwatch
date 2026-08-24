@@ -39,7 +39,7 @@ export function ForecastCard({
       <div className="flex items-start justify-between gap-2 border-b border-border px-4 py-3">
         <div>
           <p className="label-caps">{a.region.short}</p>
-          <h2 className="font-display text-lg leading-tight">{a.region.name}</h2>
+          <h2 className="text-lg leading-tight">{a.region.name}</h2>
           <p className="mt-1 text-[11px] text-muted-foreground">
             {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
           </p>

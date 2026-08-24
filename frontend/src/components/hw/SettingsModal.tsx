@@ -22,7 +22,7 @@ export function SettingsModal({
         overlayClassName="z-[600] bg-black/50 backdrop-blur-md"
         className="z-[600] glass-panel max-w-md gap-0 rounded-xl border-border/70 p-5"
       >
-        <DialogTitle className="font-display text-lg">Settings</DialogTitle>
+        <DialogTitle className="text-lg">Settings</DialogTitle>
         <DialogDescription className="mt-1 text-xs">
           Dashboard preferences, stored locally in your browser.
         </DialogDescription>

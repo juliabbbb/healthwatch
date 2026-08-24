@@ -44,7 +44,7 @@ function Methodology() {
       >
         <ArrowLeft className="size-3.5" /> Back to map
       </Link>
-      <h1 className="font-display text-3xl">Data &amp; Methodology</h1>
+      <h1 className="text-3xl">Data &amp; Methodology</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
         HEALTHWATCH is a regional time-series decision-support prototype for seasonal illness
         outbreak prediction and hotspot classification across the {REGIONS.length} administrative
@@ -279,7 +279,7 @@ function Methodology() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-8">
-      <h2 className="mb-3 font-display text-lg">{title}</h2>
+      <h2 className="mb-3 text-lg">{title}</h2>
       {children}
     </section>
   );
