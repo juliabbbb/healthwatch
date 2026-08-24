@@ -1,5 +1,7 @@
 import json
 import os
+import time
+from pathlib import Path
 from datetime import datetime, timezone
 
 import pandas as pd
@@ -157,26 +159,51 @@ def _confidence(mape, skill_vs_naive, folds):
 # Objective 5 interpretability: the LLM is strictly a narration layer over
 # already-computed pipeline outputs (_FORECASTS/_CLASSIFICATION/_THRESHOLDS/
 # _METRICS). It never generates forecasts, tiers, or numbers of its own.
+_PLAIN_LANGUAGE_RULES = (
+    "AUDIENCE: anyone — a barangay health worker, a town official, or a "
+    "resident with NO statistics training. Explain like you are talking to "
+    "a neighbour.\n"
+    "STRICT VOCABULARY RULES — never print any of these words or anything "
+    "similar: pipeline, series, index, payload, JSON, ACF, autocorrelation, "
+    "lag, decomposition, residual, variance, percentile, threshold, MAPE, "
+    "RMSE, confidence interval, statistical, model, data point. Also never "
+    "print raw field names such as change_pct_2y, latest_index, peak_week, "
+    "strength_pct.\n"
+    "SAY IT IN EVERYDAY WORDS instead:\n"
+    "- trend change -> 'compared with two years ago, cases have fallen "
+    "sharply'\n"
+    "- seasonal strength -> 'cases rise and fall in a steady yearly "
+    "rhythm'\n"
+    "- wet vs dry season -> 'the rainy months (June to November)' vs 'the "
+    "drier months'\n"
+    "- forecast accuracy/confidence -> 'this outlook is usually close to "
+    "what really happens' or 'this outlook is less certain than usual'\n"
+    "- risk tier -> 'the alert level for dengue is high/low'\n"
+    "NUMBER RULES: round naturally ('about 90% lower', 'around 600 cases a "
+    "week'). Always attach meaning ('roughly a tenth of what it was'). Name "
+    "MONTHS, never week numbers ('around September', never 'week 36').\n"
+    "SHAPE RULES: open with the single most important message in the first "
+    "sentence. End with one short practical takeaway for the community when "
+    "it fits. Keep every sentence under about 18 words.\n"
+    "FORMAT RULES: plain sentences only. No markdown, no bullet points, no "
+    "headings, no asterisks, no quotes around terms, no parenthesised field "
+    "names. Do not mention HEALTHWATCH systems, pipelines, models, or where "
+    "the numbers came from — just talk about dengue in the region.\n"
+    "TRUTH RULES: use ONLY the numbers provided below. Never invent, round-"
+    "up, or recompute any figure. If something is missing, simply do not "
+    "mention it."
+)
+
 _ANALYSIS_SYSTEM_PROMPT = (
-    "You are the narrative layer for HEALTHWATCH, a dengue outbreak "
-    "decision-support dashboard used by Philippine local government and "
-    "health officers. You receive one JSON object of pipeline-computed "
-    "numbers for one region: latest observed weekly cases, the model's "
-    "point forecast with its interval, the percentile-based hotspot "
-    "classification (p50/p75 thresholds and risk tier), walk-forward "
-    "validation accuracy, and a calibrated confidence label.\n"
-    "Write 2-4 sentences of plain-language prose for a non-technical "
-    "municipal/city health officer. Strict rules:\n"
-    "- Use ONLY the numbers in the payload. Never invent or recompute a "
-    "case count, percentage, threshold, or risk tier. If a number you would "
-    "need is not in the payload, do not state it.\n"
-    "- The forecast and risk tier were produced by HEALTHWATCH's statistical "
-    "pipeline; you only explain them. Never imply you generated them.\n"
-    "- Prefer plain phrasing ('forecast accuracy', 'expected range') over "
-    "jargon (MAPE, RMSE, p50/p75).\n"
-    "- When the confidence label is not High, surface that caveat rather "
-    "than leading only with the headline number.\n"
-    "- Output prose only: no markdown, headings, or bullet lists."
+    "You write short plain-language explanations of dengue numbers for "
+    "Philippine communities, based only on the figures you are given.\n"
+    + _PLAIN_LANGUAGE_RULES
+    + "\nTASK: using the JSON figures, write 3-4 sentences covering: (1) how "
+    "many dengue cases are happening now, in everyday terms; (2) what is "
+    "expected in the coming weeks, including the honest range if given; (3) "
+    "the current alert level in plain words, with a caution note only if the "
+    "outlook is flagged as uncertain; (4) one practical thing the community "
+    "can focus on now."
 )
 
 
@@ -265,6 +292,299 @@ def _build_grounding(db_region, disease, window):
     }
 
 
+_MONTH_LABELS = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+]
+
+
+def _month_label(iso_week):
+    # Same week→month approximation as the Seasonality page (data.ts MONTHS).
+    return _MONTH_LABELS[min(11, int(((iso_week - 1) / 52) * 12))]
+
+
+def _variance(values):
+    mean = sum(values) / len(values)
+    return sum((v - mean) ** 2 for v in values) / len(values)
+
+
+def _seasonality_grounding(db_region):
+    """Deterministic server-side port of the Seasonality page's decomposition
+    (frontend data.ts `decompose()`/`acf()`): centred ±26-week moving-average
+    trend, week-of-year seasonal index, residual noise and autocorrelation.
+    Computed from the already-loaded history tables only — the LLM narrates
+    these numbers, it never derives its own."""
+
+    hist = _history(db_region)
+    dates = list(hist["date"])
+    values = [float(c) for c in hist["cases"]]
+    n = len(values)
+
+    half = 26
+    trend_pts = []
+    for i in range(n):
+        lo, hi = max(0, i - half), min(n, i + half + 1)
+        window = values[lo:hi]
+        trend_pts.append(sum(window) / len(window))
+
+    weeks = [int(d.isocalendar().week) for d in dates]
+    detrended = [v - t for v, t in zip(values, trend_pts)]
+    buckets = [[] for _ in range(52)]
+    for dval, wk in zip(detrended, weeks):
+        buckets[(wk - 1) % 52].append(dval)
+    seasonal_idx = [(sum(b) / len(b)) if b else 0.0 for b in buckets]
+    seas_pts = [seasonal_idx[(wk - 1) % 52] for wk in weeks]
+    resid_pts = [v - t - s for v, t, s in zip(values, trend_pts, seas_pts)]
+
+    seas_var = _variance(seas_pts)
+    resid_var = _variance(resid_pts)
+    strength_pct = round(100 * seas_var / ((seas_var + resid_var) or 1))
+
+    mean = sum(values) / n
+    denom = sum((v - mean) ** 2 for v in values) or 1
+    acfs = {}
+    for lag in range(1, 61):
+        num = sum((values[i] - mean) * (values[i - lag] - mean) for i in range(lag, n))
+        acfs[lag] = round(num / denom, 3)
+    dominant_lag = max(acfs, key=lambda k: acfs[k])
+
+    peak_week = max(range(52), key=lambda w: seasonal_idx[w]) + 1
+    trough_week = min(range(52), key=lambda w: seasonal_idx[w]) + 1
+
+    wet = [v for d, v in zip(dates, values) if d.month in WET_MONTHS]
+    dry = [v for d, v in zip(dates, values) if d.month not in WET_MONTHS]
+
+    trend_change = (
+        round((trend_pts[-1] - trend_pts[n - 105]) / (trend_pts[n - 105] or 1) * 100)
+        if n > 104
+        else 0
+    )
+
+    return {
+        "region": db_region,
+        "observed_weeks": n,
+        "series_start": dates[0].date().isoformat(),
+        "series_end": dates[-1].date().isoformat(),
+        "trend": {"latest_index": round(trend_pts[-1]), "change_pct_2y": trend_change},
+        "seasonal": {
+            "peak_week": peak_week,
+            "peak_month": _month_label(peak_week),
+            "trough_week": trough_week,
+            "trough_month": _month_label(trough_week),
+            "strength_pct": strength_pct,
+        },
+        "cycle": {
+            "acf_lag52": acfs.get(52, 0.0),
+            "acf_lag26": acfs.get(26, 0.0),
+            "dominant_lag_weeks": dominant_lag,
+            "dominant_lag_acf": acfs[dominant_lag],
+        },
+        "wet_dry": {
+            "wet_season_mean_cases": round(sum(wet) / len(wet), 1) if wet else None,
+            "dry_season_mean_cases": round(sum(dry) / len(dry), 1) if dry else None,
+        },
+    }
+
+
+# Objective 1/5 interpretability for the Seasonality page: same rules as the
+# region forecast narration — pipeline numbers in, prose out, nothing invented.
+_SEASONALITY_SYSTEM_PROMPT = (
+    "You write short plain-language explanations of dengue numbers for "
+    "Philippine communities, based only on the figures you are given.\n"
+    + _PLAIN_LANGUAGE_RULES
+    + "\nTASK: using the JSON figures, write 2-3 sentences about the yearly "
+    "dengue pattern the user is looking at. Name months instead of week "
+    "numbers whenever a week number appears in the figures."
+)
+
+_SEASONALITY_FOCUS = {
+    "observed": (
+        "Focus on how many cases are happening now compared with two years "
+        "ago and with what is usual for this region."
+    ),
+    "trend": (
+        "Focus on the long-term direction across the years shown — whether "
+        "dengue is rising, falling, or steady — and how big that change is."
+    ),
+    "seasonal": (
+        "Focus on the yearly rhythm: which months cases usually rise to a "
+        "peak and fall to a low, and how rainy months differ from dry ones."
+    ),
+    "residual": (
+        "Focus on unusual weeks that jumped above or dropped below the normal "
+        "pattern, and note that some up-and-down week to week is normal."
+    ),
+    "acf": (
+        "Focus on how reliably this pattern repeats every year — whether one "
+        "year looks much like the last."
+    ),
+}
+
+
+def _load_dotenv() -> None:
+    """Populate os.environ from a repo-root .env file (KEY=VALUE lines).
+
+    Existing environment variables always win, so a real shell/export still
+    takes precedence. Keeps secrets out of the codebase (.env is
+    git-ignored) and makes the backend independent of how it was launched."""
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8-sig").splitlines():
+        line = line.strip().lstrip("\ufeff")
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and key not in os.environ:
+            os.environ[key] = value
+
+
+_load_dotenv()
+
+
+def _narrate_with_gemini(api_key, system_prompt, user_prompt):
+    """Google AI Studio (Gemini) via plain stdlib HTTP — no extra dependency.
+
+    Tries the primary model, then GEMINI_FALLBACK_MODELS in order. Free-tier
+    quotas are per model, so when the primary is rate-limited (429) a lighter
+    fallback usually still has headroom."""
+    from urllib.error import HTTPError, URLError
+    from urllib.request import Request, urlopen
+
+    primary = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
+    models = [primary]
+    for candidate in os.environ.get(
+        "GEMINI_FALLBACK_MODELS", "gemini-3.5-flash-lite,gemini-3.1-flash-lite"
+    ).split(","):
+        candidate = candidate.strip()
+        if candidate and candidate != primary and candidate not in models:
+            models.append(candidate)
+
+    payload = {
+        "systemInstruction": {"parts": [{"text": system_prompt}]},
+        "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+        # thinkingBudget 0 is rejected by gemini-3.x; -1 lets the model use
+        # as much hidden reasoning as it needs, so maxOutputTokens must be
+        # generous enough that prose never gets starved (finish=MAX_TOKENS).
+        "generationConfig": {
+            "temperature": 0.4,
+            "maxOutputTokens": 4096,
+            "thinkingConfig": {"thinkingBudget": -1},
+        },
+    }
+
+    narrative = ""
+    used_model = None
+    last_code = None
+    try:
+        # Free tier occasionally returns transient 429/503 bursts; one quiet
+        # retry after a short pause keeps single clicks from failing before
+        # we move on to the next model in the chain.
+        for candidate in models:
+            request = Request(
+                "https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{candidate}:generateContent",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+                method="POST",
+            )
+            for attempt in range(2):
+                try:
+                    with urlopen(request, timeout=60) as response:
+                        body = json.loads(response.read().decode("utf-8"))
+                    parts = body["candidates"][0]["content"]["parts"]
+                    narrative = "".join(part.get("text", "") for part in parts).strip()
+                    used_model = candidate
+                    break
+                except HTTPError as exc:
+                    last_code = exc.code
+                    if exc.code in (429, 500, 503) and attempt == 0:
+                        time.sleep(6)
+                        continue
+                    break
+            if used_model:
+                break
+        if not used_model:
+            if last_code == 429:
+                detail = (
+                    "AI-assisted analysis failed: free-tier quota reached on "
+                    "all configured Gemini models — try again later"
+                )
+            else:
+                detail = f"AI-assisted analysis failed: HTTPError {last_code}"
+            raise HTTPException(status_code=503, detail=detail)
+        narrative = (
+            narrative.replace("**", "")
+            .replace("`", "")
+            .lstrip("-• ")
+            .strip()
+        )
+    except (HTTPError, URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
+        suffix = f" {exc.code}" if isinstance(exc, HTTPError) else ""
+        raise HTTPException(
+            status_code=503,
+            detail=f"AI-assisted analysis failed: {type(exc).__name__}{suffix} — "
+            "try again in a moment",
+        )
+    if not narrative:
+        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
+    return narrative, used_model
+
+
+def _narrate_with_anthropic(api_key, system_prompt, user_prompt):
+    try:
+        import anthropic
+    except ImportError:
+        raise HTTPException(
+            status_code=503,
+            detail="AI-assisted analysis unavailable: anthropic package not installed.",
+        )
+
+    model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    try:
+        client = anthropic.Anthropic(api_key=api_key, timeout=30.0, max_retries=0)
+        message = client.messages.create(
+            model=model,
+            max_tokens=400,
+            system=system_prompt,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        narrative = "".join(
+            block.text for block in message.content if getattr(block, "type", "") == "text"
+        ).strip()
+    except Exception as exc:  # timeout, rate limit, auth, bad model id…
+        raise HTTPException(
+            status_code=503,
+            detail=f"AI-assisted analysis failed: {type(exc).__name__}",
+        )
+    if not narrative:
+        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
+    return narrative, model
+
+
+def _llm_narrate(system_prompt, user_prompt):
+    """Shared constrained LLM call for interpretability endpoints.
+
+    Provider is picked by which key the server has: GEMINI_API_KEY (free tier
+    at aistudio.google.com) wins over ANTHROPIC_API_KEY. Fails soft (503) on
+    missing key or API errors so no dashboard view ever breaks because of the
+    AI layer."""
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        return _narrate_with_gemini(gemini_key, system_prompt, user_prompt)
+
+    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+    if anthropic_key:
+        return _narrate_with_anthropic(anthropic_key, system_prompt, user_prompt)
+
+    raise HTTPException(
+        status_code=503,
+        detail="AI-assisted analysis unavailable: set GEMINI_API_KEY (free tier) "
+        "or ANTHROPIC_API_KEY on the server.",
+    )
+
+
 app = FastAPI(
     title="HEALTHWATCH API",
     description=(
@@ -300,7 +620,7 @@ def root():
             "objective_3_hotspot_classification": "/risk-classification/{disease} and /thresholds/{disease}",
             "objective_4_dashboard_comparison": "/regions and /metrics/{region}",
             "objective_5_domain_rules": "non-negativity clipping and wet/dry season regressor applied in pipeline; see /metrics for validation",
-            "objective_5_interpretability": "/analysis/{region} (opt-in LLM narrative over pipeline outputs)",
+            "objective_5_interpretability": "/analysis/{region} and /analysis/seasonality (opt-in LLM narratives over pipeline outputs)",
         },
         "supported_diseases": SUPPORTED_DISEASES,
     }
@@ -448,6 +768,47 @@ def metrics(
     }
 
 
+@app.get("/analysis/seasonality", tags=["objective_1_patterns", "objective_5_interpretability"])
+def analysis_seasonality(
+    region: str = Query(...),
+    disease: str = Query(default=DISEASE_DEFAULT),
+    component: str = Query(default="seasonal"),
+):
+    """Opt-in AI narrative for Seasonality-page charts (right-click → explain).
+
+    `component` selects which chart was clicked (observed/trend/seasonal/
+    residual/acf); the payload always carries the full deterministic
+    decomposition so the narrative stays grounded and auditable."""
+    _check_disease(disease)
+    db_region = _resolve_region(region)
+    if db_region is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    allowed_components = ("observed", "trend", "seasonal", "residual", "acf")
+    if component not in allowed_components:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Unknown component '{component}'. Allowed: {list(allowed_components)}",
+        )
+    grounding = _seasonality_grounding(db_region)
+    grounding["disease"] = disease
+
+    user_prompt = (
+        f"The user is looking at the '{component}' chart for this region. "
+        f"{_SEASONALITY_FOCUS[component]} Figures you may use:\n"
+        + json.dumps(grounding)
+    )
+    narrative, model = _llm_narrate(_SEASONALITY_SYSTEM_PROMPT, user_prompt)
+
+    return {
+        "region": region,
+        "disease": disease,
+        "component": component,
+        "narrative": narrative,
+        "grounding_data": grounding,
+        "model": model,
+    }
+
+
 @app.get("/analysis/{region}", tags=["objective_5_interpretability"])
 def analysis(
     region: str,
@@ -466,44 +827,11 @@ def analysis(
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     grounding = _build_grounding(db_region, disease, window)
 
-    api_key = os.environ.get("ANTHROPIC_API_KEY")
-    if not api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="AI-assisted analysis unavailable: ANTHROPIC_API_KEY is not configured on the server.",
-        )
-    try:
-        import anthropic
-    except ImportError:
-        raise HTTPException(
-            status_code=503,
-            detail="AI-assisted analysis unavailable: anthropic package not installed.",
-        )
-
-    model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
     user_prompt = (
-        "Explain this HEALTHWATCH region assessment in 2-4 plain-language "
-        "sentences for a local health officer. Ground every number in this "
-        "JSON:\n" + json.dumps(grounding)
+        "Explain the current dengue situation for this region. Figures you "
+        "may use:\n" + json.dumps(grounding)
     )
-    try:
-        client = anthropic.Anthropic(api_key=api_key, timeout=30.0, max_retries=0)
-        message = client.messages.create(
-            model=model,
-            max_tokens=400,
-            system=_ANALYSIS_SYSTEM_PROMPT,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
-        narrative = "".join(
-            block.text for block in message.content if getattr(block, "type", "") == "text"
-        ).strip()
-    except Exception as exc:  # timeout, rate limit, auth, bad model id…
-        raise HTTPException(
-            status_code=503,
-            detail=f"AI-assisted analysis failed: {type(exc).__name__}",
-        )
-    if not narrative:
-        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
+    narrative, model = _llm_narrate(_ANALYSIS_SYSTEM_PROMPT, user_prompt)
 
     return {
         "region": region,

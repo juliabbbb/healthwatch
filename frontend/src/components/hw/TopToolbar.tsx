@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Download, Minus, Plus, Search, Settings, Share2 } from "lucide-react";
+import { SettingsModal } from "@/components/hw/SettingsModal";
 import { REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +17,7 @@ export function TopToolbar({
 }) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const matches = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -72,9 +74,9 @@ export function TopToolbar({
 
       <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
         {trailing}
-        <IconLink to="/settings" label="Settings">
+        <IconButton label="Settings" onClick={() => setSettingsOpen(true)}>
           <Settings className="size-4" />
-        </IconLink>
+        </IconButton>
         <IconButton label="Share view" onClick={() => shareView()}>
           <Share2 className="size-4" />
         </IconButton>
@@ -93,6 +95,8 @@ export function TopToolbar({
           </>
         )}
       </div>
+
+      <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </div>
   );
 }
@@ -139,26 +143,5 @@ function IconButton({
     >
       {children}
     </button>
-  );
-}
-
-function IconLink({
-  to,
-  label,
-  children,
-}: {
-  to: string;
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link
-      to={to}
-      title={label}
-      aria-label={label}
-      className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-    >
-      {children}
-    </Link>
   );
 }
