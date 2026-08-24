@@ -131,12 +131,12 @@ export function AIExplanationModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        overlayClassName="z-[600] bg-black/50 backdrop-blur-md"
+        overlayClassName="z-[600] bg-black/40 backdrop-blur-sm dark:bg-black/60"
         className="z-[600] glass-panel max-w-xl gap-0 rounded-xl border-border/70 p-5"
       >
         <div className="flex items-start justify-between gap-3 pr-6">
           <div>
-            <DialogTitle className="flex items-center gap-2 font-display text-base">
+            <DialogTitle className="flex items-center gap-2 text-base">
               <span className="inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider text-primary">
                 <Bot className="size-3" /> AI-generated
               </span>

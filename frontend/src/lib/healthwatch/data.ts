@@ -768,10 +768,28 @@ export function recommendations(a: RegionAssessment): Recommendation[] {
 /* Presentation helpers                                                */
 /* ------------------------------------------------------------------ */
 
-export const RISK_META: Record<RiskLevel, { label: string; color: string; tone: string }> = {
-  low: { label: "Low", color: "var(--risk-low)", tone: "risk-low" },
-  moderate: { label: "Moderate", color: "var(--risk-moderate)", tone: "risk-moderate" },
-  high: { label: "High", color: "var(--risk-high)", tone: "risk-high" },
+export const RISK_META: Record<
+  RiskLevel,
+  { label: string; color: string; solidColor: string; tone: string }
+> = {
+  low: {
+    label: "Low",
+    color: "var(--risk-low)",
+    solidColor: "var(--risk-low-solid)",
+    tone: "risk-low",
+  },
+  moderate: {
+    label: "Moderate",
+    color: "var(--risk-moderate)",
+    solidColor: "var(--risk-moderate-solid)",
+    tone: "risk-moderate",
+  },
+  high: {
+    label: "High",
+    color: "var(--risk-high)",
+    solidColor: "var(--risk-high-solid)",
+    tone: "risk-high",
+  },
 };
 
 export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2021-W02)

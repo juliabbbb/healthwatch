@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   ChevronsDownUp,
   ChevronsUpDown,
@@ -30,13 +30,20 @@ export function TimelineScrubber({
   const [expanded, setExpanded] = useState(false);
   const meta = weekMeta(weekIndex);
 
+  const cbRef = useRef(onChange);
+  cbRef.current = onChange;
+  const idxRef = useRef(weekIndex);
+
   useEffect(() => {
     if (!playing) return;
+    idxRef.current = weekIndex;
     const id = window.setInterval(() => {
-      onChange(weekIndex + 1 >= TOTAL_WEEKS ? 0 : weekIndex + 1);
-    }, 160);
+      idxRef.current = idxRef.current + 1 >= TOTAL_WEEKS ? 0 : idxRef.current + 1;
+      cbRef.current(idxRef.current);
+    }, 200);
     return () => window.clearInterval(id);
-  }, [playing, weekIndex, onChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- stable interval; latest values via refs
+  }, [playing]);
 
   const pct = (weekIndex / (TOTAL_WEEKS - 1)) * 100;
   const histPct = (HIST_WEEKS / (TOTAL_WEEKS - 1)) * 100;
@@ -56,7 +63,7 @@ export function TimelineScrubber({
   );
 
   return (
-    <div className="glass-panel pointer-events-auto rounded-xl px-3.5 py-2.5">
+    <div className="glass-panel pointer-events-auto rounded-xl px-4 py-3">
       <div className="flex items-center gap-3">
         {/* Transport — icon-only cluster */}
         <div className="flex items-center gap-1">

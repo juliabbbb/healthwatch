@@ -14,6 +14,7 @@ import {
   type RiskLevel,
 } from "@/lib/healthwatch/data";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
+import { StatusChip } from "./StatusChip";
 
 export function ForecastCard({
   regionCode,
@@ -39,7 +40,7 @@ export function ForecastCard({
       <div className="flex items-start justify-between gap-2 border-b border-border px-4 py-3">
         <div>
           <p className="label-caps">{a.region.short}</p>
-          <h2 className="font-display text-lg leading-tight">{a.region.name}</h2>
+          <h2 className="text-lg leading-tight">{a.region.name}</h2>
           <p className="mt-1 text-[11px] text-muted-foreground">
             {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
           </p>
@@ -90,15 +91,9 @@ export function ForecastCard({
       <div className="border-t border-border px-4 py-3">
         <div className="mb-2 flex items-center justify-between">
           <p className="label-caps">Model validation</p>
-          <span
-            className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-            style={{
-              color: RISK_META[validation.tone].color,
-              backgroundColor: `color-mix(in oklab, ${RISK_META[validation.tone].color} 18%, transparent)`,
-            }}
-          >
-            {validation.label}
-          </span>
+          <StatusChip>
+            {validation.label} · MAPE {validation.mape}%
+          </StatusChip>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center">
           {[
@@ -133,7 +128,7 @@ export function ForecastCard({
                     }}
                   />
                 </span>
-                <span className="w-24 text-right tabular-nums">
+                <span className="w-24 text-right font-mono tabular-nums">
                   {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
                   {formatMetric(metricValue(p.upper, a.region, mode), mode)}
                 </span>

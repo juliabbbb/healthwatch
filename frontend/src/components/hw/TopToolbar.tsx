@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Download, Minus, Plus, Search, Settings, Share2 } from "lucide-react";
+import { Download, Minus, Moon, Plus, Search, Settings, Share2, Sun } from "lucide-react";
 import { SettingsModal } from "@/components/hw/SettingsModal";
+import { useTheme } from "@/hooks/use-theme";
 import { REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export function TopToolbar({
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [theme, toggleTheme] = useTheme();
 
   const matches = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -33,7 +35,7 @@ export function TopToolbar({
   return (
     <div className="pointer-events-auto flex items-start gap-2">
       <div className="relative">
-        <div className="glass-panel flex items-center gap-2 rounded-xl px-3 py-2">
+        <div className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2.5">
           <Search className="size-4 text-muted-foreground" />
           <input
             value={q}
@@ -74,6 +76,12 @@ export function TopToolbar({
 
       <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
         {trailing}
+        <IconButton
+          label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+          onClick={toggleTheme}
+        >
+          {theme === "dark" ? <Sun className="size-4" /> : <Moon className="size-4" />}
+        </IconButton>
         <IconButton label="Settings" onClick={() => setSettingsOpen(true)}>
           <Settings className="size-4" />
         </IconButton>

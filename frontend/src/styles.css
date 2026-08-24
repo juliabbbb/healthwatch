@@ -5,14 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * HEALTHWATCH design system — dark operations-console theme.
+ * HEALTHWATCH design system — warm light theme.
  * All colors are oklch semantic tokens. Never hardcode colors in components.
+ * Risk colors are reserved exclusively for risk data.
  */
 
 @theme inline {
-  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --font-sans: "General Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -45,6 +45,9 @@
   --color-risk-low: var(--risk-low);
   --color-risk-moderate: var(--risk-moderate);
   --color-risk-high: var(--risk-high);
+  --color-risk-low-solid: var(--risk-low-solid);
+  --color-risk-moderate-solid: var(--risk-moderate-solid);
+  --color-risk-high-solid: var(--risk-high-solid);
   --color-wet: var(--wet);
   --color-dry: var(--dry);
   --color-panel: var(--panel);
@@ -66,7 +69,67 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.625rem;
+
+  --background: oklch(0.98 0.007 81);        /* warm cream, not white */
+  --foreground: oklch(0.24 0.008 85);         /* near-black ink, not pure black */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.24 0.008 85);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.24 0.008 85);
+
+  --primary: oklch(0.70 0.19 35);             /* warm coral — the one accent */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.019 256);         /* pale sky blue */
+  --secondary-foreground: oklch(0.34 0.063 249);
+  --muted: oklch(0.94 0.013 82);
+  --muted-foreground: oklch(0.51 0.019 79);
+  --accent: oklch(0.91 0.111 90);             /* pale sun yellow, sparing use */
+  --accent-foreground: oklch(0.31 0.058 92);
+  --destructive: oklch(0.59 0.188 32);
+  --destructive-foreground: oklch(1 0 0);
+
+  --border: oklch(0.24 0.008 85 / 10%);
+  --input: oklch(0.24 0.008 85 / 14%);
+  --ring: oklch(0.70 0.19 35 / 55%);
+
+  /* risk semantics — green/amber/red at a glance, tuned for light bg */
+  --risk-low: oklch(0.62 0.129 162);
+  --risk-moderate: oklch(0.75 0.152 80);
+  --risk-high: oklch(0.59 0.188 32);
+  /* deeper variants for solid badges carrying white text (WCAG AA ≥4.5:1);
+     maps/legends keep the brighter tokens above */
+  --risk-low-solid: oklch(0.508 0.118 165);    /* ≈ emerald-700 */
+  --risk-moderate-solid: oklch(0.555 0.116 66); /* ≈ amber-700 */
+  --risk-high-solid: oklch(0.517 0.176 27);     /* ≈ red-700 */
+  --wet: oklch(0.64 0.117 234);
+  --dry: oklch(0.68 0.129 72);
+
+  --panel: oklch(1 0 0 / 88%);
+  --panel-border: oklch(0.24 0.008 85 / 10%);
+
+  --chart-1: oklch(0.70 0.19 35);   /* coral */
+  --chart-2: oklch(0.64 0.117 234); /* teal/sky */
+  --chart-3: oklch(0.62 0.129 162); /* green */
+  --chart-4: oklch(0.75 0.152 80);  /* amber */
+  --chart-5: oklch(0.56 0.129 307); /* plum, last resort */
+
+  --sidebar: oklch(0.24 0.008 85);           /* one dark surface kept for contrast */
+  --sidebar-foreground: oklch(0.96 0.013 87);
+  --sidebar-primary: oklch(0.70 0.19 35);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.30 0.01 85);
+  --sidebar-accent-foreground: oklch(0.96 0.013 87);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.70 0.19 35 / 55%);
+}
+
+/*
+ * Dark theme — the original operations-console palette, kept intact and
+ * activated by the theme toggle (`.dark` on <html>, persisted per browser).
+ */
+.dark {
+  color-scheme: dark;
 
   --background: oklch(0.16 0.014 248);
   --foreground: oklch(0.96 0.005 248);
@@ -113,8 +176,11 @@
   --sidebar-ring: oklch(0.78 0.14 196 / 60%);
 }
 
-.dark {
-  color-scheme: dark;
+.dark .glass-panel {
+  backdrop-filter: blur(12px) saturate(140%);
+  box-shadow:
+    0 18px 50px -20px oklch(0 0 0 / 70%),
+    inset 0 1px 0 oklch(1 0 0 / 6%);
 }
 
 @layer base {
@@ -132,20 +198,19 @@
 
   h1,
   h2,
-  h3,
-  .font-display {
-    font-family: var(--font-display);
-    letter-spacing: -0.015em;
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 }
 
 @utility glass-panel {
   background-color: var(--panel);
-  backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(10px) saturate(120%);
   border: 1px solid var(--panel-border);
   box-shadow:
-    0 18px 50px -20px oklch(0 0 0 / 70%),
-    inset 0 1px 0 oklch(1 0 0 / 6%);
+    0 1px 2px oklch(0.24 0.008 85 / 6%),
+    0 8px 24px -12px oklch(0.24 0.008 85 / 12%);
 }
 
 @utility hw-scroll {
@@ -154,27 +219,37 @@
 }
 
 @utility label-caps {
+  font-family: var(--font-mono);
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-muted-foreground);
 }
 
-/* Leaflet dark treatment */
+/* Leaflet — CartoDB raster basemaps (Positron light / Dark Matter dark) */
 .leaflet-container {
-  background: oklch(0.13 0.014 248);
+  background: var(--color-muted);
   font-family: var(--font-sans);
   outline: none;
 }
 
+/* Basemaps arrive well-tuned; only a gentle calm-down is needed. */
 .leaflet-tile-pane {
-  filter: brightness(0.62) saturate(0.55) contrast(1.08) hue-rotate(178deg) invert(1);
+  filter: saturate(0.9) brightness(1.02);
+}
+
+.dark .leaflet-tile-pane {
+  filter: brightness(0.94) saturate(0.92);
 }
 
 .leaflet-control-attribution {
-  background: oklch(0.16 0.014 248 / 75%) !important;
+  background: oklch(1 0 0 / 70%) !important;
   color: var(--color-muted-foreground) !important;
   font-size: 10px !important;
+}
+
+.dark .leaflet-control-attribution {
+  background: oklch(0.16 0.014 248 / 75%) !important;
 }
 
 .leaflet-control-attribution a {
@@ -186,14 +261,20 @@
 }
 
 .hw-tooltip {
-  background: oklch(0.16 0.014 248 / 88%) !important;
+  background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
   font-size: 10px !important;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 6px !important;
-  box-shadow: none !important;
+  box-shadow: 0 4px 12px oklch(0.24 0.008 85 / 12%) !important;
+}
+
+.dark .hw-tooltip {
+  box-shadow: 0 4px 12px oklch(0 0 0 / 45%) !important;
 }
 
 .hw-tooltip::before {

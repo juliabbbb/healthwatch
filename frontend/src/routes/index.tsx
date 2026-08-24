@@ -95,7 +95,7 @@ function MapView() {
         <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3 py-2">
           <Activity className="size-5 text-primary" />
           <div>
-            <p className="font-display text-sm leading-none tracking-wide">HEALTHWATCH</p>
+            <p className="text-sm leading-none tracking-wide">HEALTHWATCH</p>
             <p className="mt-1 text-[10px] text-muted-foreground">
               DOH · LGU outbreak decision support
             </p>

@@ -9,6 +9,7 @@ import {
   type ContextMenuAnchor,
 } from "@/components/hw/SeasonalityContextMenu";
 import { SeasonTag } from "@/components/hw/RiskBadge";
+import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import { ILLNESSES, REGIONS, REGION_BY_CODE, acf, decompose } from "@/lib/healthwatch/data";
@@ -138,7 +139,12 @@ function SeasonalityPage() {
       </Link>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="font-display text-3xl">Seasonal pattern identification</h1>
+          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+            <StatusChipRow
+              items={["Prophet", "Centered MA trend", "ACF · lags 1–60", "Weekly data"]}
+            />
+          </div>
+          <h1 className="text-3xl">Seasonal pattern identification</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Decompose any regional illness series into trend, seasonality and noise, then confirm
             the recurring annual cycle with 52-week autocorrelation.
@@ -203,7 +209,7 @@ function SeasonalityPage() {
         className="mt-6 rounded-xl border border-border bg-card/40 p-4"
         onContextMenu={(e) => openMenu(e, "decomposition")}
       >
-        <h2 className="font-display text-lg">Trend / seasonality / noise</h2>
+        <h2 className="text-lg">Trend / seasonality / noise</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
           {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2017–2023 split
           into a 52-week centred moving-average trend, a week-of-year seasonal index and the
@@ -230,7 +236,7 @@ function SeasonalityPage() {
         className="mt-6 rounded-xl border border-border bg-card/40 p-4"
         onContextMenu={(e) => openMenu(e, "acf")}
       >
-        <h2 className="font-display text-lg">52-week cycle indicators</h2>
+        <h2 className="text-lg">52-week cycle indicators</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
           Autocorrelation of the observed series against itself at increasing lags. A pronounced
           spike at lag 52 (marked) is the signature of a recurring annual outbreak cycle.
@@ -275,7 +281,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub: string 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-4">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 font-display text-2xl">{value}</p>
+      <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sub}</p>
     </div>
   );

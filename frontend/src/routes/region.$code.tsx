@@ -75,7 +75,7 @@ function RegionDetail() {
           >
             <ArrowLeft className="size-3.5" /> Back to map
           </Link>
-          <h1 className="font-display text-3xl">{region.name}</h1>
+          <h1 className="text-3xl">{region.name}</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             PSGC {region.code} · {region.short} · {region.island} · {region.classification} ·{" "}
             {region.population.toLocaleString()} population · {region.density.toLocaleString()}{" "}
@@ -165,11 +165,11 @@ function RegionDetail() {
                 <tr key={p.index} className="border-t border-border">
                   <td className="py-1.5">{p.label}</td>
                   <td className="capitalize text-muted-foreground">{p.season}</td>
-                  <td className="text-right tabular-nums">{p.cases.toLocaleString()}</td>
-                  <td className="text-right tabular-nums text-muted-foreground">
+                  <td className="text-right font-mono tabular-nums">{p.cases.toLocaleString()}</td>
+                  <td className="text-right font-mono tabular-nums text-muted-foreground">
                     {p.lower.toLocaleString()}
                   </td>
-                  <td className="text-right tabular-nums text-muted-foreground">
+                  <td className="text-right font-mono tabular-nums text-muted-foreground">
                     {p.upper.toLocaleString()}
                   </td>
                 </tr>
@@ -229,7 +229,7 @@ function Kpi({ label, value, sub }: { label: string; value: string; sub: string 
   return (
     <div className="rounded-xl border border-border bg-card/60 p-4">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 font-display text-2xl">{value}</p>
+      <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{sub}</p>
     </div>
   );
@@ -246,7 +246,7 @@ function Panel({
 }) {
   return (
     <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
-      <h2 className="font-display text-lg">{title}</h2>
+      <h2 className="text-lg">{title}</h2>
       {subtitle && <p className="mb-3 mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
       {children}
     </section>

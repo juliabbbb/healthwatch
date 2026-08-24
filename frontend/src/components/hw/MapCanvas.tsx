@@ -1,5 +1,11 @@
 import { useEffect, useRef } from "react";
-import type { Map as LeafletMap, GeoJSON as LeafletGeoJSON, Layer, PathOptions } from "leaflet";
+import type {
+  Map as LeafletMap,
+  GeoJSON as LeafletGeoJSON,
+  Layer,
+  PathOptions,
+  TileLayer,
+} from "leaflet";
 import {
   REGION_BY_GEONAME,
   assessRegion,
@@ -21,6 +27,22 @@ interface Props {
 }
 
 const PH_CENTER: [number, number] = [12.8797, 121.774];
+
+/** CartoDB free basemaps — Positron for light, Dark Matter for dark. */
+const TILE_URLS = {
+  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+} as const;
+
+const CARTO_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
+  '&copy; <a href="https://carto.com/attributions">CARTO</a> · Boundaries: PSA PSGC';
+
+function prefersDark(): boolean {
+  return typeof document !== "undefined"
+    ? document.documentElement.classList.contains("dark")
+    : false;
+}
 
 function ramp(t: number): string {
   // 0 -> low, 1 -> high, through the risk palette
@@ -55,17 +77,21 @@ export default function MapCanvas({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const geoRef = useRef<LeafletGeoJSON | null>(null);
+  const tileRef = useRef<TileLayer | null>(null);
+  const darkRef = useRef<boolean>(false);
   const stateRef = useRef({ illness, weekIndex, layer, mode, selectedCode, onSelect });
   stateRef.current = { illness, weekIndex, layer, mode, selectedCode, onSelect };
 
   useEffect(() => {
     let cancelled = false;
     let map: LeafletMap | null = null;
+    let observer: MutationObserver | null = null;
 
     (async () => {
       const L = (await import("leaflet")).default;
       if (cancelled || !containerRef.current || mapRef.current) return;
 
+      darkRef.current = prefersDark();
       map = L.map(containerRef.current, {
         center: PH_CENTER,
         zoom: 6,
@@ -78,10 +104,14 @@ export default function MapCanvas({
       });
       mapRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors · Boundaries: PSA PSGC",
-        maxZoom: 12,
-      }).addTo(map);
+      tileRef.current = L.tileLayer(
+        darkRef.current ? TILE_URLS.dark : TILE_URLS.light,
+        {
+          attribution: CARTO_ATTRIBUTION,
+          subdomains: "abcd",
+          maxZoom: 12,
+        },
+      ).addTo(map);
 
       const res = await fetch("/geo/ph-regions.geojson");
       const geo = await res.json();
@@ -92,10 +122,14 @@ export default function MapCanvas({
         const s = stateRef.current;
         if (!region) return { fillOpacity: 0, weight: 0 };
         const selected = s.selectedCode === region.code;
+        // Border ink flips with the basemap so regions stay crisp on both.
+        const border = darkRef.current
+          ? { stroke: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)" }
+          : { stroke: selected ? "oklch(0.24 0.008 85 / 85%)" : "oklch(0.24 0.008 85 / 25%)" };
         return {
           fillColor: fillFor(region, s.illness, s.weekIndex, s.layer, s.mode),
           fillOpacity: selected ? 0.78 : 0.55,
-          color: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)",
+          color: border.stroke,
           weight: selected ? 2 : 0.8,
         };
       };
@@ -121,13 +155,31 @@ export default function MapCanvas({
         },
       }).addTo(map);
       geoRef.current = geoLayer;
+
+      // Swap basemap + border ink live when the theme toggles.
+      observer = new MutationObserver(() => {
+        const dark = prefersDark();
+        if (dark === darkRef.current) return;
+        darkRef.current = dark;
+        tileRef.current?.setUrl(dark ? TILE_URLS.dark : TILE_URLS.light);
+        const geoLayer = geoRef.current;
+        if (geoLayer) {
+          geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
+        }
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
     })();
 
     return () => {
       cancelled = true;
+      observer?.disconnect();
       mapRef.current?.remove();
       mapRef.current = null;
       geoRef.current = null;
+      tileRef.current = null;
     };
   }, []);
 
