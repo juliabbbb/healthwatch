@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, timezone
 
@@ -153,6 +154,117 @@ def _confidence(mape, skill_vs_naive, folds):
     }
 
 
+# Objective 5 interpretability: the LLM is strictly a narration layer over
+# already-computed pipeline outputs (_FORECASTS/_CLASSIFICATION/_THRESHOLDS/
+# _METRICS). It never generates forecasts, tiers, or numbers of its own.
+_ANALYSIS_SYSTEM_PROMPT = (
+    "You are the narrative layer for HEALTHWATCH, a dengue outbreak "
+    "decision-support dashboard used by Philippine local government and "
+    "health officers. You receive one JSON object of pipeline-computed "
+    "numbers for one region: latest observed weekly cases, the model's "
+    "point forecast with its interval, the percentile-based hotspot "
+    "classification (p50/p75 thresholds and risk tier), walk-forward "
+    "validation accuracy, and a calibrated confidence label.\n"
+    "Write 2-4 sentences of plain-language prose for a non-technical "
+    "municipal/city health officer. Strict rules:\n"
+    "- Use ONLY the numbers in the payload. Never invent or recompute a "
+    "case count, percentage, threshold, or risk tier. If a number you would "
+    "need is not in the payload, do not state it.\n"
+    "- The forecast and risk tier were produced by HEALTHWATCH's statistical "
+    "pipeline; you only explain them. Never imply you generated them.\n"
+    "- Prefer plain phrasing ('forecast accuracy', 'expected range') over "
+    "jargon (MAPE, RMSE, p50/p75).\n"
+    "- When the confidence label is not High, surface that caveat rather "
+    "than leading only with the headline number.\n"
+    "- Output prose only: no markdown, headings, or bullet lists."
+)
+
+
+def _build_grounding(db_region, disease, window):
+    """Assembles the structured payload the LLM narrates, from the same
+    DataFrames /series, /risk-classification, /thresholds and /metrics read.
+    Raises 404 when any required pipeline output is missing."""
+    hist = _history(db_region)
+    last_obs = hist.iloc[-1]
+
+    fcst = _FORECASTS[
+        (_FORECASTS["region"] == db_region) & (_FORECASTS["disease"] == disease)
+    ].sort_values("target_date")
+    if fcst.empty:
+        raise HTTPException(status_code=404, detail=f"No forecast available for '{db_region}'")
+    frow = fcst.iloc[0]
+
+    cls = _CLASSIFICATION[
+        (_CLASSIFICATION["region"] == db_region)
+        & (_CLASSIFICATION["disease"] == disease)
+    ].sort_values("date")
+    crow = cls[cls["date"] == frow["target_date"]]
+    if crow.empty:
+        crow = cls.tail(1)
+    if crow.empty:
+        raise HTTPException(status_code=404, detail=f"No risk classification for '{db_region}'")
+    crow = crow.iloc[0]
+
+    trow = _THRESHOLDS[
+        (_THRESHOLDS["region"] == db_region)
+        & (_THRESHOLDS["disease"] == disease)
+        & (_THRESHOLDS["iso_week"] == frow["target_date"].isocalendar().week)
+    ]
+    thresh = trow.iloc[0] if not trow.empty else None
+
+    mrows = _METRICS[
+        (_METRICS["region"] == db_region) & (_METRICS["disease"] == disease)
+    ]
+    primary = mrows[mrows["window"] == window]
+    if primary.empty:
+        raise HTTPException(status_code=404, detail=f"Window '{window}' not found")
+    mrow = primary.iloc[0]
+
+    return {
+        "region": db_region,
+        "disease": disease,
+        "observed_through": {
+            "week_label": _week_point(0, last_obs["date"], last_obs["cases"], False)["label"],
+            "cases": int(last_obs["cases"]),
+        },
+        "forecast": {
+            "target_date": frow["target_date"].date().isoformat(),
+            "yhat": float(frow["yhat"]),
+            "yhat_lower": float(frow["yhat_lower"]),
+            "yhat_upper": float(frow["yhat_upper"]),
+        },
+        "classification": {
+            "date": crow["date"].date().isoformat(),
+            "yhat": float(crow["yhat"]),
+            "p50": float(crow["p50"]),
+            "p75": float(crow["p75"]),
+            "risk_level": str(crow["risk_level"]),
+        },
+        "thresholds_for_iso_week": (
+            {
+                "iso_week": int(thresh["iso_week"]),
+                "p50": float(thresh["p50"]),
+                "p75": float(thresh["p75"]),
+            }
+            if thresh is not None
+            else None
+        ),
+        "validation": {
+            "window": window,
+            "MAE": float(mrow["MAE"]),
+            "RMSE": float(mrow["RMSE"]),
+            "MAPE": float(mrow["MAPE"]),
+            "weeks": int(mrow["weeks"]),
+            "skill_vs_naive_pct": (
+                None if pd.isna(mrow["skill_vs_naive_pct"]) else float(mrow["skill_vs_naive_pct"])
+            ),
+        },
+        "confidence": _confidence(
+            float(mrow["MAPE"]), float(mrow["skill_vs_naive_pct"]), int(mrow["weeks"])
+        ),
+    }
+
+
 app = FastAPI(
     title="HEALTHWATCH API",
     description=(
@@ -188,6 +300,7 @@ def root():
             "objective_3_hotspot_classification": "/risk-classification/{disease} and /thresholds/{disease}",
             "objective_4_dashboard_comparison": "/regions and /metrics/{region}",
             "objective_5_domain_rules": "non-negativity clipping and wet/dry season regressor applied in pipeline; see /metrics for validation",
+            "objective_5_interpretability": "/analysis/{region} (opt-in LLM narrative over pipeline outputs)",
         },
         "supported_diseases": SUPPORTED_DISEASES,
     }
@@ -332,4 +445,70 @@ def metrics(
         "mape": float(row["MAPE"]),
         "skill_vs_naive_pct": None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"]),
         "confidence": confidence,
+    }
+
+
+@app.get("/analysis/{region}", tags=["objective_5_interpretability"])
+def analysis(
+    region: str,
+    disease: str = Query(default=DISEASE_DEFAULT),
+    window: str = Query(default=PRIMARY_WINDOW),
+):
+    """Opt-in AI-assisted narrative over already-computed pipeline outputs.
+
+    The LLM only restates/explains the structured grounding payload; it never
+    produces forecasts or risk tiers itself. Fails soft (503) when the
+    Anthropic key is missing or the API errors so region pages stay usable.
+    """
+    _check_disease(disease)
+    db_region = _resolve_region(region)
+    if db_region is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    grounding = _build_grounding(db_region, disease, window)
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="AI-assisted analysis unavailable: ANTHROPIC_API_KEY is not configured on the server.",
+        )
+    try:
+        import anthropic
+    except ImportError:
+        raise HTTPException(
+            status_code=503,
+            detail="AI-assisted analysis unavailable: anthropic package not installed.",
+        )
+
+    model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    user_prompt = (
+        "Explain this HEALTHWATCH region assessment in 2-4 plain-language "
+        "sentences for a local health officer. Ground every number in this "
+        "JSON:\n" + json.dumps(grounding)
+    )
+    try:
+        client = anthropic.Anthropic(api_key=api_key, timeout=30.0, max_retries=0)
+        message = client.messages.create(
+            model=model,
+            max_tokens=400,
+            system=_ANALYSIS_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": user_prompt}],
+        )
+        narrative = "".join(
+            block.text for block in message.content if getattr(block, "type", "") == "text"
+        ).strip()
+    except Exception as exc:  # timeout, rate limit, auth, bad model id…
+        raise HTTPException(
+            status_code=503,
+            detail=f"AI-assisted analysis failed: {type(exc).__name__}",
+        )
+    if not narrative:
+        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
+
+    return {
+        "region": region,
+        "disease": disease,
+        "narrative": narrative,
+        "grounding_data": grounding,
+        "model": model,
     }

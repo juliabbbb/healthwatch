@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Download, Minus, Plus, Search, Share2 } from "lucide-react";
+import { Download, Minus, Plus, Search, Settings, Share2 } from "lucide-react";
 import { REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +72,9 @@ export function TopToolbar({
 
       <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
         {trailing}
+        <IconLink to="/settings" label="Settings">
+          <Settings className="size-4" />
+        </IconLink>
         <IconButton label="Share view" onClick={() => shareView()}>
           <Share2 className="size-4" />
         </IconButton>
@@ -136,5 +139,26 @@ function IconButton({
     >
       {children}
     </button>
+  );
+}
+
+function IconLink({
+  to,
+  label,
+  children,
+}: {
+  to: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      to={to}
+      title={label}
+      aria-label={label}
+      className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+    >
+      {children}
+    </Link>
   );
 }
