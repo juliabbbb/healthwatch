@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
+import type { DataLayer } from "./MapCanvas";
+import { cn } from "@/lib/utils";
 import {
   METRIC_META,
   RISK_META,
@@ -21,12 +23,18 @@ export function ForecastCard({
   illness,
   weekIndex,
   mode = "percapita",
+  onModeChange,
+  layer = "hotspot",
+  onLayerChange,
   onClose,
 }: {
   regionCode: string;
   illness: string;
   weekIndex: number;
   mode?: MetricMode;
+  onModeChange?: (m: MetricMode) => void;
+  layer?: DataLayer;
+  onLayerChange?: (l: DataLayer) => void;
   onClose: () => void;
 }) {
   const a = assessRegion(regionCode, illness, weekIndex, mode);
@@ -36,7 +44,7 @@ export function ForecastCard({
   const unit = METRIC_META[mode].unit;
 
   return (
-    <div className="glass-panel w-[21rem] max-w-[calc(100vw-2rem)] rounded-xl">
+    <div className="glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl">
       <div className="flex items-start justify-between gap-2 border-b border-border px-4 py-3">
         <div>
           <p className="label-caps">{a.region.short}</p>
@@ -86,6 +94,63 @@ export function ForecastCard({
             {a.changePct}% vs 4 weeks ago · {a.percentileRank}th national percentile
           </span>
         </div>
+      </div>
+
+      {/* Regional Data Layers & Classification Controls */}
+      <div className="border-t border-border px-4 py-3">
+        <p className="label-caps mb-2">Data layers</p>
+        {onLayerChange && (
+          <div className="mb-2.5 flex rounded-md border border-border p-0.5">
+            <button
+              onClick={() => onLayerChange("hotspot")}
+              className={cn(
+                "flex-1 rounded-[5px] px-2 py-1 text-[11px] font-medium transition-colors",
+                layer === "hotspot"
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Hotspot classification
+            </button>
+            <button
+              onClick={() => onLayerChange("density")}
+              className={cn(
+                "flex-1 rounded-[5px] px-2 py-1 text-[11px] font-medium transition-colors",
+                layer === "density"
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Case density
+            </button>
+          </div>
+        )}
+        {onModeChange && (
+          <>
+            <p className="label-caps mb-1.5">Classification metric</p>
+            <div className="flex rounded-md border border-border p-0.5">
+              {(["percapita", "raw"] as MetricMode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => onModeChange(m)}
+                  aria-pressed={mode === m}
+                  className={cn(
+                    "flex-1 rounded-[5px] px-2 py-1 text-[11px] font-medium transition-colors",
+                    mode === m
+                      ? "bg-primary/20 text-primary"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  {METRIC_META[m].short}
+                </button>
+              ))}
+            </div>
+            <p className="mt-1.5 text-[10px] leading-relaxed text-muted-foreground">
+              Hotspots are ranked on{" "}
+              <span className="text-foreground">{METRIC_META[mode].label.toLowerCase()}</span>.
+            </p>
+          </>
+        )}
       </div>
 
       <div className="border-t border-border px-4 py-3">
@@ -148,7 +213,7 @@ export function ForecastCard({
         </p>
       </div>
 
-      <div className="border-t border-border px-4 py-3">
+      <div className="sticky bottom-0 border-t border-border bg-card/95 backdrop-blur-md px-4 py-3 rounded-b-xl z-10">
         <Link
           to="/region/$code"
           params={{ code: regionCode }}
