@@ -29,6 +29,8 @@ export function ForecastCard({
   layer = "hotspot",
   onLayerChange,
   onClose,
+  outbreakSeason,
+  onOutbreakSeasonChange,
 }: {
   regionCode: string;
   illness: string;
@@ -37,7 +39,6 @@ export function ForecastCard({
   onModeChange?: (m: MetricMode) => void;
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
-  breakout?: never;
   onClose: () => void;
   outbreakSeason?: Season;
   onOutbreakSeasonChange?: (s: Season) => void;
