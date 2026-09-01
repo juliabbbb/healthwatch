@@ -1,0 +1,5 @@
+# ML pipeline dependencies (forecasting / feature engineering) — local use only.
+# NOT needed at runtime by the API, so it is intentionally excluded from
+# requirements.txt to keep Render deploys light and fast.
+-r requirements.txt
+prophet
