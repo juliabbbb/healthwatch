@@ -13,10 +13,21 @@ VAL_WEEKS = 52
 REFIT_EVERY = 4
 MIN_TRAIN_WEEKS = 104
 WINDOWS = {
-    "last_52w": None,
     "pre_covid_52w": "2019-12-31",
+    "pre_2025_52w": "2024-12-31",
 }
-TRAIN_END = pd.Timestamp("2019-12-31")
+TRAIN_END = pd.Timestamp("2024-12-31")
+
+# Seasonal outbreak "probe" forecasts: one 12-week window per season, expressed
+# as week offsets after the training-end Sunday. The dry probe is the immediate
+# Jan-Mar weeks (the already-existing forecast horizon); the wet probe targets
+# the historical dengue-peak window (Jul-Sep) of the next wet season so the
+# outbreak indicator can compare each season's expected load against that
+# season's own historical P75 (O2: wet AND dry season detection).
+SEASON_PROBE_WEEKS = 12
+DRY_PROBE_OFFSETS = (1, 12)
+WET_PROBE_OFFSETS = (27, 38)  # Jul-Sep, the climatological wet-season peak
+PROBE_HORIZON = 40
 
 
 def load_series():
@@ -108,13 +119,49 @@ def build_forecast(series, horizon=FORECAST_WEEKS):
     return fcst
 
 
-def run():
+def build_season_probes(series, horizon=PROBE_HORIZON):
+    """One 12-week 'probe' forecast per season (dry, wet) for a region.
+
+    Fits a single prophet model on history up to TRAIN_END, forecasts a long
+    enough horizon to reach both seasonal windows, then takes a 12-week slice
+    from each season: DRY = the immediate Jan-Mar window, WET = the Jul-Sep
+    climatological peak. Weekly offsets (1-based) count Sundays after the last
+    training Sunday.
+    """
+    series = series[series["ds"] <= TRAIN_END].reset_index(drop=True)
+    model = fit_prophet(series)
+    last = series["ds"].max()
+    future_dates = pd.date_range(last, periods=horizon + 1, freq="W-SUN")[1:]
+    fcst = predict(model, future_dates)
+    fcst["yhat"] = fcst["yhat"].clip(lower=0)
+    fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=0)
+    fcst["week_offset"] = range(1, len(fcst) + 1)
+
+    def slice_offsets(a, b):
+        return fcst[(fcst["week_offset"] >= a) & (fcst["week_offset"] <= b)].copy()
+
+    dry = slice_offsets(*DRY_PROBE_OFFSETS)
+    wet = slice_offsets(*WET_PROBE_OFFSETS)
+    dry["season"] = "dry"
+    wet["season"] = "wet"
+    out = pd.concat([dry, wet], ignore_index=True).drop(columns=["week_offset"])
+    return out[["ds", "season", "yhat", "yhat_lower", "yhat_upper"]]
+
+
+def run(probes_only=False):
     df = load_series()
+    probe_frames = []
     forecast_frames = []
     metric_rows = []
     val_rows = []
     for (disease, region), group in df.groupby(["disease", "region"]):
         series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
+        probes = build_season_probes(series)
+        probes.insert(0, "region", region)
+        probes.insert(0, "disease", disease)
+        probe_frames.append(probes)
+        if probes_only:
+            continue
         for window_name, end_date in WINDOWS.items():
             validation = walk_forward_validation(series, end_date=end_date)
             if validation is None:
@@ -147,6 +194,21 @@ def run():
         fcst.insert(0, "disease", disease)
         forecast_frames.append(fcst)
 
+    probes_df = pd.concat(probe_frames, ignore_index=True)
+    probes_df = probes_df.rename(columns={"ds": "target_date"})
+    probes_df = probes_df[
+        ["disease", "region", "target_date", "season", "yhat", "yhat_lower", "yhat_upper"]
+    ]
+    probes_path = ingest.save_processed(probes_df, "season_probes.csv")
+    print(f"Saved {len(probes_df)} seasonal probe rows -> {probes_path}")
+    if probes_only:
+        print(
+            probes_df.groupby("season")["target_date"]
+            .agg(["min", "max", "count"])
+            .to_string()
+        )
+        return probes_df, pd.DataFrame()
+
     forecasts = pd.concat(forecast_frames, ignore_index=True)
     forecasts = forecasts.rename(columns={"ds": "target_date"})
     forecasts = forecasts[
@@ -168,4 +230,7 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    import sys
+
+    probes_only = "--probes-only" in sys.argv
+    run(probes_only=probes_only)

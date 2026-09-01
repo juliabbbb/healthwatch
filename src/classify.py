@@ -3,7 +3,7 @@ import pandas as pd
 
 from . import ingest
 
-HISTORY_END_YEAR = 2019
+HISTORY_END = pd.Timestamp("2024-12-31")
 TIER_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
 
 # Calendar wet/dry season mapping used by the outbreak indicator, matching
@@ -23,7 +23,7 @@ def load_history():
         ingest.PROCESSED_DIR / "regional_dengue_weekly.csv", parse_dates=["date"]
     )
     df = pd.concat([national, regional], ignore_index=True)
-    return df[df["date"].dt.year <= HISTORY_END_YEAR].copy()
+    return df[df["date"] <= HISTORY_END].copy()
 
 
 def with_iso_week(df, date_col="date"):
@@ -78,12 +78,9 @@ def label(values, p50, p75):
     return np.where(values < p50, "Low", np.where(values <= p75, "Moderate", "High"))
 
 
-def classify_forecasts(thresholds):
-    forecasts = pd.read_csv(ingest.PROCESSED_DIR / "forecasts.csv").rename(
-        columns={"target_date": "date"}
-    )
-    forecasts["date"] = pd.to_datetime(forecasts["date"])
-    merged = with_iso_week(forecasts).merge(
+def _apply_tiers(rows, thresholds):
+    """Join risk tiers (p50/p75) onto forecast rows by iso_week and label them."""
+    merged = with_iso_week(rows).merge(
         thresholds, on=["disease", "region", "iso_week"], how="left"
     )
     missing = merged[merged[["p50", "p75"]].isna().any(axis=1)]
@@ -91,8 +88,35 @@ def classify_forecasts(thresholds):
         sample = missing[["region", "iso_week"]].drop_duplicates().head(5)
         raise ValueError(f"Missing historical thresholds for: {sample.to_dict('records')}")
     merged["risk_level"] = label(merged["yhat"], merged["p50"], merged["p75"])
+    return merged
+
+
+def classify_forecasts(thresholds):
+    forecasts = pd.read_csv(ingest.PROCESSED_DIR / "forecasts.csv").rename(
+        columns={"target_date": "date"}
+    )
+    forecasts["date"] = pd.to_datetime(forecasts["date"])
+    merged = _apply_tiers(forecasts, thresholds)
     out = merged[["disease", "region", "date", "yhat", "p50", "p75", "risk_level"]]
     return out.sort_values(["region", "date"], ignore_index=True)
+
+
+def classify_seasonal(thresholds):
+    """Classify the season-probe forecasts (dry + wet windows) into risk tiers.
+
+    Same weekly P75 thresholding as classify_forecasts, but applied to
+    season_probes.csv so each region gets a dry- and wet-season risk label for
+    the outbreak indicator, without altering the dashboard's next-12-weeks view.
+    """
+    probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
+        columns={"target_date": "date"}
+    )
+    probes["date"] = pd.to_datetime(probes["date"])
+    merged = _apply_tiers(probes, thresholds)
+    out = merged[
+        ["disease", "region", "season", "date", "yhat", "p50", "p75", "risk_level"]
+    ]
+    return out.sort_values(["region", "season", "date"], ignore_index=True)
 
 
 def tier_backtest(thresholds):
@@ -126,20 +150,24 @@ def run():
     thresholds = compute_thresholds(history)
     thresholds_path = ingest.save_processed(thresholds, "risk_thresholds.csv")
 
-    seasonal = compute_seasonal_thresholds(history)
-    seasonal_path = ingest.save_processed(seasonal, "seasonal_thresholds.csv")
+    seasonal_thr = compute_seasonal_thresholds(history)
+    seasonal_thr_path = ingest.save_processed(seasonal_thr, "seasonal_thresholds.csv")
 
     classification = classify_forecasts(thresholds)
     classification_path = ingest.save_processed(classification, "risk_classification.csv")
 
+    seasonal_cls = classify_seasonal(thresholds)
+    seasonal_cls_path = ingest.save_processed(seasonal_cls, "seasonal_classification.csv")
+
     accuracy = tier_backtest(thresholds)
     accuracy_path = ingest.save_processed(accuracy, "tier_accuracy.csv")
 
-    print(f"History used: {history['date'].min().year}-{HISTORY_END_YEAR} "
+    print(f"History used: {history['date'].min().year}-{HISTORY_END.year} "
           f"({len(history)} rows, COVID years excluded)")
     print(f"Saved {len(thresholds)} region-week thresholds -> {thresholds_path}")
-    print(f"Saved {len(seasonal)} region-season thresholds -> {seasonal_path}")
+    print(f"Saved {len(seasonal_thr)} region-season thresholds -> {seasonal_thr_path}")
     print(f"Saved {len(classification)} classified forecasts -> {classification_path}")
+    print(f"Saved {len(seasonal_cls)} classified seasonal probes -> {seasonal_cls_path}")
     print(f"Saved {len(accuracy)} backtest rows -> {accuracy_path}")
 
     summary = (
