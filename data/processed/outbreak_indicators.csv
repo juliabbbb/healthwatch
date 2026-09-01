@@ -1,0 +1,19 @@
+disease,region,season,outbreak,trigger,consecutive_high_n,rule_a_weeks,season_sum,season_p75,n_forecast_weeks
+Dengue,BARMM,dry,True,both,12,2020-01-05..2020-03-22,1425.8,46.2,12
+Dengue,CAR,dry,True,both,12,2020-01-05..2020-03-22,1585.0,80.0,12
+Dengue,Caraga,dry,True,both,12,2020-01-05..2020-03-22,4132.2,170.2,12
+Dengue,NCR,dry,True,both,12,2020-01-05..2020-03-22,10107.2,436.0,12
+Dengue,National,dry,True,both,12,2020-01-05..2020-03-22,106560.3,3326.5,12
+Dengue,Region I (Ilocos),dry,True,both,12,2020-01-05..2020-03-22,4111.7,128.0,12
+Dengue,Region II (Cagayan Valley),dry,True,both,12,2020-01-05..2020-03-22,4233.1,130.2,12
+Dengue,Region III (Central Luzon),dry,True,both,12,2020-01-05..2020-03-22,8540.7,497.5,12
+Dengue,Region IV-A (CALABARZON),dry,True,both,12,2020-01-05..2020-03-22,24363.4,569.2,12
+Dengue,Region IV-B (MIMAROPA),dry,True,both,12,2020-01-05..2020-03-22,2801.3,77.2,12
+Dengue,Region IX (Zamboanga Peninsula),dry,True,both,12,2020-01-05..2020-03-22,8123.2,170.5,12
+Dengue,Region V (Bicol),dry,True,both,12,2020-01-05..2020-03-22,3379.7,72.0,12
+Dengue,Region VI (Western Visayas),dry,True,both,12,2020-01-05..2020-03-22,15143.3,278.2,12
+Dengue,Region VII (Central Visayas),dry,True,both,12,2020-01-05..2020-03-22,7257.1,485.2,12
+Dengue,Region VIII (Eastern Visayas),dry,True,both,12,2020-01-05..2020-03-22,7551.5,130.2,12
+Dengue,Region X (Northern Mindanao),dry,True,both,12,2020-01-05..2020-03-22,7388.9,311.2,12
+Dengue,Region XI (Davao),dry,True,season_p75,2,,2011.0,153.0,12
+Dengue,Region XII (SOCCSKSARGEN),dry,True,both,11,2020-01-05..2020-03-22,4939.2,269.5,12
