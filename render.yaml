@@ -7,14 +7,12 @@ services:
     name: healthwatch-api
     runtime: python
     rootDir: .
+    plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ALLOWED_ORIGINS
-        fromService:
-          name: healthwatch-frontend
-          type: web
-          property: url
+        value: https://healthwatch-frontend.onrender.com
       - key: GEMINI_API_KEY
         sync: false
 
@@ -22,13 +20,11 @@ services:
     name: healthwatch-frontend
     runtime: node
     rootDir: frontend
+    plan: free
     buildCommand: npm ci && npm run build
     startCommand: node .output/server/index.mjs
     envVars:
       - key: VITE_API_URL
-        fromService:
-          name: healthwatch-api
-          type: web
-          property: url
+        value: https://healthwatch-api.onrender.com
       - key: VITE_CARTO_API_KEY
         sync: false

@@ -29,7 +29,7 @@ interface Props {
 const PH_CENTER: [number, number] = [12.8797, 121.774];
 
 /** CARTO raster basemaps (Voyager for light, Dark Matter for dark — both labeled). */
-const CARTO_KEY = import.meta.env.VITE_CARTO_API_KEY as string | undefined;
+const CARTO_KEY = import.meta.env["VITE_CARTO_API_KEY"] as string | undefined;
 const TILE_URLS = {
   light: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
   dark: `https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
