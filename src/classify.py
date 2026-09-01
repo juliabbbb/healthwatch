@@ -6,6 +6,14 @@ from . import ingest
 HISTORY_END_YEAR = 2019
 TIER_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
 
+# Calendar wet/dry season mapping used by the outbreak indicator, matching
+# features.py: wet = Jun-Nov (months 6-11), dry = Dec-May (12,1-5). The month
+# (not the date-week) decides the season, so weeks never split across seasons.
+def season_of(date):
+    """Return 'wet' | 'dry' for a date-like, matching features.py wet/dry flag."""
+    m = pd.Timestamp(date).month
+    return "wet" if 6 <= m <= 11 else "dry"
+
 
 def load_history():
     national = pd.read_csv(
@@ -38,6 +46,29 @@ def compute_thresholds(history):
         .reset_index()
     )
     return thresholds
+
+
+def compute_seasonal_thresholds(history):
+    """Per-(disease, region, season) P75 of pre-2020 historical cases.
+
+    Pools every historical weekly case count that falls within the season
+    (wet = Jun-Nov, dry = Dec-May) and takes the 75th percentile. This season
+    baseline backs Rule B of the outbreak indicator (season sum up-lift) and
+    reuses the same pre-COVID history as the weekly percentiles.
+    """
+    h = history.copy()
+    h["season"] = h["date"].map(season_of)
+    thresholds = (
+        h.groupby(["disease", "region", "season"])["cases"]
+        .quantile(0.75)
+        .rename("p75")
+        .clip(lower=0)
+        .reset_index()
+    )
+    counts = h.groupby(["disease", "region", "season"])["cases"].size().rename("n_weeks")
+    thresholds = thresholds.merge(counts, on=["disease", "region", "season"], how="left")
+    thresholds["p75"] = thresholds["p75"].round(1)
+    return thresholds.sort_values(["region", "season"], ignore_index=True)
 
 
 def label(values, p50, p75):
@@ -95,6 +126,9 @@ def run():
     thresholds = compute_thresholds(history)
     thresholds_path = ingest.save_processed(thresholds, "risk_thresholds.csv")
 
+    seasonal = compute_seasonal_thresholds(history)
+    seasonal_path = ingest.save_processed(seasonal, "seasonal_thresholds.csv")
+
     classification = classify_forecasts(thresholds)
     classification_path = ingest.save_processed(classification, "risk_classification.csv")
 
@@ -104,6 +138,7 @@ def run():
     print(f"History used: {history['date'].min().year}-{HISTORY_END_YEAR} "
           f"({len(history)} rows, COVID years excluded)")
     print(f"Saved {len(thresholds)} region-week thresholds -> {thresholds_path}")
+    print(f"Saved {len(seasonal)} region-season thresholds -> {seasonal_path}")
     print(f"Saved {len(classification)} classified forecasts -> {classification_path}")
     print(f"Saved {len(accuracy)} backtest rows -> {accuracy_path}")
 
