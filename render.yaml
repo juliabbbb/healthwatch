@@ -4,7 +4,7 @@
 
 services:
   - type: web
-    name: healthwatch-api
+    name: healthwatch-api-xepv
     runtime: python
     rootDir: .
     plan: free
@@ -12,12 +12,12 @@ services:
     startCommand: uvicorn src.api:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: ALLOWED_ORIGINS
-        value: https://healthwatch-frontend.onrender.com
+        value: https://healthwatch-ui.onrender.com
       - key: GEMINI_API_KEY
         sync: false
 
   - type: web
-    name: healthwatch-frontend
+    name: healthwatch-ui
     runtime: node
     rootDir: frontend
     plan: free
@@ -25,6 +25,6 @@ services:
     startCommand: node .output/server/index.mjs
     envVars:
       - key: VITE_API_URL
-        value: https://healthwatch-api.onrender.com
+        value: https://healthwatch-api-xepv.onrender.com
       - key: VITE_CARTO_API_KEY
         sync: false
