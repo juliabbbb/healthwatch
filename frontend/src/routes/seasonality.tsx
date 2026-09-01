@@ -211,7 +211,7 @@ function SeasonalityPage() {
       >
         <h2 className="text-lg">Trend / seasonality / noise</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
-          {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2017–2023 split
+          {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2016–2025 split
           into a 52-week centred moving-average trend, a week-of-year seasonal index and the
           irregular remainder.
         </p>

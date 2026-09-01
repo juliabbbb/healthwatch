@@ -8,12 +8,14 @@ import {
   assessRegion,
   classify,
   formatMetric,
+  getOutbreak,
   metricValue,
   modelMetrics,
   recommendations,
   weekMeta,
   type MetricMode,
   type RiskLevel,
+  type Season,
 } from "@/lib/healthwatch/data";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
 import { StatusChip } from "./StatusChip";
@@ -35,13 +37,17 @@ export function ForecastCard({
   onModeChange?: (m: MetricMode) => void;
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
+  breakout?: never;
   onClose: () => void;
+  outbreakSeason?: Season;
+  onOutbreakSeasonChange?: (s: Season) => void;
 }) {
   const a = assessRegion(regionCode, illness, weekIndex, mode);
   const meta = weekMeta(weekIndex);
   const recs = recommendations(a);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
+  const outlookData = getOutbreak(regionCode);
 
   return (
     <div className="glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl">
@@ -80,6 +86,7 @@ export function ForecastCard({
           <div className="flex flex-col items-end gap-1.5">
             <RiskBadge risk={a.risk} />
             <SeasonTag season={meta.season} />
+            <OutbreakChip regionCode={regionCode} />
           </div>
         </div>
 
@@ -123,6 +130,17 @@ export function ForecastCard({
             >
               Case density
             </button>
+            <button
+              onClick={() => onLayerChange("outbreak")}
+              className={cn(
+                "flex-1 rounded-[5px] px-2 py-1 text-[11px] font-medium transition-colors",
+                layer === "outbreak"
+                  ? "bg-primary/20 text-primary"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Seasonal outbreak outlook
+            </button>
           </div>
         )}
         {onModeChange && (
@@ -152,6 +170,73 @@ export function ForecastCard({
           </>
         )}
       </div>
+
+      {/* Seasonal outbreak outlook */}
+      {outlookData.dry && (
+        <div className="border-t border-border px-4 py-3">
+          <p className="label-caps mb-2">Seasonal outbreak outlook</p>
+          <div className="mb-2 grid grid-cols-2 gap-1.5 text-[11px]">
+            <button
+              onClick={() => onOutbreakSeasonChange?.("dry")}
+              className={cn(
+                "rounded-md border px-2 py-1 text-left transition-colors",
+                outbreakSeason === "dry"
+                  ? "border-primary/50 bg-primary/15 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Dry · Jan–Mar
+            </button>
+            <button
+              onClick={() => onOutbreakSeasonChange?.("wet")}
+              className={cn(
+                "rounded-md border px-2 py-1 text-left transition-colors",
+                outbreakSeason === "wet"
+                  ? "border-primary/50 bg-primary/15 text-primary"
+                  : "border-border text-muted-foreground hover:text-foreground",
+              )}
+            >
+              Wet · Jul–Sep
+            </button>
+          </div>
+          {(["dry", "wet"] as Season[]).map((s) => {
+            const ind = outlookData[s];
+            if (!ind) return null;
+            const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
+            const width = Math.min(100, Math.round((ratio / 1.5) * 100));
+            return (
+              <div key={s} className="mt-1.5 rounded-md bg-secondary/50 px-2.5 py-2">
+                <div className="flex items-center justify-between">
+                  <span className="label-caps capitalize">{s} window</span>
+                  <span
+                    className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
+                    style={
+                      ind.outbreak
+                        ? { color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }
+                        : { color: "var(--risk-low)", backgroundColor: "color-mix(in oklab, var(--risk-low), transparent 85%)" }
+                    }
+                  >
+                    {ind.outbreak ? "Alert" : "Clear"}
+                  </span>
+                </div>
+                <p className="mt-1 font-mono tabular-nums text-foreground">
+                  {Math.round(ind.season_avg).toLocaleString()} / {Math.round(ind.season_p75).toLocaleString()} P75
+                </p>
+                <div className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    style={{ width: `${width}%`, backgroundColor: "var(--risk-high)" }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+          <p className="mt-1.5 text-[10px] leading-relaxed text-muted-foreground">
+            Dry-season detection F1 0.90 (precision 0.93 / recall 0.88 against
+            real 2025 data); wet season by design favours recall and over-warns.
+          </p>
+        </div>
+      )}
 
       <div className="border-t border-border px-4 py-3">
         <div className="mb-2 flex items-center justify-between">
@@ -223,5 +308,23 @@ export function ForecastCard({
         </Link>
       </div>
     </div>
+  );
+}
+
+function OutbreakChip({ regionCode }: { regionCode: string }) {
+  const outlook = getOutbreak(regionCode);
+  const flagged =
+    Boolean(outlook.dry?.outbreak) || Boolean(outlook.wet?.outbreak);
+  if (!flagged) return null;
+  return (
+    <span
+      className="inline-flex items-center gap-1 uppercase tracking-wider rounded-full px-2 py-0.5 text-[10px] font-medium"
+      style={{
+        color: "oklch(0.99 0.003 95)",
+        backgroundColor: RISK_META.high.solidColor,
+      }}
+    >
+      Seasonal outbreak watch
+    </span>
   );
 }

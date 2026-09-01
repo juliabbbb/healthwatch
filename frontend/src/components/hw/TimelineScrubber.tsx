@@ -148,8 +148,8 @@ export function TimelineScrubber({
 
       {expanded && (
         <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-          <span>2017-W01</span>
-          <span>Historical surveillance (2017–2023)</span>
+          <span>2016-W02</span>
+          <span>Historical surveillance (2016–2025)</span>
           <span>+12-week forecast horizon</span>
         </div>
       )}

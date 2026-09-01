@@ -152,7 +152,7 @@ export function LayerSidebar({
             </ul>
             <p className="mt-2 text-[10px] leading-relaxed text-muted-foreground">
               Thresholds: &lt;50th pct = Low, 50–75th = Moderate, &gt;75th = High of the national
-              2016–2021 distribution ({METRIC_META[mode].unit}) for the same ±6-week calendar
+              2016–2025 distribution ({METRIC_META[mode].unit}) for the same ±6-week calendar
               window.
             </p>
           </div>

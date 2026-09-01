@@ -42,6 +42,9 @@ _FORECASTS = db.read_table("forecasts")
 _CLASSIFICATION = db.read_table("risk_classification")
 _THRESHOLDS = db.read_table("risk_thresholds")
 _METRICS = db.read_table("validation_metrics")
+_SEASONAL_THRESHOLDS = db.read_table("seasonal_thresholds")
+_OUTBREAKS = db.read_table("outbreak_indicators")
+_OUTBREAK_VALIDATION = db.read_table("outbreak_validation_2025")
 
 for _df, _col in (
     (_NATIONAL, "date"),
@@ -622,6 +625,12 @@ def root():
             "objective_5_domain_rules": "non-negativity clipping and wet/dry season regressor applied in pipeline; see /metrics for validation",
             "objective_5_interpretability": "/analysis/{region} and /analysis/seasonality (opt-in LLM narratives over pipeline outputs)",
         },
+        "seasonal_outbreak_indicators": {
+            "overview": "/outbreak",
+            "region_detail": "/outbreak/{region}",
+            "seasonal_thresholds": "/thresholds/seasonal",
+            "prospective_validation_2025": "/validation/outbreak",
+        },
         "supported_diseases": SUPPORTED_DISEASES,
     }
 
@@ -722,6 +731,21 @@ def risk_classification(disease: str, region: str | None = Query(default=None)):
     return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
 
 
+@app.get("/thresholds/seasonal", tags=["objective_3_classification"])
+def seasonal_thresholds(region: str | None = Query(default=None)):
+    """Season-probe alert thresholds: long-run P75 of weekly case load for the
+    dry (Jan-Mar) and wet (Jul-Sep) forecast windows, per region."""
+    df = _SEASONAL_THRESHOLDS.copy()
+    if region:
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == db_region]
+        if df.empty:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    return {"items": df.to_dict(orient="records")}
+
+
 @app.get("/thresholds/{disease}", tags=["objective_3_classification"])
 def thresholds(disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
@@ -734,6 +758,99 @@ def thresholds(disease: str, region: str | None = Query(default=None)):
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     return {"disease": disease, "region": region, "items": df.to_dict(orient="records")}
+
+
+@app.get("/outbreak", tags=["objective_3_classification"])
+def outbreak_overview(
+    region: str | None = Query(default=None),
+    season: str | None = Query(default=None),
+):
+    """Region-season outbreak flags for the map/dashboard.
+
+    Rule A: >=3 consecutive probe weeks forecast at High (above the weekly
+    P75). Rule B: the season's forecast average exceeds the season's long-run
+    P75. Trigger reports which rule(s) fired."""
+    df = _OUTBREAKS.copy()
+    if region:
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == db_region]
+    if season:
+        if season not in ("dry", "wet"):
+            raise HTTPException(status_code=404, detail="season must be 'dry' or 'wet'")
+        df = df[df["season"] == season]
+    df = df.sort_values(["region", "season"])
+    return {"season": season, "count": len(df), "items": df.to_dict(orient="records")}
+
+
+@app.get("/outbreak/{region}", tags=["objective_3_classification"])
+def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
+    """Per-region outbreak status for the current dry + wet season probes."""
+    _check_disease(disease)
+    db_region = _resolve_region(region)
+    if db_region is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    rows = _OUTBREAKS[
+        (_OUTBREAKS["region"] == db_region) & (_OUTBREAKS["disease"] == disease)
+    ].sort_values("season")
+    if rows.empty:
+        raise HTTPException(status_code=404, detail=f"No outbreak indicators for '{region}'")
+    return {
+        "region": db_region,
+        "disease": disease,
+        "seasons": rows.to_dict(orient="records"),
+    }
+
+
+@app.get("/validation/outbreak", tags=["objective_3_classification"])
+def outbreak_validation():
+    """Prospective 2025 validation of the outbreak indicator.
+
+    Headline: dry-season detection is strong (F1 0.90); the wet season
+    favours recall over precision and over-warns, by design."""
+    v = _OUTBREAK_VALIDATION
+    overall = {
+        "tp": int(v["tp"].sum()),
+        "fp": int(v["fp"].sum()),
+        "fn": int(v["fn"].sum()),
+        "tn": int(v["tn"].sum()),
+    }
+    tp, fp, fn = overall["tp"], overall["fp"], overall["fn"]
+    overall["precision"] = round(tp / (tp + fp), 3) if tp + fp else None
+    overall["recall"] = round(tp / (tp + fn), 3) if tp + fn else None
+    f1 = (
+        2 * overall["precision"] * overall["recall"]
+        / (overall["precision"] + overall["recall"])
+        if overall["precision"] and overall["recall"]
+        else None
+    )
+    overall["f1"] = round(f1, 3) if f1 else None
+
+    by_season = {}
+    for s in ("dry", "wet"):
+        sub = v[v["season"] == s]
+        stp, sfp, sfn = int(sub["tp"].sum()), int(sub["fp"].sum()), int(sub["fn"].sum())
+        precision = stp / (stp + sfp) if stp + sfp else None
+        recall = stp / (stp + sfn) if stp + sfn else None
+        s_f1 = (
+            2 * precision * recall / (precision + recall) if precision and recall else None
+        )
+        by_season[s] = {
+            "tp": stp,
+            "fp": sfp,
+            "fn": sfn,
+            "tn": int(sub["tn"].sum()),
+            "precision": round(precision, 3) if precision else None,
+            "recall": round(recall, 3) if recall else None,
+            "f1": round(s_f1, 3) if s_f1 else None,
+        }
+    return {
+        "scope": "2025 dry (Jan-Mar) + wet (Jul-Sep) season probes, forecast "
+        "with data through 2024-12-31 and compared against observed DOH-EB 2025",
+        "overall": overall,
+        "by_season": by_season,
+    }
 
 
 @app.get("/metrics/{region}", tags=["objective_4_dashboard"])

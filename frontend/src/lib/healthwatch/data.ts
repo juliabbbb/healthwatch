@@ -1,11 +1,11 @@
 /**
  * HEALTHWATCH data layer.
  *
- * Sources real DOH Epidemiology Bureau dengue surveillance (2016-2021,
- * PSGC-coded regions) served by the FastAPI backend (src/api.py) over SQLite.
- * Series and validation metrics are fetched once at startup via
- * `loadHealthwatchData()`; every component then reads the caches
- * synchronously, keeping render output stable across renders/SSR.
+ * Sources real DOH Epidemiology Bureau dengue surveillance (2016-2019 +
+ * 2022-2025, via the UPRI-NOAH open dataset) served by the FastAPI backend
+ * (src/api.py) over SQLite. Series and validation metrics are fetched once
+ * at startup via `loadHealthwatchData()`; every component then reads the
+ * caches synchronously, keeping render output stable across renders/SSR.
  */
 
 export type RiskLevel = "low" | "moderate" | "high";
@@ -268,7 +268,11 @@ export const ILLNESSES: Illness[] = [
 export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
 
 export const WEEKS_PER_YEAR = 52;
-export const HIST_WEEKS = 262;
+/**
+ * Observed weekly rows per region served by the backend: 2016-01-10 through
+ * 2025-12-28 (DOH Epidemiology Bureau via the UPRI-NOAH open dataset).
+ */
+export const HIST_WEEKS = 416;
 export const FORECAST_WEEKS = 12;
 export const TOTAL_WEEKS = HIST_WEEKS + FORECAST_WEEKS;
 
@@ -357,7 +361,7 @@ interface ApiMetrics {
   mape: number;
   weeks: number;
   confidence: { label: string; tone: "low" | "moderate" | "high" };
-  skill_vs_naive: { pre_covid_52w: number; last_52w: number } | null;
+  skill_vs_naive: { pre_covid_52w: number; pre_2025_52w: number } | null;
 }
 
 /**
@@ -393,6 +397,13 @@ export async function loadHealthwatchData(): Promise<void> {
     );
   }
   await Promise.all(jobs);
+  try {
+    await loadOutbreakData();
+  } catch (err) {
+    // Outbreak layer is additive; a backend without /outbreak (older deploy or
+    // a not-yet-restarted uvicorn) must not take the whole dashboard down.
+    console.warn("Seasonal outbreak indicator unavailable:", err);
+  }
 }
 
 /** Starts loading immediately on module import. */
@@ -792,7 +803,7 @@ export const RISK_META: Record<
   },
 };
 
-export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2021-W02)
+export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2025-W52)
 
 export function weekLabel(index: number) {
   return weekMeta(index).label;
@@ -811,3 +822,58 @@ export interface PipelineStatus {
 export async function fetchPipelineStatus(): Promise<PipelineStatus> {
   return fetchJson(`${API_BASE}/status`);
 }
+
+/* ------------------------------------------------------------------ */
+/* Seasonal outbreak outlook (off the backend /outbreak indicator)     */
+/* ------------------------------------------------------------------ */
+
+export interface OutbreakIndicator {
+  region: string; // backend region label, e.g. "Region IV-A (CALABARZON)"
+  season: Season;
+  outbreak: boolean;
+  trigger: string; // "both" | "consecutive_high" | "season_p75"
+  consecutive_high_n: number;
+  season_avg: number;
+  season_p75: number;
+  n_forecast_weeks: number;
+}
+
+const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
+
+function regionCodeForApiLabel(label: string): string | null {
+  const lowered = label.toLowerCase();
+  const direct = REGIONS.find(
+    (r) =>
+      [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
+  );
+  if (direct) return direct.code;
+  const prefix = label.split(" (")[0]!.toLowerCase();
+  const byPrefix = REGIONS.find(
+    (r) => r.short.toLowerCase() === prefix || r.name.toLowerCase() === prefix,
+  );
+  return byPrefix ? byPrefix.code : null;
+}
+
+async function loadOutbreakData(): Promise<void> {
+  const res = await fetchJson<{ items: OutbreakIndicator[] }>("/outbreak");
+  for (const item of res.items) {
+    const code = regionCodeForApiLabel(item.region);
+    if (!code) continue; // "National" and any non-map rows
+    const entry = outbreakCache.get(code) ?? {};
+    entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
+    outbreakCache.set(code, entry);
+  }
+}
+
+/** Per-season outbreak outlook for a region code (dengue pilot). */
+export function getOutbreak(
+  regionCode: string,
+): Partial<Record<Season, OutbreakIndicator>> {
+  return outbreakCache.get(regionCode) ?? {};
+}
+
+export const OUTBREAK_TRIGGER_LABEL: Record<string, string> = {
+  both: "Weekly High run + seasonal average",
+  consecutive_high: "3+ consecutive weekly High forecasts",
+  season_p75: "Seasonal average above P75",
+};

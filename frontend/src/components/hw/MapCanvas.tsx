@@ -9,12 +9,14 @@ import type {
 import {
   REGION_BY_GEONAME,
   assessRegion,
+  getOutbreak,
   RISK_META,
   type MetricMode,
   type Region,
+  type Season,
 } from "@/lib/healthwatch/data";
 
-export type DataLayer = "hotspot" | "density";
+export type DataLayer = "hotspot" | "density" | "outbreak";
 
 interface Props {
   illness: string;
@@ -24,6 +26,7 @@ interface Props {
   selectedCode: string | null;
   onSelect: (code: string) => void;
   flyToCode?: string | null;
+  outbreakSeason?: Season;
 }
 
 const PH_CENTER: [number, number] = [12.8797, 121.774];
@@ -57,9 +60,18 @@ function fillFor(
   weekIndex: number,
   layer: DataLayer,
   mode: MetricMode,
+  outbreakSeason: Season,
 ): string {
   if (layer === "hotspot") {
     return RISK_META[assessRegion(region.code, illness, weekIndex, mode).risk].color;
+  }
+  if (layer === "outbreak") {
+    // Seasonal outlook (backend /outbreak indicator), dengue pilot: regions
+    // with an outbreak flag on the active season read as alert; the rest stay
+    // on the normal (low) tone.
+    return getOutbreak(region.code)[outbreakSeason]?.outbreak
+      ? "var(--risk-high)"
+      : "var(--risk-low)";
   }
   const a = assessRegion(region.code, illness, weekIndex, mode);
   const per100k = (a.point.cases / region.population) * 100000;
@@ -74,14 +86,15 @@ export default function MapCanvas({
   selectedCode,
   onSelect,
   flyToCode,
+  outbreakSeason = "dry",
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const geoRef = useRef<LeafletGeoJSON | null>(null);
   const tileRef = useRef<TileLayer | null>(null);
   const darkRef = useRef<boolean>(false);
-  const stateRef = useRef({ illness, weekIndex, layer, mode, selectedCode, onSelect });
-  stateRef.current = { illness, weekIndex, layer, mode, selectedCode, onSelect };
+  const stateRef = useRef({ illness, weekIndex, layer, mode, selectedCode, onSelect, outbreakSeason });
+  stateRef.current = { illness, weekIndex, layer, mode, selectedCode, onSelect, outbreakSeason };
 
   useEffect(() => {
     let cancelled = false;
@@ -127,7 +140,7 @@ export default function MapCanvas({
           ? { stroke: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)" }
           : { stroke: selected ? "oklch(0.24 0.008 85 / 85%)" : "oklch(0.24 0.008 85 / 25%)" };
         return {
-          fillColor: fillFor(region, s.illness, s.weekIndex, s.layer, s.mode),
+          fillColor: fillFor(region, s.illness, s.weekIndex, s.layer, s.mode, s.outbreakSeason),
           fillOpacity: selected ? 0.78 : 0.55,
           color: border.stroke,
           weight: selected ? 2 : 0.8,
@@ -188,7 +201,7 @@ export default function MapCanvas({
     const geoLayer = geoRef.current;
     if (!geoLayer) return;
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
-  }, [illness, weekIndex, layer, mode, selectedCode]);
+  }, [illness, weekIndex, layer, mode, selectedCode, outbreakSeason]);
 
   // Fly to a searched/selected region
   useEffect(() => {
