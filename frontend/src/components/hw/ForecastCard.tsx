@@ -12,6 +12,9 @@ import {
   metricValue,
   modelMetrics,
   recommendations,
+  REPORT_DATE,
+  REPORT_UPCOMING_SEASON,
+  SEASON_START_MONTH,
   weekMeta,
   type MetricMode,
   type OutbreakIndicator,
@@ -28,7 +31,7 @@ export function ForecastCard({
   mode = "percapita",
   onModeChange,
   onClose,
-  outbreakSeason = "dry",
+  outbreakSeason = REPORT_UPCOMING_SEASON,
   onOutbreakSeasonChange,
 }: {
   regionCode: string;
@@ -155,6 +158,7 @@ export function ForecastCard({
                 season={outbreakSeason}
                 ind={outlookData[outbreakSeason]}
               />
+              <SeasonBasis isManual={outbreakSeason !== REPORT_UPCOMING_SEASON} />
               <button
                 onClick={() => setCompareOpen((o) => !o)}
                 aria-expanded={compareOpen}
@@ -315,6 +319,22 @@ const SEASON_WINDOW: Record<Season, string> = {
   dry: "Dry · Jan–Mar",
   wet: "Wet · Jul–Sep",
 };
+
+function SeasonBasis({ isManual }: { isManual: boolean }) {
+  const start = SEASON_START_MONTH[REPORT_UPCOMING_SEASON];
+  return (
+    <p
+      className={cn(
+        "mt-1.5 text-[10px] leading-relaxed",
+        isManual ? "text-muted-foreground/70" : "text-muted-foreground",
+      )}
+    >
+      Based on the current report date ({REPORT_DATE}) — upcoming season derived
+      from a fixed calendar rule (wet: Jun–Nov, dry: Dec–May), starting {start}.{" "}
+      {isManual && "Showing the other season for comparison."}
+    </p>
+  );
+}
 
 function OutbreakHeadline({ season, ind }: { season: Season; ind: OutbreakIndicator }) {
   const cap = season === "dry" ? "Dry" : "Wet";

@@ -6,7 +6,7 @@ import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
-import { CURRENT_WEEK_INDEX, assessAll, upcomingSeasonForWeek, weekMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
+import { CURRENT_WEEK_INDEX, REPORT_UPCOMING_SEASON, assessAll, weekMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
@@ -41,9 +41,7 @@ function MapView() {
   const [selected, setSelected] = useState<string | null>("130000000");
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
-  const [outbreakSeason, setOutbreakSeason] = useState<Season>(
-    upcomingSeasonForWeek(weekMeta(CURRENT_WEEK_INDEX + 4).week),
-  );
+  const [outbreakSeason, setOutbreakSeason] = useState<Season>(REPORT_UPCOMING_SEASON);
 
   useEffect(() => setMounted(true), []);
 

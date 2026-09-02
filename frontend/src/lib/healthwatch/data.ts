@@ -289,6 +289,7 @@ export function weekMeta(index: number) {
     week,
     label: `${year}-W${String(week).padStart(2, "0")}`,
     date: date.toISOString().slice(0, 10),
+    month,
     season: (month >= 6 && month <= 11 ? "wet" : "dry") as Season,
     forecast: index >= HIST_WEEKS,
   };
@@ -324,6 +325,25 @@ export interface WeekPoint {
 export function seasonForWeek(week: number): Season {
   // PAGASA: wet season June-November (approx. weeks 22-48)
   return week >= 22 && week <= 48 ? "wet" : "dry";
+}
+
+/**
+ * Strict calendar-boundary season for a month (1-12): Jun-Nov = wet,
+ * Dec-May = dry. Season is a fixed calendar definition (not a live
+ * PAGASA/weather feed) — this is a deliberate deterministic design choice
+ * per Objective 5.
+ */
+export function seasonForMonth(month: number): Season {
+  return month >= 6 && month <= 11 ? "wet" : "dry";
+}
+
+/**
+ * The season that starts after the given calendar month. Season is a fixed
+ * calendar definition (not a live PAGASA/weather feed) — this is a deliberate
+ * deterministic design choice per Objective 5.
+ */
+export function upcomingSeasonForMonth(month: number): Season {
+  return seasonForMonth(month) === "wet" ? "dry" : "wet";
 }
 
 /** The season that starts after the given ISO week (upcoming probe window). */
@@ -809,6 +829,20 @@ export const RISK_META: Record<
 };
 
 export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2025-W52)
+
+/** The single deterministic "now" the dashboard reasons from: the last reported week. */
+export const REPORT_WEEK_INDEX = CURRENT_WEEK_INDEX;
+export const REPORT_DATE = weekMeta(CURRENT_WEEK_INDEX).date; // e.g. "2025-12-28"
+/**
+ * Real-time-derived default for the outbreak outlook: the season that starts
+ * after the report date, computed from the fixed calendar boundary — never
+ * hardcoded, never a weather feed. Today this resolves to "wet".
+ */
+export const REPORT_UPCOMING_SEASON: Season = upcomingSeasonForMonth(
+  weekMeta(CURRENT_WEEK_INDEX).month,
+);
+/** Display label for the month an upcoming season starts (for "starts [date]"). */
+export const SEASON_START_MONTH: Record<Season, string> = { dry: "Dec", wet: "Jun" };
 
 export function weekLabel(index: number) {
   return weekMeta(index).label;

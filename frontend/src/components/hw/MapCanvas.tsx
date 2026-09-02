@@ -9,6 +9,7 @@ import type {
 import {
   REGION_BY_GEONAME,
   REGIONS,
+  REPORT_UPCOMING_SEASON,
   assessRegion,
   dataReady,
   getOutbreak,
@@ -68,7 +69,7 @@ export default function MapCanvas({
   selectedCode,
   onSelect,
   flyToCode,
-  outbreakSeason = "dry",
+  outbreakSeason = REPORT_UPCOMING_SEASON,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);

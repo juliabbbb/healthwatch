@@ -189,6 +189,14 @@ function Methodology() {
           </li>
         </ul>
         <p className="mt-3 text-sm text-foreground/85">
+          The upcoming season used for outbreak detection is determined automatically from the
+          current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May) — not from
+          PAGASA or any live weather source. This keeps the indicator reproducible and directly
+          implements Objective 2's goal of predicting cases "during an upcoming season (dry or
+          wet)" as the basis for outbreak detection (Objective 2 → feeds Objective 3's
+          classification).
+        </p>
+        <p className="mt-3 text-sm text-foreground/85">
           Crucially, these flags were <strong>locked without retuning</strong> after a prospective
           test: probes were generated from data through 31 December 2024 and compared against the
           real, observed 2025 DOH-EB weekly series (never part of training). Dry-season detection
