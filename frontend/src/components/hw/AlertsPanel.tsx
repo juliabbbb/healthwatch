@@ -15,7 +15,8 @@ export function AlertsPanel({
   onFocusRegion: (code: string) => void;
 }) {
   const [open, setOpen] = useState(true);
-  const highCount = alerts.filter((a) => a.kind === "high-now").length;
+  const severeCount = alerts.filter((a) => a.kind !== "crossing").length;
+  const severe = severeCount > 0;
 
   return (
     <div className="glass-panel pointer-events-auto w-[21.5rem] max-w-[calc(100vw-2rem)] rounded-xl">
@@ -27,15 +28,15 @@ export function AlertsPanel({
       >
         <TriangleAlert
           className="size-4 shrink-0"
-          style={{ color: highCount > 0 ? "var(--risk-high)" : "var(--muted-foreground)" }}
+          style={{ color: severe ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
         <span className="label-caps flex-1">Active alerts</span>
         {alerts.length > 0 && (
           <span
             className="rounded-full px-1.5 py-0.5 font-mono text-[10px] tabular-nums"
             style={{
-              color: highCount > 0 ? "var(--risk-high)" : "var(--risk-moderate)",
-              backgroundColor: `color-mix(in oklab, ${highCount > 0 ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
+              color: severe ? "var(--risk-high)" : "var(--risk-moderate)",
+              backgroundColor: `color-mix(in oklab, ${severe ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
             }}
           >
             {alerts.length}
@@ -66,21 +67,31 @@ export function AlertsPanel({
                     className="mt-0.5 shrink-0 rounded-md p-1"
                     style={{
                       color:
-                        a.kind === "high-now" ? "var(--risk-high)" : "var(--risk-moderate)",
+                        a.kind === "outbreak" ? "var(--risk-moderate)" : "var(--risk-high)",
                       backgroundColor: `color-mix(in oklab, ${
-                        a.kind === "high-now" ? "var(--risk-high)" : "var(--risk-moderate)"
+                        a.kind === "outbreak" ? "var(--risk-moderate)" : "var(--risk-high)"
                       }, transparent 86%)`,
                     }}
                     aria-hidden="true"
                   >
-                    {a.kind === "high-now" ? (
+                    {a.kind === "outbreak" ? (
+                      <TriangleAlert className="size-3.5" />
+                    ) : a.kind === "high-now" ? (
                       <Siren className="size-3.5" />
                     ) : (
                       <TrendingUp className="size-3.5" />
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-xs font-medium">{a.title}</span>
+                    <span
+                      className={
+                        a.kind === "outbreak"
+                          ? "block text-xs font-semibold text-foreground"
+                          : "block truncate text-xs font-medium"
+                      }
+                    >
+                      {a.title}
+                    </span>
                     <span className="mt-0.5 block text-[10px] leading-snug text-muted-foreground">
                       {a.detail}
                     </span>
@@ -94,8 +105,9 @@ export function AlertsPanel({
           </ul>
           {alerts.length > 0 && (
             <p className="border-t border-border px-3 py-1.5 text-[9px] leading-relaxed text-muted-foreground">
-              Derived from current classification and the 12-week forecast horizon. Click an
-              alert to locate the region on the map.
+              Weekly risk alerts come from the current classification; seasonal outbreak alerts come
+              from Rule A/B on the active season window. Click an alert to locate the region on the
+              map.
             </p>
           )}
         </>

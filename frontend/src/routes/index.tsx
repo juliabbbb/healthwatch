@@ -1,14 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Activity } from "lucide-react";
-import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
-import { NotificationBell } from "@/components/hw/NotificationBell";
-import { CURRENT_WEEK_INDEX, assessAll, weekMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
+import { CURRENT_WEEK_INDEX, assessAll, upcomingSeasonForWeek, weekMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
@@ -38,13 +36,14 @@ export const Route = createFileRoute("/")({
 function MapView() {
   const [mounted, setMounted] = useState(false);
   const [illness, setIllness] = useState("all");
-  const [layer, setLayer] = useState<DataLayer>("hotspot");
   const [weekIndex, setWeekIndex] = useState(CURRENT_WEEK_INDEX + 4);
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<string | null>("130000000");
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
-  const [outbreakSeason, setOutbreakSeason] = useState<Season>("dry");
+  const [outbreakSeason, setOutbreakSeason] = useState<Season>(
+    upcomingSeasonForWeek(weekMeta(CURRENT_WEEK_INDEX + 4).week),
+  );
 
   useEffect(() => setMounted(true), []);
 
@@ -57,7 +56,10 @@ function MapView() {
     assessments.forEach((a) => (c[a.risk] += 1));
     return c;
   }, [assessments]);
-  const alerts = useMemo(() => deriveAlerts(assessments, illness), [assessments, illness]);
+  const alerts = useMemo(
+    () => deriveAlerts(assessments, illness, outbreakSeason),
+    [assessments, illness, outbreakSeason],
+  );
 
   const totalCases = assessments.reduce((a, r) => a + r.point.cases, 0);
   const nationalPer100k =
@@ -79,7 +81,6 @@ function MapView() {
             <MapCanvas
               illness={illness}
               weekIndex={weekIndex}
-              layer={layer}
               mode={mode}
               selectedCode={selected}
               onSelect={handleSelect}
@@ -107,12 +108,20 @@ function MapView() {
         <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
       </div>
 
-      {/* Toolbar + notifications */}
+      {/* Toolbar */}
       <div className="absolute right-4 top-4 z-[500]">
-        <TopToolbar trailing={<NotificationBell items={alerts} />} onPick={handleFocusRegion} />
+        <TopToolbar onPick={handleFocusRegion} />
       </div>
 
-      {/* Forecast card (Regional Data side panel with Data Layers & Metric Controls) */}
+      {/* Always-visible map legend caption */}
+      <div className="pointer-events-none absolute inset-x-0 top-[4.5rem] z-[500] flex justify-center px-4">
+        <p className="rounded-full border border-border bg-background/80 px-3 py-1 text-center text-[11px] leading-snug text-muted-foreground backdrop-blur">
+          Colors show weekly risk tier (Low/Moderate/High). The alert marker shows a
+          seasonal outbreak flag for the upcoming dry or wet season.
+        </p>
+      </div>
+
+      {/* Forecast card (Regional Data side panel) */}
       {selected && (
         <div className="absolute right-4 top-[5.5rem] z-[500] max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
           <ForecastCard
@@ -121,8 +130,6 @@ function MapView() {
             weekIndex={weekIndex}
             mode={mode}
             onModeChange={setMode}
-            layer={layer}
-            onLayerChange={setLayer}
             onClose={() => setSelected(null)}
             outbreakSeason={outbreakSeason}
             onOutbreakSeasonChange={setOutbreakSeason}

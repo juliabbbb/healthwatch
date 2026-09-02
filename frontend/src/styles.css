@@ -280,3 +280,9 @@
 .hw-tooltip::before {
   display: none !important;
 }
+
+.hw-outbreak-marker {
+  background: transparent;
+  border: none;
+  pointer-events: none;
+}

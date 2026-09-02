@@ -760,7 +760,7 @@ def thresholds(disease: str, region: str | None = Query(default=None)):
     return {"disease": disease, "region": region, "items": df.to_dict(orient="records")}
 
 
-@app.get("/outbreak", tags=["objective_3_classification"])
+@app.get("/outbreak", tags=["objective_2_forecast"])
 def outbreak_overview(
     region: str | None = Query(default=None),
     season: str | None = Query(default=None),
@@ -784,7 +784,7 @@ def outbreak_overview(
     return {"season": season, "count": len(df), "items": df.to_dict(orient="records")}
 
 
-@app.get("/outbreak/{region}", tags=["objective_3_classification"])
+@app.get("/outbreak/{region}", tags=["objective_2_forecast"])
 def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
     """Per-region outbreak status for the current dry + wet season probes."""
     _check_disease(disease)

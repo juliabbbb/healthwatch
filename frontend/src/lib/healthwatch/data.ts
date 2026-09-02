@@ -326,6 +326,11 @@ export function seasonForWeek(week: number): Season {
   return week >= 22 && week <= 48 ? "wet" : "dry";
 }
 
+/** The season that starts after the given ISO week (upcoming probe window). */
+export function upcomingSeasonForWeek(week: number): Season {
+  return seasonForWeek(week) === "wet" ? "dry" : "wet";
+}
+
 /* ------------------------------------------------------------------ */
 /* Data loading — live FastAPI server over SQLite                      */
 /* ------------------------------------------------------------------ */
