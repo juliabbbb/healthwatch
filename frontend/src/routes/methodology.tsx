@@ -20,7 +20,7 @@ export const Route = createFileRoute("/methodology")({
       {
         name: "description",
         content:
-          "How HEALTHWATCH works: DOH Epidemiology Bureau weekly dengue surveillance (2016–2019 + 2022–2025), per-region Prophet forecasting with a PAGASA wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
+          "How HEALTHWATCH works: DOH Epidemiology Bureau weekly dengue surveillance (2016–2019 + 2022–2025), per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
       },
       { property: "og:title", content: "Data & Methodology — HEALTHWATCH" },
       {
@@ -62,10 +62,6 @@ function Methodology() {
             and handled as an excluded interval (see below).
           </li>
           <li>
-            <strong>PAGASA seasonal definition</strong> — the wet (June–November) / dry
-            (December–May) split used as an exogenous regressor in the forecasting model.
-          </li>
-          <li>
             <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
             for keying every record to a PSGC code.
           </li>
@@ -85,7 +81,7 @@ function Methodology() {
             contiguous weekly series per region.
           </li>
           <li>
-            <strong>Feature engineering.</strong> Each week receives a PAGASA wet/dry season flag;
+            <strong>Feature engineering.</strong> Each week receives a calendar-based wet/dry season flag;
             non-negativity clipping is enforced on all counts before modelling.
           </li>
           <li>
@@ -190,8 +186,9 @@ function Methodology() {
         </ul>
         <p className="mt-3 text-sm text-foreground/85">
           The upcoming season used for outbreak detection is determined automatically from the
-          current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May) — not from
-          PAGASA or any live weather source. This keeps the indicator reproducible and directly
+          current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May, per PAGASA's
+          climatological definition) — it is not pulled from PAGASA or any live weather source.
+          This keeps the indicator reproducible and directly
           implements Objective 2's goal of predicting cases "during an upcoming season (dry or
           wet)" as the basis for outbreak detection (Objective 2 → feeds Objective 3's
           classification).
@@ -252,7 +249,7 @@ function Methodology() {
       <Section title="Deterministic rules enforced">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>Non-negativity: no predicted or lower-bound value may fall below zero.</li>
-          <li>Season flagging: every week carries a PAGASA wet/dry tag, shaded on all charts.</li>
+          <li>Season flagging: every week carries a calendar-based wet/dry tag, shaded on all charts.</li>
           <li>
             Transparent tiers: thresholds are plain percentiles — reproducible without refitting
             any model.
@@ -307,7 +304,7 @@ function Methodology() {
           <li>
             <strong>No weather map layers.</strong> Precipitation, temperature and humidity
             overlays were removed because they are not live feeds; the model's only
-            weather-adjacent signal is the deterministic PAGASA wet/dry season flag.
+            weather-adjacent signal is the deterministic calendar-based wet/dry season flag.
           </li>
           <li>
             Region-level resolution only — province and city-level hotspots are a later phase.

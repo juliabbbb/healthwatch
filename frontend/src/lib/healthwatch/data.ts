@@ -323,7 +323,7 @@ export interface WeekPoint {
 }
 
 export function seasonForWeek(week: number): Season {
-  // PAGASA: wet season June-November (approx. weeks 22-48)
+  // Fixed calendar definition (wet: Jun–Nov, dry: Dec–May) — date-only, no external feed.
   return week >= 22 && week <= 48 ? "wet" : "dry";
 }
 
