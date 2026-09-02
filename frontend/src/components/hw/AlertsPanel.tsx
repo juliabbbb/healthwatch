@@ -14,7 +14,7 @@ export function AlertsPanel({
   alerts: AlertItem[];
   onFocusRegion: (code: string) => void;
 }) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const severeCount = alerts.filter((a) => a.kind !== "crossing").length;
   const severe = severeCount > 0;
 

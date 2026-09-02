@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { Info } from "lucide-react";
 import {
   ILLNESSES,
   METRIC_META,
@@ -24,6 +26,8 @@ export function NationalSnapshot({
   onIllnessChange,
   counts,
   dominantIllness,
+  showOutbreakMarkers = false,
+  onOutbreakMarkersChange,
 }: {
   weekLabel: string;
   isForecast: boolean;
@@ -34,7 +38,10 @@ export function NationalSnapshot({
   onIllnessChange?: (i: string) => void;
   counts: Record<RiskLevel, number>;
   dominantIllness: string;
+  showOutbreakMarkers?: boolean;
+  onOutbreakMarkersChange?: (v: boolean) => void;
 }) {
+  const [legendOpen, setLegendOpen] = useState(false);
   return (
     <div className="glass-panel pointer-events-auto flex flex-col gap-3 rounded-xl px-4 py-3">
       {/* Header Row */}
@@ -72,6 +79,28 @@ export function NationalSnapshot({
               </span>
             </span>
           ))}
+
+          <span
+            className="relative"
+            onMouseEnter={() => setLegendOpen(true)}
+            onMouseLeave={() => setLegendOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setLegendOpen((v) => !v)}
+              aria-expanded={legendOpen}
+              aria-label="What these map colors mean"
+              className="flex size-4.5 cursor-pointer items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <Info className="size-3" />
+            </button>
+            {legendOpen && (
+              <div className="glass-panel absolute left-0 top-full z-50 mt-1.5 w-64 rounded-lg border border-border p-2.5 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
+                Colors show weekly risk tier (Low/Moderate/High). The alert marker shows a
+                seasonal outbreak flag for the upcoming dry or wet season.
+              </div>
+            )}
+          </span>
         </div>
 
         <span className="h-8 w-px bg-border" aria-hidden="true" />
@@ -141,6 +170,22 @@ export function NationalSnapshot({
               ))}
             </div>
           </div>
+        )}
+
+        {/* Outbreak Marker Layer Toggle (opt-in, default off) */}
+        {onOutbreakMarkersChange && (
+          <button
+            onClick={() => onOutbreakMarkersChange(!showOutbreakMarkers)}
+            aria-pressed={showOutbreakMarkers}
+            className={cn(
+              "rounded-full border px-2.5 py-0.5 text-[11px] transition-colors",
+              showOutbreakMarkers
+                ? "border-primary/50 bg-primary/15 text-primary font-medium"
+                : "border-border text-muted-foreground hover:text-foreground",
+            )}
+          >
+            Outbreak markers: {showOutbreakMarkers ? "on" : "off"}
+          </button>
         )}
       </div>
 

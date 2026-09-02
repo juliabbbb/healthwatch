@@ -27,6 +27,7 @@ interface Props {
   onSelect: (code: string) => void;
   flyToCode?: string | null;
   outbreakSeason?: Season;
+  showOutbreakMarkers?: boolean;
 }
 
 const PH_CENTER: [number, number] = [12.8797, 121.774];
@@ -48,9 +49,9 @@ function prefersDark(): boolean {
     : false;
 }
 
-/** Alert-triangle glyph (lucide TriangleAlert path) rendered on top of the fill. */
+/** Small ring/dot glyph at ~half the previous size — a subtle secondary detail over the fill. */
 const OUTBREAK_MARKER_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="var(--risk-high)" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 1px 1px oklch(0 0 0 / 0.45))"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>';
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.4" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="1.6"/><circle cx="7" cy="7" r="5.4" fill="color-mix(in oklab, var(--risk-high) 32%, transparent)" stroke="var(--risk-high)" stroke-width="1.4"/></svg>';
 
 function fillFor(
   region: Region,
@@ -70,6 +71,7 @@ export default function MapCanvas({
   onSelect,
   flyToCode,
   outbreakSeason = REPORT_UPCOMING_SEASON,
+  showOutbreakMarkers = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -156,14 +158,15 @@ export default function MapCanvas({
       }).addTo(map);
       geoRef.current = geoLayer;
 
-      // Outbreak markers: alert-triangle glyphs at region centroids, above the
-      // risk-tier fill, rebuilt when the active season changes.
+      // Outbreak markers: small ring glyphs at region centroids, above the
+      // risk-tier fill. Opt-in (showOutbreakMarkers) — the basemap loads with
+      // fill only; markers are rebuilt when the toggle or season changes.
       leafletRef.current = L;
       alertIconRef.current = L.divIcon({
         className: "hw-outbreak-marker",
         html: OUTBREAK_MARKER_SVG,
-        iconSize: [28, 28],
-        iconAnchor: [14, 14],
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
       });
       markerRef.current = L.layerGroup().addTo(map);
       setMapReady(true);
@@ -205,7 +208,8 @@ export default function MapCanvas({
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
   }, [illness, weekIndex, mode, selectedCode]);
 
-  // Seasonal outbreak markers, rebuilt when the active season changes.
+  // Seasonal outbreak markers, opt-in. Rebuilt when the toggle or active
+  // season changes; the off state leaves the risk-tier fill as the only layer.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -215,6 +219,7 @@ export default function MapCanvas({
       const icon = alertIconRef.current;
       if (cancelled || !Lf || !group || !icon) return;
       group.clearLayers();
+      if (!showOutbreakMarkers) return;
       for (const r of REGIONS) {
         if (getOutbreak(r.code)[outbreakSeason]?.outbreak) {
           Lf.marker([r.lat, r.lng], { icon, interactive: false }).addTo(group);
@@ -224,7 +229,7 @@ export default function MapCanvas({
     return () => {
       cancelled = true;
     };
-  }, [outbreakSeason, mapReady, dataReady]);
+  }, [outbreakSeason, showOutbreakMarkers, mapReady, dataReady]);
 
   // Fly to a searched/selected region
   useEffect(() => {
