@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Activity } from "lucide-react";
+import { Activity, Info, X } from "lucide-react";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
@@ -111,13 +111,8 @@ function MapView() {
         <TopToolbar onPick={handleFocusRegion} />
       </div>
 
-      {/* Always-visible map legend caption */}
-      <div className="pointer-events-none absolute inset-x-0 top-[4.5rem] z-[500] flex justify-center px-4">
-        <p className="rounded-full border border-border bg-background/80 px-3 py-1 text-center text-[11px] leading-snug text-muted-foreground backdrop-blur">
-          Colors show weekly risk tier (Low/Moderate/High). The alert marker shows a
-          seasonal outbreak flag for the upcoming dry or wet season.
-        </p>
-      </div>
+      {/* Legend popup — appears on load, auto-dismisses */}
+      <LegendToast />
 
       {/* Forecast card (Regional Data side panel) */}
       {selected && (
@@ -158,5 +153,48 @@ function MapView() {
         />
       </div>
     </main>
+  );
+}
+
+/** Small auto-dismissing legend popup shown on first load of the map view. */
+function LegendToast() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setVisible(true);
+    const t = window.setTimeout(() => setVisible(false), 7000);
+    return () => window.clearTimeout(t);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className="pointer-events-auto absolute inset-x-0 top-[4.5rem] z-[700] flex justify-center px-4">
+      <div
+        role="status"
+        className="glass-panel flex max-w-md items-start gap-3 rounded-xl border border-border p-3 text-left shadow-lg"
+      >
+        <span
+          className="mt-0.5 shrink-0 rounded-md p-1 text-primary"
+          style={{ backgroundColor: "color-mix(in oklab, var(--primary), transparent 88%)" }}
+        >
+          <Info className="size-3.5" />
+        </span>
+        <div className="flex-1">
+          <p className="text-xs font-semibold text-foreground">Reading the map</p>
+          <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
+            Colors show weekly risk tier (Low/Moderate/High). The alert marker shows a seasonal
+            outbreak flag for the upcoming dry or wet season.
+          </p>
+        </div>
+        <button
+          onClick={() => setVisible(false)}
+          aria-label="Dismiss map legend"
+          className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+        >
+          <X className="size-3.5" />
+        </button>
+      </div>
+    </div>
   );
 }
