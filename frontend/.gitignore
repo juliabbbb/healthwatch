@@ -16,8 +16,10 @@ dist-ssr
 .nitro
 *.local
 
-# Wrangler / Cloudflare
-.wrangler/
+# Environment / secrets (Vite inlines these at build time)
+.env
+.env.*
+!.env.example
 .dev.vars
 
 # Editor directories and files

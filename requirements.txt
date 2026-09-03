@@ -1,7 +1,9 @@
+# Runtime dependencies for the FastAPI backend (Render deploy).
+# Kept slim on purpose: the API only serves the SQLite DB + pandas computations.
+# Prophet and the ML pipeline live in requirements-ml.txt (local training only).
 pandas
 numpy
 openpyxl
-prophet
 fastapi
 uvicorn
 anthropic

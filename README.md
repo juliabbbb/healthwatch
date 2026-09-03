@@ -23,6 +23,8 @@ cd healthwatch
 # Backend
 python -m venv .venv
 .venv\Scripts\pip install -r requirements.txt
+# ML pipeline (Prophet) — only needed to re-run forecasting locally; the API serves prebuilt data
+.venv\Scripts\pip install -r requirements-ml.txt
 
 # Frontend
 cd frontend

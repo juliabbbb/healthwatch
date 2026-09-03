@@ -28,10 +28,11 @@ interface Props {
 
 const PH_CENTER: [number, number] = [12.8797, 121.774];
 
-/** CartoDB free basemaps — Positron for light, Dark Matter for dark. */
+/** CARTO raster basemaps (Voyager for light, Dark Matter for dark — both labeled). */
+const CARTO_KEY = import.meta.env["VITE_CARTO_API_KEY"] as string | undefined;
 const TILE_URLS = {
-  light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-  dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+  light: `https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
+  dark: `https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}.png?key=${CARTO_KEY}`,
 } as const;
 
 const CARTO_ATTRIBUTION =
@@ -108,7 +109,6 @@ export default function MapCanvas({
         darkRef.current ? TILE_URLS.dark : TILE_URLS.light,
         {
           attribution: CARTO_ATTRIBUTION,
-          subdomains: "abcd",
           maxZoom: 12,
         },
       ).addTo(map);
