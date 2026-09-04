@@ -19,6 +19,8 @@ import {
   type Season,
 } from "@/lib/healthwatch/data";
 
+export type DataLayer = "hotspot" | "density";
+
 interface Props {
   illness: string;
   weekIndex: number;

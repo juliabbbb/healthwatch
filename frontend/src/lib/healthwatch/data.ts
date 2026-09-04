@@ -560,6 +560,47 @@ export function assessRegion(
 ): RegionAssessment {
   const region = REGION_BY_CODE[regionCode]!;
   const series = seriesFor(regionCode, illnessId);
+
+  if (!series.length) {
+    // A region with no series yet (backend incomplete or unreachable) must not
+    // take the dashboard down. Report the requested calendar location with a
+    // zeroed point so maps and charts render; the tier falls to Low by
+    // construction and the rank lands at the bottom of the national pool.
+    const idx = Math.min(Math.max(weekIndex, 0), Math.max(0, TOTAL_WEEKS - 1));
+    const safeMeta = weekMeta(idx);
+    const point: WeekPoint = {
+      index: idx,
+      year: safeMeta.year,
+      week: safeMeta.week,
+      label: safeMeta.label,
+      date: safeMeta.date,
+      season: safeMeta.season,
+      forecast: safeMeta.forecast,
+      cases: 0,
+      lower: 0,
+      upper: 0,
+      raw: 0,
+      adjusted: false,
+    };
+    const thresholds = getThresholds(illnessId, point.week, mode);
+    const dist = pooledValues(illnessId, point.week, mode);
+    return {
+      region,
+      weekIndex: idx,
+      point,
+      mode,
+      value: 0,
+      thresholds,
+      risk: classify(0, thresholds),
+      percentileRank: Math.round(
+        (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
+      ),
+      dominantIllness: ILLNESSES[0]!,
+      fourWeek: [],
+      changePct: 0,
+    };
+  }
+
   const idx = Math.min(Math.max(weekIndex, 0), series.length - 1);
   const point = series[idx]!;
   const thresholds = getThresholds(illnessId, point.week, mode);
