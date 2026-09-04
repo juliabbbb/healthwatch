@@ -1,0 +1,37 @@
+disease,region,season,outbreak,trigger,consecutive_high_n,season_avg,season_p75,n_forecast_weeks
+Dengue,BARMM,dry,True,both,12,218.4,103.8,12
+Dengue,BARMM,wet,True,both,12,329.9,194.8,12
+Dengue,CAR,dry,True,both,12,512.9,102.0,12
+Dengue,CAR,wet,True,both,12,1097.8,447.2,12
+Dengue,Caraga,dry,True,both,12,350.9,175.5,12
+Dengue,Caraga,wet,True,both,12,442.2,225.5,12
+Dengue,NCR,dry,True,both,12,554.2,421.2,12
+Dengue,NCR,wet,True,both,4,1151.5,1061.8,12
+Dengue,National,dry,True,both,12,6263.2,3533.5,12
+Dengue,National,wet,True,both,12,13123.9,8984.0,12
+Dengue,Region I (Ilocos),dry,True,both,10,141.2,87.2,12
+Dengue,Region I (Ilocos),wet,True,season_p75,2,587.9,423.8,12
+Dengue,Region II (Cagayan Valley),dry,True,both,12,180.7,135.0,12
+Dengue,Region II (Cagayan Valley),wet,False,none,0,458.9,561.0,12
+Dengue,Region III (Central Luzon),dry,True,both,12,486.7,437.8,12
+Dengue,Region III (Central Luzon),wet,True,both,4,1361.9,1233.8,12
+Dengue,Region IV-A (CALABARZON),dry,True,both,11,670.5,451.2,12
+Dengue,Region IV-A (CALABARZON),wet,True,both,12,1552.4,1098.8,12
+Dengue,Region IV-B (MIMAROPA),dry,True,both,12,304.6,155.5,12
+Dengue,Region IV-B (MIMAROPA),wet,True,both,11,598.0,364.8,12
+Dengue,Region IX (Zamboanga Peninsula),dry,True,both,5,226.3,225.0,12
+Dengue,Region IX (Zamboanga Peninsula),wet,True,both,3,418.0,358.0,12
+Dengue,Region V (Bicol),dry,False,none,0,0.0,50.0,12
+Dengue,Region V (Bicol),wet,False,none,0,34.3,98.0,12
+Dengue,Region VI (Western Visayas),dry,False,none,0,97.6,156.0,12
+Dengue,Region VI (Western Visayas),wet,True,season_p75,1,834.7,613.2,12
+Dengue,Region VII (Central Visayas),dry,True,both,12,621.6,306.5,12
+Dengue,Region VII (Central Visayas),wet,True,both,12,950.4,573.0,12
+Dengue,Region VIII (Eastern Visayas),dry,False,none,0,2.5,156.0,12
+Dengue,Region VIII (Eastern Visayas),wet,False,none,0,273.1,392.5,12
+Dengue,Region X (Northern Mindanao),dry,True,both,11,369.5,304.5,12
+Dengue,Region X (Northern Mindanao),wet,True,season_p75,2,707.1,587.5,12
+Dengue,Region XI (Davao),dry,True,both,12,609.8,265.5,12
+Dengue,Region XI (Davao),wet,True,both,12,865.3,455.0,12
+Dengue,Region XII (SOCCSKSARGEN),dry,True,both,12,415.9,294.0,12
+Dengue,Region XII (SOCCSKSARGEN),wet,True,both,6,633.9,457.8,12

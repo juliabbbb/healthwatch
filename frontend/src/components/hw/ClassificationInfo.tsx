@@ -44,7 +44,7 @@ export function ClassificationInfo({
         <ol className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
           <li>
             <span className="text-foreground">1. Pool the national distribution.</span> Every
-            historical week (2017–2023) from all 17 regions is collected for the selected illness
+            historical week (2016–2025) from all 17 regions is collected for the selected illness
             and converted into the active metric, so regions are ranked against the whole country,
             not against themselves.
           </li>

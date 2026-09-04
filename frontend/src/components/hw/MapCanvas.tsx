@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type {
   Map as LeafletMap,
   GeoJSON as LeafletGeoJSON,
@@ -8,10 +8,15 @@ import type {
 } from "leaflet";
 import {
   REGION_BY_GEONAME,
+  REGIONS,
+  REPORT_UPCOMING_SEASON,
   assessRegion,
+  dataReady,
+  getOutbreak,
   RISK_META,
   type MetricMode,
   type Region,
+  type Season,
 } from "@/lib/healthwatch/data";
 
 export type DataLayer = "hotspot" | "density";
@@ -19,11 +24,12 @@ export type DataLayer = "hotspot" | "density";
 interface Props {
   illness: string;
   weekIndex: number;
-  layer: DataLayer;
   mode: MetricMode;
   selectedCode: string | null;
   onSelect: (code: string) => void;
   flyToCode?: string | null;
+  outbreakSeason?: Season;
+  showOutbreakMarkers?: boolean;
 }
 
 const PH_CENTER: [number, number] = [12.8797, 121.774];
@@ -45,43 +51,41 @@ function prefersDark(): boolean {
     : false;
 }
 
-function ramp(t: number): string {
-  // 0 -> low, 1 -> high, through the risk palette
-  if (t < 0.5) return `color-mix(in oklab, var(--risk-low), var(--risk-moderate) ${t * 200}%)`;
-  return `color-mix(in oklab, var(--risk-moderate), var(--risk-high) ${(t - 0.5) * 200}%)`;
-}
+/** Small ring/dot glyph at ~half the previous size — a subtle secondary detail over the fill. */
+const OUTBREAK_MARKER_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.4" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="1.6"/><circle cx="7" cy="7" r="5.4" fill="color-mix(in oklab, var(--risk-high) 32%, transparent)" stroke="var(--risk-high)" stroke-width="1.4"/></svg>';
 
 function fillFor(
   region: Region,
   illness: string,
   weekIndex: number,
-  layer: DataLayer,
   mode: MetricMode,
 ): string {
-  if (layer === "hotspot") {
-    return RISK_META[assessRegion(region.code, illness, weekIndex, mode).risk].color;
-  }
-  const a = assessRegion(region.code, illness, weekIndex, mode);
-  const per100k = (a.point.cases / region.population) * 100000;
-  return ramp(Math.min(1, per100k / 12));
+  // Region fill always reflects the risk tier, whatever is overlaid on top.
+  return RISK_META[assessRegion(region.code, illness, weekIndex, mode).risk].color;
 }
 
 export default function MapCanvas({
   illness,
   weekIndex,
-  layer,
   mode,
   selectedCode,
   onSelect,
   flyToCode,
+  outbreakSeason = REPORT_UPCOMING_SEASON,
+  showOutbreakMarkers = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const geoRef = useRef<LeafletGeoJSON | null>(null);
   const tileRef = useRef<TileLayer | null>(null);
   const darkRef = useRef<boolean>(false);
-  const stateRef = useRef({ illness, weekIndex, layer, mode, selectedCode, onSelect });
-  stateRef.current = { illness, weekIndex, layer, mode, selectedCode, onSelect };
+  const leafletRef = useRef<typeof import("leaflet") | null>(null);
+  const markerRef = useRef<import("leaflet").LayerGroup | null>(null);
+  const alertIconRef = useRef<import("leaflet").DivIcon | null>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const stateRef = useRef({ illness, weekIndex, mode, selectedCode, onSelect });
+  stateRef.current = { illness, weekIndex, mode, selectedCode, onSelect };
 
   useEffect(() => {
     let cancelled = false;
@@ -127,7 +131,7 @@ export default function MapCanvas({
           ? { stroke: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)" }
           : { stroke: selected ? "oklch(0.24 0.008 85 / 85%)" : "oklch(0.24 0.008 85 / 25%)" };
         return {
-          fillColor: fillFor(region, s.illness, s.weekIndex, s.layer, s.mode),
+          fillColor: fillFor(region, s.illness, s.weekIndex, s.mode),
           fillOpacity: selected ? 0.78 : 0.55,
           color: border.stroke,
           weight: selected ? 2 : 0.8,
@@ -156,6 +160,19 @@ export default function MapCanvas({
       }).addTo(map);
       geoRef.current = geoLayer;
 
+      // Outbreak markers: small ring glyphs at region centroids, above the
+      // risk-tier fill. Opt-in (showOutbreakMarkers) — the basemap loads with
+      // fill only; markers are rebuilt when the toggle or season changes.
+      leafletRef.current = L;
+      alertIconRef.current = L.divIcon({
+        className: "hw-outbreak-marker",
+        html: OUTBREAK_MARKER_SVG,
+        iconSize: [14, 14],
+        iconAnchor: [7, 7],
+      });
+      markerRef.current = L.layerGroup().addTo(map);
+      setMapReady(true);
+
       // Swap basemap + border ink live when the theme toggles.
       observer = new MutationObserver(() => {
         const dark = prefersDark();
@@ -180,15 +197,41 @@ export default function MapCanvas({
       mapRef.current = null;
       geoRef.current = null;
       tileRef.current = null;
+      markerRef.current = null;
+      alertIconRef.current = null;
+      leafletRef.current = null;
     };
   }, []);
 
-  // Restyle on data changes
+  // Restyle on data changes (risk-tier fill).
   useEffect(() => {
     const geoLayer = geoRef.current;
     if (!geoLayer) return;
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
-  }, [illness, weekIndex, layer, mode, selectedCode]);
+  }, [illness, weekIndex, mode, selectedCode]);
+
+  // Seasonal outbreak markers, opt-in. Rebuilt when the toggle or active
+  // season changes; the off state leaves the risk-tier fill as the only layer.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      await dataReady;
+      const Lf = leafletRef.current;
+      const group = markerRef.current;
+      const icon = alertIconRef.current;
+      if (cancelled || !Lf || !group || !icon) return;
+      group.clearLayers();
+      if (!showOutbreakMarkers) return;
+      for (const r of REGIONS) {
+        if (getOutbreak(r.code)[outbreakSeason]?.outbreak) {
+          Lf.marker([r.lat, r.lng], { icon, interactive: false }).addTo(group);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [outbreakSeason, showOutbreakMarkers, mapReady, dataReady]);
 
   // Fly to a searched/selected region
   useEffect(() => {

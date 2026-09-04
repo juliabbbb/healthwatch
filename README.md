@@ -3,8 +3,9 @@
 Regional time-series analysis system for seasonal illness outbreak prediction and hotspot classification.
 
 Forecasting dengue outbreaks per Philippine region (Prophet), classifying weekly risk tiers
-(<P50 Low · P50–75 Moderate · >P75 High), served by a FastAPI backend over SQLite and visualized
-in a React dashboard with an interactive choropleth map.
+(<P50 Low · P50–75 Moderate · >P75 High), publishing a season-level outbreak indicator for the
+coming dry (Jan–Mar) and wet (Jul–Sep) windows, served by a FastAPI backend over SQLite and
+visualized in a React dashboard with an interactive choropleth map.
 
 ## Prerequisites
 
@@ -32,7 +33,7 @@ npm install
 cd ..
 ```
 
-No pipeline run is needed — all data ships in the repo (`data/raw` source CSVs,
+No pipeline run is needed — all data ships in the repo (`data/raw` canonical source file,
 `data/processed` cleaned outputs, and `healthwatch.db`).
 
 ## Running the app
@@ -68,29 +69,43 @@ Interactive API docs: <http://localhost:8000/docs>
 
 ## Rebuilding data from scratch
 
-Only needed if the raw CSVs in `data/raw/` change. Re-run the pipeline modules in `src/`
-(ingest → features → forecast → classify → db) to regenerate everything in `data/processed/`.
+Only needed if the raw data changes. Re-run the pipeline modules in `src/`
+(ingest → forecast → classify → outbreak → validate → db) to regenerate everything in
+`data/processed/`:
+
+```powershell
+.venv\Scripts\python -m src.doh_eb_ingest   # canonical DOH-EB file -> weekly series
+.venv\Scripts\python -m src.forecast        # Prophet fits, forecasts, season probes, validation
+.venv\Scripts\python -m src.classify        # week + season thresholds, risk + probe classification
+.venv\Scripts\python -m src.outbreak        # season-level outbreak flags
+.venv\Scripts\python -m src.validate_2025   # prospective check of the 2025 flags (real data)
+.venv\Scripts\python -m src.db              # rebuild SQLite from processed CSVs
+```
 
 ## Structure
 
 | Path | Purpose |
 |---|---|
-| `data/raw/` | Untouched DOH Epidemiology Bureau dengue surveillance CSVs (2016–2021) |
-| `data/processed/` | Cleaned weekly series, forecasts, risk tiers, validation metrics + SQLite DB |
+| `data/raw/` | Canonical DOH Epidemiology Bureau weekly dengue surveillance file (UPRI-NOAH open dataset, 2016–2019 + 2022–2025) |
+| `data/processed/` | Cleaned weekly series, forecasts, probes, thresholds, outbreak indicators, validation + SQLite DB |
 | `frontend/public/geo/` | PSGC region GeoJSON for the choropleth map |
-| `src/` | Pipeline (ingest, features, forecast, classify, db) + FastAPI app (`api.py`) |
-| `frontend/` | React + Vite + TanStack Router dashboard (map, charts, risk classification views) |
+| `src/` | Pipeline (ingest, forecast, classify, outbreak, validate, db) + FastAPI app (`api.py`) |
+| `frontend/` | React + Vite + TanStack Router dashboard (map with outbreak layer, region pages, methodology) |
 
 ## Locked scope
 
 - **Disease: dengue only, for this release.** The original proposal covered five illnesses
   (dengue, leptospirosis, influenza-like illness, acute gastroenteritis, heat-related illness).
   Regional forecasting and the choropleth are scoped to dengue only because it's the only disease
-  with a usable regional-breakdown dataset (HDX DOH-Epidemiology Bureau, 2016–2021); the other four
-  are **deferred**, not implemented — no national-level fallback is wired in either. The pipeline
-  and schema aren't disease-locked, so adding another disease later is an extension, not a rewrite,
-  but it isn't scheduled work right now.
+  with a usable regional-breakdown dataset (DOH Epidemiology Bureau via the UPRI-NOAH open file);
+  the other four are **deferred**, not implemented — no national-level fallback is wired in either.
+  The pipeline and schema aren't disease-locked, so adding another disease later is an extension,
+  not a rewrite, but it isn't scheduled work right now.
 - Prediction: Prophet only
-- Risk classes: percentile thresholds (<50 Low, 50–75 Moderate, >75 High)
+- Risk classes: percentile thresholds (<50 Low, 50–75 Moderate, >75 High) per region-week and per
+  region-season (dry/wet P75 alert lines)
+- Outbreak indicator: Rule A (≥3 consecutive probe weeks High) or Rule B (season forecast average
+  > seasonal P75); locked without tuning after prospective 2025 validation — dry-season F1 0.90,
+  wet season deliberately recall-first
 - Rules: deterministic post-processing only (non-negativity clipping, wet/dry season regressor)
-- Training window: pre-COVID weeks (≤2019); 2020–2021 kept only as a stress-test window
+- Training window: every observed week through 2024-12-31; 2020–2021 reporting gap excluded

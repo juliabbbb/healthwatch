@@ -11,9 +11,14 @@ TABLES = {
     "weekly_cases_regional": "regional_dengue_weekly.csv",
     "forecasts": "forecasts.csv",
     "risk_thresholds": "risk_thresholds.csv",
+    "seasonal_thresholds": "seasonal_thresholds.csv",
     "risk_classification": "risk_classification.csv",
     "validation_metrics": "validation_metrics.csv",
     "tier_accuracy": "tier_accuracy.csv",
+    "season_probes": "season_probes.csv",
+    "seasonal_classification": "seasonal_classification.csv",
+    "outbreak_indicators": "outbreak_indicators.csv",
+    "outbreak_validation_2025": "outbreak_validation_2025.csv",
 }
 
 

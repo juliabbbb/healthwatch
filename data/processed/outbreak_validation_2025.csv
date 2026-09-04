@@ -1,0 +1,37 @@
+disease,region,season,forecast_avg,actual_avg,actual_max,season_p75,actual_high_run,predicted,actual_outbreak,rule_a_actual,rule_b_actual,tp,fp,fn,tn
+Dengue,BARMM,dry,218.4,121.8,154.0,103.8,11,True,True,True,True,True,False,False,False
+Dengue,BARMM,wet,329.9,150.8,186.0,194.8,0,True,False,False,False,False,True,False,False
+Dengue,CAR,dry,512.9,132.5,154.0,102.0,11,True,True,True,True,True,False,False,False
+Dengue,CAR,wet,1097.8,218.6,248.0,447.2,0,True,False,False,False,False,True,False,False
+Dengue,Caraga,dry,350.9,276.9,406.0,175.5,11,True,True,True,True,True,False,False,False
+Dengue,Caraga,wet,442.2,64.2,96.0,225.5,0,True,False,False,False,False,True,False,False
+Dengue,NCR,dry,554.2,1320.4,1698.0,421.2,12,True,True,True,True,True,False,False,False
+Dengue,NCR,wet,1151.5,976.2,1224.0,1061.8,1,True,False,False,False,False,True,False,False
+Dengue,National,dry,6263.2,7111.9,8731.0,3533.5,12,True,True,True,True,True,False,False,False
+Dengue,National,wet,13123.9,7926.9,9235.0,8984.0,0,True,False,False,False,False,True,False,False
+Dengue,Region I (Ilocos),dry,141.2,152.2,190.0,87.2,11,True,True,True,True,True,False,False,False
+Dengue,Region I (Ilocos),wet,587.9,638.7,830.0,423.8,2,True,True,False,True,True,False,False,False
+Dengue,Region II (Cagayan Valley),dry,180.7,213.4,290.0,135.0,11,True,True,True,True,True,False,False,False
+Dengue,Region II (Cagayan Valley),wet,458.9,410.8,562.0,561.0,0,False,False,False,False,False,False,False,True
+Dengue,Region III (Central Luzon),dry,486.7,1176.8,1525.0,437.8,12,True,True,True,True,True,False,False,False
+Dengue,Region III (Central Luzon),wet,1361.9,2331.1,2940.0,1233.8,12,True,True,True,True,True,False,False,False
+Dengue,Region IV-A (CALABARZON),dry,670.5,1392.0,1857.0,451.2,12,True,True,True,True,True,False,False,False
+Dengue,Region IV-A (CALABARZON),wet,1552.4,1170.2,1385.0,1098.8,5,True,True,True,True,True,False,False,False
+Dengue,Region IV-B (MIMAROPA),dry,304.6,312.8,362.0,155.5,12,True,True,True,True,True,False,False,False
+Dengue,Region IV-B (MIMAROPA),wet,598.0,361.8,512.0,364.8,0,True,False,False,False,False,True,False,False
+Dengue,Region IX (Zamboanga Peninsula),dry,226.3,208.9,260.0,225.0,2,True,False,False,False,False,True,False,False
+Dengue,Region IX (Zamboanga Peninsula),wet,418.0,125.8,177.0,358.0,0,True,False,False,False,False,True,False,False
+Dengue,Region V (Bicol),dry,0.0,47.7,68.0,50.0,5,False,True,True,False,False,False,True,False
+Dengue,Region V (Bicol),wet,34.3,50.2,64.0,98.0,0,False,False,False,False,False,False,False,True
+Dengue,Region VI (Western Visayas),dry,97.6,273.8,336.0,156.0,11,False,True,True,True,False,False,True,False
+Dengue,Region VI (Western Visayas),wet,834.7,418.8,679.0,613.2,0,True,False,False,False,False,True,False,False
+Dengue,Region VII (Central Visayas),dry,621.6,375.0,499.0,306.5,11,True,True,True,True,True,False,False,False
+Dengue,Region VII (Central Visayas),wet,950.4,203.5,230.0,573.0,0,True,False,False,False,False,True,False,False
+Dengue,Region VIII (Eastern Visayas),dry,2.5,121.8,155.0,156.0,1,False,False,False,False,False,False,False,True
+Dengue,Region VIII (Eastern Visayas),wet,273.1,52.2,67.0,392.5,0,False,False,False,False,False,False,False,True
+Dengue,Region X (Northern Mindanao),dry,369.5,320.8,389.0,304.5,6,True,True,True,True,True,False,False,False
+Dengue,Region X (Northern Mindanao),wet,707.1,239.6,336.0,587.5,0,True,False,False,False,False,True,False,False
+Dengue,Region XI (Davao),dry,609.8,387.7,454.0,265.5,12,True,True,True,True,True,False,False,False
+Dengue,Region XI (Davao),wet,865.3,253.3,323.0,455.0,0,True,False,False,False,False,True,False,False
+Dengue,Region XII (SOCCSKSARGEN),dry,415.9,277.6,316.0,294.0,3,True,True,True,False,True,False,False,False
+Dengue,Region XII (SOCCSKSARGEN),wet,633.9,261.1,333.0,457.8,0,True,False,False,False,False,True,False,False

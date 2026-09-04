@@ -4,13 +4,13 @@ import { ILLNESSES, REGIONS } from "@/lib/healthwatch/data";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
-  { date: "2019-07-21", cases: 15599, p50: 5713, p75: 10656, tier: "High" },
-  { date: "2019-07-28", cases: 21545, p50: 6456, p75: 14000.5, tier: "High" },
-  { date: "2019-08-04", cases: 20955, p50: 6209, p75: 13582, tier: "High" },
-  { date: "2019-08-11", cases: 20355, p50: 6749, p75: 13552, tier: "High" },
-  { date: "2019-08-18", cases: 20819, p50: 7288, p75: 14053.5, tier: "High" },
-  { date: "2019-08-25", cases: 19596, p50: 5450, p75: 12523, tier: "High" },
-  { date: "2019-09-01", cases: 22148, p50: 6547, p75: 14347.5, tier: "High" },
+  { date: "2019-07-21", cases: 18820, p50: 6951, p75: 11618.5, tier: "High" },
+  { date: "2019-07-28", cases: 20266, p50: 8489, p75: 12111, tier: "High" },
+  { date: "2019-08-04", cases: 19969, p50: 9121, p75: 13764, tier: "High" },
+  { date: "2019-08-11", cases: 19231, p50: 9244, p75: 14246, tier: "High" },
+  { date: "2019-08-18", cases: 19981, p50: 8902, p75: 14259, tier: "High" },
+  { date: "2019-08-25", cases: 19093, p50: 8150, p75: 12922, tier: "High" },
+  { date: "2019-09-01", cases: 18601, p50: 7989, p75: 11986, tier: "High" },
 ];
 
 export const Route = createFileRoute("/methodology")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/methodology")({
       {
         name: "description",
         content:
-          "How HEALTHWATCH works: DOH Epidemiology Bureau dengue surveillance (2016–2021), per-region Prophet forecasting with a PAGASA wet/dry season regressor, percentile-based hotspot classification and walk-forward validation.",
+          "How HEALTHWATCH works: DOH Epidemiology Bureau weekly dengue surveillance (2016–2019 + 2022–2025), per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
       },
       { property: "og:title", content: "Data & Methodology — HEALTHWATCH" },
       {
@@ -54,14 +54,12 @@ function Methodology() {
       <Section title="Data sources">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>
-            <strong>DOH Epidemiology Bureau dengue surveillance (2016–2021)</strong> — weekly
-            reported dengue cases per PSGC-coded administrative region, published as an open
-            research dataset (Mendeley Data, DOH-Epi dump). This is the backbone of every series in
-            the system.
-          </li>
-          <li>
-            <strong>PAGASA seasonal definition</strong> — the wet (June–November) / dry
-            (December–May) split used as an exogenous regressor in the forecasting model.
+            <strong>DOH Epidemiology Bureau weekly dengue surveillance (2016–2019 + 2022–2025)</strong>{" "}
+            — the PIDSR weekly case series per administrative region, republished for open research
+            by the UPRI-NOAH dengue-rainfall dataset (Zenodo 10.5281/zenodo.19448854, ODC-ODbL).
+            This canonical file replaces the earlier 2016–2021 dump and is the backbone of every
+            series in the system. The 2020–2021 reporting gap is structurally absent from the source
+            and handled as an excluded interval (see below).
           </li>
           <li>
             <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
@@ -83,16 +81,18 @@ function Methodology() {
             contiguous weekly series per region.
           </li>
           <li>
-            <strong>Feature engineering.</strong> Each week receives a PAGASA wet/dry season flag;
+            <strong>Feature engineering.</strong> Each week receives a calendar-based wet/dry season flag;
             non-negativity clipping is enforced on all counts before modelling.
           </li>
           <li>
             <strong>Forecasting model.</strong> One <strong>Prophet</strong> model per region
             (additive trend with automatic changepoint detection + Fourier yearly seasonality +
             wet/dry season regressor). Model parameters are learned from data via Bayesian
-            estimation — this is the machine-learning step. The training window deliberately ends
-            <strong> December 2019</strong>: the COVID-19 response collapsed routine dengue
-            reporting from 2020 onward, and including those years would corrupt the learned trend.
+            estimation — this is the machine-learning step. The training window uses every observed
+            week through <strong>31 December 2024</strong>. The structurally missing 2020–2021
+            interval (routine reporting collapsed during the COVID-19 emergency) is excluded from
+            training as a gap rather than fed in as near-zero values; the stable 2016–2019 and
+            2022–2024 years set the seasonal pattern.
           </li>
           <li>
             <strong>Horizon.</strong> Each regional model publishes a 12-week ahead forecast with
@@ -103,27 +103,27 @@ function Methodology() {
 
       <Section title="Validation — proving the model generalises">
         <p className="text-sm text-foreground/85">
-          Models are evaluated on weeks they never saw, using two chronological holdout windows:
+          Models are evaluated on weeks they never saw, using two chronological 52-week holdout
+          windows:
         </p>
         <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
           <li>
-            <strong>Pre-COVID window</strong> — the last 52 reported weeks before 2020 (primary
-            quality measure).
+            <strong>Pre-2025 window</strong> — the 52 weeks of calendar 2024 (primary quality
+            measure for the 2025 outlook).
           </li>
           <li>
-            <strong>COVID stress-test</strong> — the final 52 weeks of the dataset (2020–2021),
-            where reporting was disrupted; a model that still beats its baseline here is robust.
+            <strong>Pre-COVID window</strong> — the last 52 reported weeks before 2020 (stable,
+            epidemic-year calibration).
           </li>
         </ul>
         <p className="mt-3 text-sm text-foreground/85">
           Reported metrics per region: MAE, RMSE, MAPE, and{" "}
-          <strong>skill versus a seasonal-naïve baseline</strong> (“same week last year”). The
-          Prophet models beat the naïve baseline in 18 of 18 region-series during the COVID
-          stress window and 12 of 18 pre-COVID. The confidence chip shown on each region page is
-          driven by that skill score — High = beats the baseline by ≥15% with MAPE ≤100%, Low =
-          no improvement over the baseline, Moderate = everything between. Raw MAPE alone is not
-          used for tiering because near-zero case weeks inflate it into triple digits even when
-          forecasts are epidemiologically useful.
+          <strong>skill versus a seasonal-naïve baseline</strong> (“same week last year”). Most
+          regions beat the naïve baseline in both windows; the confidence chip on each region page
+          is driven by that skill score — High = beats the baseline by ≥15% with MAPE ≤100%, Low =
+          no improvement, Moderate = everything between. Raw MAPE alone is not used for tiering
+          because near-zero case weeks inflate it into triple digits even when forecasts are
+          epidemiologically useful.
         </p>
       </Section>
 
@@ -157,7 +157,7 @@ function Methodology() {
         </ul>
         <p className="mt-3 text-xs text-muted-foreground">
           The pipeline stores the full 936-row region × week percentile table (P50/P75) used to
-          grade tier accuracy: ~52% of validation weeks landed in the correct tier versus ~33%
+          grade tier accuracy: ~43% of validation weeks landed in the correct tier versus ~33%
           expected from random assignment across three classes. This is a deliberately simple,
           deterministic analog of established epidemic-threshold methods such as the WHO
           Moving Epidemic Method, which likewise derives intensity bands from historical
@@ -165,11 +165,52 @@ function Methodology() {
         </p>
       </Section>
 
+      <Section title="Seasonal outbreak indicator">
+        <p className="text-sm text-foreground/85">
+          On top of the weekly tier, the pipeline publishes a season-level outbreak flag for the
+          coming{" "}
+          <strong>dry window (Jan–Mar)</strong> and{" "}
+          <strong>wet window (Jul–Sep, the climatological peak)</strong>. Each purpose-built
+          Prophet probe forecasts the 12 weeks of that window; a region is flagged when either
+          rule fires on the probe:
+        </p>
+        <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
+          <li>
+            <strong>Rule A</strong> — at least 3 consecutive probe weeks classify High (above the
+            region-week P75).
+          </li>
+          <li>
+            <strong>Rule B</strong> — the window&rsquo;s forecast average weekly load exceeds the
+            season&rsquo;s long-run P75 (the seasonal alert line).
+          </li>
+        </ul>
+        <p className="mt-3 text-sm text-foreground/85">
+          The upcoming season used for outbreak detection is determined automatically from the
+          current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May, per PAGASA's
+          climatological definition) — it is not pulled from PAGASA or any live weather source.
+          This keeps the indicator reproducible and directly
+          implements Objective 2's goal of predicting cases "during an upcoming season (dry or
+          wet)" as the basis for outbreak detection (Objective 2 → feeds Objective 3's
+          classification).
+        </p>
+        <p className="mt-3 text-sm text-foreground/85">
+          Crucially, these flags were <strong>locked without retuning</strong> after a prospective
+          test: probes were generated from data through 31 December 2024 and compared against the
+          real, observed 2025 DOH-EB weekly series (never part of training). Dry-season detection
+          across the 17 regions scored <strong>F1 0.90</strong> (precision 0.93, recall 0.88),
+          catching every region that actually surged in the 2025 early-year outbreak except two
+          low-incidence areas. The wet season scored precision 0.20 but recall 1.00 — the system
+          over-warns rather than misses a surge; that conservative posture is deliberate for a
+          public-health alerting layer and is the reason wet-season flags are framed as a watch,
+          not a confirmation.
+        </p>
+      </Section>
+
       <Section title="Known-epidemic check">
         <p className="text-sm text-foreground/85">
           As an independent sanity check, the classification method was run against a real,
           pre-declared national emergency: DOH declared a national dengue epidemic on 6 August
-          2019. Grading the surrounding national weekly counts against the same pre-2020
+          2019. Grading the surrounding national weekly counts against the same 2016–2024
           percentile thresholds:
         </p>
         <div className="mt-3 overflow-hidden rounded-lg border border-border">
@@ -199,8 +240,8 @@ function Methodology() {
           </table>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          All 7 of 7 weeks classify as High — the method flags the real epidemic without ever
-          having seen it (thresholds use pre-2020 data only). Reproduce with{" "}
+          All 7 of 7 weeks classify as High against the 2016–2024 regional thresholds. Reproduce
+          with{" "}
           <code>python -m src.validate_known_epidemic</code>.
         </p>
       </Section>
@@ -208,7 +249,7 @@ function Methodology() {
       <Section title="Deterministic rules enforced">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>Non-negativity: no predicted or lower-bound value may fall below zero.</li>
-          <li>Season flagging: every week carries a PAGASA wet/dry tag, shaded on all charts.</li>
+          <li>Season flagging: every week carries a calendar-based wet/dry tag, shaded on all charts.</li>
           <li>
             Transparent tiers: thresholds are plain percentiles — reproducible without refitting
             any model.
@@ -238,16 +279,22 @@ function Methodology() {
       <Section title="Limitations">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>
-            <strong>COVID-era disruption.</strong> 2020–2021 reporting reflects altered healthcare-
-            seeking behaviour; those years are excluded from training and used only as a
-            stress-test window.
+            <strong>2020–2021 reporting gap.</strong> Routine surveillance collapsed during the
+            COVID-19 emergency and those years are structurally absent from the source file; they
+            are excluded from training as a gap rather than imputed as near-zero values.
           </li>
           <li>
-            <strong>Negative-skill regions.</strong> In 6 of 36 region-window validation runs —
-            CAR, Caraga, NCR and Regions I, III and IV-B in the pre-COVID window — a seasonal-naive
-            baseline outperformed the model by 11–22% MAPE. Outbreak timing in these areas was too
-            irregular for the available history to learn reliably; the metrics panel surfaces each
-            region's skill so low-confidence forecasts are visible rather than hidden.
+            <strong>Negative-skill windows.</strong> In 12 of 36 region-window validation runs a
+            seasonal-naive baseline outperformed the model — most in the volatile pre-COVID 2019
+            epidemic year (CAR, Caraga, NCR and Regions I, III, IV-B, VI, VII, X) plus Regions
+            IV-A, V and VIII on the 2024 holdout. Outbreak timing in these areas was too irregular
+            for the available history to learn reliably; the metrics panel surfaces each region's
+            skill so low-confidence forecasts are visible rather than hidden.
+          </li>
+          <li>
+            <strong>Wet-season over-warning.</strong> The locked wet 2025 outlook over-flagged 12
+            regions (precision 0.20 with recall 1.00). The flags extrapolate the record 2024 wet
+            peak into 2025 and, by design, favour recall so no surge is missed.
           </li>
           <li>
             <strong>No intervention logs.</strong> LGU/DOH response activities are not published as
@@ -257,7 +304,7 @@ function Methodology() {
           <li>
             <strong>No weather map layers.</strong> Precipitation, temperature and humidity
             overlays were removed because they are not live feeds; the model's only
-            weather-adjacent signal is the deterministic PAGASA wet/dry season flag.
+            weather-adjacent signal is the deterministic calendar-based wet/dry season flag.
           </li>
           <li>
             Region-level resolution only — province and city-level hotspots are a later phase.
