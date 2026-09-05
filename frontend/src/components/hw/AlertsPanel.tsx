@@ -106,7 +106,7 @@ export function AlertsPanel({
                     </span>
                   </span>
                   <span className="shrink-0 pt-0.5 font-mono text-[10px] font-medium tabular-nums text-muted-foreground">
-                    {a.week}
+                    {a.month}
                   </span>
                 </button>
               </li>
@@ -115,7 +115,7 @@ export function AlertsPanel({
           {alerts.length > 0 && (
 <div className="border-t border-border/70 px-4 py-2 bg-secondary/15">
               <p className="text-[10px] leading-relaxed text-muted-foreground">
-                Weekly risk alerts come from the current classification; seasonal outbreak alerts come
+                Monthly risk alerts come from the current classification; seasonal outbreak alerts come
                 from Rule A/B on the active season window. Click an alert to locate the region on the
                 map.
               </p>

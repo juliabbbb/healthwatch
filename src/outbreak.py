@@ -4,18 +4,17 @@ Deterministically flags a region-season as being at seasonal outbreak risk using
 data already produced by the pipeline (O2 forecasts + percentile tiers) — no new
 ML. Two complementary rules, per (disease, region, season):
 
-  Rule A — consecutive High: the season's 12-week probe forecast contains a run
-      of >= N consecutive weeks whose risk tier is 'High' (>weekly P75).
-      Sustained elevation, not a single anomalous week.
+  Rule A — consecutive High: the season's 3-month probe forecast contains a run
+      of >= N consecutive months whose risk tier is 'High' (>monthly P75).
+      Sustained elevation, not a single anomalous month.
 
-  Rule B — season P75 uplift: the average expected weekly load over the season's
-      probe weeks exceeds the region's historical P75 for that season (from
-      seasonal_thresholds.csv). A per-week baseline compared against a per-week
-      average, so the two are on the same scale; captures elevated *seasonal*
-      load even when individual weeks sit near the boundary.
+  Rule B — season P75 uplift: the average expected monthly load over the
+      season's probe months exceeds the region's historical P75 for that season
+      (from seasonal_thresholds.csv). Captures elevated *seasonal* load even
+      when individual months sit near the boundary.
 
 If either rule fires, the region is flagged for that season. Both rules reuse
-pre-COVID history via the existing thresholds, keeping the method deterministic
+pre-2025 history via the existing thresholds, keeping the method deterministic
 and explainable (Objective 5).
 
 Run: python -m src.outbreak
@@ -63,7 +62,7 @@ def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
     key = ["disease", "region", "season"]
     for (disease, region, season), grp in classification.groupby(key):
         grp = grp.sort_values("date")
-        n_weeks = len(grp)
+        n_months = len(grp)
         high_run = _longest_high_run(grp["risk_level"].tolist())
         rule_a = high_run >= consecutive_n
 
@@ -100,7 +99,7 @@ def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
                 "consecutive_high_n": int(high_run),
                 "season_avg": round(season_avg, 1),
                 "season_p75": round(season_p75, 1),
-                "n_forecast_weeks": int(n_weeks),
+                "n_forecast_months": int(n_months),
             }
         )
 

@@ -16,7 +16,7 @@ import {
   REPORT_DATE,
   REPORT_UPCOMING_SEASON,
   SEASON_START_MONTH,
-  weekMeta,
+  monthMeta,
   type MetricMode,
   type OutbreakIndicator,
   type RiskLevel,
@@ -28,7 +28,7 @@ import { StatusChip } from "./StatusChip";
 export interface ForecastCardProps {
   regionCode: string;
   illness: string;
-  weekIndex: number;
+  monthIndex: number;
   mode?: MetricMode;
   onModeChange?: (m: MetricMode) => void;
   layer?: DataLayer;
@@ -44,7 +44,7 @@ export interface ForecastCardProps {
 export function ForecastCard({
   regionCode,
   illness,
-  weekIndex,
+  monthIndex,
   mode = "percapita",
   onModeChange,
   onClose,
@@ -56,8 +56,8 @@ export function ForecastCard({
   outbreakSeason = REPORT_UPCOMING_SEASON,
   onOutbreakSeasonChange,
 }: ForecastCardProps) {
-  const a = assessRegion(regionCode, illness, weekIndex, mode);
-  const meta = weekMeta(weekIndex);
+  const a = assessRegion(regionCode, illness, monthIndex, mode);
+  const meta = monthMeta(monthIndex);
   const recs = recommendations(a);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
@@ -134,7 +134,7 @@ export function ForecastCard({
               {a.changePct >= 0 ? "+" : ""}
               {a.changePct}%
             </strong>{" "}
-            vs 4 weeks ago · <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national percentile
+            vs 3 months ago · <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national percentile
           </span>
         </div>
       </div>
@@ -318,11 +318,11 @@ export function ForecastCard({
         </details>
       </div>
 
-      {/* 4-Week Forecast Horizon */}
+      {/* 12-Month Forecast Horizon */}
       <div className="border-t border-border/70 px-4 py-3">
-        <p className="label-caps mb-2 text-[10px]">4-week forecast</p>
+        <p className="label-caps mb-2 text-[10px]">12-month forecast</p>
         <ul className="space-y-2">
-          {a.fourWeek.map((p) => {
+          {a.forecastWindow.map((p) => {
             const v = metricValue(p.cases, a.region, mode);
             const risk: RiskLevel = classify(v, a.thresholds);
             return (

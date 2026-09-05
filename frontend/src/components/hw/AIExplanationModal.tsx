@@ -21,27 +21,27 @@ const COMPONENT_LABELS: Record<SeasonalityComponent, string> = {
   trend: "Trend component",
   seasonal: "Seasonal pattern",
   residual: "Noise (residual)",
-  acf: "52-week cycle indicators",
+  acf: "12-month cycle indicators",
 };
 
 interface SeasonalityGrounding {
   region: string;
   disease: string;
-  observed_weeks: number;
+  observed_months: number;
   series_start: string;
   series_end: string;
   trend: { latest_index: number; change_pct_2y: number };
   seasonal: {
-    peak_week: number;
-    peak_month: string;
-    trough_week: number;
-    trough_month: string;
+    peak_month: number;
+    peak_label: string;
+    trough_month: number;
+    trough_label: string;
     strength_pct: number;
   };
   cycle: {
-    acf_lag52: number;
-    acf_lag26: number;
-    dominant_lag_weeks: number;
+    acf_lag12: number;
+    acf_lag6: number;
+    dominant_lag_months: number;
     dominant_lag_acf: number;
   };
   wet_dry: { wet_season_mean_cases: number; dry_season_mean_cases: number };
@@ -223,7 +223,7 @@ function GroundingReadout({ data }: { data: SeasonalityGrounding }) {
     <dl className="mt-3 grid gap-x-6 gap-y-4 rounded-lg border border-border bg-card/60 p-3 sm:grid-cols-2">
       <Group title="Series">
         <Row label="Region" value={data.region} />
-        <Row label="Weeks observed" value={String(data.observed_weeks)} />
+        <Row label="Months observed" value={String(data.observed_months)} />
         <Row label="Coverage" value={`${data.series_start} → ${data.series_end}`} />
       </Group>
       <Group title="Trend">
@@ -235,26 +235,20 @@ function GroundingReadout({ data }: { data: SeasonalityGrounding }) {
       </Group>
       <Group title="Seasonal pattern">
         <Row label="Strength" value={`${data.seasonal.strength_pct}%`} />
-        <Row
-          label="Peak week"
-          value={`W${data.seasonal.peak_week} (~${data.seasonal.peak_month})`}
-        />
-        <Row
-          label="Trough week"
-          value={`W${data.seasonal.trough_week} (~${data.seasonal.trough_month})`}
-        />
+        <Row label="Peak month" value={data.seasonal.peak_label} />
+        <Row label="Trough month" value={data.seasonal.trough_label} />
       </Group>
       <Group title="Annual cycle (ACF)">
-        <Row label="Lag 52" value={data.cycle.acf_lag52.toFixed(2)} />
-        <Row label="Lag 26" value={data.cycle.acf_lag26.toFixed(2)} />
+        <Row label="Lag 12" value={data.cycle.acf_lag12.toFixed(2)} />
+        <Row label="Lag 6" value={data.cycle.acf_lag6.toFixed(2)} />
         <Row
           label="Dominant lag"
-          value={`${data.cycle.dominant_lag_weeks}w (${data.cycle.dominant_lag_acf.toFixed(2)})`}
+          value={`${data.cycle.dominant_lag_months}m (${data.cycle.dominant_lag_acf.toFixed(2)})`}
         />
       </Group>
       <Group title="Wet vs dry season">
-        <Row label="Wet mean cases/wk" value={fmt(data.wet_dry.wet_season_mean_cases)} />
-        <Row label="Dry mean cases/wk" value={fmt(data.wet_dry.dry_season_mean_cases)} />
+        <Row label="Wet mean cases/mo" value={fmt(data.wet_dry.wet_season_mean_cases)} />
+        <Row label="Dry mean cases/mo" value={fmt(data.wet_dry.dry_season_mean_cases)} />
       </Group>
     </dl>
   );
