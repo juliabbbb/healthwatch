@@ -1,37 +1,39 @@
-disease,region,window,MAE,RMSE,MAPE,weeks,naive_MAE,skill_vs_naive_pct
-Dengue,BARMM,pre_2025_52w,66.76,76.77,34.55,52,88.98,25.0
-Dengue,BARMM,pre_covid_52w,41.21,54.31,42.76,52,62.54,34.1
-Dengue,CAR,pre_2025_52w,391.49,617.88,71.36,52,406.6,3.7
-Dengue,CAR,pre_covid_52w,53.05,61.13,57.24,52,47.33,-12.1
-Dengue,Caraga,pre_2025_52w,151.89,194.42,49.57,52,200.21,24.1
-Dengue,Caraga,pre_covid_52w,175.86,203.89,124.9,52,146.83,-19.8
-Dengue,NCR,pre_2025_52w,346.6,569.41,34.87,52,401.17,13.6
-Dengue,NCR,pre_covid_52w,333.75,463.86,76.02,52,286.4,-16.5
-Dengue,National,pre_2025_52w,2985.83,3692.47,40.88,52,3594.69,16.9
-Dengue,National,pre_covid_52w,3552.07,4447.02,59.19,52,3978.12,10.7
-Dengue,Region I (Ilocos),pre_2025_52w,100.49,148.72,59.26,52,109.54,8.3
-Dengue,Region I (Ilocos),pre_covid_52w,185.8,221.29,139.06,52,118.5,-56.8
-Dengue,Region II (Cagayan Valley),pre_2025_52w,107.32,169.15,30.98,52,156.35,31.4
-Dengue,Region II (Cagayan Valley),pre_covid_52w,247.32,279.77,151.91,52,279.73,11.6
-Dengue,Region III (Central Luzon),pre_2025_52w,335.29,464.87,46.72,52,421.37,20.4
-Dengue,Region III (Central Luzon),pre_covid_52w,300.25,384.91,59.11,52,201.38,-49.1
-Dengue,Region IV-A (CALABARZON),pre_2025_52w,554.99,714.67,69.32,52,543.31,-2.1
-Dengue,Region IV-A (CALABARZON),pre_covid_52w,879.88,1265.71,65.77,52,898.87,2.1
-Dengue,Region IV-B (MIMAROPA),pre_2025_52w,118.12,195.27,32.47,52,129.92,9.1
-Dengue,Region IV-B (MIMAROPA),pre_covid_52w,97.78,114.83,141.47,52,73.77,-32.5
-Dengue,Region IX (Zamboanga Peninsula),pre_2025_52w,83.09,114.95,22.07,52,86.46,3.9
-Dengue,Region IX (Zamboanga Peninsula),pre_covid_52w,257.9,306.11,81.16,52,357.88,27.9
-Dengue,Region V (Bicol),pre_2025_52w,15.96,18.78,76.77,52,13.31,-19.9
-Dengue,Region V (Bicol),pre_covid_52w,134.26,185.96,65.35,52,150.12,10.6
-Dengue,Region VI (Western Visayas),pre_2025_52w,319.65,471.4,78.0,52,389.19,17.9
-Dengue,Region VI (Western Visayas),pre_covid_52w,801.15,1047.17,1076.5,52,718.29,-11.5
-Dengue,Region VII (Central Visayas),pre_2025_52w,363.73,566.24,52.6,52,462.69,21.4
-Dengue,Region VII (Central Visayas),pre_covid_52w,227.79,259.23,104.56,52,225.1,-1.2
-Dengue,Region VIII (Eastern Visayas),pre_2025_52w,84.1,91.3,84.0,52,83.5,-0.7
-Dengue,Region VIII (Eastern Visayas),pre_covid_52w,391.32,549.48,138.95,52,397.9,1.7
-Dengue,Region X (Northern Mindanao),pre_2025_52w,152.33,182.12,35.13,52,189.33,19.5
-Dengue,Region X (Northern Mindanao),pre_covid_52w,234.3,265.14,66.72,52,226.88,-3.3
-Dengue,Region XI (Davao),pre_2025_52w,167.98,219.18,31.97,52,178.56,5.9
-Dengue,Region XI (Davao),pre_covid_52w,71.48,82.74,573.35,52,82.15,13.0
-Dengue,Region XII (SOCCSKSARGEN),pre_2025_52w,152.5,179.12,35.9,52,173.98,12.3
-Dengue,Region XII (SOCCSKSARGEN),pre_covid_52w,242.59,259.36,157.05,52,252.63,4.0
+disease,region,window,MAE,RMSE,MAPE,months,naive_MAE,skill_vs_naive_pct
+Dengue,Bangsamoro (BARMM),2025_prospective,309.9,386.8,38.36,12,390.58,20.7
+Dengue,Bangsamoro (BARMM),last_12m,480.55,504.24,79.74,12,364.75,-31.7
+Dengue,Bicol Region,2025_prospective,95.93,106.97,87.55,12,49.5,-93.8
+Dengue,Bicol Region,last_12m,106.05,129.56,62.21,12,77.33,-37.1
+Dengue,CALABARZON,2025_prospective,3021.72,4158.26,76.18,12,2314.0,-30.6
+Dengue,CALABARZON,last_12m,3689.66,4601.54,69.02,12,2922.67,-26.2
+Dengue,Cagayan Valley,2025_prospective,1099.45,1426.69,102.25,12,665.83,-65.1
+Dengue,Cagayan Valley,last_12m,977.5,1222.8,73.1,12,619.5,-57.8
+Dengue,Caraga,2025_prospective,1092.01,1345.23,72.63,12,867.58,-25.9
+Dengue,Caraga,last_12m,1135.05,1276.95,180.65,12,824.42,-37.7
+Dengue,Central Luzon,2025_prospective,3046.51,3879.91,106.3,12,1785.42,-70.6
+Dengue,Central Luzon,last_12m,3651.93,4292.12,65.87,12,2993.25,-22.0
+Dengue,Central Visayas,2025_prospective,2511.69,3442.32,82.31,12,2005.0,-25.3
+Dengue,Central Visayas,last_12m,2476.41,2929.5,174.61,12,1818.92,-36.1
+Dengue,Cordillera Administrative Region,2025_prospective,2287.89,3188.94,128.08,12,1749.25,-30.8
+Dengue,Cordillera Administrative Region,last_12m,2647.71,3096.01,305.79,12,1867.17,-41.8
+Dengue,Davao Region,2025_prospective,1233.18,1471.13,58.77,12,770.08,-60.1
+Dengue,Davao Region,last_12m,1583.98,1733.51,108.3,12,858.17,-84.6
+Dengue,Eastern Visayas,2025_prospective,472.92,694.24,73.67,12,367.0,-28.9
+Dengue,Eastern Visayas,last_12m,369.62,484.03,132.3,12,395.83,6.6
+Dengue,Ilocos Region,2025_prospective,752.53,965.59,106.24,12,454.33,-65.6
+Dengue,Ilocos Region,last_12m,715.57,923.37,66.49,12,529.58,-35.1
+Dengue,MIMAROPA,2025_prospective,614.58,827.88,41.88,12,489.67,-25.5
+Dengue,MIMAROPA,last_12m,805.52,1005.65,56.65,12,719.08,-12.0
+Dengue,National,2025_prospective,23583.56,30315.27,65.72,12,16611.92,-42.0
+Dengue,National,last_12m,22962.59,28552.78,65.12,12,16702.17,-37.5
+Dengue,National Capital Region,2025_prospective,2657.67,3726.04,84.49,12,1697.25,-56.6
+Dengue,National Capital Region,last_12m,3389.83,4385.67,71.2,12,2645.17,-28.2
+Dengue,Negros Island Region,2025_prospective,1270.21,1700.79,89.93,12,1095.5,-15.9
+Dengue,Negros Island Region,last_12m,1036.82,1334.33,83.65,12,1064.83,2.6
+Dengue,Northern Mindanao,2025_prospective,908.97,1157.45,44.62,12,801.92,-13.3
+Dengue,Northern Mindanao,last_12m,1135.1,1275.61,90.52,12,825.58,-37.5
+Dengue,SOCCSKSARGEN,2025_prospective,752.72,903.7,43.34,12,738.92,-1.9
+Dengue,SOCCSKSARGEN,last_12m,1187.82,1218.79,98.76,12,762.33,-55.8
+Dengue,Western Visayas,2025_prospective,1844.31,2860.97,86.4,12,1686.58,-9.4
+Dengue,Western Visayas,last_12m,1724.66,2093.64,111.56,12,1595.5,-8.1
+Dengue,Zamboanga Peninsula,2025_prospective,908.73,1018.12,68.45,12,355.33,-155.7
+Dengue,Zamboanga Peninsula,last_12m,899.36,982.49,108.39,12,532.42,-68.9

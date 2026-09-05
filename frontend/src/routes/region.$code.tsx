@@ -8,15 +8,15 @@ import { InterventionPanel } from "@/components/hw/InterventionPanel";
 import { RiskBadge, SeasonTag } from "@/components/hw/RiskBadge";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import {
-  CURRENT_WEEK_INDEX,
-  HIST_WEEKS,
+  CURRENT_MONTH_INDEX,
+  HIST_MONTHS,
   ILLNESSES,
   OUTBREAK_TRIGGER_LABEL,
   REGION_BY_CODE,
   assessRegion,
   getOutbreak,
+  monthMeta,
   seriesFor,
-  weekMeta,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/region/$code")({
       };
     }
     const title = `${loaderData.name} outbreak forecast — HEALTHWATCH`;
-    const description = `Seasonal decomposition, 12-week case forecast, hotspot risk classification and recommended interventions for ${loaderData.name} (${loaderData.short}).`;
+    const description = `Seasonal decomposition, 12-month case forecast, hotspot risk classification and recommended interventions for ${loaderData.name} (${loaderData.short}).`;
     return {
       meta: [
         { title },
@@ -61,10 +61,10 @@ function RegionDetail() {
   const [seasonFilter, setSeasonFilter] = useState<"all" | "wet" | "dry">("all");
   const [aiEnabled] = useAiAnalysisSetting();
 
-  const a = assessRegion(code, illness, CURRENT_WEEK_INDEX + horizon);
+  const a = assessRegion(code, illness, CURRENT_MONTH_INDEX + horizon);
   const series = seriesFor(code, illness);
   const forecastRows = series
-    .slice(HIST_WEEKS, HIST_WEEKS + horizon)
+    .slice(HIST_MONTHS, HIST_MONTHS + horizon)
     .filter((p) => seasonFilter === "all" || p.season === seasonFilter);
 
   return (
@@ -86,7 +86,7 @@ function RegionDetail() {
         </div>
         <div className="flex items-center gap-2">
           <RiskBadge risk={a.risk} size="md" />
-          <SeasonTag season={weekMeta(a.weekIndex).season} />
+          <SeasonTag season={monthMeta(a.monthIndex).season} />
           <ClassificationInfo mode={a.mode} thresholds={a.thresholds} label="Risk method" />
           <Link
             to="/compare"
@@ -110,7 +110,7 @@ function RegionDetail() {
         <span className="mx-2 h-5 w-px bg-border" />
         {HORIZONS.map((h) => (
           <Chip key={h} active={horizon === h} onClick={() => setHorizon(h)}>
-            {h}-week horizon
+            {h}-month horizon
           </Chip>
         ))}
         <span className="mx-2 h-5 w-px bg-border" />
@@ -124,7 +124,7 @@ function RegionDetail() {
       {/* KPIs */}
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi
-          label={`Predicted (${weekMeta(a.weekIndex).label})`}
+          label={`Predicted (${monthMeta(a.monthIndex).label})`}
           value={a.point.cases.toLocaleString()}
           sub={`CI ${a.point.lower.toLocaleString()}–${a.point.upper.toLocaleString()}`}
         />
@@ -134,9 +134,9 @@ function RegionDetail() {
           sub={`P50 ${Math.round(a.thresholds.p50).toLocaleString()} · P75 ${Math.round(a.thresholds.p75).toLocaleString()}`}
         />
         <Kpi
-          label="4-week change"
+          label="3-month change"
           value={`${a.changePct >= 0 ? "+" : ""}${a.changePct}%`}
-          sub="vs. same series 4 weeks prior"
+          sub="vs. same series 3 months prior"
         />
         <Kpi
           label="Dominant illness"
@@ -161,14 +161,14 @@ function RegionDetail() {
       {/* Forecast */}
       <Panel
         title="Case volume forecast"
-        subtitle={`Reported 2016–2025 with ${horizon}-week predicted horizon and 95% interval, wet-season shading.`}
+        subtitle={`Reported 2022–2026 with ${horizon}-month predicted horizon and 95% interval, wet-season shading.`}
       >
         <ForecastChart regionCode={code} illness={illness} horizon={horizon} />
         <div className="mt-3 overflow-x-auto">
           <table className="w-full min-w-[520px] text-left text-xs">
             <thead className="label-caps">
               <tr>
-                <th className="py-1.5">Week</th>
+                <th className="py-1.5">Month</th>
                 <th>Season</th>
                 <th className="text-right">Predicted</th>
                 <th className="text-right">Lower</th>
@@ -197,7 +197,7 @@ function RegionDetail() {
       {/* Decomposition */}
       <Panel
         title="Seasonal pattern decomposition"
-        subtitle="Observed series split into trend, week-of-year seasonality and irregular residual (STL-equivalent)."
+        subtitle="Observed series split into trend, month-of-year seasonality and irregular residual (STL-equivalent)."
       >
         <div className="grid gap-4 lg:grid-cols-2">
           {(["observed", "trend", "seasonal", "residual"] as const).map((c) => (
@@ -208,10 +208,10 @@ function RegionDetail() {
           ))}
         </div>
         <div className="mt-4">
-          <p className="label-caps mb-1">Autocorrelation (lag in weeks)</p>
+          <p className="label-caps mb-1">Autocorrelation (lag in months)</p>
           <AcfChart regionCode={code} illness={illness} />
           <p className="mt-1 text-[11px] text-muted-foreground">
-            The marked spike at lag 52 confirms a recurring annual outbreak cycle for this region.
+            The marked spike at lag 12 confirms a recurring annual outbreak cycle for this region.
           </p>
           <Link
             to="/seasonality"
@@ -328,7 +328,7 @@ function SeasonalOutbreakView({ code }: { code: string }) {
               <span className="font-mono text-sm tabular-nums text-foreground">
                 {Math.round(ind.season_avg).toLocaleString()}
               </span>{" "}
-              cases/week vs seasonal P75{" "}
+              cases/month vs seasonal P75{" "}
               <span className="font-mono tabular-nums">
                 {Math.round(ind.season_p75).toLocaleString()}
               </span>
@@ -345,9 +345,9 @@ function SeasonalOutbreakView({ code }: { code: string }) {
             <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
               {OUTBREAK_TRIGGER_LABEL[ind.trigger] ?? ind.trigger}
               {ind.trigger === "consecutive_high" || ind.trigger === "both"
-                ? ` — ${ind.consecutive_high_n} consecutive weekly High forecasts`
+                ? ` — ${ind.consecutive_high_n} consecutive monthly High forecasts`
                 : ""}{" "}
-              over {ind.n_forecast_weeks} probe weeks.
+              over {ind.n_forecast_months} probe months.
             </p>
           </div>
         );

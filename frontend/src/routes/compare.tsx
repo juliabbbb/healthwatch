@@ -6,7 +6,7 @@ import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { InterventionPanel } from "@/components/hw/InterventionPanel";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import {
-  CURRENT_WEEK_INDEX,
+  CURRENT_MONTH_INDEX,
   ILLNESSES,
   METRIC_META,
   REGIONS,
@@ -14,7 +14,7 @@ import {
   assessRegion,
   formatMetric,
   metricValue,
-  weekMeta,
+  monthMeta,
   type MetricMode,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
@@ -48,10 +48,10 @@ export default function ComparePage() {
   const [season, setSeason] = useState<"all" | "wet" | "dry">("all");
   const [mode, setMode] = useState<MetricMode>("percapita");
 
-  const weekIndex = CURRENT_WEEK_INDEX + horizon;
+  const monthIndex = CURRENT_MONTH_INDEX + horizon;
   const rows = useMemo(
-    () => selected.map((code) => assessRegion(code, illness, weekIndex, mode)),
-    [selected, illness, weekIndex, mode],
+    () => selected.map((code) => assessRegion(code, illness, monthIndex, mode)),
+    [selected, illness, monthIndex, mode],
   );
 
   const meta = METRIC_META[mode];
@@ -75,7 +75,7 @@ export default function ComparePage() {
           <h1 className="text-3xl">Comparative dashboard</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Benchmark up to four regions on forecast load, risk tier and intervention priority ·{" "}
-            {weekMeta(weekIndex).label} ({weekMeta(weekIndex).season} season) · ranked on{" "}
+            {monthMeta(monthIndex).label} ({monthMeta(monthIndex).season} season) · ranked on{" "}
             {meta.label.toLowerCase()}
           </p>
         </div>
@@ -100,11 +100,11 @@ export default function ComparePage() {
             </Chip>
           ))}
           <span className="mx-2 h-5 w-px bg-border" />
-          {[4, 8, 12].map((h) => (
-            <Chip key={h} active={horizon === h} onClick={() => setHorizon(h)}>
-              {h}w
-            </Chip>
-          ))}
+          { [4, 8, 12].map((h) => (
+          <Chip key={h} active={horizon === h} onClick={() => setHorizon(h)}>
+            {h}m
+          </Chip>
+        ))}
           <span className="mx-2 h-5 w-px bg-border" />
           {(["all", "wet", "dry"] as const).map((s) => (
             <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
@@ -129,7 +129,7 @@ export default function ComparePage() {
               <th className="text-right">Predicted ({meta.unit})</th>
               <th className="text-right">95% CI</th>
               <th className="text-right">Percentile</th>
-              <th className="text-right">4w change</th>
+              <th className="text-right">3m change</th>
               <th>Dominant illness</th>
               <th className="pr-4">Relative load</th>
             </tr>
@@ -192,7 +192,7 @@ export default function ComparePage() {
               regionCode={a.region.code}
               illness={illness}
               horizon={horizon}
-              weeksBack={52}
+              monthsBack={36}
               height={220}
               mode={mode}
             />

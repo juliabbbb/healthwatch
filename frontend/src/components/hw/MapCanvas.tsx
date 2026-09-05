@@ -23,7 +23,7 @@ export type DataLayer = "hotspot" | "density";
 
 interface Props {
   illness: string;
-  weekIndex: number;
+  monthIndex: number;
   mode: MetricMode;
   selectedCode: string | null;
   onSelect: (code: string) => void;
@@ -58,16 +58,16 @@ const OUTBREAK_MARKER_SVG =
 function fillFor(
   region: Region,
   illness: string,
-  weekIndex: number,
+  monthIndex: number,
   mode: MetricMode,
 ): string {
   // Region fill always reflects the risk tier, whatever is overlaid on top.
-  return RISK_META[assessRegion(region.code, illness, weekIndex, mode).risk].color;
+  return RISK_META[assessRegion(region.code, illness, monthIndex, mode).risk].color;
 }
 
 export default function MapCanvas({
   illness,
-  weekIndex,
+  monthIndex,
   mode,
   selectedCode,
   onSelect,
@@ -84,8 +84,8 @@ export default function MapCanvas({
   const markerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const alertIconRef = useRef<import("leaflet").DivIcon | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const stateRef = useRef({ illness, weekIndex, mode, selectedCode, onSelect });
-  stateRef.current = { illness, weekIndex, mode, selectedCode, onSelect };
+  const stateRef = useRef({ illness, monthIndex, mode, selectedCode, onSelect });
+  stateRef.current = { illness, monthIndex, mode, selectedCode, onSelect };
 
   useEffect(() => {
     let cancelled = false;
@@ -131,7 +131,7 @@ export default function MapCanvas({
           ? { stroke: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)" }
           : { stroke: selected ? "oklch(0.24 0.008 85 / 85%)" : "oklch(0.24 0.008 85 / 25%)" };
         return {
-          fillColor: fillFor(region, s.illness, s.weekIndex, s.mode),
+          fillColor: fillFor(region, s.illness, s.monthIndex, s.mode),
           fillOpacity: selected ? 0.78 : 0.55,
           color: border.stroke,
           weight: selected ? 2 : 0.8,
@@ -208,7 +208,7 @@ export default function MapCanvas({
     const geoLayer = geoRef.current;
     if (!geoLayer) return;
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
-  }, [illness, weekIndex, mode, selectedCode]);
+  }, [illness, monthIndex, mode, selectedCode]);
 
   // Seasonal outbreak markers, opt-in. Rebuilt when the toggle or active
   // season changes; the off state leaves the risk-tier fill as the only layer.

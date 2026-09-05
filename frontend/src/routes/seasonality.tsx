@@ -24,13 +24,13 @@ export const Route = createFileRoute("/seasonality")({
       {
         name: "description",
         content:
-          "Trend, seasonality and noise decomposition with 52-week autocorrelation cycle indicators for Philippine regional illness surveillance series.",
+          "Trend, seasonality and noise decomposition with 12-month autocorrelation cycle indicators for Philippine regional illness surveillance series.",
       },
       { property: "og:title", content: "Seasonal Pattern Identification — HEALTHWATCH" },
       {
         property: "og:description",
         content:
-          "Split any regional illness series into trend, seasonality and noise, and confirm the annual outbreak cycle with 52-week ACF indicators.",
+          "Split any regional illness series into trend, seasonality and noise, and confirm the annual outbreak cycle with 12-month ACF indicators.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -95,35 +95,35 @@ function SeasonalityPage() {
 
   const stats = useMemo(() => {
     const d = decompose(code, illness);
-    const a = acf(code, illness, 60);
+    const a = acf(code, illness, 24);
     const seasonalVar = variance(d.map((p) => p.seasonal));
     const residualVar = variance(d.map((p) => p.residual));
     const trendVals = d.map((p) => p.trend);
     const strength = seasonalVar / (seasonalVar + residualVar || 1);
-    const lag52 = a.find((p) => p.lag === 52)?.value ?? 0;
-    const lag26 = a.find((p) => p.lag === 26)?.value ?? 0;
+    const lag12 = a.find((p) => p.lag === 12)?.value ?? 0;
+    const lag6 = a.find((p) => p.lag === 6)?.value ?? 0;
     const peak = a.reduce((best, p) => (p.value > best.value ? p : best), a[0]!);
-    // Peak calendar week of the seasonal component.
-    const byWeek = new Map<number, number>();
-    d.forEach((p, i) => byWeek.set((i % 52) + 1, p.seasonal));
-    let peakWeek = 1;
+    // Peak calendar month of the seasonal component.
+    const byMonth = new Map<number, number>();
+    d.forEach((p, i) => byMonth.set((i % 12) + 1, p.seasonal));
+    let peakMonthIdx = 1;
     let peakVal = -Infinity;
-    byWeek.forEach((v, w) => {
+    byMonth.forEach((v, m) => {
       if (v > peakVal) {
         peakVal = v;
-        peakWeek = w;
+        peakMonthIdx = m;
       }
     });
     const trendChange =
-      trendVals.length > 104
+      trendVals.length > 24
         ? Math.round(
-            ((trendVals.at(-1)! - trendVals[trendVals.length - 105]!) /
-              (trendVals[trendVals.length - 105]! || 1)) *
+            ((trendVals.at(-1)! - trendVals[trendVals.length - 25]!) /
+              (trendVals[trendVals.length - 25]! || 1)) *
               100,
           )
         : 0;
-    const peakMonth = MONTHS[Math.min(11, Math.floor(((peakWeek - 1) / 52) * 12))]!;
-    return { strength, lag52, lag26, peak, peakWeek, peakMonth, trendChange };
+    const peakMonth = MONTHS[Math.min(11, Math.max(0, peakMonthIdx - 1))]!;
+    return { strength, lag12, lag6, peak, peakMonth, trendChange };
   }, [code, illness]);
 
   // PAGASA defines the wet season as June–November (6 months).
@@ -141,13 +141,13 @@ function SeasonalityPage() {
         <div>
           <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
             <StatusChipRow
-              items={["Prophet", "Centered MA trend", "ACF · lags 1–60", "Weekly data"]}
+              items={["Prophet", "12-month centred MA trend", "ACF · lags 1–24", "Monthly data"]}
             />
           </div>
           <h1 className="text-3xl">Seasonal pattern identification</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Decompose any regional illness series into trend, seasonality and noise, then confirm
-            the recurring annual cycle with 52-week autocorrelation.
+            the recurring annual cycle with 12-month autocorrelation.
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground">
@@ -185,23 +185,23 @@ function SeasonalityPage() {
           sub="var(seasonal) / (var(seasonal) + var(residual))"
         />
         <Kpi
-          label="ACF at lag 52"
-          value={stats.lag52.toFixed(2)}
+          label="ACF at lag 12"
+          value={stats.lag12.toFixed(2)}
           sub={
-            stats.lag52 > 0.4
+            stats.lag12 > 0.4
               ? "Strong annual cycle confirmed"
               : "Weak annual cycle — check drivers"
           }
         />
         <Kpi
           label="Dominant cycle"
-          value={`${stats.peak.lag} weeks`}
-          sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 26) ${stats.lag26.toFixed(2)}`}
+          value={`${stats.peak.lag} months`}
+          sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 6) ${stats.lag6.toFixed(2)}`}
         />
         <Kpi
           label="Typical peak"
-          value={`Week ${stats.peakWeek}`}
-          sub={`Around ${stats.peakMonth} · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
+          value={stats.peakMonth}
+          sub={`Median seasonal index · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
         />
       </div>
 
@@ -211,8 +211,8 @@ function SeasonalityPage() {
       >
         <h2 className="text-lg">Trend / seasonality / noise</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
-          {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2016–2025 split
-          into a 52-week centred moving-average trend, a week-of-year seasonal index and the
+          {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026 split
+          into a 12-month centred moving-average trend, a month-of-year seasonal index and the
           irregular remainder.
         </p>
         <div className="grid gap-4 lg:grid-cols-2">
@@ -236,17 +236,17 @@ function SeasonalityPage() {
         className="mt-6 rounded-xl border border-border bg-card/40 p-4"
         onContextMenu={(e) => openMenu(e, "acf")}
       >
-        <h2 className="text-lg">52-week cycle indicators</h2>
+        <h2 className="text-lg">12-month cycle indicators</h2>
         <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
           Autocorrelation of the observed series against itself at increasing lags. A pronounced
-          spike at lag 52 (marked) is the signature of a recurring annual outbreak cycle.
+          spike at lag 12 (marked) is the signature of a recurring annual outbreak cycle.
         </p>
         <AcfChart regionCode={code} illness={illness} height={200} />
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           <SeasonTag season="wet" />
           <span>
-            Interpretation: lag 52 = {stats.lag52.toFixed(2)}, lag 26 = {stats.lag26.toFixed(2)}.
-            Values above 0.4 at lag 52 indicate the series repeats reliably year over year, which is
+            Interpretation: lag 12 = {stats.lag12.toFixed(2)}, lag 6 = {stats.lag6.toFixed(2)}.
+            Values above 0.4 at lag 12 indicate the series repeats reliably year over year, which is
             what the forecast's seasonal-naive-with-drift baseline exploits.
           </span>
         </div>

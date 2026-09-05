@@ -1,37 +1,39 @@
-disease,region,season,outbreak,trigger,consecutive_high_n,season_avg,season_p75,n_forecast_weeks
-Dengue,BARMM,dry,True,both,12,218.4,103.8,12
-Dengue,BARMM,wet,True,both,12,329.9,194.8,12
-Dengue,CAR,dry,True,both,12,512.9,102.0,12
-Dengue,CAR,wet,True,both,12,1097.8,447.2,12
-Dengue,Caraga,dry,True,both,12,350.9,175.5,12
-Dengue,Caraga,wet,True,both,12,442.2,225.5,12
-Dengue,NCR,dry,True,both,12,554.2,421.2,12
-Dengue,NCR,wet,True,both,4,1151.5,1061.8,12
-Dengue,National,dry,True,both,12,6263.2,3533.5,12
-Dengue,National,wet,True,both,12,13123.9,8984.0,12
-Dengue,Region I (Ilocos),dry,True,both,10,141.2,87.2,12
-Dengue,Region I (Ilocos),wet,True,season_p75,2,587.9,423.8,12
-Dengue,Region II (Cagayan Valley),dry,True,both,12,180.7,135.0,12
-Dengue,Region II (Cagayan Valley),wet,False,none,0,458.9,561.0,12
-Dengue,Region III (Central Luzon),dry,True,both,12,486.7,437.8,12
-Dengue,Region III (Central Luzon),wet,True,both,4,1361.9,1233.8,12
-Dengue,Region IV-A (CALABARZON),dry,True,both,11,670.5,451.2,12
-Dengue,Region IV-A (CALABARZON),wet,True,both,12,1552.4,1098.8,12
-Dengue,Region IV-B (MIMAROPA),dry,True,both,12,304.6,155.5,12
-Dengue,Region IV-B (MIMAROPA),wet,True,both,11,598.0,364.8,12
-Dengue,Region IX (Zamboanga Peninsula),dry,True,both,5,226.3,225.0,12
-Dengue,Region IX (Zamboanga Peninsula),wet,True,both,3,418.0,358.0,12
-Dengue,Region V (Bicol),dry,False,none,0,0.0,50.0,12
-Dengue,Region V (Bicol),wet,False,none,0,34.3,98.0,12
-Dengue,Region VI (Western Visayas),dry,False,none,0,97.6,156.0,12
-Dengue,Region VI (Western Visayas),wet,True,season_p75,1,834.7,613.2,12
-Dengue,Region VII (Central Visayas),dry,True,both,12,621.6,306.5,12
-Dengue,Region VII (Central Visayas),wet,True,both,12,950.4,573.0,12
-Dengue,Region VIII (Eastern Visayas),dry,False,none,0,2.5,156.0,12
-Dengue,Region VIII (Eastern Visayas),wet,False,none,0,273.1,392.5,12
-Dengue,Region X (Northern Mindanao),dry,True,both,11,369.5,304.5,12
-Dengue,Region X (Northern Mindanao),wet,True,season_p75,2,707.1,587.5,12
-Dengue,Region XI (Davao),dry,True,both,12,609.8,265.5,12
-Dengue,Region XI (Davao),wet,True,both,12,865.3,455.0,12
-Dengue,Region XII (SOCCSKSARGEN),dry,True,both,12,415.9,294.0,12
-Dengue,Region XII (SOCCSKSARGEN),wet,True,both,6,633.9,457.8,12
+disease,region,season,outbreak,trigger,consecutive_high_n,season_avg,season_p75,n_forecast_months
+Dengue,Bangsamoro (BARMM),dry,True,both,3,968.9,707.8,3
+Dengue,Bangsamoro (BARMM),wet,True,both,3,1646.4,1016.5,3
+Dengue,Bicol Region,dry,False,none,0,22.7,95.5,3
+Dengue,Bicol Region,wet,False,none,0,173.6,233.5,3
+Dengue,CALABARZON,dry,True,season_p75,2,2295.6,1435.8,3
+Dengue,CALABARZON,wet,True,both,3,5748.8,5225.5,3
+Dengue,Cagayan Valley,dry,False,none,0,70.8,644.0,3
+Dengue,Cagayan Valley,wet,False,none,0,2039.6,2703.5,3
+Dengue,Caraga,dry,True,both,3,1978.4,725.5,3
+Dengue,Caraga,wet,True,both,3,2697.3,1488.5,3
+Dengue,Central Luzon,dry,False,none,0,0.0,1710.5,3
+Dengue,Central Luzon,wet,False,none,0,4760.7,6316.8,3
+Dengue,Central Visayas,dry,True,both,3,3208.9,1240.5,3
+Dengue,Central Visayas,wet,True,both,3,4718.9,2915.5,3
+Dengue,Cordillera Administrative Region,dry,True,both,3,3276.7,484.5,3
+Dengue,Cordillera Administrative Region,wet,True,both,3,6136.5,3220.5,3
+Dengue,Davao Region,dry,True,both,3,3512.2,1583.5,3
+Dengue,Davao Region,wet,True,both,3,4499.5,2505.0,3
+Dengue,Eastern Visayas,dry,True,season_p75,2,459.1,421.2,3
+Dengue,Eastern Visayas,wet,True,season_p75,0,989.7,812.8,3
+Dengue,Ilocos Region,dry,True,both,3,1451.6,209.8,3
+Dengue,Ilocos Region,wet,True,both,3,3010.3,1605.5,3
+Dengue,MIMAROPA,dry,True,both,3,1784.8,731.5,3
+Dengue,MIMAROPA,wet,True,both,3,3317.5,1957.2,3
+Dengue,National,dry,True,both,3,34690.9,15266.0,3
+Dengue,National,wet,True,both,3,68761.4,44641.5,3
+Dengue,National Capital Region,dry,False,none,1,908.4,1800.5,3
+Dengue,National Capital Region,wet,False,none,0,4136.5,5445.2,3
+Dengue,Negros Island Region,dry,True,both,3,1312.2,431.5,3
+Dengue,Negros Island Region,wet,True,both,3,2597.9,1827.5,3
+Dengue,Northern Mindanao,dry,True,both,3,2540.6,1365.8,3
+Dengue,Northern Mindanao,wet,True,both,3,3602.2,1909.8,3
+Dengue,SOCCSKSARGEN,dry,True,both,3,2515.4,1577.2,3
+Dengue,SOCCSKSARGEN,wet,True,both,3,3255.7,1745.0,3
+Dengue,Western Visayas,dry,True,both,3,3173.2,571.8,3
+Dengue,Western Visayas,wet,True,both,3,4916.0,1811.8,3
+Dengue,Zamboanga Peninsula,dry,True,both,3,1329.9,981.2,3
+Dengue,Zamboanga Peninsula,wet,True,both,3,2111.1,1514.5,3

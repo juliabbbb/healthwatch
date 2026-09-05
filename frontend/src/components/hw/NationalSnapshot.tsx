@@ -18,7 +18,7 @@ import { LiveClock } from "./LiveClock";
  * Designed with a spacious, multi-card layout that scales cleanly from 320px to desktop.
  */
 export function NationalSnapshot({
-  weekLabel,
+  monthLabel,
   isForecast,
   value,
   mode,
@@ -31,7 +31,7 @@ export function NationalSnapshot({
   onOutbreakMarkersChange,
   className,
 }: {
-  weekLabel: string;
+  monthLabel: string;
   isForecast: boolean;
   value: number;
   mode: MetricMode;
@@ -59,7 +59,7 @@ export function NationalSnapshot({
             National Snapshot
           </span>
           <span className="text-muted-foreground text-xs">·</span>
-          <span className="font-mono text-xs font-semibold text-foreground">{weekLabel}</span>
+          <span className="font-mono text-xs font-semibold text-foreground">{monthLabel}</span>
           <span
             className="rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
             style={{
@@ -110,7 +110,7 @@ export function NationalSnapshot({
               </button>
               {legendOpen && (
                 <div className="glass-panel absolute left-0 top-full z-50 mt-1.5 w-64 rounded-lg border border-border p-2.5 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
-                  Colors show weekly risk tier (Low/Moderate/High). The alert marker shows a
+                  Colors show monthly risk tier (Low/Moderate/High). The alert marker shows a
                   seasonal outbreak flag for the upcoming dry or wet season.
                 </div>
               )}

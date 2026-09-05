@@ -12,95 +12,71 @@ from . import db, ingest
 
 SUPPORTED_DISEASES = ["Dengue"]
 DISEASE_DEFAULT = "Dengue"
-PRIMARY_WINDOW = "pre_covid_52w"
+PRIMARY_WINDOW = "last_12m"
 
 WET_MONTHS = (6, 7, 8, 9, 10, 11)
 
-REGION_META = [
-    {"code": "130000000", "name": "National Capital Region", "short": "NCR", "island": "Luzon", "geoName": "Metropolitan Manila", "lat": 14.5995, "lng": 120.9842},
-    {"code": "140000000", "name": "Cordillera Administrative Region", "short": "CAR", "island": "Luzon", "geoName": "Cordillera Administrative Region (CAR)", "lat": 17.35, "lng": 121.1},
-    {"code": "010000000", "name": "Ilocos Region", "short": "Region I", "island": "Luzon", "geoName": "Ilocos Region (Region I)", "lat": 16.6, "lng": 120.45},
-    {"code": "020000000", "name": "Cagayan Valley", "short": "Region II", "island": "Luzon", "geoName": "Cagayan Valley (Region II)", "lat": 17.0, "lng": 121.8},
-    {"code": "030000000", "name": "Central Luzon", "short": "Region III", "island": "Luzon", "geoName": "Central Luzon (Region III)", "lat": 15.4, "lng": 120.7},
-    {"code": "040000000", "name": "CALABARZON", "short": "Region IV-A", "island": "Luzon", "geoName": "CALABARZON (Region IV-A)", "lat": 14.1, "lng": 121.3},
-    {"code": "170000000", "name": "MIMAROPA", "short": "Region IV-B", "island": "Luzon", "geoName": "MIMAROPA (Region IV-B)", "lat": 12.3, "lng": 120.9},
-    {"code": "050000000", "name": "Bicol Region", "short": "Region V", "island": "Luzon", "geoName": "Bicol Region (Region V)", "lat": 13.4, "lng": 123.4},
-    {"code": "060000000", "name": "Western Visayas", "short": "Region VI", "island": "Visayas", "geoName": "Western Visayas (Region VI)", "lat": 11.0, "lng": 122.6},
-    {"code": "070000000", "name": "Central Visayas", "short": "Region VII", "island": "Visayas", "geoName": "Central Visayas (Region VII)", "lat": 10.0, "lng": 123.7},
-    {"code": "080000000", "name": "Eastern Visayas", "short": "Region VIII", "island": "Visayas", "geoName": "Eastern Visayas (Region VIII)", "lat": 11.4, "lng": 125.0},
-    {"code": "090000000", "name": "Zamboanga Peninsula", "short": "Region IX", "island": "Mindanao", "geoName": "Zamboanga Peninsula (Region IX)", "lat": 8.0, "lng": 122.9},
-    {"code": "100000000", "name": "Northern Mindanao", "short": "Region X", "island": "Mindanao", "geoName": "Northern Mindanao (Region X)", "lat": 8.3, "lng": 124.7},
-    {"code": "110000000", "name": "Davao Region", "short": "Region XI", "island": "Mindanao", "geoName": "Davao Region (Region XI)", "lat": 7.1, "lng": 125.6},
-    {"code": "120000000", "name": "SOCCSKSARGEN", "short": "Region XII", "island": "Mindanao", "geoName": "SOCCSKSARGEN (Region XII)", "lat": 6.5, "lng": 124.9},
-    {"code": "160000000", "name": "Caraga", "short": "Region XIII", "island": "Mindanao", "geoName": "Caraga (Region XIII)", "lat": 8.9, "lng": 125.7},
-    {"code": "150000000", "name": "Bangsamoro (BARMM)", "short": "BARMM", "island": "Mindanao", "geoName": "Autonomous Region of Muslim Mindanao (ARMM)", "lat": 7.2, "lng": 124.2},
-]
+REGION_META = db.REGION_META
+NAME_BY_CODE = {
+    r["code"]: r["name"]
+    for r in REGION_META
+} | {db.NATIONAL_CODE: db.NATIONAL_NAME}
+SHORT_BY_CODE = {r["code"]: r["short"] for r in REGION_META}
 
-_NATIONAL = db.read_table("weekly_cases_national")
-_REGIONAL = db.read_table("weekly_cases_regional")
+_NATIONAL = db.read_table("monthly_observations")
+_NATIONAL = _NATIONAL[_NATIONAL["region_code"] == db.NATIONAL_CODE]
+_REGIONAL = db.read_table("monthly_observations")
+_REGIONAL = _REGIONAL[_REGIONAL["region_code"] != db.NATIONAL_CODE]
 _FORECASTS = db.read_table("forecasts")
-_CLASSIFICATION = db.read_table("risk_classification")
+_CLASSIFICATION = db.read_table("risk_classifications")
 _THRESHOLDS = db.read_table("risk_thresholds")
 _METRICS = db.read_table("validation_metrics")
-_SEASONAL_THRESHOLDS = db.read_table("seasonal_thresholds")
-_OUTBREAKS = db.read_table("outbreak_indicators")
-_OUTBREAK_VALIDATION = db.read_table("outbreak_validation_2025")
+_OUTBREAKS = db.read_table("outbreak_signals")
+_OUTBREAK_VALIDATION_CSV = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
+_OUTBREAK_VALIDATION = (
+    pd.read_csv(_OUTBREAK_VALIDATION_CSV) if _OUTBREAK_VALIDATION_CSV.exists() else pd.DataFrame()
+)
 
+for _df in (_NATIONAL, _REGIONAL):
+    _df["date"] = pd.to_datetime(
+        _df["year"].astype(str) + "-" + _df["month"].astype(str).str.zfill(2) + "-01"
+    )
 for _df, _col in (
-    (_NATIONAL, "date"),
-    (_REGIONAL, "date"),
     (_FORECASTS, "target_date"),
     (_CLASSIFICATION, "date"),
 ):
     _df[_col] = pd.to_datetime(_df[_col])
 
 
-def _build_region_aliases():
-    """Maps case-insensitive identifiers (API short names and raw pipeline
-    labels like 'Region IV-A (CALABARZON)') onto the labels stored in the DB."""
-    aliases = {"national": "National"}
-    labels = (
-        set(_REGIONAL["region"].unique())
-        | set(_NATIONAL["region"].unique())
-        | set(_FORECASTS["region"].unique())
-        | set(_METRICS["region"].unique())
-    )
-    for label in labels:
-        aliases[label.strip().lower()] = label
-        aliases[label.split(" (")[0].strip().lower()] = label
-    # Fallback for shorts whose DB label shares no prefix (e.g. 'Region XIII' -> 'Caraga').
+def _region_code_or_none(label):
+    if label.strip().lower() == db.NATIONAL_NAME.lower():
+        return db.NATIONAL_CODE
     for meta in REGION_META:
-        short_key = meta["short"].strip().lower()
-        if short_key in aliases:
-            continue
-        for candidate in (meta["name"], meta["geoName"], meta["name"].replace(" (BARMM)", "")):
-            hit = aliases.get(candidate.strip().lower())
-            if hit is not None and hit != "National":
-                aliases[short_key] = hit
-                break
-    return aliases
-
-
-_DB_REGION_ALIASES = _build_region_aliases()
+        for cand in (meta["name"], meta["short"], meta["geoName"]):
+            if cand.strip().lower() == label.strip().lower():
+                return meta["code"]
+    return None
 
 
 def _resolve_region(region):
-    """Returns the DB-stored label for a region identifier, or None."""
-    return _DB_REGION_ALIASES.get(region.strip().lower())
+    return _region_code_or_none(region)
+
+
+def _label(code):
+    return NAME_BY_CODE.get(code, code)
 
 
 def _season(dt):
     return "wet" if dt.month in WET_MONTHS else "dry"
 
 
-def _week_point(i, dt, cases, forecast, lower=None, upper=None):
-    iso = dt.isocalendar()
+def _month_point(i, dt, cases, forecast, lower=None, upper=None):
     c = int(round(float(cases)))
     return {
         "index": i,
         "year": int(dt.year),
-        "week": int(iso.week),
-        "label": f"{dt.year}-W{int(iso.week):02d}",
+        "month": int(dt.month),
+        "label": f"{dt.year}-{int(dt.month):02d}",
         "date": dt.date().isoformat(),
         "season": _season(dt),
         "forecast": forecast,
@@ -120,19 +96,19 @@ def _check_disease(disease):
         )
 
 
-def _history(region):
-    source = _NATIONAL if region == "National" else _REGIONAL
-    out = source[source["region"] == region].sort_values("date")
+def _history(region_code):
+    source = _NATIONAL if region_code == db.NATIONAL_CODE else _REGIONAL
+    out = source[source["region_code"] == region_code].sort_values("date")
     if out.empty:
-        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region_code}'")
     return out
 
 
-def _confidence(mape, skill_vs_naive, folds):
+def _confidence(mape, skill_vs_naive, months):
     """Calibrated on data/processed/validation_metrics.csv.
 
-    Raw MAPE alone is misleading for low-incidence weekly counts: a forecast
-    of 4 against an actual of 1 reads as 300% error, so near-zero weeks push
+    Raw MAPE alone is misleading for low-incidence counts: a forecast of 4
+    against an actual of 1 reads as 300% error, so near-zero months push
     regional MAPE into triple digits even when the model beats its baseline.
     Skill vs the seasonal-naive baseline is a ratio of two errors and stays
     meaningful, so it drives the tiers:
@@ -144,18 +120,18 @@ def _confidence(mape, skill_vs_naive, folds):
         return {
             "label": "High confidence",
             "tone": "low",
-            "note": f"Beats the seasonal-naive baseline by {skill_vs_naive:.0f}% across {folds} walk-forward weeks - the seasonal signal is stable enough to plan against.",
+            "note": f"Beats the seasonal-naive baseline by {skill_vs_naive:.0f}% across {months} walk-forward months - the seasonal signal is stable enough to plan against.",
         }
     if skill_vs_naive <= 0:
         return {
             "label": "Low confidence - volatile series",
             "tone": "high",
-            "note": f"Does not beat the seasonal-naive baseline ({skill_vs_naive:+.0f}% skill) over {folds} walk-forward weeks: week-to-week case counts swing more than the seasonal signal explains. Treat the point forecast as a range, not a target.",
+            "note": f"Does not beat the seasonal-naive baseline ({skill_vs_naive:+.0f}% skill) over {months} walk-forward months: month-to-month case counts swing more than the seasonal signal explains. Treat the point forecast as a range, not a target.",
         }
     return {
         "label": "Moderate confidence",
         "tone": "moderate",
-        "note": f"Beats the naive baseline by {skill_vs_naive:+.0f}% (MAPE {mape:.0f}%, inflated by near-zero weeks) over {folds} walk-forward weeks. Direction of change is reliable; exact case volume is not.",
+        "note": f"Beats the naive baseline by {skill_vs_naive:+.0f}% (MAPE {mape:.0f}%, inflated by near-zero months) over {months} walk-forward months. Direction of change is reliable; exact case volume is not.",
     }
 
 
@@ -170,7 +146,7 @@ _PLAIN_LANGUAGE_RULES = (
     "similar: pipeline, series, index, payload, JSON, ACF, autocorrelation, "
     "lag, decomposition, residual, variance, percentile, threshold, MAPE, "
     "RMSE, confidence interval, statistical, model, data point. Also never "
-    "print raw field names such as change_pct_2y, latest_index, peak_week, "
+    "print raw field names such as change_pct_2y, latest_index, peak_month, "
     "strength_pct.\n"
     "SAY IT IN EVERYDAY WORDS instead:\n"
     "- trend change -> 'compared with two years ago, cases have fallen "
@@ -183,8 +159,8 @@ _PLAIN_LANGUAGE_RULES = (
     "what really happens' or 'this outlook is less certain than usual'\n"
     "- risk tier -> 'the alert level for dengue is high/low'\n"
     "NUMBER RULES: round naturally ('about 90% lower', 'around 600 cases a "
-    "week'). Always attach meaning ('roughly a tenth of what it was'). Name "
-    "MONTHS, never week numbers ('around September', never 'week 36').\n"
+    "month'). Always attach meaning ('roughly a tenth of what it was'). Name "
+    "MONTHS, never month numbers ('around September', never 'month 9').\n"
     "SHAPE RULES: open with the single most important message in the first "
     "sentence. End with one short practical takeaway for the community when "
     "it fits. Keep every sentence under about 18 words.\n"
@@ -203,7 +179,7 @@ _ANALYSIS_SYSTEM_PROMPT = (
     + _PLAIN_LANGUAGE_RULES
     + "\nTASK: using the JSON figures, write 3-4 sentences covering: (1) how "
     "many dengue cases are happening now, in everyday terms; (2) what is "
-    "expected in the coming weeks, including the honest range if given; (3) "
+    "expected in the coming months, including the honest range if given; (3) "
     "the current alert level in plain words, with a caution note only if the "
     "outlook is flagged as uncertain; (4) one practical thing the community "
     "can focus on now."
@@ -218,14 +194,14 @@ def _build_grounding(db_region, disease, window):
     last_obs = hist.iloc[-1]
 
     fcst = _FORECASTS[
-        (_FORECASTS["region"] == db_region) & (_FORECASTS["disease"] == disease)
+        (_FORECASTS["region_code"] == db_region) & (_FORECASTS["disease"] == disease)
     ].sort_values("target_date")
     if fcst.empty:
         raise HTTPException(status_code=404, detail=f"No forecast available for '{db_region}'")
     frow = fcst.iloc[0]
 
     cls = _CLASSIFICATION[
-        (_CLASSIFICATION["region"] == db_region)
+        (_CLASSIFICATION["region_code"] == db_region)
         & (_CLASSIFICATION["disease"] == disease)
     ].sort_values("date")
     crow = cls[cls["date"] == frow["target_date"]]
@@ -236,14 +212,14 @@ def _build_grounding(db_region, disease, window):
     crow = crow.iloc[0]
 
     trow = _THRESHOLDS[
-        (_THRESHOLDS["region"] == db_region)
+        (_THRESHOLDS["region_code"] == db_region)
         & (_THRESHOLDS["disease"] == disease)
-        & (_THRESHOLDS["iso_week"] == frow["target_date"].isocalendar().week)
+        & (_THRESHOLDS["month"] == int(frow["target_date"].month))
     ]
     thresh = trow.iloc[0] if not trow.empty else None
 
     mrows = _METRICS[
-        (_METRICS["region"] == db_region) & (_METRICS["disease"] == disease)
+        (_METRICS["region_code"] == db_region) & (_METRICS["disease"] == disease)
     ]
     primary = mrows[mrows["window"] == window]
     if primary.empty:
@@ -251,10 +227,10 @@ def _build_grounding(db_region, disease, window):
     mrow = primary.iloc[0]
 
     return {
-        "region": db_region,
+        "region": _label(db_region),
         "disease": disease,
         "observed_through": {
-            "week_label": _week_point(0, last_obs["date"], last_obs["cases"], False)["label"],
+            "month_label": _month_point(0, last_obs["date"], last_obs["cases"], False)["label"],
             "cases": int(last_obs["cases"]),
         },
         "forecast": {
@@ -270,9 +246,9 @@ def _build_grounding(db_region, disease, window):
             "p75": float(crow["p75"]),
             "risk_level": str(crow["risk_level"]),
         },
-        "thresholds_for_iso_week": (
+        "thresholds_for_month": (
             {
-                "iso_week": int(thresh["iso_week"]),
+                "month": int(thresh["month"]),
                 "p50": float(thresh["p50"]),
                 "p75": float(thresh["p75"]),
             }
@@ -284,13 +260,13 @@ def _build_grounding(db_region, disease, window):
             "MAE": float(mrow["MAE"]),
             "RMSE": float(mrow["RMSE"]),
             "MAPE": float(mrow["MAPE"]),
-            "weeks": int(mrow["weeks"]),
+            "months": int(mrow["months"]),
             "skill_vs_naive_pct": (
                 None if pd.isna(mrow["skill_vs_naive_pct"]) else float(mrow["skill_vs_naive_pct"])
             ),
         },
         "confidence": _confidence(
-            float(mrow["MAPE"]), float(mrow["skill_vs_naive_pct"]), int(mrow["weeks"])
+            float(mrow["MAPE"]), float(mrow["skill_vs_naive_pct"]), int(mrow["months"])
         ),
     }
 
@@ -300,9 +276,8 @@ _MONTH_LABELS = [
 ]
 
 
-def _month_label(iso_week):
-    # Same week→month approximation as the Seasonality page (data.ts MONTHS).
-    return _MONTH_LABELS[min(11, int(((iso_week - 1) / 52) * 12))]
+def _month_label(m):
+    return _MONTH_LABELS[min(11, max(0, int(m) - 1))]
 
 
 def _variance(values):
@@ -312,8 +287,8 @@ def _variance(values):
 
 def _seasonality_grounding(db_region):
     """Deterministic server-side port of the Seasonality page's decomposition
-    (frontend data.ts `decompose()`/`acf()`): centred ±26-week moving-average
-    trend, week-of-year seasonal index, residual noise and autocorrelation.
+    (frontend data.ts `decompose()`/`acf()`): centred ±6-month moving-average
+    trend, month-of-year seasonal index, residual noise and autocorrelation.
     Computed from the already-loaded history tables only — the LLM narrates
     these numbers, it never derives its own."""
 
@@ -322,20 +297,20 @@ def _seasonality_grounding(db_region):
     values = [float(c) for c in hist["cases"]]
     n = len(values)
 
-    half = 26
+    half = 6
     trend_pts = []
     for i in range(n):
         lo, hi = max(0, i - half), min(n, i + half + 1)
         window = values[lo:hi]
         trend_pts.append(sum(window) / len(window))
 
-    weeks = [int(d.isocalendar().week) for d in dates]
+    months = [d.month for d in dates]
     detrended = [v - t for v, t in zip(values, trend_pts)]
-    buckets = [[] for _ in range(52)]
-    for dval, wk in zip(detrended, weeks):
-        buckets[(wk - 1) % 52].append(dval)
+    buckets = [[] for _ in range(12)]
+    for dval, m in zip(detrended, months):
+        buckets[m - 1].append(dval)
     seasonal_idx = [(sum(b) / len(b)) if b else 0.0 for b in buckets]
-    seas_pts = [seasonal_idx[(wk - 1) % 52] for wk in weeks]
+    seas_pts = [seasonal_idx[m - 1] for m in months]
     resid_pts = [v - t - s for v, t, s in zip(values, trend_pts, seas_pts)]
 
     seas_var = _variance(seas_pts)
@@ -345,40 +320,40 @@ def _seasonality_grounding(db_region):
     mean = sum(values) / n
     denom = sum((v - mean) ** 2 for v in values) or 1
     acfs = {}
-    for lag in range(1, 61):
+    for lag in range(1, 25):
         num = sum((values[i] - mean) * (values[i - lag] - mean) for i in range(lag, n))
         acfs[lag] = round(num / denom, 3)
     dominant_lag = max(acfs, key=lambda k: acfs[k])
 
-    peak_week = max(range(52), key=lambda w: seasonal_idx[w]) + 1
-    trough_week = min(range(52), key=lambda w: seasonal_idx[w]) + 1
+    peak_month = max(range(12), key=lambda m: seasonal_idx[m]) + 1
+    trough_month = min(range(12), key=lambda m: seasonal_idx[m]) + 1
 
     wet = [v for d, v in zip(dates, values) if d.month in WET_MONTHS]
     dry = [v for d, v in zip(dates, values) if d.month not in WET_MONTHS]
 
     trend_change = (
-        round((trend_pts[-1] - trend_pts[n - 105]) / (trend_pts[n - 105] or 1) * 100)
-        if n > 104
+        round((trend_pts[-1] - trend_pts[n - 25]) / (trend_pts[n - 25] or 1) * 100)
+        if n > 24
         else 0
     )
 
     return {
-        "region": db_region,
-        "observed_weeks": n,
+        "region": _label(db_region),
+        "observed_months": n,
         "series_start": dates[0].date().isoformat(),
         "series_end": dates[-1].date().isoformat(),
         "trend": {"latest_index": round(trend_pts[-1]), "change_pct_2y": trend_change},
         "seasonal": {
-            "peak_week": peak_week,
-            "peak_month": _month_label(peak_week),
-            "trough_week": trough_week,
-            "trough_month": _month_label(trough_week),
+            "peak_month": peak_month,
+            "peak_label": _month_label(peak_month),
+            "trough_month": trough_month,
+            "trough_label": _month_label(trough_month),
             "strength_pct": strength_pct,
         },
         "cycle": {
-            "acf_lag52": acfs.get(52, 0.0),
-            "acf_lag26": acfs.get(26, 0.0),
-            "dominant_lag_weeks": dominant_lag,
+            "acf_lag12": acfs.get(12, 0.0),
+            "acf_lag6": acfs.get(6, 0.0),
+            "dominant_lag_months": dominant_lag,
             "dominant_lag_acf": acfs[dominant_lag],
         },
         "wet_dry": {
@@ -395,8 +370,8 @@ _SEASONALITY_SYSTEM_PROMPT = (
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
     + "\nTASK: using the JSON figures, write 2-3 sentences about the yearly "
-    "dengue pattern the user is looking at. Name months instead of week "
-    "numbers whenever a week number appears in the figures."
+    "dengue pattern the user is looking at. Name months instead of month "
+    "numbers whenever a number appears in the figures."
 )
 
 _SEASONALITY_FOCUS = {
@@ -413,8 +388,8 @@ _SEASONALITY_FOCUS = {
         "peak and fall to a low, and how rainy months differ from dry ones."
     ),
     "residual": (
-        "Focus on unusual weeks that jumped above or dropped below the normal "
-        "pattern, and note that some up-and-down week to week is normal."
+        "Focus on unusual months that jumped above or dropped below the normal "
+        "pattern, and note that some up-and-down from month to month is normal."
     ),
     "acf": (
         "Focus on how reliably this pattern repeats every year — whether one "
@@ -595,7 +570,7 @@ app = FastAPI(
         "prediction and hotspot classification. Endpoints are tagged by which "
         "study objective they serve."
     ),
-    version="0.1.0",
+    version="0.2.0",
 )
 
 _origins = os.environ.get(
@@ -655,12 +630,11 @@ def status():
 
     # The regional table defines what the dashboard plots (national runs later).
     last_date = _REGIONAL["date"].max()
-    iso = last_date.isocalendar()
     return {
         "generated_at": generated.isoformat(),
         "data_through": {
             "date": last_date.date().isoformat(),
-            "epi_week": f"{iso.year}-W{iso.week:02d}",
+            "month": f"{last_date.year}-{last_date.month:02d}",
         },
         "supported_diseases": SUPPORTED_DISEASES,
     }
@@ -678,16 +652,16 @@ def series(
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     hist = _history(db_region)
     points = [
-        _week_point(i, dt, cases, False)
+        _month_point(i, dt, cases, False)
         for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
     ]
     if include_forecast:
         fcst = _FORECASTS[
-            (_FORECASTS["region"] == db_region) & (_FORECASTS["disease"] == disease)
+            (_FORECASTS["region_code"] == db_region) & (_FORECASTS["disease"] == disease)
         ].sort_values("target_date")
         for k, row in enumerate(fcst.itertuples(index=False)):
             points.append(
-                _week_point(
+                _month_point(
                     len(points),
                     row.target_date,
                     row.yhat,
@@ -696,7 +670,7 @@ def series(
                     upper=row.yhat_upper,
                 )
             )
-    return {"region": region, "disease": disease, "points": points}
+    return {"region": _label(db_region), "disease": disease, "points": points}
 
 
 @app.get("/forecast/{disease}", tags=["objective_2_forecast"])
@@ -707,11 +681,14 @@ def forecast(disease: str, region: str | None = Query(default=None)):
         db_region = _resolve_region(region)
         if db_region is None:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-        df = df[df["region"] == db_region]
+        df = df[df["region_code"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    df = df.sort_values(["region", "target_date"])
-    df = df.assign(target_date=df["target_date"].dt.date.astype(str))
+    df = df.sort_values(["region_code", "target_date"])
+    df = df.assign(
+        region=df["region_code"].map(_label),
+        target_date=df["target_date"].dt.date.astype(str),
+    ).drop(columns=["region_code"])
     return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
 
 
@@ -723,24 +700,29 @@ def risk_classification(disease: str, region: str | None = Query(default=None)):
         db_region = _resolve_region(region)
         if db_region is None:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-        df = df[df["region"] == db_region]
+        df = df[df["region_code"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    df = df.sort_values(["region", "date"])
-    df = df.assign(date=df["date"].dt.date.astype(str))
+    df = df.sort_values(["region_code", "date"])
+    df = df.assign(
+        region=df["region_code"].map(_label),
+        date=df["date"].dt.date.astype(str),
+    ).drop(columns=["region_code"])
     return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
 
 
 @app.get("/thresholds/seasonal", tags=["objective_3_classification"])
 def seasonal_thresholds(region: str | None = Query(default=None)):
-    """Season-probe alert thresholds: long-run P75 of weekly case load for the
-    dry (Jan-Mar) and wet (Jul-Sep) forecast windows, per region."""
-    df = _SEASONAL_THRESHOLDS.copy()
+    """Season-probe alert thresholds: long-run P75 of monthly case load within
+    each season (dry/wet), per region, exactly as used by the outbreak flags."""
+    df = _OUTBREAKS[["region_code", "disease", "season", "season_avg", "season_p75"]].copy()
+    df = df.assign(region=df["region_code"].map(_label)).drop(columns=["region_code"])
+    df = df.rename(columns={"season_avg": "forecast_avg"})
     if region:
         db_region = _resolve_region(region)
         if db_region is None:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-        df = df[df["region"] == db_region]
+        df = df[df["region"] == _label(db_region)]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     return {"items": df.to_dict(orient="records")}
@@ -754,9 +736,10 @@ def thresholds(disease: str, region: str | None = Query(default=None)):
         db_region = _resolve_region(region)
         if db_region is None:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-        df = df[df["region"] == db_region]
+        df = df[df["region_code"] == db_region]
         if df.empty:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    df = df.assign(region=df["region_code"].map(_label)).drop(columns=["region_code"])
     return {"disease": disease, "region": region, "items": df.to_dict(orient="records")}
 
 
@@ -767,15 +750,16 @@ def outbreak_overview(
 ):
     """Region-season outbreak flags for the map/dashboard.
 
-    Rule A: >=3 consecutive probe weeks forecast at High (above the weekly
+    Rule A: >=3 consecutive probe months forecast at High (above the month's
     P75). Rule B: the season's forecast average exceeds the season's long-run
     P75. Trigger reports which rule(s) fired."""
     df = _OUTBREAKS.copy()
+    df = df.assign(region=df["region_code"].map(_label)).drop(columns=["region_code"])
     if region:
         db_region = _resolve_region(region)
         if db_region is None:
             raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-        df = df[df["region"] == db_region]
+        df = df[df["region"] == _label(db_region)]
     if season:
         if season not in ("dry", "wet"):
             raise HTTPException(status_code=404, detail="season must be 'dry' or 'wet'")
@@ -792,12 +776,13 @@ def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
     if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     rows = _OUTBREAKS[
-        (_OUTBREAKS["region"] == db_region) & (_OUTBREAKS["disease"] == disease)
+        (_OUTBREAKS["region_code"] == db_region) & (_OUTBREAKS["disease"] == disease)
     ].sort_values("season")
     if rows.empty:
         raise HTTPException(status_code=404, detail=f"No outbreak indicators for '{region}'")
+    rows = rows.assign(region=rows["region_code"].map(_label)).drop(columns=["region_code"])
     return {
-        "region": db_region,
+        "region": _label(db_region),
         "disease": disease,
         "seasons": rows.to_dict(orient="records"),
     }
@@ -807,9 +792,11 @@ def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
 def outbreak_validation():
     """Prospective 2025 validation of the outbreak indicator.
 
-    Headline: dry-season detection is strong (F1 0.90); the wet season
-    favours recall over precision and over-warns, by design."""
+    Compares the dry (Jan-Mar) and wet (Jul-Sep) 2025 season flags — forecasts
+    fit with data through 2024-12-31 — against observed DOH-EB monthly data."""
     v = _OUTBREAK_VALIDATION
+    if v.empty:
+        raise HTTPException(status_code=404, detail="2025 outbreak validation not generated yet")
     overall = {
         "tp": int(v["tp"].sum()),
         "fp": int(v["fp"].sum()),
@@ -863,17 +850,17 @@ def metrics(
     db_region = _resolve_region(region)
     if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    rows = _METRICS[(_METRICS["region"] == db_region) & (_METRICS["disease"] == disease)]
+    rows = _METRICS[(_METRICS["region_code"] == db_region) & (_METRICS["disease"] == disease)]
     if rows.empty:
         raise HTTPException(status_code=404, detail=f"No validation metrics for '{region}'")
-    items = rows.to_dict(orient="records")
+    items = rows.assign(region=rows["region_code"].map(_label)).drop(columns=["region_code"]).to_dict(orient="records")
     primary = rows[rows["window"] == window]
     if primary.empty:
         raise HTTPException(status_code=404, detail=f"Window '{window}' not found")
     row = primary.iloc[0]
-    confidence = _confidence(row["MAPE"], float(row["skill_vs_naive_pct"]), int(row["weeks"]))
+    confidence = _confidence(row["MAPE"], float(row["skill_vs_naive_pct"]), int(row["months"]))
     return {
-        "region": region,
+        "region": _label(db_region),
         "disease": disease,
         "windows": items,
         "primary_window": window,
@@ -917,7 +904,7 @@ def analysis_seasonality(
     narrative, model = _llm_narrate(_SEASONALITY_SYSTEM_PROMPT, user_prompt)
 
     return {
-        "region": region,
+        "region": _label(db_region),
         "disease": disease,
         "component": component,
         "narrative": narrative,
@@ -936,8 +923,7 @@ def analysis(
 
     The LLM only restates/explains the structured grounding payload; it never
     produces forecasts or risk tiers itself. Fails soft (503) when the
-    Anthropic key is missing or the API errors so region pages stay usable.
-    """
+    API key is missing or the API errors so region pages stay usable."""
     _check_disease(disease)
     db_region = _resolve_region(region)
     if db_region is None:
@@ -951,7 +937,7 @@ def analysis(
     narrative, model = _llm_narrate(_ANALYSIS_SYSTEM_PROMPT, user_prompt)
 
     return {
-        "region": region,
+        "region": _label(db_region),
         "disease": disease,
         "narrative": narrative,
         "grounding_data": grounding,

@@ -6,7 +6,7 @@ import {
   METRIC_META,
   assessRegion,
   formatMetric,
-  weekMeta,
+  monthMeta,
   type MetricMode,
 } from "@/lib/healthwatch/data";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
@@ -15,7 +15,7 @@ import { ForecastCard } from "./ForecastCard";
 export interface MobileBottomSheetProps {
   regionCode: string;
   illness: string;
-  weekIndex: number;
+  monthIndex: number;
   mode?: MetricMode;
   onModeChange?: (m: MetricMode) => void;
   layer?: DataLayer;
@@ -26,7 +26,7 @@ export interface MobileBottomSheetProps {
 export function MobileBottomSheet({
   regionCode,
   illness,
-  weekIndex,
+  monthIndex,
   mode = "percapita",
   onModeChange,
   layer = "hotspot",
@@ -42,8 +42,8 @@ export function MobileBottomSheet({
     setIsExpanded(false);
   }, [regionCode]);
 
-  const a = assessRegion(regionCode, illness, weekIndex, mode);
-  const meta = weekMeta(weekIndex);
+  const a = assessRegion(regionCode, illness, monthIndex, mode);
+  const meta = monthMeta(monthIndex);
   const unit = METRIC_META[mode].unit;
 
   // Touch handlers for drag gesture
@@ -195,7 +195,7 @@ export function MobileBottomSheet({
             <ForecastCard
               regionCode={regionCode}
               illness={illness}
-              weekIndex={weekIndex}
+              monthIndex={monthIndex}
               mode={mode}
               {...(onModeChange ? { onModeChange } : {})}
               {...(onLayerChange ? { onLayerChange } : {})}

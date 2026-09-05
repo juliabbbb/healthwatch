@@ -44,14 +44,14 @@ export function ClassificationInfo({
         <ol className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
           <li>
             <span className="text-foreground">1. Pool the national distribution.</span> Every
-            historical week (2016–2025) from all 17 regions is collected for the selected illness
+            historical month (2022–2026) from all 18 regions is collected for the selected illness
             and converted into the active metric, so regions are ranked against the whole country,
             not against themselves.
           </li>
           <li>
-            <span className="text-foreground">2. Restrict to the seasonal window.</span> Only weeks
-            falling within ±6 calendar weeks of the target week are kept, so a wet-season forecast
-            is judged against wet-season norms.
+            <span className="text-foreground">2. Restrict to the same calendar month.</span> Only
+            months from prior years that fall on the same calendar month (e.g. every August) are
+            kept, so a wet-season forecast is judged against wet-season norms.
           </li>
           <li>
             <span className="text-foreground">3. Take percentiles.</span> The 50th and 75th

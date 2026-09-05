@@ -232,7 +232,7 @@ function NotificationContent({
                     {a.title}
                   </span>
                   <span className="shrink-0 font-mono text-[11px] text-muted-foreground whitespace-nowrap">
-                    {a.week}
+                    {a.month}
                   </span>
                 </div>
                 <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">

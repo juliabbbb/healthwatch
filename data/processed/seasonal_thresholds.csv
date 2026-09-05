@@ -1,37 +1,39 @@
-disease,region,season,p75,n_weeks
-Dengue,BARMM,dry,103.8,182
-Dengue,BARMM,wet,194.8,182
-Dengue,CAR,dry,102.0,182
-Dengue,CAR,wet,447.2,182
-Dengue,Caraga,dry,175.5,182
-Dengue,Caraga,wet,225.5,182
-Dengue,NCR,dry,421.2,182
-Dengue,NCR,wet,1061.8,182
-Dengue,National,dry,3533.5,182
-Dengue,National,wet,8984.0,182
-Dengue,Region I (Ilocos),dry,87.2,182
-Dengue,Region I (Ilocos),wet,423.8,182
-Dengue,Region II (Cagayan Valley),dry,135.0,182
-Dengue,Region II (Cagayan Valley),wet,561.0,182
-Dengue,Region III (Central Luzon),dry,437.8,182
-Dengue,Region III (Central Luzon),wet,1233.8,182
-Dengue,Region IV-A (CALABARZON),dry,451.2,182
-Dengue,Region IV-A (CALABARZON),wet,1098.8,182
-Dengue,Region IV-B (MIMAROPA),dry,155.5,182
-Dengue,Region IV-B (MIMAROPA),wet,364.8,182
-Dengue,Region IX (Zamboanga Peninsula),dry,225.0,182
-Dengue,Region IX (Zamboanga Peninsula),wet,358.0,182
-Dengue,Region V (Bicol),dry,50.0,182
-Dengue,Region V (Bicol),wet,98.0,182
-Dengue,Region VI (Western Visayas),dry,156.0,182
-Dengue,Region VI (Western Visayas),wet,613.2,182
-Dengue,Region VII (Central Visayas),dry,306.5,182
-Dengue,Region VII (Central Visayas),wet,573.0,182
-Dengue,Region VIII (Eastern Visayas),dry,156.0,182
-Dengue,Region VIII (Eastern Visayas),wet,392.5,182
-Dengue,Region X (Northern Mindanao),dry,304.5,182
-Dengue,Region X (Northern Mindanao),wet,587.5,182
-Dengue,Region XI (Davao),dry,265.5,182
-Dengue,Region XI (Davao),wet,455.0,182
-Dengue,Region XII (SOCCSKSARGEN),dry,294.0,182
-Dengue,Region XII (SOCCSKSARGEN),wet,457.8,182
+disease,region,season,p75,n_months
+Dengue,Bangsamoro (BARMM),dry,707.8,18
+Dengue,Bangsamoro (BARMM),wet,1016.5,18
+Dengue,Bicol Region,dry,95.5,18
+Dengue,Bicol Region,wet,233.5,18
+Dengue,CALABARZON,dry,1435.8,18
+Dengue,CALABARZON,wet,5225.5,18
+Dengue,Cagayan Valley,dry,644.0,18
+Dengue,Cagayan Valley,wet,2703.5,18
+Dengue,Caraga,dry,725.5,18
+Dengue,Caraga,wet,1488.5,18
+Dengue,Central Luzon,dry,1710.5,18
+Dengue,Central Luzon,wet,6316.8,18
+Dengue,Central Visayas,dry,1240.5,18
+Dengue,Central Visayas,wet,2915.5,18
+Dengue,Cordillera Administrative Region,dry,484.5,18
+Dengue,Cordillera Administrative Region,wet,3220.5,18
+Dengue,Davao Region,dry,1583.5,18
+Dengue,Davao Region,wet,2505.0,18
+Dengue,Eastern Visayas,dry,421.2,18
+Dengue,Eastern Visayas,wet,812.8,18
+Dengue,Ilocos Region,dry,209.8,18
+Dengue,Ilocos Region,wet,1605.5,18
+Dengue,MIMAROPA,dry,731.5,18
+Dengue,MIMAROPA,wet,1957.2,18
+Dengue,National,dry,15266.0,18
+Dengue,National,wet,44641.5,18
+Dengue,National Capital Region,dry,1800.5,18
+Dengue,National Capital Region,wet,5445.2,18
+Dengue,Negros Island Region,dry,431.5,18
+Dengue,Negros Island Region,wet,1827.5,18
+Dengue,Northern Mindanao,dry,1365.8,18
+Dengue,Northern Mindanao,wet,1909.8,18
+Dengue,SOCCSKSARGEN,dry,1577.2,18
+Dengue,SOCCSKSARGEN,wet,1745.0,18
+Dengue,Western Visayas,dry,571.8,18
+Dengue,Western Visayas,wet,1811.8,18
+Dengue,Zamboanga Peninsula,dry,981.2,18
+Dengue,Zamboanga Peninsula,wet,1514.5,18

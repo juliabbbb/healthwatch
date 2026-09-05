@@ -8,48 +8,48 @@ import {
   SkipBack,
   SkipForward,
 } from "lucide-react";
-import { CURRENT_WEEK_INDEX, HIST_WEEKS, TOTAL_WEEKS, weekMeta } from "@/lib/healthwatch/data";
+import { CURRENT_MONTH_INDEX, HIST_MONTHS, TOTAL_MONTHS, monthMeta } from "@/lib/healthwatch/data";
 import { SeasonTag } from "./RiskBadge";
 import { cn } from "@/lib/utils";
 
 /**
- * Week scrubber with a compact single-row transport (default) and an
+ * Month scrubber with a compact single-row transport (default) and an
  * expanded state that adds the horizon captions and the jump-to-latest
  * affordance, so playback chrome never eats map real estate.
  */
 export function TimelineScrubber({
-  weekIndex,
+  monthIndex,
   onChange,
   playing,
   onPlayingChange,
   className,
 }: {
-  weekIndex: number;
+  monthIndex: number;
   onChange: (i: number) => void;
   playing: boolean;
   onPlayingChange: (p: boolean) => void;
   className?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const meta = weekMeta(weekIndex);
+  const meta = monthMeta(monthIndex);
 
   const cbRef = useRef(onChange);
   cbRef.current = onChange;
-  const idxRef = useRef(weekIndex);
+  const idxRef = useRef(monthIndex);
 
   useEffect(() => {
     if (!playing) return;
-    idxRef.current = weekIndex;
+    idxRef.current = monthIndex;
     const id = window.setInterval(() => {
-      idxRef.current = idxRef.current + 1 >= TOTAL_WEEKS ? 0 : idxRef.current + 1;
+      idxRef.current = idxRef.current + 1 >= TOTAL_MONTHS ? 0 : idxRef.current + 1;
       cbRef.current(idxRef.current);
     }, 200);
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- stable interval; latest values via refs
   }, [playing]);
 
-  const pct = (weekIndex / (TOTAL_WEEKS - 1)) * 100;
-  const histPct = (HIST_WEEKS / (TOTAL_WEEKS - 1)) * 100;
+  const pct = (monthIndex / (TOTAL_MONTHS - 1)) * 100;
+  const histPct = (HIST_MONTHS / (TOTAL_MONTHS - 1)) * 100;
 
   const modeBadge = (
     <span
@@ -71,8 +71,8 @@ export function TimelineScrubber({
         {/* Transport — icon-only cluster */}
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
-            onClick={() => onChange(Math.max(0, weekIndex - 1))}
-            aria-label="Previous week"
+            onClick={() => onChange(Math.max(0, monthIndex - 1))}
+            aria-label="Previous month"
             className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95"
           >
             <SkipBack className="size-3.5" />
@@ -85,8 +85,8 @@ export function TimelineScrubber({
             {playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
           </button>
           <button
-            onClick={() => onChange(Math.min(TOTAL_WEEKS - 1, weekIndex + 1))}
-            aria-label="Next week"
+            onClick={() => onChange(Math.min(TOTAL_MONTHS - 1, monthIndex + 1))}
+            aria-label="Next month"
             className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95"
           >
             <SkipForward className="size-3.5" />
@@ -110,10 +110,10 @@ export function TimelineScrubber({
           <input
             type="range"
             min={0}
-            max={TOTAL_WEEKS - 1}
-            value={weekIndex}
+            max={TOTAL_MONTHS - 1}
+            value={monthIndex}
             onChange={(e) => onChange(Number(e.target.value))}
-            aria-label="Week scrubber"
+            aria-label="Month scrubber"
             className="relative h-4 w-full cursor-pointer appearance-none bg-transparent [&::-webkit-slider-thumb]:size-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:shadow-md"
           />
         </div>
@@ -127,9 +127,9 @@ export function TimelineScrubber({
           {modeBadge}
           {expanded && (
             <button
-              onClick={() => onChange(CURRENT_WEEK_INDEX)}
-              title="Jump to latest reported week"
-              aria-label="Jump to latest reported week"
+              onClick={() => onChange(CURRENT_MONTH_INDEX)}
+              title="Jump to latest reported month"
+              aria-label="Jump to latest reported month"
               className="rounded-md border border-border p-1 text-muted-foreground transition-colors hover:text-foreground"
             >
               <History className="size-3.5" />
@@ -153,9 +153,9 @@ export function TimelineScrubber({
 
       {expanded && (
         <div className="mt-1.5 flex justify-between text-[9px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
-          <span>2016-W02</span>
-          <span className="hidden xs:inline">Historical surveillance (2016–2025)</span>
-          <span>+12-week forecast horizon</span>
+          <span>2022-01</span>
+          <span className="hidden xs:inline">Historical surveillance (2022–2026)</span>
+          <span>+12-month forecast horizon</span>
         </div>
       )}
     </div>

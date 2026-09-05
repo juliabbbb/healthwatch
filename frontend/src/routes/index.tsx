@@ -8,7 +8,7 @@ import { ForecastCard } from "@/components/hw/ForecastCard";
 import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
-import { CURRENT_WEEK_INDEX, REPORT_UPCOMING_SEASON, assessAll, weekMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
+import { CURRENT_MONTH_INDEX, REPORT_UPCOMING_SEASON, assessAll, monthMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
@@ -20,13 +20,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Regional time-series forecasting and hotspot classification for seasonal illness outbreaks across all 17 Philippine regions.",
+          "Regional time-series forecasting and hotspot classification for seasonal illness outbreaks across all 18 Philippine regions.",
       },
       { property: "og:title", content: "HEALTHWATCH — PH Outbreak Hotspot Map" },
       {
         property: "og:description",
         content:
-          "Live choropleth of Low/Moderate/High outbreak risk per Philippine region with 12-week case forecasts.",
+          "Live choropleth of Low/Moderate/High outbreak risk per Philippine region with 12-month case forecasts.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/")({
 function MapView() {
   const [mounted, setMounted] = useState(false);
   const [illness, setIllness] = useState("all");
-  const [weekIndex, setWeekIndex] = useState(CURRENT_WEEK_INDEX + 4);
+  const [monthIndex, setMonthIndex] = useState(CURRENT_MONTH_INDEX + 4);
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<string | null>("130000000");
   const [flyTo, setFlyTo] = useState<string | null>(null);
@@ -51,8 +51,8 @@ function MapView() {
   useEffect(() => setMounted(true), []);
 
   const assessments = useMemo(
-    () => assessAll(illness, weekIndex, mode),
-    [illness, weekIndex, mode],
+    () => assessAll(illness, monthIndex, mode),
+    [illness, monthIndex, mode],
   );
   const counts = useMemo(() => {
     const c = { high: 0, moderate: 0, low: 0 };
@@ -68,7 +68,7 @@ function MapView() {
   const nationalPer100k =
     (totalCases / assessments.reduce((s, a) => s + a.region.population, 0)) * 100000;
 
-  const meta = weekMeta(weekIndex);
+  const meta = monthMeta(monthIndex);
 
   const handleSelect = useCallback((code: string) => setSelected(code), []);
   const handleFocusRegion = useCallback((code: string) => {
@@ -85,7 +85,7 @@ function MapView() {
           <Suspense fallback={null}>
             <MapCanvas
               illness={illness}
-              weekIndex={weekIndex}
+              monthIndex={monthIndex}
               mode={mode}
               selectedCode={selected}
               onSelect={handleSelect}
@@ -100,7 +100,7 @@ function MapView() {
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
       <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-8.5rem)] w-[26rem] flex-col items-start gap-3">
         <NationalSnapshot
-              weekLabel={meta.label}
+              monthLabel={meta.label}
               isForecast={meta.forecast}
               value={mode === "raw" ? totalCases : nationalPer100k}
               mode={mode}
@@ -139,7 +139,7 @@ function MapView() {
           <ForecastCard
             regionCode={selected}
             illness={illness}
-            weekIndex={weekIndex}
+            monthIndex={monthIndex}
             mode={mode}
             onModeChange={setMode}
             onClose={() => setSelected(null)}
@@ -154,7 +154,7 @@ function MapView() {
         <MobileBottomSheet
           regionCode={selected}
           illness={illness}
-          weekIndex={weekIndex}
+          monthIndex={monthIndex}
           mode={mode}
           onModeChange={setMode}
           layer={layer}
@@ -183,8 +183,8 @@ function MapView() {
         } ${mobileNationalOpen ? "opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto" : ""}`}
       >
         <TimelineScrubber
-          weekIndex={weekIndex}
-          onChange={setWeekIndex}
+          monthIndex={monthIndex}
+          onChange={setMonthIndex}
           playing={playing}
           onPlayingChange={setPlaying}
         />
@@ -215,7 +215,7 @@ function MapView() {
 
             <div className="space-y-4 pb-6">
               <NationalSnapshot
-                weekLabel={meta.label}
+                monthLabel={meta.label}
                 isForecast={meta.forecast}
                 value={mode === "raw" ? totalCases : nationalPer100k}
                 mode={mode}
