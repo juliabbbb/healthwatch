@@ -17,19 +17,19 @@ import { cn } from "@/lib/utils";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const DISEASE = "Dengue";
-const WINDOW = "pre_covid_52w";
+const WINDOW = "last_12m";
 
 interface GroundingData {
-  observed_through: { week_label: string; cases: number };
+  observed_through: { month_label: string; cases: number };
   forecast: { target_date: string; yhat: number; yhat_lower: number; yhat_upper: number };
   classification: { date: string; yhat: number; p50: number; p75: number; risk_level: string };
-  thresholds_for_iso_week: { iso_week: number; p50: number; p75: number } | null;
+  thresholds_for_month: { month: number; p50: number; p75: number } | null;
   validation: {
     window: string;
     MAE: number;
     RMSE: number;
     MAPE: number;
-    weeks: number;
+    months: number;
     skill_vs_naive_pct: number | null;
   };
   confidence: { label: string; tone: string; note: string };
@@ -196,7 +196,7 @@ function GroundingReadout({ data }: { data: GroundingData }) {
   return (
     <dl className="mt-2 grid gap-x-6 gap-y-4 rounded-lg border border-border bg-card/60 p-3 sm:grid-cols-2 lg:grid-cols-3">
       <Group title="Observed">
-        <Row label="Week" value={data.observed_through.week_label} />
+        <Row label="Month" value={data.observed_through.month_label} />
         <Row label="Reported cases" value={data.observed_through.cases.toLocaleString()} />
       </Group>
       <Group title={`Forecast (${data.forecast.target_date})`}>
@@ -225,7 +225,7 @@ function GroundingReadout({ data }: { data: GroundingData }) {
               : `${data.validation.skill_vs_naive_pct > 0 ? "+" : ""}${fmt(data.validation.skill_vs_naive_pct)}%`
           }
         />
-        <Row label="Backtest weeks" value={String(data.validation.weeks)} />
+        <Row label="Backtest months" value={String(data.validation.months)} />
       </Group>
       <Group title="Confidence">
         <Row label="Label" value={data.confidence.label} />

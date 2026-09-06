@@ -1,0 +1,1009 @@
+date,region,disease,cases,deaths
+2022-01-01,Bangsamoro (BARMM),Dengue,157,0
+2022-02-01,Bangsamoro (BARMM),Dengue,186,4
+2022-03-01,Bangsamoro (BARMM),Dengue,287,2
+2022-04-01,Bangsamoro (BARMM),Dengue,440,5
+2022-05-01,Bangsamoro (BARMM),Dengue,680,10
+2022-06-01,Bangsamoro (BARMM),Dengue,783,7
+2022-07-01,Bangsamoro (BARMM),Dengue,859,5
+2022-08-01,Bangsamoro (BARMM),Dengue,748,8
+2022-09-01,Bangsamoro (BARMM),Dengue,673,3
+2022-10-01,Bangsamoro (BARMM),Dengue,499,4
+2022-11-01,Bangsamoro (BARMM),Dengue,527,6
+2022-12-01,Bangsamoro (BARMM),Dengue,329,4
+2023-01-01,Bangsamoro (BARMM),Dengue,452,2
+2023-02-01,Bangsamoro (BARMM),Dengue,369,3
+2023-03-01,Bangsamoro (BARMM),Dengue,350,4
+2023-04-01,Bangsamoro (BARMM),Dengue,325,3
+2023-05-01,Bangsamoro (BARMM),Dengue,505,4
+2023-06-01,Bangsamoro (BARMM),Dengue,604,0
+2023-07-01,Bangsamoro (BARMM),Dengue,854,11
+2023-08-01,Bangsamoro (BARMM),Dengue,1019,3
+2023-09-01,Bangsamoro (BARMM),Dengue,1009,3
+2023-10-01,Bangsamoro (BARMM),Dengue,817,2
+2023-11-01,Bangsamoro (BARMM),Dengue,851,3
+2023-12-01,Bangsamoro (BARMM),Dengue,604,6
+2024-01-01,Bangsamoro (BARMM),Dengue,718,7
+2024-02-01,Bangsamoro (BARMM),Dengue,717,2
+2024-03-01,Bangsamoro (BARMM),Dengue,779,5
+2024-04-01,Bangsamoro (BARMM),Dengue,752,3
+2024-05-01,Bangsamoro (BARMM),Dengue,939,6
+2024-06-01,Bangsamoro (BARMM),Dengue,1273,3
+2024-07-01,Bangsamoro (BARMM),Dengue,1624,10
+2024-08-01,Bangsamoro (BARMM),Dengue,1655,11
+2024-09-01,Bangsamoro (BARMM),Dengue,1247,7
+2024-10-01,Bangsamoro (BARMM),Dengue,924,6
+2024-11-01,Bangsamoro (BARMM),Dengue,666,0
+2024-12-01,Bangsamoro (BARMM),Dengue,426,1
+2025-01-01,Bangsamoro (BARMM),Dengue,623,2
+2025-02-01,Bangsamoro (BARMM),Dengue,491,2
+2025-03-01,Bangsamoro (BARMM),Dengue,488,4
+2025-04-01,Bangsamoro (BARMM),Dengue,457,4
+2025-05-01,Bangsamoro (BARMM),Dengue,554,1
+2025-06-01,Bangsamoro (BARMM),Dengue,710,1
+2025-07-01,Bangsamoro (BARMM),Dengue,756,6
+2025-08-01,Bangsamoro (BARMM),Dengue,709,5
+2025-09-01,Bangsamoro (BARMM),Dengue,447,1
+2025-10-01,Bangsamoro (BARMM),Dengue,411,1
+2025-11-01,Bangsamoro (BARMM),Dengue,207,4
+2025-12-01,Bangsamoro (BARMM),Dengue,196,4
+2026-01-01,Bangsamoro (BARMM),Dengue,336,4
+2026-02-01,Bangsamoro (BARMM),Dengue,268,0
+2026-03-01,Bangsamoro (BARMM),Dengue,344,2
+2026-04-01,Bangsamoro (BARMM),Dengue,361,0
+2026-05-01,Bangsamoro (BARMM),Dengue,440,2
+2026-06-01,Bangsamoro (BARMM),Dengue,740,4
+2026-07-01,Bangsamoro (BARMM),Dengue,977,5
+2026-08-01,Bangsamoro (BARMM),Dengue,570,1
+2022-01-01,Bicol Region,Dengue,67,2
+2022-02-01,Bicol Region,Dengue,85,0
+2022-03-01,Bicol Region,Dengue,126,0
+2022-04-01,Bicol Region,Dengue,143,1
+2022-05-01,Bicol Region,Dengue,264,2
+2022-06-01,Bicol Region,Dengue,403,2
+2022-07-01,Bicol Region,Dengue,439,3
+2022-08-01,Bicol Region,Dengue,325,2
+2022-09-01,Bicol Region,Dengue,188,5
+2022-10-01,Bicol Region,Dengue,110,4
+2022-11-01,Bicol Region,Dengue,97,0
+2022-12-01,Bicol Region,Dengue,74,0
+2023-01-01,Bicol Region,Dengue,81,1
+2023-02-01,Bicol Region,Dengue,69,0
+2023-03-01,Bicol Region,Dengue,75,2
+2023-04-01,Bicol Region,Dengue,59,0
+2023-05-01,Bicol Region,Dengue,76,0
+2023-06-01,Bicol Region,Dengue,99,0
+2023-07-01,Bicol Region,Dengue,125,0
+2023-08-01,Bicol Region,Dengue,134,0
+2023-09-01,Bicol Region,Dengue,128,0
+2023-10-01,Bicol Region,Dengue,139,0
+2023-11-01,Bicol Region,Dengue,171,1
+2023-12-01,Bicol Region,Dengue,135,0
+2024-01-01,Bicol Region,Dengue,99,2
+2024-02-01,Bicol Region,Dengue,50,2
+2024-03-01,Bicol Region,Dengue,73,0
+2024-04-01,Bicol Region,Dengue,50,0
+2024-05-01,Bicol Region,Dengue,41,0
+2024-06-01,Bicol Region,Dengue,86,0
+2024-07-01,Bicol Region,Dengue,248,1
+2024-08-01,Bicol Region,Dengue,330,2
+2024-09-01,Bicol Region,Dengue,190,1
+2024-10-01,Bicol Region,Dengue,145,0
+2024-11-01,Bicol Region,Dengue,126,0
+2024-12-01,Bicol Region,Dengue,69,0
+2025-01-01,Bicol Region,Dengue,233,2
+2025-02-01,Bicol Region,Dengue,240,0
+2025-03-01,Bicol Region,Dengue,192,1
+2025-04-01,Bicol Region,Dengue,130,2
+2025-05-01,Bicol Region,Dengue,125,0
+2025-06-01,Bicol Region,Dengue,162,1
+2025-07-01,Bicol Region,Dengue,276,2
+2025-08-01,Bicol Region,Dengue,368,2
+2025-09-01,Bicol Region,Dengue,257,1
+2025-10-01,Bicol Region,Dengue,259,2
+2025-11-01,Bicol Region,Dengue,156,0
+2025-12-01,Bicol Region,Dengue,115,0
+2026-01-01,Bicol Region,Dengue,183,1
+2026-02-01,Bicol Region,Dengue,134,0
+2026-03-01,Bicol Region,Dengue,102,1
+2026-04-01,Bicol Region,Dengue,118,3
+2026-05-01,Bicol Region,Dengue,115,1
+2026-06-01,Bicol Region,Dengue,202,0
+2026-07-01,Bicol Region,Dengue,464,3
+2026-08-01,Bicol Region,Dengue,328,2
+2022-01-01,CALABARZON,Dengue,530,3
+2022-02-01,CALABARZON,Dengue,570,0
+2022-03-01,CALABARZON,Dengue,727,3
+2022-04-01,CALABARZON,Dengue,836,3
+2022-05-01,CALABARZON,Dengue,1598,4
+2022-06-01,CALABARZON,Dengue,2951,8
+2022-07-01,CALABARZON,Dengue,5294,8
+2022-08-01,CALABARZON,Dengue,5020,11
+2022-09-01,CALABARZON,Dengue,3815,7
+2022-10-01,CALABARZON,Dengue,2470,6
+2022-11-01,CALABARZON,Dengue,1981,14
+2022-12-01,CALABARZON,Dengue,1334,4
+2023-01-01,CALABARZON,Dengue,1420,2
+2023-02-01,CALABARZON,Dengue,1096,0
+2023-03-01,CALABARZON,Dengue,999,4
+2023-04-01,CALABARZON,Dengue,988,5
+2023-05-01,CALABARZON,Dengue,1121,6
+2023-06-01,CALABARZON,Dengue,2163,1
+2023-07-01,CALABARZON,Dengue,2007,6
+2023-08-01,CALABARZON,Dengue,2099,5
+2023-09-01,CALABARZON,Dengue,2575,9
+2023-10-01,CALABARZON,Dengue,3097,2
+2023-11-01,CALABARZON,Dengue,2673,3
+2023-12-01,CALABARZON,Dengue,1779,4
+2024-01-01,CALABARZON,Dengue,1949,8
+2024-02-01,CALABARZON,Dengue,1441,3
+2024-03-01,CALABARZON,Dengue,1131,2
+2024-04-01,CALABARZON,Dengue,970,2
+2024-05-01,CALABARZON,Dengue,978,3
+2024-06-01,CALABARZON,Dengue,1581,11
+2024-07-01,CALABARZON,Dengue,4251,10
+2024-08-01,CALABARZON,Dengue,6656,24
+2024-09-01,CALABARZON,Dengue,6233,22
+2024-10-01,CALABARZON,Dengue,7860,27
+2024-11-01,CALABARZON,Dengue,8435,30
+2024-12-01,CALABARZON,Dengue,6814,16
+2025-01-01,CALABARZON,Dengue,7426,16
+2025-02-01,CALABARZON,Dengue,5590,11
+2025-03-01,CALABARZON,Dengue,3799,13
+2025-04-01,CALABARZON,Dengue,2034,5
+2025-05-01,CALABARZON,Dengue,1609,5
+2025-06-01,CALABARZON,Dengue,2351,11
+2025-07-01,CALABARZON,Dengue,4551,24
+2025-08-01,CALABARZON,Dengue,5861,20
+2025-09-01,CALABARZON,Dengue,4962,15
+2025-10-01,CALABARZON,Dengue,5096,32
+2025-11-01,CALABARZON,Dengue,2274,16
+2025-12-01,CALABARZON,Dengue,1785,6
+2026-01-01,CALABARZON,Dengue,2769,7
+2026-02-01,CALABARZON,Dengue,1625,10
+2026-03-01,CALABARZON,Dengue,1239,12
+2026-04-01,CALABARZON,Dengue,1025,1
+2026-05-01,CALABARZON,Dengue,1031,3
+2026-06-01,CALABARZON,Dengue,1395,9
+2026-07-01,CALABARZON,Dengue,2270,5
+2026-08-01,CALABARZON,Dengue,1490,4
+2022-01-01,Cagayan Valley,Dengue,332,0
+2022-02-01,Cagayan Valley,Dengue,354,2
+2022-03-01,Cagayan Valley,Dengue,403,2
+2022-04-01,Cagayan Valley,Dengue,658,0
+2022-05-01,Cagayan Valley,Dengue,1342,9
+2022-06-01,Cagayan Valley,Dengue,3013,4
+2022-07-01,Cagayan Valley,Dengue,4154,4
+2022-08-01,Cagayan Valley,Dengue,3205,2
+2022-09-01,Cagayan Valley,Dengue,2693,1
+2022-10-01,Cagayan Valley,Dengue,1743,5
+2022-11-01,Cagayan Valley,Dengue,1530,1
+2022-12-01,Cagayan Valley,Dengue,829,6
+2023-01-01,Cagayan Valley,Dengue,579,1
+2023-02-01,Cagayan Valley,Dengue,352,1
+2023-03-01,Cagayan Valley,Dengue,286,1
+2023-04-01,Cagayan Valley,Dengue,282,2
+2023-05-01,Cagayan Valley,Dengue,400,2
+2023-06-01,Cagayan Valley,Dengue,537,1
+2023-07-01,Cagayan Valley,Dengue,608,0
+2023-08-01,Cagayan Valley,Dengue,743,7
+2023-09-01,Cagayan Valley,Dengue,993,2
+2023-10-01,Cagayan Valley,Dengue,1365,2
+2023-11-01,Cagayan Valley,Dengue,1117,3
+2023-12-01,Cagayan Valley,Dengue,714,2
+2024-01-01,Cagayan Valley,Dengue,602,1
+2024-02-01,Cagayan Valley,Dengue,375,3
+2024-03-01,Cagayan Valley,Dengue,233,0
+2024-04-01,Cagayan Valley,Dengue,249,0
+2024-05-01,Cagayan Valley,Dengue,350,2
+2024-06-01,Cagayan Valley,Dengue,778,1
+2024-07-01,Cagayan Valley,Dengue,2249,9
+2024-08-01,Cagayan Valley,Dengue,3730,7
+2024-09-01,Cagayan Valley,Dengue,2707,6
+2024-10-01,Cagayan Valley,Dengue,2018,3
+2024-11-01,Cagayan Valley,Dengue,1424,3
+2024-12-01,Cagayan Valley,Dengue,979,5
+2025-01-01,Cagayan Valley,Dengue,1085,7
+2025-02-01,Cagayan Valley,Dengue,901,3
+2025-03-01,Cagayan Valley,Dengue,748,1
+2025-04-01,Cagayan Valley,Dengue,454,2
+2025-05-01,Cagayan Valley,Dengue,438,2
+2025-06-01,Cagayan Valley,Dengue,696,0
+2025-07-01,Cagayan Valley,Dengue,1235,4
+2025-08-01,Cagayan Valley,Dengue,2148,5
+2025-09-01,Cagayan Valley,Dengue,2158,3
+2025-10-01,Cagayan Valley,Dengue,1575,2
+2025-11-01,Cagayan Valley,Dengue,281,0
+2025-12-01,Cagayan Valley,Dengue,195,0
+2026-01-01,Cagayan Valley,Dengue,591,0
+2026-02-01,Cagayan Valley,Dengue,335,0
+2026-03-01,Cagayan Valley,Dengue,358,1
+2026-04-01,Cagayan Valley,Dengue,266,1
+2026-05-01,Cagayan Valley,Dengue,274,1
+2026-06-01,Cagayan Valley,Dengue,341,0
+2026-07-01,Cagayan Valley,Dengue,656,0
+2026-08-01,Cagayan Valley,Dengue,509,1
+2022-01-01,Caraga,Dengue,140,0
+2022-02-01,Caraga,Dengue,213,1
+2022-03-01,Caraga,Dengue,331,0
+2022-04-01,Caraga,Dengue,432,5
+2022-05-01,Caraga,Dengue,505,2
+2022-06-01,Caraga,Dengue,620,1
+2022-07-01,Caraga,Dengue,737,3
+2022-08-01,Caraga,Dengue,710,4
+2022-09-01,Caraga,Dengue,697,1
+2022-10-01,Caraga,Dengue,513,2
+2022-11-01,Caraga,Dengue,583,3
+2022-12-01,Caraga,Dengue,530,4
+2023-01-01,Caraga,Dengue,599,5
+2023-02-01,Caraga,Dengue,359,3
+2023-03-01,Caraga,Dengue,347,4
+2023-04-01,Caraga,Dengue,315,2
+2023-05-01,Caraga,Dengue,332,0
+2023-06-01,Caraga,Dengue,362,4
+2023-07-01,Caraga,Dengue,409,0
+2023-08-01,Caraga,Dengue,457,0
+2023-09-01,Caraga,Dengue,539,3
+2023-10-01,Caraga,Dengue,630,2
+2023-11-01,Caraga,Dengue,721,0
+2023-12-01,Caraga,Dengue,856,5
+2024-01-01,Caraga,Dengue,1143,6
+2024-02-01,Caraga,Dengue,756,4
+2024-03-01,Caraga,Dengue,634,2
+2024-04-01,Caraga,Dengue,556,5
+2024-05-01,Caraga,Dengue,837,9
+2024-06-01,Caraga,Dengue,1022,3
+2024-07-01,Caraga,Dengue,1773,12
+2024-08-01,Caraga,Dengue,2868,18
+2024-09-01,Caraga,Dengue,2225,10
+2024-10-01,Caraga,Dengue,1685,8
+2024-11-01,Caraga,Dengue,1644,9
+2024-12-01,Caraga,Dengue,1194,3
+2025-01-01,Caraga,Dengue,1561,12
+2025-02-01,Caraga,Dengue,1071,5
+2025-03-01,Caraga,Dengue,807,3
+2025-04-01,Caraga,Dengue,571,4
+2025-05-01,Caraga,Dengue,515,2
+2025-06-01,Caraga,Dengue,411,1
+2025-07-01,Caraga,Dengue,369,1
+2025-08-01,Caraga,Dengue,235,0
+2025-09-01,Caraga,Dengue,200,1
+2025-10-01,Caraga,Dengue,256,1
+2025-11-01,Caraga,Dengue,207,0
+2025-12-01,Caraga,Dengue,136,0
+2026-01-01,Caraga,Dengue,213,2
+2026-02-01,Caraga,Dengue,223,2
+2026-03-01,Caraga,Dengue,216,0
+2026-04-01,Caraga,Dengue,214,2
+2026-05-01,Caraga,Dengue,226,2
+2026-06-01,Caraga,Dengue,370,2
+2026-07-01,Caraga,Dengue,865,7
+2026-08-01,Caraga,Dengue,587,0
+2022-01-01,Central Luzon,Dengue,787,5
+2022-02-01,Central Luzon,Dengue,766,0
+2022-03-01,Central Luzon,Dengue,810,2
+2022-04-01,Central Luzon,Dengue,1145,2
+2022-05-01,Central Luzon,Dengue,2863,6
+2022-06-01,Central Luzon,Dengue,6783,19
+2022-07-01,Central Luzon,Dengue,12793,22
+2022-08-01,Central Luzon,Dengue,10069,22
+2022-09-01,Central Luzon,Dengue,6330,18
+2022-10-01,Central Luzon,Dengue,4520,13
+2022-11-01,Central Luzon,Dengue,3246,8
+2022-12-01,Central Luzon,Dengue,2349,7
+2023-01-01,Central Luzon,Dengue,1858,6
+2023-02-01,Central Luzon,Dengue,894,3
+2023-03-01,Central Luzon,Dengue,896,3
+2023-04-01,Central Luzon,Dengue,809,2
+2023-05-01,Central Luzon,Dengue,1085,3
+2023-06-01,Central Luzon,Dengue,2132,2
+2023-07-01,Central Luzon,Dengue,2539,6
+2023-08-01,Central Luzon,Dengue,2598,4
+2023-09-01,Central Luzon,Dengue,3302,8
+2023-10-01,Central Luzon,Dengue,3625,5
+2023-11-01,Central Luzon,Dengue,2652,2
+2023-12-01,Central Luzon,Dengue,1786,3
+2024-01-01,Central Luzon,Dengue,1484,4
+2024-02-01,Central Luzon,Dengue,1050,2
+2024-03-01,Central Luzon,Dengue,751,3
+2024-04-01,Central Luzon,Dengue,625,2
+2024-05-01,Central Luzon,Dengue,649,0
+2024-06-01,Central Luzon,Dengue,1572,5
+2024-07-01,Central Luzon,Dengue,4919,10
+2024-08-01,Central Luzon,Dengue,8236,18
+2024-09-01,Central Luzon,Dengue,5215,11
+2024-10-01,Central Luzon,Dengue,5441,15
+2024-11-01,Central Luzon,Dengue,6277,24
+2024-12-01,Central Luzon,Dengue,5984,15
+2025-01-01,Central Luzon,Dengue,6258,19
+2025-02-01,Central Luzon,Dengue,4683,4
+2025-03-01,Central Luzon,Dengue,3882,14
+2025-04-01,Central Luzon,Dengue,2241,16
+2025-05-01,Central Luzon,Dengue,1733,5
+2025-06-01,Central Luzon,Dengue,3716,15
+2025-07-01,Central Luzon,Dengue,9125,30
+2025-08-01,Central Luzon,Dengue,12015,34
+2025-09-01,Central Luzon,Dengue,9019,36
+2025-10-01,Central Luzon,Dengue,8192,27
+2025-11-01,Central Luzon,Dengue,6274,19
+2025-12-01,Central Luzon,Dengue,4740,13
+2026-01-01,Central Luzon,Dengue,5314,25
+2026-02-01,Central Luzon,Dengue,2901,10
+2026-03-01,Central Luzon,Dengue,1937,3
+2026-04-01,Central Luzon,Dengue,1256,3
+2026-05-01,Central Luzon,Dengue,990,3
+2026-06-01,Central Luzon,Dengue,1578,7
+2026-07-01,Central Luzon,Dengue,3291,12
+2026-08-01,Central Luzon,Dengue,1851,5
+2022-01-01,Central Visayas,Dengue,361,12
+2022-02-01,Central Visayas,Dengue,656,4
+2022-03-01,Central Visayas,Dengue,1030,11
+2022-04-01,Central Visayas,Dengue,1371,9
+2022-05-01,Central Visayas,Dengue,2150,9
+2022-06-01,Central Visayas,Dengue,2653,9
+2022-07-01,Central Visayas,Dengue,2203,12
+2022-08-01,Central Visayas,Dengue,1725,9
+2022-09-01,Central Visayas,Dengue,1379,10
+2022-10-01,Central Visayas,Dengue,992,5
+2022-11-01,Central Visayas,Dengue,935,4
+2022-12-01,Central Visayas,Dengue,552,3
+2023-01-01,Central Visayas,Dengue,633,2
+2023-02-01,Central Visayas,Dengue,698,5
+2023-03-01,Central Visayas,Dengue,532,0
+2023-04-01,Central Visayas,Dengue,392,1
+2023-05-01,Central Visayas,Dengue,368,3
+2023-06-01,Central Visayas,Dengue,449,2
+2023-07-01,Central Visayas,Dengue,689,3
+2023-08-01,Central Visayas,Dengue,692,6
+2023-09-01,Central Visayas,Dengue,683,3
+2023-10-01,Central Visayas,Dengue,859,6
+2023-11-01,Central Visayas,Dengue,1133,4
+2023-12-01,Central Visayas,Dengue,1185,1
+2024-01-01,Central Visayas,Dengue,1617,3
+2024-02-01,Central Visayas,Dengue,1259,2
+2024-03-01,Central Visayas,Dengue,1158,2
+2024-04-01,Central Visayas,Dengue,744,3
+2024-05-01,Central Visayas,Dengue,690,3
+2024-06-01,Central Visayas,Dengue,810,2
+2024-07-01,Central Visayas,Dengue,3003,6
+2024-08-01,Central Visayas,Dengue,7966,30
+2024-09-01,Central Visayas,Dengue,6116,13
+2024-10-01,Central Visayas,Dengue,4074,4
+2024-11-01,Central Visayas,Dengue,3008,8
+2024-12-01,Central Visayas,Dengue,1928,0
+2025-01-01,Central Visayas,Dengue,2091,2
+2025-02-01,Central Visayas,Dengue,1574,3
+2025-03-01,Central Visayas,Dengue,1039,5
+2025-04-01,Central Visayas,Dengue,590,0
+2025-05-01,Central Visayas,Dengue,526,2
+2025-06-01,Central Visayas,Dengue,603,3
+2025-07-01,Central Visayas,Dengue,965,8
+2025-08-01,Central Visayas,Dengue,876,3
+2025-09-01,Central Visayas,Dengue,793,3
+2025-10-01,Central Visayas,Dengue,894,2
+2025-11-01,Central Visayas,Dengue,508,1
+2025-12-01,Central Visayas,Dengue,475,2
+2026-01-01,Central Visayas,Dengue,666,4
+2026-02-01,Central Visayas,Dengue,582,4
+2026-03-01,Central Visayas,Dengue,703,7
+2026-04-01,Central Visayas,Dengue,555,3
+2026-05-01,Central Visayas,Dengue,535,3
+2026-06-01,Central Visayas,Dengue,801,5
+2026-07-01,Central Visayas,Dengue,1861,10
+2026-08-01,Central Visayas,Dengue,1894,17
+2022-01-01,Cordillera Administrative Region,Dengue,268,1
+2022-02-01,Cordillera Administrative Region,Dengue,236,0
+2022-03-01,Cordillera Administrative Region,Dengue,270,1
+2022-04-01,Cordillera Administrative Region,Dengue,442,1
+2022-05-01,Cordillera Administrative Region,Dengue,1260,2
+2022-06-01,Cordillera Administrative Region,Dengue,2972,5
+2022-07-01,Cordillera Administrative Region,Dengue,3919,9
+2022-08-01,Cordillera Administrative Region,Dengue,3241,5
+2022-09-01,Cordillera Administrative Region,Dengue,2216,0
+2022-10-01,Cordillera Administrative Region,Dengue,1193,3
+2022-11-01,Cordillera Administrative Region,Dengue,962,0
+2022-12-01,Cordillera Administrative Region,Dengue,465,0
+2023-01-01,Cordillera Administrative Region,Dengue,393,1
+2023-02-01,Cordillera Administrative Region,Dengue,289,0
+2023-03-01,Cordillera Administrative Region,Dengue,222,0
+2023-04-01,Cordillera Administrative Region,Dengue,247,1
+2023-05-01,Cordillera Administrative Region,Dengue,477,0
+2023-06-01,Cordillera Administrative Region,Dengue,893,1
+2023-07-01,Cordillera Administrative Region,Dengue,1141,2
+2023-08-01,Cordillera Administrative Region,Dengue,1331,2
+2023-09-01,Cordillera Administrative Region,Dengue,1639,1
+2023-10-01,Cordillera Administrative Region,Dengue,1530,0
+2023-11-01,Cordillera Administrative Region,Dengue,928,0
+2023-12-01,Cordillera Administrative Region,Dengue,705,1
+2024-01-01,Cordillera Administrative Region,Dengue,487,0
+2024-02-01,Cordillera Administrative Region,Dengue,296,1
+2024-03-01,Cordillera Administrative Region,Dengue,194,1
+2024-04-01,Cordillera Administrative Region,Dengue,292,1
+2024-05-01,Cordillera Administrative Region,Dengue,882,0
+2024-06-01,Cordillera Administrative Region,Dengue,3159,5
+2024-07-01,Cordillera Administrative Region,Dengue,7020,17
+2024-08-01,Cordillera Administrative Region,Dengue,9659,11
+2024-09-01,Cordillera Administrative Region,Dengue,4910,9
+2024-10-01,Cordillera Administrative Region,Dengue,2018,1
+2024-11-01,Cordillera Administrative Region,Dengue,1095,1
+2024-12-01,Cordillera Administrative Region,Dengue,718,2
+2025-01-01,Cordillera Administrative Region,Dengue,627,2
+2025-02-01,Cordillera Administrative Region,Dengue,567,1
+2025-03-01,Cordillera Administrative Region,Dengue,551,0
+2025-04-01,Cordillera Administrative Region,Dengue,422,4
+2025-05-01,Cordillera Administrative Region,Dengue,463,1
+2025-06-01,Cordillera Administrative Region,Dengue,825,1
+2025-07-01,Cordillera Administrative Region,Dengue,862,2
+2025-08-01,Cordillera Administrative Region,Dengue,1001,2
+2025-09-01,Cordillera Administrative Region,Dengue,1096,1
+2025-10-01,Cordillera Administrative Region,Dengue,1435,2
+2025-11-01,Cordillera Administrative Region,Dengue,657,0
+2025-12-01,Cordillera Administrative Region,Dengue,358,1
+2026-01-01,Cordillera Administrative Region,Dengue,405,0
+2026-02-01,Cordillera Administrative Region,Dengue,395,0
+2026-03-01,Cordillera Administrative Region,Dengue,293,1
+2026-04-01,Cordillera Administrative Region,Dengue,238,0
+2026-05-01,Cordillera Administrative Region,Dengue,337,1
+2026-06-01,Cordillera Administrative Region,Dengue,829,3
+2026-07-01,Cordillera Administrative Region,Dengue,2065,6
+2026-08-01,Cordillera Administrative Region,Dengue,996,3
+2022-01-01,Davao Region,Dengue,512,4
+2022-02-01,Davao Region,Dengue,468,3
+2022-03-01,Davao Region,Dengue,564,1
+2022-04-01,Davao Region,Dengue,724,0
+2022-05-01,Davao Region,Dengue,975,4
+2022-06-01,Davao Region,Dengue,1039,2
+2022-07-01,Davao Region,Dengue,951,2
+2022-08-01,Davao Region,Dengue,960,1
+2022-09-01,Davao Region,Dengue,1014,0
+2022-10-01,Davao Region,Dengue,926,2
+2022-11-01,Davao Region,Dengue,1257,0
+2022-12-01,Davao Region,Dengue,933,5
+2023-01-01,Davao Region,Dengue,1153,4
+2023-02-01,Davao Region,Dengue,1064,6
+2023-03-01,Davao Region,Dengue,1077,1
+2023-04-01,Davao Region,Dengue,1037,3
+2023-05-01,Davao Region,Dengue,1608,7
+2023-06-01,Davao Region,Dengue,1872,11
+2023-07-01,Davao Region,Dengue,2249,13
+2023-08-01,Davao Region,Dengue,2574,15
+2023-09-01,Davao Region,Dengue,2412,12
+2023-10-01,Davao Region,Dengue,1923,6
+2023-11-01,Davao Region,Dengue,1873,10
+2023-12-01,Davao Region,Dengue,1968,7
+2024-01-01,Davao Region,Dengue,2127,13
+2024-02-01,Davao Region,Dengue,1665,11
+2024-03-01,Davao Region,Dengue,1646,13
+2024-04-01,Davao Region,Dengue,1271,11
+2024-05-01,Davao Region,Dengue,1255,6
+2024-06-01,Davao Region,Dengue,2085,16
+2024-07-01,Davao Region,Dengue,3515,26
+2024-08-01,Davao Region,Dengue,5242,29
+2024-09-01,Davao Region,Dengue,3645,18
+2024-10-01,Davao Region,Dengue,2536,20
+2024-11-01,Davao Region,Dengue,1932,8
+2024-12-01,Davao Region,Dengue,1510,6
+2025-01-01,Davao Region,Dengue,1878,20
+2025-02-01,Davao Region,Dengue,1552,8
+2025-03-01,Davao Region,Dengue,1614,9
+2025-04-01,Davao Region,Dengue,1308,11
+2025-05-01,Davao Region,Dengue,1123,8
+2025-06-01,Davao Region,Dengue,1240,9
+2025-07-01,Davao Region,Dengue,1228,9
+2025-08-01,Davao Region,Dengue,1002,11
+2025-09-01,Davao Region,Dengue,1011,2
+2025-10-01,Davao Region,Dengue,1134,5
+2025-11-01,Davao Region,Dengue,555,1
+2025-12-01,Davao Region,Dengue,275,3
+2026-01-01,Davao Region,Dengue,738,5
+2026-02-01,Davao Region,Dengue,680,2
+2026-03-01,Davao Region,Dengue,769,4
+2026-04-01,Davao Region,Dengue,659,1
+2026-05-01,Davao Region,Dengue,891,3
+2026-06-01,Davao Region,Dengue,1571,7
+2026-07-01,Davao Region,Dengue,2593,10
+2026-08-01,Davao Region,Dengue,1653,2
+2022-01-01,Eastern Visayas,Dengue,153,1
+2022-02-01,Eastern Visayas,Dengue,180,2
+2022-03-01,Eastern Visayas,Dengue,348,1
+2022-04-01,Eastern Visayas,Dengue,527,2
+2022-05-01,Eastern Visayas,Dengue,806,4
+2022-06-01,Eastern Visayas,Dengue,933,0
+2022-07-01,Eastern Visayas,Dengue,969,3
+2022-08-01,Eastern Visayas,Dengue,791,3
+2022-09-01,Eastern Visayas,Dengue,646,3
+2022-10-01,Eastern Visayas,Dengue,601,0
+2022-11-01,Eastern Visayas,Dengue,725,1
+2022-12-01,Eastern Visayas,Dengue,413,1
+2023-01-01,Eastern Visayas,Dengue,338,0
+2023-02-01,Eastern Visayas,Dengue,291,0
+2023-03-01,Eastern Visayas,Dengue,285,1
+2023-04-01,Eastern Visayas,Dengue,179,1
+2023-05-01,Eastern Visayas,Dengue,198,2
+2023-06-01,Eastern Visayas,Dengue,317,1
+2023-07-01,Eastern Visayas,Dengue,553,1
+2023-08-01,Eastern Visayas,Dengue,420,1
+2023-09-01,Eastern Visayas,Dengue,432,0
+2023-10-01,Eastern Visayas,Dengue,566,0
+2023-11-01,Eastern Visayas,Dengue,650,2
+2023-12-01,Eastern Visayas,Dengue,610,0
+2024-01-01,Eastern Visayas,Dengue,569,1
+2024-02-01,Eastern Visayas,Dengue,367,2
+2024-03-01,Eastern Visayas,Dengue,389,0
+2024-04-01,Eastern Visayas,Dengue,255,2
+2024-05-01,Eastern Visayas,Dengue,424,1
+2024-06-01,Eastern Visayas,Dengue,573,0
+2024-07-01,Eastern Visayas,Dengue,1092,5
+2024-08-01,Eastern Visayas,Dengue,1957,2
+2024-09-01,Eastern Visayas,Dengue,820,2
+2024-10-01,Eastern Visayas,Dengue,364,0
+2024-11-01,Eastern Visayas,Dengue,287,1
+2024-12-01,Eastern Visayas,Dengue,204,1
+2025-01-01,Eastern Visayas,Dengue,575,2
+2025-02-01,Eastern Visayas,Dengue,571,0
+2025-03-01,Eastern Visayas,Dengue,390,1
+2025-04-01,Eastern Visayas,Dengue,265,0
+2025-05-01,Eastern Visayas,Dengue,221,0
+2025-06-01,Eastern Visayas,Dengue,167,1
+2025-07-01,Eastern Visayas,Dengue,218,1
+2025-08-01,Eastern Visayas,Dengue,270,0
+2025-09-01,Eastern Visayas,Dengue,193,1
+2025-10-01,Eastern Visayas,Dengue,248,0
+2025-11-01,Eastern Visayas,Dengue,26,0
+2025-12-01,Eastern Visayas,Dengue,18,0
+2026-01-01,Eastern Visayas,Dengue,87,0
+2026-02-01,Eastern Visayas,Dengue,109,0
+2026-03-01,Eastern Visayas,Dengue,89,0
+2026-04-01,Eastern Visayas,Dengue,112,0
+2026-05-01,Eastern Visayas,Dengue,89,0
+2026-06-01,Eastern Visayas,Dengue,193,0
+2026-07-01,Eastern Visayas,Dengue,368,0
+2026-08-01,Eastern Visayas,Dengue,271,0
+2022-01-01,Ilocos Region,Dengue,94,0
+2022-02-01,Ilocos Region,Dengue,75,0
+2022-03-01,Ilocos Region,Dengue,118,1
+2022-04-01,Ilocos Region,Dengue,161,2
+2022-05-01,Ilocos Region,Dengue,343,1
+2022-06-01,Ilocos Region,Dengue,856,2
+2022-07-01,Ilocos Region,Dengue,1631,4
+2022-08-01,Ilocos Region,Dengue,1502,4
+2022-09-01,Ilocos Region,Dengue,916,3
+2022-10-01,Ilocos Region,Dengue,604,1
+2022-11-01,Ilocos Region,Dengue,498,2
+2022-12-01,Ilocos Region,Dengue,210,0
+2023-01-01,Ilocos Region,Dengue,197,1
+2023-02-01,Ilocos Region,Dengue,129,1
+2023-03-01,Ilocos Region,Dengue,169,0
+2023-04-01,Ilocos Region,Dengue,209,1
+2023-05-01,Ilocos Region,Dengue,344,1
+2023-06-01,Ilocos Region,Dengue,689,5
+2023-07-01,Ilocos Region,Dengue,1447,8
+2023-08-01,Ilocos Region,Dengue,1529,10
+2023-09-01,Ilocos Region,Dengue,1355,3
+2023-10-01,Ilocos Region,Dengue,1140,4
+2023-11-01,Ilocos Region,Dengue,926,2
+2023-12-01,Ilocos Region,Dengue,443,3
+2024-01-01,Ilocos Region,Dengue,160,0
+2024-02-01,Ilocos Region,Dengue,123,3
+2024-03-01,Ilocos Region,Dengue,115,0
+2024-04-01,Ilocos Region,Dengue,121,0
+2024-05-01,Ilocos Region,Dengue,192,0
+2024-06-01,Ilocos Region,Dengue,663,3
+2024-07-01,Ilocos Region,Dengue,1826,12
+2024-08-01,Ilocos Region,Dengue,3670,10
+2024-09-01,Ilocos Region,Dengue,2471,25
+2024-10-01,Ilocos Region,Dengue,1654,16
+2024-11-01,Ilocos Region,Dengue,1239,5
+2024-12-01,Ilocos Region,Dengue,1069,4
+2025-01-01,Ilocos Region,Dengue,791,8
+2025-02-01,Ilocos Region,Dengue,631,1
+2025-03-01,Ilocos Region,Dengue,535,1
+2025-04-01,Ilocos Region,Dengue,379,2
+2025-05-01,Ilocos Region,Dengue,398,2
+2025-06-01,Ilocos Region,Dengue,1193,5
+2025-07-01,Ilocos Region,Dengue,2687,12
+2025-08-01,Ilocos Region,Dengue,3298,8
+2025-09-01,Ilocos Region,Dengue,2090,5
+2025-10-01,Ilocos Region,Dengue,1607,11
+2025-11-01,Ilocos Region,Dengue,817,3
+2025-12-01,Ilocos Region,Dengue,758,3
+2026-01-01,Ilocos Region,Dengue,764,0
+2026-02-01,Ilocos Region,Dengue,424,0
+2026-03-01,Ilocos Region,Dengue,402,2
+2026-04-01,Ilocos Region,Dengue,284,0
+2026-05-01,Ilocos Region,Dengue,444,2
+2026-06-01,Ilocos Region,Dengue,758,4
+2026-07-01,Ilocos Region,Dengue,2042,6
+2026-08-01,Ilocos Region,Dengue,1472,2
+2022-01-01,MIMAROPA,Dengue,117,1
+2022-02-01,MIMAROPA,Dengue,102,4
+2022-03-01,MIMAROPA,Dengue,145,0
+2022-04-01,MIMAROPA,Dengue,225,1
+2022-05-01,MIMAROPA,Dengue,596,8
+2022-06-01,MIMAROPA,Dengue,1417,15
+2022-07-01,MIMAROPA,Dengue,2434,10
+2022-08-01,MIMAROPA,Dengue,1598,7
+2022-09-01,MIMAROPA,Dengue,849,9
+2022-10-01,MIMAROPA,Dengue,689,11
+2022-11-01,MIMAROPA,Dengue,796,9
+2022-12-01,MIMAROPA,Dengue,709,2
+2023-01-01,MIMAROPA,Dengue,739,6
+2023-02-01,MIMAROPA,Dengue,809,7
+2023-03-01,MIMAROPA,Dengue,665,7
+2023-04-01,MIMAROPA,Dengue,786,6
+2023-05-01,MIMAROPA,Dengue,1072,7
+2023-06-01,MIMAROPA,Dengue,1959,20
+2023-07-01,MIMAROPA,Dengue,2622,10
+2023-08-01,MIMAROPA,Dengue,1952,11
+2023-09-01,MIMAROPA,Dengue,1322,6
+2023-10-01,MIMAROPA,Dengue,1390,5
+2023-11-01,MIMAROPA,Dengue,986,4
+2023-12-01,MIMAROPA,Dengue,654,8
+2024-01-01,MIMAROPA,Dengue,702,11
+2024-02-01,MIMAROPA,Dengue,603,8
+2024-03-01,MIMAROPA,Dengue,631,1
+2024-04-01,MIMAROPA,Dengue,570,5
+2024-05-01,MIMAROPA,Dengue,630,2
+2024-06-01,MIMAROPA,Dengue,1573,8
+2024-07-01,MIMAROPA,Dengue,4070,14
+2024-08-01,MIMAROPA,Dengue,3900,13
+2024-09-01,MIMAROPA,Dengue,1718,13
+2024-10-01,MIMAROPA,Dengue,1327,11
+2024-11-01,MIMAROPA,Dengue,1288,9
+2024-12-01,MIMAROPA,Dengue,1052,5
+2025-01-01,MIMAROPA,Dengue,1491,6
+2025-02-01,MIMAROPA,Dengue,1345,13
+2025-03-01,MIMAROPA,Dengue,1269,10
+2025-04-01,MIMAROPA,Dengue,991,6
+2025-05-01,MIMAROPA,Dengue,944,6
+2025-06-01,MIMAROPA,Dengue,1435,5
+2025-07-01,MIMAROPA,Dengue,1972,16
+2025-08-01,MIMAROPA,Dengue,1570,7
+2025-09-01,MIMAROPA,Dengue,1006,5
+2025-10-01,MIMAROPA,Dengue,1072,8
+2025-11-01,MIMAROPA,Dengue,1064,3
+2025-12-01,MIMAROPA,Dengue,603,3
+2026-01-01,MIMAROPA,Dengue,776,8
+2026-02-01,MIMAROPA,Dengue,564,4
+2026-03-01,MIMAROPA,Dengue,482,4
+2026-04-01,MIMAROPA,Dengue,416,2
+2026-05-01,MIMAROPA,Dengue,398,2
+2026-06-01,MIMAROPA,Dengue,661,3
+2026-07-01,MIMAROPA,Dengue,1174,9
+2026-08-01,MIMAROPA,Dengue,754,1
+2022-01-01,National Capital Region,Dengue,654,2
+2022-02-01,National Capital Region,Dengue,704,5
+2022-03-01,National Capital Region,Dengue,756,1
+2022-04-01,National Capital Region,Dengue,794,3
+2022-05-01,National Capital Region,Dengue,1353,3
+2022-06-01,National Capital Region,Dengue,2876,8
+2022-07-01,National Capital Region,Dengue,4987,15
+2022-08-01,National Capital Region,Dengue,6187,18
+2022-09-01,National Capital Region,Dengue,5598,10
+2022-10-01,National Capital Region,Dengue,3703,6
+2022-11-01,National Capital Region,Dengue,2652,2
+2022-12-01,National Capital Region,Dengue,1892,1
+2023-01-01,National Capital Region,Dengue,1880,2
+2023-02-01,National Capital Region,Dengue,1516,3
+2023-03-01,National Capital Region,Dengue,1161,1
+2023-04-01,National Capital Region,Dengue,874,1
+2023-05-01,National Capital Region,Dengue,1070,0
+2023-06-01,National Capital Region,Dengue,2082,6
+2023-07-01,National Capital Region,Dengue,1755,4
+2023-08-01,National Capital Region,Dengue,2277,6
+2023-09-01,National Capital Region,Dengue,3077,3
+2023-10-01,National Capital Region,Dengue,3216,4
+2023-11-01,National Capital Region,Dengue,3167,5
+2023-12-01,National Capital Region,Dengue,2049,3
+2024-01-01,National Capital Region,Dengue,1992,3
+2024-02-01,National Capital Region,Dengue,1562,1
+2024-03-01,National Capital Region,Dengue,1147,1
+2024-04-01,National Capital Region,Dengue,787,2
+2024-05-01,National Capital Region,Dengue,663,0
+2024-06-01,National Capital Region,Dengue,973,2
+2024-07-01,National Capital Region,Dengue,2302,7
+2024-08-01,National Capital Region,Dengue,4230,15
+2024-09-01,National Capital Region,Dengue,5673,27
+2024-10-01,National Capital Region,Dengue,7037,15
+2024-11-01,National Capital Region,Dengue,8641,20
+2024-12-01,National Capital Region,Dengue,6250,17
+2025-01-01,National Capital Region,Dengue,6812,19
+2025-02-01,National Capital Region,Dengue,5801,14
+2025-03-01,National Capital Region,Dengue,3902,13
+2025-04-01,National Capital Region,Dengue,1877,8
+2025-05-01,National Capital Region,Dengue,1134,3
+2025-06-01,National Capital Region,Dengue,1568,15
+2025-07-01,National Capital Region,Dengue,3181,21
+2025-08-01,National Capital Region,Dengue,5031,15
+2025-09-01,National Capital Region,Dengue,5095,23
+2025-10-01,National Capital Region,Dengue,5635,25
+2025-11-01,National Capital Region,Dengue,704,5
+2025-12-01,National Capital Region,Dengue,548,2
+2026-01-01,National Capital Region,Dengue,3452,15
+2026-02-01,National Capital Region,Dengue,2136,6
+2026-03-01,National Capital Region,Dengue,1341,6
+2026-04-01,National Capital Region,Dengue,848,2
+2026-05-01,National Capital Region,Dengue,832,3
+2026-06-01,National Capital Region,Dengue,950,3
+2026-07-01,National Capital Region,Dengue,1754,6
+2026-08-01,National Capital Region,Dengue,1007,3
+2022-01-01,Negros Island Region,Dengue,140,4
+2022-02-01,Negros Island Region,Dengue,160,1
+2022-03-01,Negros Island Region,Dengue,193,2
+2022-04-01,Negros Island Region,Dengue,381,4
+2022-05-01,Negros Island Region,Dengue,983,3
+2022-06-01,Negros Island Region,Dengue,1550,12
+2022-07-01,Negros Island Region,Dengue,2054,8
+2022-08-01,Negros Island Region,Dengue,1616,14
+2022-09-01,Negros Island Region,Dengue,997,5
+2022-10-01,Negros Island Region,Dengue,566,3
+2022-11-01,Negros Island Region,Dengue,536,2
+2022-12-01,Negros Island Region,Dengue,345,3
+2023-01-01,Negros Island Region,Dengue,304,2
+2023-02-01,Negros Island Region,Dengue,271,1
+2023-03-01,Negros Island Region,Dengue,212,0
+2023-04-01,Negros Island Region,Dengue,133,2
+2023-05-01,Negros Island Region,Dengue,207,2
+2023-06-01,Negros Island Region,Dengue,278,3
+2023-07-01,Negros Island Region,Dengue,406,2
+2023-08-01,Negros Island Region,Dengue,424,2
+2023-09-01,Negros Island Region,Dengue,362,0
+2023-10-01,Negros Island Region,Dengue,368,1
+2023-11-01,Negros Island Region,Dengue,385,2
+2023-12-01,Negros Island Region,Dengue,342,2
+2024-01-01,Negros Island Region,Dengue,533,1
+2024-02-01,Negros Island Region,Dengue,451,1
+2024-03-01,Negros Island Region,Dengue,446,1
+2024-04-01,Negros Island Region,Dengue,388,1
+2024-05-01,Negros Island Region,Dengue,355,3
+2024-06-01,Negros Island Region,Dengue,591,0
+2024-07-01,Negros Island Region,Dengue,2426,7
+2024-08-01,Negros Island Region,Dengue,4344,6
+2024-09-01,Negros Island Region,Dengue,2657,4
+2024-10-01,Negros Island Region,Dengue,1898,5
+2024-11-01,Negros Island Region,Dengue,1609,6
+2024-12-01,Negros Island Region,Dengue,1140,6
+2025-01-01,Negros Island Region,Dengue,1127,6
+2025-02-01,Negros Island Region,Dengue,973,1
+2025-03-01,Negros Island Region,Dengue,622,3
+2025-04-01,Negros Island Region,Dengue,506,0
+2025-05-01,Negros Island Region,Dengue,677,0
+2025-06-01,Negros Island Region,Dengue,1091,1
+2025-07-01,Negros Island Region,Dengue,1181,5
+2025-08-01,Negros Island Region,Dengue,890,2
+2025-09-01,Negros Island Region,Dengue,631,2
+2025-10-01,Negros Island Region,Dengue,490,2
+2025-11-01,Negros Island Region,Dengue,263,0
+2025-12-01,Negros Island Region,Dengue,273,0
+2026-01-01,Negros Island Region,Dengue,346,3
+2026-02-01,Negros Island Region,Dengue,280,1
+2026-03-01,Negros Island Region,Dengue,305,3
+2026-04-01,Negros Island Region,Dengue,207,1
+2026-05-01,Negros Island Region,Dengue,217,0
+2026-06-01,Negros Island Region,Dengue,370,2
+2026-07-01,Negros Island Region,Dengue,976,4
+2026-08-01,Negros Island Region,Dengue,612,2
+2022-01-01,Northern Mindanao,Dengue,601,0
+2022-02-01,Northern Mindanao,Dengue,499,3
+2022-03-01,Northern Mindanao,Dengue,635,3
+2022-04-01,Northern Mindanao,Dengue,888,3
+2022-05-01,Northern Mindanao,Dengue,1254,5
+2022-06-01,Northern Mindanao,Dengue,1507,4
+2022-07-01,Northern Mindanao,Dengue,1545,4
+2022-08-01,Northern Mindanao,Dengue,1239,2
+2022-09-01,Northern Mindanao,Dengue,1187,6
+2022-10-01,Northern Mindanao,Dengue,997,3
+2022-11-01,Northern Mindanao,Dengue,950,3
+2022-12-01,Northern Mindanao,Dengue,652,2
+2023-01-01,Northern Mindanao,Dengue,1201,1
+2023-02-01,Northern Mindanao,Dengue,971,5
+2023-03-01,Northern Mindanao,Dengue,906,1
+2023-04-01,Northern Mindanao,Dengue,747,1
+2023-05-01,Northern Mindanao,Dengue,1056,5
+2023-06-01,Northern Mindanao,Dengue,1290,2
+2023-07-01,Northern Mindanao,Dengue,1866,7
+2023-08-01,Northern Mindanao,Dengue,2014,6
+2023-09-01,Northern Mindanao,Dengue,1879,9
+2023-10-01,Northern Mindanao,Dengue,1915,2
+2023-11-01,Northern Mindanao,Dengue,1697,7
+2023-12-01,Northern Mindanao,Dengue,1716,5
+2024-01-01,Northern Mindanao,Dengue,1948,12
+2024-02-01,Northern Mindanao,Dengue,1654,14
+2024-03-01,Northern Mindanao,Dengue,1440,15
+2024-04-01,Northern Mindanao,Dengue,1237,5
+2024-05-01,Northern Mindanao,Dengue,1403,5
+2024-06-01,Northern Mindanao,Dengue,1894,8
+2024-07-01,Northern Mindanao,Dengue,3587,19
+2024-08-01,Northern Mindanao,Dengue,4473,22
+2024-09-01,Northern Mindanao,Dengue,2548,9
+2024-10-01,Northern Mindanao,Dengue,1557,6
+2024-11-01,Northern Mindanao,Dengue,1318,7
+2024-12-01,Northern Mindanao,Dengue,1084,4
+2025-01-01,Northern Mindanao,Dengue,1351,15
+2025-02-01,Northern Mindanao,Dengue,1402,11
+2025-03-01,Northern Mindanao,Dengue,1396,9
+2025-04-01,Northern Mindanao,Dengue,1051,10
+2025-05-01,Northern Mindanao,Dengue,1116,3
+2025-06-01,Northern Mindanao,Dengue,1242,5
+2025-07-01,Northern Mindanao,Dengue,1278,3
+2025-08-01,Northern Mindanao,Dengue,931,5
+2025-09-01,Northern Mindanao,Dengue,773,4
+2025-10-01,Northern Mindanao,Dengue,876,4
+2025-11-01,Northern Mindanao,Dengue,396,3
+2025-12-01,Northern Mindanao,Dengue,376,0
+2026-01-01,Northern Mindanao,Dengue,380,2
+2026-02-01,Northern Mindanao,Dengue,361,5
+2026-03-01,Northern Mindanao,Dengue,437,3
+2026-04-01,Northern Mindanao,Dengue,419,0
+2026-05-01,Northern Mindanao,Dengue,503,5
+2026-06-01,Northern Mindanao,Dengue,799,8
+2026-07-01,Northern Mindanao,Dengue,1030,1
+2026-08-01,Northern Mindanao,Dengue,625,2
+2022-01-01,SOCCSKSARGEN,Dengue,193,0
+2022-02-01,SOCCSKSARGEN,Dengue,212,7
+2022-03-01,SOCCSKSARGEN,Dengue,406,7
+2022-04-01,SOCCSKSARGEN,Dengue,671,8
+2022-05-01,SOCCSKSARGEN,Dengue,1112,4
+2022-06-01,SOCCSKSARGEN,Dengue,1148,9
+2022-07-01,SOCCSKSARGEN,Dengue,735,1
+2022-08-01,SOCCSKSARGEN,Dengue,644,1
+2022-09-01,SOCCSKSARGEN,Dengue,585,1
+2022-10-01,SOCCSKSARGEN,Dengue,491,2
+2022-11-01,SOCCSKSARGEN,Dengue,568,5
+2022-12-01,SOCCSKSARGEN,Dengue,566,3
+2023-01-01,SOCCSKSARGEN,Dengue,734,4
+2023-02-01,SOCCSKSARGEN,Dengue,757,4
+2023-03-01,SOCCSKSARGEN,Dengue,841,3
+2023-04-01,SOCCSKSARGEN,Dengue,824,7
+2023-05-01,SOCCSKSARGEN,Dengue,1600,4
+2023-06-01,SOCCSKSARGEN,Dengue,1733,6
+2023-07-01,SOCCSKSARGEN,Dengue,1681,9
+2023-08-01,SOCCSKSARGEN,Dengue,1582,9
+2023-09-01,SOCCSKSARGEN,Dengue,1474,2
+2023-10-01,SOCCSKSARGEN,Dengue,1384,9
+2023-11-01,SOCCSKSARGEN,Dengue,1092,8
+2023-12-01,SOCCSKSARGEN,Dengue,929,4
+2024-01-01,SOCCSKSARGEN,Dengue,1509,8
+2024-02-01,SOCCSKSARGEN,Dengue,1675,6
+2024-03-01,SOCCSKSARGEN,Dengue,2098,3
+2024-04-01,SOCCSKSARGEN,Dengue,1755,8
+2024-05-01,SOCCSKSARGEN,Dengue,1628,11
+2024-06-01,SOCCSKSARGEN,Dengue,2074,7
+2024-07-01,SOCCSKSARGEN,Dengue,2939,15
+2024-08-01,SOCCSKSARGEN,Dengue,3438,14
+2024-09-01,SOCCSKSARGEN,Dengue,2385,3
+2024-10-01,SOCCSKSARGEN,Dengue,1749,5
+2024-11-01,SOCCSKSARGEN,Dengue,1261,2
+2024-12-01,SOCCSKSARGEN,Dengue,871,3
+2025-01-01,SOCCSKSARGEN,Dengue,1268,4
+2025-02-01,SOCCSKSARGEN,Dengue,1126,3
+2025-03-01,SOCCSKSARGEN,Dengue,1246,2
+2025-04-01,SOCCSKSARGEN,Dengue,954,5
+2025-05-01,SOCCSKSARGEN,Dengue,1167,4
+2025-06-01,SOCCSKSARGEN,Dengue,1278,2
+2025-07-01,SOCCSKSARGEN,Dengue,1292,2
+2025-08-01,SOCCSKSARGEN,Dengue,1140,0
+2025-09-01,SOCCSKSARGEN,Dengue,859,4
+2025-10-01,SOCCSKSARGEN,Dengue,865,3
+2025-11-01,SOCCSKSARGEN,Dengue,204,0
+2025-12-01,SOCCSKSARGEN,Dengue,117,1
+2026-01-01,SOCCSKSARGEN,Dengue,416,0
+2026-02-01,SOCCSKSARGEN,Dengue,221,1
+2026-03-01,SOCCSKSARGEN,Dengue,333,5
+2026-04-01,SOCCSKSARGEN,Dengue,640,3
+2026-05-01,SOCCSKSARGEN,Dengue,889,2
+2026-06-01,SOCCSKSARGEN,Dengue,1580,2
+2026-07-01,SOCCSKSARGEN,Dengue,1744,4
+2026-08-01,SOCCSKSARGEN,Dengue,1037,2
+2022-01-01,Western Visayas,Dengue,124,3
+2022-02-01,Western Visayas,Dengue,115,7
+2022-03-01,Western Visayas,Dengue,164,2
+2022-04-01,Western Visayas,Dengue,285,2
+2022-05-01,Western Visayas,Dengue,871,3
+2022-06-01,Western Visayas,Dengue,1852,7
+2022-07-01,Western Visayas,Dengue,2562,16
+2022-08-01,Western Visayas,Dengue,1435,5
+2022-09-01,Western Visayas,Dengue,820,5
+2022-10-01,Western Visayas,Dengue,456,1
+2022-11-01,Western Visayas,Dengue,333,2
+2022-12-01,Western Visayas,Dengue,262,1
+2023-01-01,Western Visayas,Dengue,399,3
+2023-02-01,Western Visayas,Dengue,372,2
+2023-03-01,Western Visayas,Dengue,333,0
+2023-04-01,Western Visayas,Dengue,223,0
+2023-05-01,Western Visayas,Dengue,238,1
+2023-06-01,Western Visayas,Dengue,474,5
+2023-07-01,Western Visayas,Dengue,787,3
+2023-08-01,Western Visayas,Dengue,659,1
+2023-09-01,Western Visayas,Dengue,453,0
+2023-10-01,Western Visayas,Dengue,526,0
+2023-11-01,Western Visayas,Dengue,476,0
+2023-12-01,Western Visayas,Dengue,377,2
+2024-01-01,Western Visayas,Dengue,678,0
+2024-02-01,Western Visayas,Dengue,590,3
+2024-03-01,Western Visayas,Dengue,579,0
+2024-04-01,Western Visayas,Dengue,441,1
+2024-05-01,Western Visayas,Dengue,550,3
+2024-06-01,Western Visayas,Dengue,1230,1
+2024-07-01,Western Visayas,Dengue,5242,7
+2024-08-01,Western Visayas,Dengue,8303,28
+2024-09-01,Western Visayas,Dengue,3566,12
+2024-10-01,Western Visayas,Dengue,1691,6
+2024-11-01,Western Visayas,Dengue,1509,3
+2024-12-01,Western Visayas,Dengue,1177,4
+2025-01-01,Western Visayas,Dengue,1243,7
+2025-02-01,Western Visayas,Dengue,1224,5
+2025-03-01,Western Visayas,Dengue,1058,0
+2025-04-01,Western Visayas,Dengue,828,4
+2025-05-01,Western Visayas,Dengue,1181,2
+2025-06-01,Western Visayas,Dengue,2036,5
+2025-07-01,Western Visayas,Dengue,2516,5
+2025-08-01,Western Visayas,Dengue,1496,4
+2025-09-01,Western Visayas,Dengue,1151,5
+2025-10-01,Western Visayas,Dengue,1317,8
+2025-11-01,Western Visayas,Dengue,607,0
+2025-12-01,Western Visayas,Dengue,246,1
+2026-01-01,Western Visayas,Dengue,432,2
+2026-02-01,Western Visayas,Dengue,346,1
+2026-03-01,Western Visayas,Dengue,369,3
+2026-04-01,Western Visayas,Dengue,336,3
+2026-05-01,Western Visayas,Dengue,286,2
+2026-06-01,Western Visayas,Dengue,528,2
+2026-07-01,Western Visayas,Dengue,1496,4
+2026-08-01,Western Visayas,Dengue,1200,3
+2022-01-01,Zamboanga Peninsula,Dengue,331,8
+2022-02-01,Zamboanga Peninsula,Dengue,364,4
+2022-03-01,Zamboanga Peninsula,Dengue,856,3
+2022-04-01,Zamboanga Peninsula,Dengue,1575,10
+2022-05-01,Zamboanga Peninsula,Dengue,1972,6
+2022-06-01,Zamboanga Peninsula,Dengue,1848,7
+2022-07-01,Zamboanga Peninsula,Dengue,1360,6
+2022-08-01,Zamboanga Peninsula,Dengue,971,5
+2022-09-01,Zamboanga Peninsula,Dengue,893,3
+2022-10-01,Zamboanga Peninsula,Dengue,632,3
+2022-11-01,Zamboanga Peninsula,Dengue,801,2
+2022-12-01,Zamboanga Peninsula,Dengue,652,2
+2023-01-01,Zamboanga Peninsula,Dengue,850,3
+2023-02-01,Zamboanga Peninsula,Dengue,769,1
+2023-03-01,Zamboanga Peninsula,Dengue,710,1
+2023-04-01,Zamboanga Peninsula,Dengue,741,3
+2023-05-01,Zamboanga Peninsula,Dengue,1160,2
+2023-06-01,Zamboanga Peninsula,Dengue,1356,10
+2023-07-01,Zamboanga Peninsula,Dengue,1392,6
+2023-08-01,Zamboanga Peninsula,Dengue,1365,5
+2023-09-01,Zamboanga Peninsula,Dengue,1522,4
+2023-10-01,Zamboanga Peninsula,Dengue,1437,7
+2023-11-01,Zamboanga Peninsula,Dengue,1172,1
+2023-12-01,Zamboanga Peninsula,Dengue,707,1
+2024-01-01,Zamboanga Peninsula,Dengue,996,0
+2024-02-01,Zamboanga Peninsula,Dengue,931,0
+2024-03-01,Zamboanga Peninsula,Dengue,925,1
+2024-04-01,Zamboanga Peninsula,Dengue,937,1
+2024-05-01,Zamboanga Peninsula,Dengue,1267,0
+2024-06-01,Zamboanga Peninsula,Dengue,1948,4
+2024-07-01,Zamboanga Peninsula,Dengue,2839,10
+2024-08-01,Zamboanga Peninsula,Dengue,2452,5
+2024-09-01,Zamboanga Peninsula,Dengue,1492,11
+2024-10-01,Zamboanga Peninsula,Dengue,1267,9
+2024-11-01,Zamboanga Peninsula,Dengue,1072,3
+2024-12-01,Zamboanga Peninsula,Dengue,719,6
+2025-01-01,Zamboanga Peninsula,Dengue,1030,9
+2025-02-01,Zamboanga Peninsula,Dengue,880,5
+2025-03-01,Zamboanga Peninsula,Dengue,837,3
+2025-04-01,Zamboanga Peninsula,Dengue,675,2
+2025-05-01,Zamboanga Peninsula,Dengue,857,0
+2025-06-01,Zamboanga Peninsula,Dengue,751,7
+2025-07-01,Zamboanga Peninsula,Dengue,726,6
+2025-08-01,Zamboanga Peninsula,Dengue,530,2
+2025-09-01,Zamboanga Peninsula,Dengue,456,1
+2025-10-01,Zamboanga Peninsula,Dengue,397,1
+2025-11-01,Zamboanga Peninsula,Dengue,236,0
+2025-12-01,Zamboanga Peninsula,Dengue,246,5
+2026-01-01,Zamboanga Peninsula,Dengue,667,2
+2026-02-01,Zamboanga Peninsula,Dengue,505,1
+2026-03-01,Zamboanga Peninsula,Dengue,585,5
+2026-04-01,Zamboanga Peninsula,Dengue,524,3
+2026-05-01,Zamboanga Peninsula,Dengue,759,3
+2026-06-01,Zamboanga Peninsula,Dengue,1653,14
+2026-07-01,Zamboanga Peninsula,Dengue,2065,7
+2026-08-01,Zamboanga Peninsula,Dengue,1144,7

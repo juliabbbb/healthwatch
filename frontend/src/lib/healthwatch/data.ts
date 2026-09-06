@@ -1,8 +1,9 @@
 /**
  * HEALTHWATCH data layer.
  *
- * Sources real DOH Epidemiology Bureau dengue surveillance (2016-2021,
- * PSGC-coded regions) served by the FastAPI backend (src/api.py) over SQLite.
+ * Sources real DOH Epidemiology Bureau monthly dengue surveillance
+ * (2022-01 .. 2026-08, 18 regions incl. NIR) served by the FastAPI backend
+ * (src/api.py) over the relational DB (Supabase Postgres / local SQLite).
  * Series and validation metrics are fetched once at startup via
  * `loadHealthwatchData()`; every component then reads the caches
  * synchronously, keeping render output stable across renders/SSR.
@@ -122,6 +123,18 @@ export const REGIONS: Region[] = [
     population: 6082165,
   },
   {
+    code: "450000000",
+    name: "Negros Island Region",
+    short: "NIR",
+    island: "Visayas",
+    geoName: "Negros Island Region (NIR)",
+    lat: 10.1,
+    lng: 122.9,
+    classification: "Rural-urban mix",
+    density: 295,
+    population: 4560784,
+  },
+  {
     code: "060000000",
     name: "Western Visayas",
     short: "Region VI",
@@ -239,17 +252,17 @@ export interface Illness {
   name: string;
   shortName: string;
   driver: string;
-  peakWeek: number; // week-of-year of climatological peak
+  peakMonth: number; // month-of-year of climatological peak
   season: Season;
   amplitude: number; // seasonal swing strength
-  baseRate: number; // cases / 100k / week
+  baseRate: number; // cases / 100k / month
   trend: number; // yearly multiplicative drift
 }
 
 /**
  * Scope note (capstone): the pipeline currently ingests Dengue only. The
  * Illness shape is kept so additional DOH Epidemiology Bureau disease tables
- * can be added to NATIONAL_FILES in the backend without UI changes.
+ * can be added to the backend without UI changes.
  */
 export const ILLNESSES: Illness[] = [
   {
@@ -257,7 +270,7 @@ export const ILLNESSES: Illness[] = [
     name: "Dengue",
     shortName: "Dengue",
     driver: "Aedes vector density after sustained rainfall",
-    peakWeek: 34,
+    peakMonth: 8,
     season: "wet",
     amplitude: 1.15,
     baseRate: 1.6,
@@ -267,46 +280,37 @@ export const ILLNESSES: Illness[] = [
 
 export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
 
-export const WEEKS_PER_YEAR = 52;
-export const HIST_WEEKS = 262;
-export const FORECAST_WEEKS = 12;
-export const TOTAL_WEEKS = HIST_WEEKS + FORECAST_WEEKS;
+export const MONTHS_PER_YEAR = 12;
+/**
+ * Observed monthly rows per region served by the backend: 2022-01 through
+ * 2026-08 (DOH Epidemiology Bureau monthly surveillance, 18 regions incl. NIR).
+ */
+export const HIST_MONTHS = 56;
+export const FORECAST_MONTHS = 12;
+export const TOTAL_MONTHS = HIST_MONTHS + FORECAST_MONTHS;
 
-const ANCHOR_SUNDAY = Date.UTC(2016, 0, 10);
+const ANCHOR_MONTH = Date.UTC(2022, 0, 1);
 
-export function weekMeta(index: number) {
-  const date = new Date(ANCHOR_SUNDAY + index * 7 * 24 * 3600 * 1000);
-  const iso = isoWeek(date);
-  const year = iso.year;
-  const week = iso.week;
-  const month = date.getUTCMonth() + 1;
+export function monthMeta(index: number) {
+  const date = new Date(ANCHOR_MONTH + index * 31 * 24 * 3600 * 1000);
+  const y = 2022 + Math.floor(index / 12);
+  const m = (index % 12) + 1;
   return {
-    year,
-    week,
-    label: `${year}-W${String(week).padStart(2, "0")}`,
-    date: date.toISOString().slice(0, 10),
-    season: (month >= 6 && month <= 11 ? "wet" : "dry") as Season,
-    forecast: index >= HIST_WEEKS,
+    year: y,
+    month: m,
+    label: `${y}-${String(m).padStart(2, "0")}`,
+    date: `${y}-${String(m).padStart(2, "0")}-01`,
+    season: seasonForMonth(m),
+    forecast: index >= HIST_MONTHS,
   };
 }
 
-function isoWeek(d: Date): { year: number; week: number } {
-  const t = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
-  const dayNum = t.getUTCDay() || 7;
-  t.setUTCDate(t.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
-  return {
-    year: t.getUTCFullYear(),
-    week: Math.ceil(((t.getTime() - yearStart.getTime()) / 86400000 + 1) / 7),
-  };
-}
-
-export interface WeekPoint {
+export interface MonthPoint {
   index: number;
   year: number;
-  week: number; // 1-52
-  label: string; // 2023-W41
-  date: string; // ISO date of week start
+  month: number; // 1-12
+  label: string; // 2026-08
+  date: string; // ISO date of month start
   season: Season;
   forecast: boolean;
   cases: number; // reported (historical) or predicted
@@ -317,19 +321,33 @@ export interface WeekPoint {
   adjustReason?: string;
 }
 
-export function seasonForWeek(week: number): Season {
-  // PAGASA: wet season June-November (approx. weeks 22-48)
-  return week >= 22 && week <= 48 ? "wet" : "dry";
+/**
+ * Strict calendar-boundary season for a month (1-12): Jun-Nov = wet,
+ * Dec-May = dry. Season is a fixed calendar definition (not a live
+ * PAGASA/weather feed) — this is a deliberate deterministic design choice
+ * per Objective 5.
+ */
+export function seasonForMonth(month: number): Season {
+  return month >= 6 && month <= 11 ? "wet" : "dry";
+}
+
+/**
+ * The season that starts after the given calendar month. Season is a fixed
+ * calendar definition (not a live PAGASA/weather feed) — this is a deliberate
+ * deterministic design choice per Objective 5.
+ */
+export function upcomingSeasonForMonth(month: number): Season {
+  return seasonForMonth(month) === "wet" ? "dry" : "wet";
 }
 
 /* ------------------------------------------------------------------ */
-/* Data loading — live FastAPI server over SQLite                      */
+/* Data loading — live FastAPI server over the relational DB           */
 /* ------------------------------------------------------------------ */
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const DISEASE = "dengue";
 
-const seriesCache = new Map<string, WeekPoint[]>();
+const seriesCache = new Map<string, MonthPoint[]>();
 const metricsCache = new Map<string, ModelMetrics>();
 
 async function fetchJson<T>(path: string, attempts = 10): Promise<T> {
@@ -355,9 +373,9 @@ interface ApiMetrics {
   mae: number;
   rmse: number;
   mape: number;
-  weeks: number;
+  months: number;
   confidence: { label: string; tone: "low" | "moderate" | "high" };
-  skill_vs_naive: { pre_covid_52w: number; last_52w: number } | null;
+  skill_vs_naive: { pre_covid_52w: number; pre_2025_52w: number } | null;
 }
 
 /**
@@ -369,7 +387,7 @@ export async function loadHealthwatchData(): Promise<void> {
   const jobs: Promise<void>[] = [];
   for (const region of REGIONS) {
     jobs.push(
-      fetchJson<{ points: WeekPoint[] }>(`/series/${region.short}`).then((res) => {
+      fetchJson<{ points: MonthPoint[] }>(`/series/${region.short}`).then((res) => {
         seriesCache.set(`${region.code}:${DISEASE}`, res.points);
         seriesCache.set(`${region.code}:__all`, res.points);
       }),
@@ -377,14 +395,14 @@ export async function loadHealthwatchData(): Promise<void> {
     jobs.push(
       fetchJson<ApiMetrics>(`/metrics/${region.short}`).then((m) => {
         metricsCache.set(region.code, {
-          folds: m.weeks,
+          folds: m.months,
           label: m.confidence.label,
           tone: m.confidence.tone,
           note: m.confidence.tone === "low"
-            ? "Model error is small relative to weekly case counts."
+            ? "Model error is small relative to monthly case counts."
             : m.confidence.tone === "moderate"
-              ? "Reasonable accuracy on holdout weeks."
-              : "COVID-era volatility inflates error metrics.",
+              ? "Reasonable accuracy on holdout months."
+              : "Volatile series inflates error metrics.",
           mae: m.mae,
           rmse: m.rmse,
           mape: m.mape,
@@ -393,21 +411,28 @@ export async function loadHealthwatchData(): Promise<void> {
     );
   }
   await Promise.all(jobs);
+  try {
+    await loadOutbreakData();
+  } catch (err) {
+    // Outbreak layer is additive; a backend without /outbreak (older deploy or
+    // a not-yet-restarted uvicorn) must not take the whole dashboard down.
+    console.warn("Seasonal outbreak indicator unavailable:", err);
+  }
 }
 
 /** Starts loading immediately on module import. */
 export const dataReady = loadHealthwatchData();
 
 /** Cached per region+illness so charts and the map share one source of truth. */
-export function getSeries(regionCode: string, illnessId: string): WeekPoint[] {
+export function getSeries(regionCode: string, illnessId: string): MonthPoint[] {
   return seriesCache.get(`${regionCode}:${illnessId}`) ?? [];
 }
 
-function getTotalSeries(regionCode: string): WeekPoint[] {
+function getTotalSeries(regionCode: string): MonthPoint[] {
   return getSeries(regionCode, DISEASE);
 }
 
-export function seriesFor(regionCode: string, illnessId: string | "all"): WeekPoint[] {
+export function seriesFor(regionCode: string, illnessId: string | "all"): MonthPoint[] {
   return illnessId === "all" ? getTotalSeries(regionCode) : getSeries(regionCode, illnessId);
 }
 
@@ -429,12 +454,12 @@ export interface Thresholds {
   p75: number;
 }
 
-/** Classification metric: raw weekly case counts or cases per 100k residents. */
+/** Classification metric: raw monthly case counts or cases per 100k residents. */
 export type MetricMode = "raw" | "percapita";
 
 export const METRIC_META: Record<MetricMode, { label: string; short: string; unit: string }> = {
-  raw: { label: "Raw case count", short: "Raw cases", unit: "cases/week" },
-  percapita: { label: "Cases per 100,000 population", short: "Per 100k", unit: "per 100k/week" },
+  raw: { label: "Raw case count", short: "Raw cases", unit: "cases/month" },
+  percapita: { label: "Cases per 100,000 population", short: "Per 100k", unit: "per 100k/month" },
 };
 
 /** Convert a case count into the active metric for a region. */
@@ -449,35 +474,36 @@ export function formatMetric(value: number, mode: MetricMode): string {
     : value.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 
-const inSeasonWindow = (w: number, weekOfYear?: number) => {
-  if (weekOfYear === undefined) return true;
-  const d = Math.abs(w - weekOfYear);
-  return Math.min(d, WEEKS_PER_YEAR - d) <= 6;
+/** Circular month distance; within ±1 month counts as the same seasonal window. */
+const inSeasonWindow = (m: number, monthOfYear?: number) => {
+  if (monthOfYear === undefined) return true;
+  const d = Math.abs(m - monthOfYear);
+  return Math.min(d, MONTHS_PER_YEAR - d) <= 1;
 };
 
 const poolCache = new Map<string, number[]>();
 
 /**
- * Sorted national distribution: every historical week from every region for the
- * selected illness, expressed in the active metric and restricted to a +/-6-week
- * calendar window, so a region is judged against the seasonal norm rather than
- * the annual average. Pooling across regions is what makes the raw vs
- * per-capita toggle meaningful: in raw mode large-population regions dominate
- * the upper percentiles, while per-capita mode surfaces genuinely intense
- * transmission in smaller regions.
+ * Sorted national distribution: every historical month from every region for
+ * the selected illness, expressed in the active metric and restricted to the
+ * same calendar-month window, so a region is judged against the seasonal norm
+ * rather than the annual average. Pooling across regions is what makes the raw
+ * vs per-capita toggle meaningful: in raw mode large-population regions
+ * dominate the upper percentiles, while per-capita mode surfaces genuinely
+ * intense transmission in smaller regions.
  */
 export function pooledValues(
   illnessId: string | "all",
-  weekOfYear: number | undefined,
+  monthOfYear: number | undefined,
   mode: MetricMode,
 ): number[] {
-  const key = `${illnessId}:${weekOfYear ?? "*"}:${mode}`;
+  const key = `${illnessId}:${monthOfYear ?? "*"}:${mode}`;
   const hit = poolCache.get(key);
   if (hit) return hit;
   const pooled: number[] = [];
   for (const region of REGIONS) {
     for (const p of seriesFor(region.code, illnessId)) {
-      if (p.forecast || !inSeasonWindow(p.week, weekOfYear)) continue;
+      if (p.forecast || !inSeasonWindow(p.month, monthOfYear)) continue;
       pooled.push(metricValue(p.cases, region, mode));
     }
   }
@@ -488,10 +514,10 @@ export function pooledValues(
 
 export function getThresholds(
   illnessId: string | "all",
-  weekOfYear: number | undefined,
+  monthOfYear: number | undefined,
   mode: MetricMode,
 ): Thresholds {
-  const pooled = pooledValues(illnessId, weekOfYear, mode);
+  const pooled = pooledValues(illnessId, monthOfYear, mode);
   return { p50: percentile(pooled, 0.5), p75: percentile(pooled, 0.75) };
 }
 
@@ -503,8 +529,8 @@ export function classify(value: number, t: Thresholds): RiskLevel {
 
 export interface RegionAssessment {
   region: Region;
-  weekIndex: number;
-  point: WeekPoint;
+  monthIndex: number;
+  point: MonthPoint;
   mode: MetricMode;
   /** point.cases expressed in the active metric (raw cases or per 100k). */
   value: number;
@@ -512,44 +538,86 @@ export interface RegionAssessment {
   risk: RiskLevel;
   percentileRank: number; // 0-100 within the national seasonal distribution
   dominantIllness: Illness;
-  fourWeek: WeekPoint[];
+  /** The 12-month forecast horizon immediately after the assessment month. */
+  forecastWindow: MonthPoint[];
   changePct: number;
 }
 
 export function assessRegion(
   regionCode: string,
   illnessId: string | "all",
-  weekIndex: number,
+  monthIndex: number,
   mode: MetricMode = "percapita",
 ): RegionAssessment {
   const region = REGION_BY_CODE[regionCode]!;
   const series = seriesFor(regionCode, illnessId);
-  const idx = Math.min(Math.max(weekIndex, 0), series.length - 1);
+
+  if (!series.length) {
+    // A region with no series yet (backend incomplete or unreachable) must not
+    // take the dashboard down. Report the requested calendar location with a
+    // zeroed point so maps and charts render; the tier falls to Low by
+    // construction and the rank lands at the bottom of the national pool.
+    const idx = Math.min(Math.max(monthIndex, 0), Math.max(0, TOTAL_MONTHS - 1));
+    const safeMeta = monthMeta(idx);
+    const point: MonthPoint = {
+      index: idx,
+      year: safeMeta.year,
+      month: safeMeta.month,
+      label: safeMeta.label,
+      date: safeMeta.date,
+      season: safeMeta.season,
+      forecast: safeMeta.forecast,
+      cases: 0,
+      lower: 0,
+      upper: 0,
+      raw: 0,
+      adjusted: false,
+    };
+    const thresholds = getThresholds(illnessId, point.month, mode);
+    const dist = pooledValues(illnessId, point.month, mode);
+    return {
+      region,
+      monthIndex: idx,
+      point,
+      mode,
+      value: 0,
+      thresholds,
+      risk: classify(0, thresholds),
+      percentileRank: Math.round(
+        (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
+      ),
+      dominantIllness: ILLNESSES[0]!,
+      forecastWindow: [],
+      changePct: 0,
+    };
+  }
+
+  const idx = Math.min(Math.max(monthIndex, 0), series.length - 1);
   const point = series[idx]!;
-  const thresholds = getThresholds(illnessId, point.week, mode);
+  const thresholds = getThresholds(illnessId, point.month, mode);
   const value = metricValue(point.cases, region, mode);
 
-  const dist = pooledValues(illnessId, point.week, mode);
+  const dist = pooledValues(illnessId, point.month, mode);
   const below = dist.filter((v) => v <= value).length;
   const percentileRank = Math.round((below / Math.max(1, dist.length)) * 100);
 
   const dominantIllness = ILLNESSES.reduce((best, ill) => {
     const ra =
       metricValue(getSeries(regionCode, ill.id)[idx]?.cases ?? 0, region, mode) /
-      (getThresholds(ill.id, point.week, mode).p75 || 1);
+      (getThresholds(ill.id, point.month, mode).p75 || 1);
     const rb =
       metricValue(getSeries(regionCode, best.id)[idx]?.cases ?? 0, region, mode) /
-      (getThresholds(best.id, point.week, mode).p75 || 1);
+      (getThresholds(best.id, point.month, mode).p75 || 1);
     return ra > rb ? ill : best;
   }, ILLNESSES[0]!);
 
-  const fourWeek = series.slice(idx + 1, idx + 5);
-  const prev = series[Math.max(0, idx - 4)]!.cases || 1;
+  const forecastWindow = series.slice(idx + 1, idx + 1 + FORECAST_MONTHS);
+  const prev = series[Math.max(0, idx - 3)]!.cases || 1;
   const changePct = Math.round(((point.cases - prev) / prev) * 100);
 
   return {
     region,
-    weekIndex: idx,
+    monthIndex: idx,
     point,
     mode,
     value,
@@ -557,17 +625,17 @@ export function assessRegion(
     risk: classify(value, thresholds),
     percentileRank,
     dominantIllness,
-    fourWeek,
+    forecastWindow,
     changePct,
   };
 }
 
 export function assessAll(
   illnessId: string | "all",
-  weekIndex: number,
+  monthIndex: number,
   mode: MetricMode = "percapita",
 ): RegionAssessment[] {
-  return REGIONS.map((r) => assessRegion(r.code, illnessId, weekIndex, mode));
+  return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
 }
 
 /* ------------------------------------------------------------------ */
@@ -585,11 +653,9 @@ export interface ModelMetrics {
 }
 
 /**
- * Walk-forward backtest of the seasonal-naive-with-drift baseline used to
- * generate the published forecast: for each of the last 52 historical weeks we
- * predict using only data available before that week (the same calendar week
- * one year earlier, rescaled by the ratio of the trailing 4-week level to the
- * level around that week last year), then score against the actual value.
+ * Walk-forward backtest metrics from the pipeline: the Prophet monthly model
+ * is refit every month and scored on holdout months it never saw (two windows,
+ * each up to 12 months), reported per region by /metrics/{region}.
  */
 export function modelMetrics(regionCode: string, _illnessId: string | "all"): ModelMetrics {
   return (
@@ -622,7 +688,7 @@ export interface DecompPoint {
 export function decompose(regionCode: string, illnessId: string | "all"): DecompPoint[] {
   const series = seriesFor(regionCode, illnessId).filter((p) => !p.forecast);
   const values = series.map((p) => p.cases);
-  const half = 26;
+  const half = 6;
   const trend = values.map((_, i) => {
     let sum = 0;
     let n = 0;
@@ -635,29 +701,27 @@ export function decompose(regionCode: string, illnessId: string | "all"): Decomp
     return sum / n;
   });
   const detrended = values.map((v, i) => v - trend[i]!);
-  const byWeek: number[][] = Array.from({ length: WEEKS_PER_YEAR }, () => []);
-  series.forEach((p, i) =>
-    byWeek[(p.week - 1) % WEEKS_PER_YEAR]!.push(detrended[i]!),
-  );
-  const seasonalIdx = byWeek.map((arr) =>
+  const byMonth: number[][] = Array.from({ length: MONTHS_PER_YEAR }, () => []);
+  series.forEach((p, i) => byMonth[(p.month - 1) % MONTHS_PER_YEAR]!.push(detrended[i]!));
+  const seasonalIdx = byMonth.map((arr) =>
     arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0,
   );
   return series.map((p, i) => {
-    const wk = (p.week - 1) % WEEKS_PER_YEAR;
+    const m = (p.month - 1) % MONTHS_PER_YEAR;
     return {
       label: p.label,
       index: i,
       observed: values[i]!,
       trend: Math.round(trend[i]!),
-      seasonal: Math.round(seasonalIdx[wk]!),
-      residual: Math.round(values[i]! - trend[i]! - seasonalIdx[wk]!),
+      seasonal: Math.round(seasonalIdx[m]!),
+      residual: Math.round(values[i]! - trend[i]! - seasonalIdx[m]!),
       season: p.season,
     };
   });
 }
 
-/** Autocorrelation function up to `maxLag` weeks — reveals the 52-week cycle. */
-export function acf(regionCode: string, illnessId: string | "all", maxLag = 60) {
+/** Autocorrelation function up to `maxLag` months — reveals the 12-month cycle. */
+export function acf(regionCode: string, illnessId: string | "all", maxLag = 24) {
   const values = seriesFor(regionCode, illnessId)
     .filter((p) => !p.forecast)
     .map((p) => p.cases);
@@ -703,7 +767,7 @@ export function recommendations(a: RegionAssessment): Recommendation[] {
   } else if (a.risk === "moderate") {
     base.push({
       title: "Heighten passive surveillance",
-      detail: `Case load sits at the ${a.percentileRank}th historical percentile. Move sentinel sites to weekly reporting and validate consult logs.`,
+      detail: `Case load sits at the ${a.percentileRank}th historical percentile. Move sentinel sites to monthly reporting and validate consult logs.`,
       urgency: "moderate",
     });
   } else {
@@ -719,36 +783,6 @@ export function recommendations(a: RegionAssessment): Recommendation[] {
       title: "Deploy vector-control teams",
       detail:
         "Search-and-destroy of breeding sites, targeted fogging in barangays with clustered cases, and 4S campaign amplification.",
-      urgency: a.risk,
-    },
-    lepto: {
-      title: "Flood-exposure prophylaxis",
-      detail:
-        "Distribute doxycycline prophylaxis to flood-exposed residents and responders; post wading advisories in low-lying barangays.",
-      urgency: a.risk,
-    },
-    ili: {
-      title: "Vaccination drive",
-      detail:
-        "Prioritise influenza vaccination for seniors, children under 5, and health workers; reinforce mask use in crowded transit hubs.",
-      urgency: a.risk,
-    },
-    diarrheal: {
-      title: "Water quality response",
-      detail:
-        "Chlorination of community water sources, potability testing by the regional sanitation office, and ORS distribution.",
-      urgency: a.risk,
-    },
-    age: {
-      title: "Food-safety inspection sweep",
-      detail:
-        "Inspect canteens, public markets, and school feeding programs; issue safe food-handling advisories.",
-      urgency: a.risk,
-    },
-    heat: {
-      title: "Heat-index mitigation",
-      detail:
-        "Publish PAGASA heat advisories, adjust outdoor school and work schedules, and set up hydration stations.",
       urgency: a.risk,
     },
   };
@@ -792,10 +826,24 @@ export const RISK_META: Record<
   },
 };
 
-export const CURRENT_WEEK_INDEX = HIST_WEEKS - 1; // last reported week (2021-W02)
+export const CURRENT_MONTH_INDEX = HIST_MONTHS - 1; // last reported month (2026-08)
 
-export function weekLabel(index: number) {
-  return weekMeta(index).label;
+/** The single deterministic "now" the dashboard reasons from: the last reported month. */
+export const REPORT_MONTH_INDEX = CURRENT_MONTH_INDEX;
+export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-08-01"
+/**
+ * Real-time-derived default for the outbreak outlook: the season that starts
+ * after the report date, computed from the fixed calendar boundary — never
+ * hardcoded, never a weather feed.
+ */
+export const REPORT_UPCOMING_SEASON: Season = upcomingSeasonForMonth(
+  monthMeta(CURRENT_MONTH_INDEX).month,
+);
+/** Display label for the month an upcoming season starts (for "starts [date]"). */
+export const SEASON_START_MONTH: Record<Season, string> = { dry: "Dec", wet: "Jun" };
+
+export function monthLabel(index: number) {
+  return monthMeta(index).label;
 }
 
 /* ------------------------------------------------------------------ */
@@ -804,10 +852,67 @@ export function weekLabel(index: number) {
 
 export interface PipelineStatus {
   generated_at: string;
-  data_through: { date: string; epi_week: string };
+  data_through: { date: string; month: string };
   supported_diseases: string[];
 }
 
 export async function fetchPipelineStatus(): Promise<PipelineStatus> {
   return fetchJson(`${API_BASE}/status`);
 }
+
+/* ------------------------------------------------------------------ */
+/* Seasonal outbreak outlook (off the backend /outbreak indicator)     */
+/* ------------------------------------------------------------------ */
+
+export interface OutbreakIndicator {
+  region: string; // backend region label, e.g. "Central Visayas"
+  season: Season;
+  outbreak: boolean;
+  trigger: string; // "both" | "consecutive_high" | "season_p75"
+  consecutive_high_n: number;
+  season_avg: number;
+  season_p75: number;
+  n_forecast_months: number;
+}
+
+const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
+
+function regionCodeForApiLabel(label: string): string | null {
+  const lowered = label.toLowerCase();
+  const direct = REGIONS.find(
+    (r) =>
+      [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
+  );
+  if (direct) return direct.code;
+  const prefix = label.split(" (")[0]!.toLowerCase();
+  const byPrefix = REGIONS.find(
+    (r) => r.short.toLowerCase() === prefix || r.name.toLowerCase() === prefix,
+  );
+  return byPrefix ? byPrefix.code : null;
+}
+
+async function loadOutbreakData(): Promise<void> {
+  const res = await fetchJson<{ items: OutbreakIndicator[] }>("/outbreak");
+  for (const item of res.items) {
+    const code = regionCodeForApiLabel(item.region);
+    if (!code) continue; // "National" and any non-map rows
+    const entry = outbreakCache.get(code) ?? {};
+    entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
+    outbreakCache.set(code, entry);
+  }
+}
+
+/** Per-season outbreak outlook for a region code (dengue pilot). */
+export function getOutbreak(
+  regionCode: string,
+): Partial<Record<Season, OutbreakIndicator>> {
+  return outbreakCache.get(regionCode) ?? {};
+}
+
+const CONSECUTIVE_HIGH_N = 3;
+
+export const OUTBREAK_TRIGGER_LABEL: Record<string, string> = {
+  both: "Monthly High run + seasonal average",
+  consecutive_high: `${CONSECUTIVE_HIGH_N}+ consecutive monthly High forecasts`,
+  season_p75: "Seasonal average above P75",
+};

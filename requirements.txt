@@ -1,9 +1,12 @@
 # Runtime dependencies for the FastAPI backend (Render deploy).
-# Kept slim on purpose: the API only serves the SQLite DB + pandas computations.
-# Prophet and the ML pipeline live in requirements-ml.txt (local training only).
+# The API serves the relational DB (local SQLite fallback or Postgres via
+# DATABASE_URL — Supabase/Render) + pandas computations. The ML pipeline
+# (Prophet) lives in requirements-ml.txt (local training only).
 pandas
 numpy
 openpyxl
 fastapi
 uvicorn
 anthropic
+sqlalchemy
+psycopg2-binary

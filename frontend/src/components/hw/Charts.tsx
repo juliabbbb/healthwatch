@@ -13,14 +13,14 @@ import {
   YAxis,
 } from "recharts";
 import {
-  HIST_WEEKS,
+  HIST_MONTHS,
   METRIC_META,
   REGION_BY_CODE,
   acf,
   decompose,
   metricValue,
+  monthMeta,
   seriesFor,
-  weekMeta,
   type MetricMode,
 } from "@/lib/healthwatch/data";
 
@@ -96,22 +96,22 @@ export function ForecastChart({
   regionCode,
   illness,
   horizon,
-  weeksBack = 78,
+  monthsBack = 36,
   height = 300,
   mode = "raw",
 }: {
   regionCode: string;
   illness: string;
   horizon: number;
-  weeksBack?: number;
+  monthsBack?: number;
   height?: number;
   mode?: MetricMode;
 }) {
   const series = seriesFor(regionCode, illness);
   const region = REGION_BY_CODE[regionCode]!;
   const conv = (v: number) => metricValue(v, region, mode);
-  const start = Math.max(0, HIST_WEEKS - weeksBack);
-  const slice: Row[] = series.slice(start, HIST_WEEKS + horizon).map((p) => ({
+  const start = Math.max(0, HIST_MONTHS - monthsBack);
+  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => ({
     label: p.label,
     reported: p.forecast ? null : conv(p.cases),
     predicted: p.forecast ? conv(p.cases) : null,
@@ -190,7 +190,7 @@ export function ForecastChart({
         />
 
         <ReferenceLine
-          x={weekMeta(HIST_WEEKS - 1).label}
+          x={monthMeta(HIST_MONTHS - 1).label}
           stroke="var(--color-muted-foreground)"
           strokeDasharray="3 3"
           label={{
@@ -249,7 +249,7 @@ export function DecompositionChart({
   );
 }
 
-/** Autocorrelation bars — the spike near lag 52 is the annual cycle. */
+/** Autocorrelation bars — the spike near lag 12 is the annual cycle. */
 export function AcfChart({
   regionCode,
   illness,
@@ -259,7 +259,7 @@ export function AcfChart({
   illness: string;
   height?: number;
 }) {
-  const data = acf(regionCode, illness, 60);
+  const data = acf(regionCode, illness, 24);
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
@@ -268,7 +268,7 @@ export function AcfChart({
         <YAxis {...axis} width={46} domain={[-1, 1]} />
         <Tooltip {...tooltipStyle} />
         <ReferenceLine y={0} stroke="var(--color-muted-foreground)" />
-        <ReferenceLine x={52} stroke="var(--chart-3)" strokeDasharray="3 3" />
+        <ReferenceLine x={12} stroke="var(--chart-3)" strokeDasharray="3 3" />
         <Bar dataKey="value" fill="var(--chart-1)" isAnimationActive={false} />
       </BarChart>
     </ResponsiveContainer>

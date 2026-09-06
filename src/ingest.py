@@ -34,6 +34,8 @@ def load_raw(path):
 
 
 def clean(df, disease=None):
+    """Normalise an imported table: coerce types, group to one row per
+    (date, region, disease), summing cases and (if present) deaths."""
     missing = [c for c in ("date", "region", "cases") if c not in df.columns]
     if missing:
         raise ValueError(
@@ -49,9 +51,13 @@ def clean(df, disease=None):
     out["cases"] = pd.to_numeric(out["cases"], errors="coerce")
     out["region"] = out["region"].astype(str).str.strip()
     out["disease"] = out["disease"].astype(str).str.strip()
+    sum_cols = ["cases"]
+    if "deaths" in out.columns:
+        out["deaths"] = pd.to_numeric(out["deaths"], errors="coerce")
+        sum_cols.append("deaths")
     out = out.dropna(subset=["date", "cases"])
     out = (
-        out.groupby(["date", "region", "disease"], as_index=False)["cases"]
+        out.groupby(["date", "region", "disease"], as_index=False)[sum_cols]
         .sum()
         .sort_values(["disease", "region", "date"], ignore_index=True)
     )
@@ -83,6 +89,43 @@ def to_weekly(df, fill_missing="zero"):
     elif fill_missing != "drop":
         raise ValueError(f"fill_missing must be 'zero' or 'drop', got '{fill_missing}'")
     return weekly
+
+
+def to_monthly(df, fill_missing="zero"):
+    """Aggregate any cleaned series to calendar-month totals (month-start dates).
+
+    Preserves deaths when present alongside cases."""
+    out = df.copy()
+    out["date"] = (
+        pd.to_datetime(out["date"])
+        .dt.to_period("M")
+        .dt.to_timestamp()
+    )
+    sum_cols = ["cases"] + (["deaths"] if "deaths" in out.columns else [])
+    monthly = (
+        out.groupby(["date", "region", "disease"], as_index=False)[sum_cols]
+        .sum()
+        .sort_values(["disease", "region", "date"], ignore_index=True)
+    )
+    if fill_missing == "zero":
+        idx = pd.date_range(monthly["date"].min(), monthly["date"].max(), freq="MS")
+        parts = []
+        for (disease, region), group in monthly.groupby(["disease", "region"]):
+            g = (
+                group.set_index("date")
+                .reindex(idx, fill_value=0)
+                .rename_axis("date")
+                .reset_index()
+            )
+            g["disease"] = disease
+            g["region"] = region
+            parts.append(g)
+        monthly = pd.concat(parts, ignore_index=True)[
+            ["date", "region", "disease"] + sum_cols
+        ]
+    elif fill_missing != "drop":
+        raise ValueError(f"fill_missing must be 'zero' or 'drop', got '{fill_missing}'")
+    return monthly
 
 
 def save_processed(df, name):

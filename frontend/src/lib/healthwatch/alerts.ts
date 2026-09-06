@@ -6,34 +6,48 @@
 
 import {
   METRIC_META,
-  TOTAL_WEEKS,
+  TOTAL_MONTHS,
   classify,
   formatMetric,
+  getOutbreak,
   getSeries,
   metricValue,
-  weekLabel,
+  monthLabel,
   type RegionAssessment,
+  type Season,
 } from "./data";
 
 export interface AlertItem {
   id: string;
-  kind: "high-now" | "crossing";
+  kind: "high-now" | "crossing" | "outbreak";
   regionCode: string;
   title: string;
   detail: string;
-  week: string; // ISO week label of the triggering week
-  /** Sort key: current-risk alerts rank by percentile, crossings by soonest week. */
+  month: string; // month label (or probe window) of the triggering month
+  /** Sort key: current-risk alerts rank by percentile, crossings by soonest month. */
   order: number;
 }
 
 const HORIZON = 12;
 
+const SEASON_WINDOW: Record<Season, string> = {
+  dry: "Jan–Mar",
+  wet: "Jul–Sep",
+};
+
 /**
- * Builds the active-alert list for the selected illness/week:
- *  - "high-now": regions classified High at the currently scrubbed week.
- *  - "crossing": regions whose 12-week forecast first crosses into High.
+ * Builds the active-alert list for the selected illness/month:
+ *  - "high-now": regions classified High at the currently scrubbed month.
+ *  - "crossing": regions whose 12-month forecast first crosses into High.
+ *  - "outbreak": regions with a Rule A/B seasonal outbreak flag on the active
+ *    (upcoming) probe window. Monthly risk and seasonal outbreak phrasing stay
+ *    deliberately separate — never combined in one sentence.
  */
-export function deriveAlerts(assessments: RegionAssessment[], illnessId: string): AlertItem[] {
+export function deriveAlerts(
+  assessments: RegionAssessment[],
+  illnessId: string,
+  activeSeason: Season,
+): AlertItem[] {
   const out: AlertItem[] = [];
 
   for (const a of assessments) {
@@ -42,17 +56,33 @@ export function deriveAlerts(assessments: RegionAssessment[], illnessId: string)
         id: `high-${a.region.code}`,
         kind: "high-now",
         regionCode: a.region.code,
-        title: `${a.region.short} at high outbreak risk`,
+        title: `${a.region.short} — High risk this month`,
         detail: `${formatMetric(a.value, a.mode)} ${METRIC_META[a.mode].unit} — ${a.percentileRank}th percentile of the seasonal norm.`,
-        week: weekLabel(a.weekIndex),
+        month: monthLabel(a.monthIndex),
         order: a.percentileRank,
+      });
+    }
+
+    const flag = getOutbreak(a.region.code)[activeSeason];
+    if (flag?.outbreak) {
+      const avg = Math.round(flag.season_avg);
+      const p75 = Math.round(flag.season_p75);
+      out.push({
+        id: `outbreak-${a.region.code}`,
+        kind: "outbreak",
+        regionCode: a.region.code,
+        title: `${a.region.short} — Seasonal outbreak alert`,
+        detail: `${SEASON_WINDOW[activeSeason]} window: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
+        month: SEASON_WINDOW[activeSeason],
+        // busiest seasons (highest avg/P75 ratio) rank first within this kind
+        order: (flag.season_avg / Math.max(0.01, flag.season_p75)) * 100,
       });
     }
 
     const series = getSeries(a.region.code, illnessId);
     let prevRisk = a.risk;
-    const end = Math.min(a.weekIndex + 1 + HORIZON, TOTAL_WEEKS);
-    for (let i = a.weekIndex + 1; i < end; i++) {
+    const end = Math.min(a.monthIndex + 1 + HORIZON, TOTAL_MONTHS);
+    for (let i = a.monthIndex + 1; i < end; i++) {
       const p = series[i];
       if (!p) break;
       const risk = classify(metricValue(p.cases, a.region, a.mode), a.thresholds);
@@ -61,11 +91,11 @@ export function deriveAlerts(assessments: RegionAssessment[], illnessId: string)
           id: `cross-${a.region.code}`,
           kind: "crossing",
           regionCode: a.region.code,
-          title: `${a.region.short} forecast crosses into high risk`,
-          detail: `Predicted ${formatMetric(metricValue(p.cases, a.region, a.mode), a.mode)} ${METRIC_META[a.mode].unit} that week — pre-position response capacity.`,
-          week: p.label,
-          // sooner crossings first: invert distance from the current week
-          order: -(i - a.weekIndex),
+          title: `${a.region.short} — forecast crosses into high risk`,
+          detail: `Predicted ${formatMetric(metricValue(p.cases, a.region, a.mode), a.mode)} ${METRIC_META[a.mode].unit} that month — pre-position response capacity.`,
+          month: p.label,
+          // sooner crossings first: invert distance from the current month
+          order: -(i - a.monthIndex),
         });
         break;
       }
@@ -73,7 +103,15 @@ export function deriveAlerts(assessments: RegionAssessment[], illnessId: string)
     }
   }
 
-  return out.sort((x, y) =>
-    x.kind === y.kind ? y.order - x.order : x.kind === "high-now" ? -1 : 1,
+  const weight: Record<AlertItem["kind"], number> = {
+    "high-now": 0,
+    outbreak: 1,
+    crossing: 2,
+  };
+  return out.sort(
+    (x, y) =>
+      weight[x.kind] !== weight[y.kind]
+        ? weight[x.kind] - weight[y.kind]
+        : y.order - x.order,
   );
 }
