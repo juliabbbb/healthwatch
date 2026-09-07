@@ -31,8 +31,8 @@ export interface AlertItem {
 const HORIZON = 12;
 
 const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Jan–Mar",
-  wet: "Jul–Sep",
+  dry: "Dec–May",
+  wet: "Jun–Nov",
 };
 
 /**

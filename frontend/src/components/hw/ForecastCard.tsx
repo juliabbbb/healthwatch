@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ChevronDown, TrendingDown, TrendingUp, X } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
@@ -12,7 +12,6 @@ import {
   getOutbreak,
   metricValue,
   modelMetrics,
-  recommendations,
   REPORT_DATE,
   REPORT_UPCOMING_SEASON,
   SEASON_START_MONTH,
@@ -41,6 +40,19 @@ export interface ForecastCardProps {
   onOutbreakSeasonChange?: (s: Season) => void;
 }
 
+export const SEASON_CONFIG: Record<
+  Season,
+  { label: string; months: string; display: string }
+> = {
+  dry: { label: "Dry", months: "Dec–May", display: "Dry · Dec–May" },
+  wet: { label: "Wet", months: "Jun–Nov", display: "Wet · Jun–Nov" },
+};
+
+export const SEASON_WINDOW: Record<Season, string> = {
+  dry: "Dry · Dec–May",
+  wet: "Wet · Jun–Nov",
+};
+
 export function ForecastCard({
   regionCode,
   illness,
@@ -58,25 +70,35 @@ export function ForecastCard({
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
   const meta = monthMeta(monthIndex);
-  const recs = recommendations(a);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
   const outlookData = getOutbreak(regionCode);
-  const flagged = Boolean(outlookData[outbreakSeason]?.outbreak);
-  const [compareOpen, setCompareOpen] = useState(false);
+
+  const [selectedSeason, setSelectedSeason] = useState<Season>(outbreakSeason);
+
+  useEffect(() => {
+    setSelectedSeason(outbreakSeason);
+  }, [outbreakSeason]);
+
+  const handleSeasonChange = (s: Season) => {
+    setSelectedSeason(s);
+    onOutbreakSeasonChange?.(s);
+  };
 
   const isSheet = variant === "sheet";
 
   return (
     <div
       className={cn(
-        isSheet ? "w-full" : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl",
+        isSheet
+          ? "w-full space-y-3"
+          : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
         className,
       )}
     >
-      {/* Header Row */}
+      {/* 1. Region Header (unchanged) */}
       {showHeader && (
-        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-4 py-3">
+        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-4 py-3 bg-card/40">
           <div className="min-w-0 flex-1">
             <p className="label-caps">{a.region.short}</p>
             <h2 className="text-lg font-semibold leading-tight text-foreground truncate">
@@ -98,214 +120,305 @@ export function ForecastCard({
         </div>
       )}
 
-      {/* Primary Key Metric Readout */}
-      <div className="px-4 py-3">
-        <div className="flex items-end justify-between gap-2">
-          <div>
-            <p className="label-caps">
+      {/* 2. Current Status Card */}
+      <section className="border-b border-border/70 bg-card/30 px-4 py-3.5">
+        <p className="label-caps text-[10px] text-muted-foreground/80 tracking-wider mb-2.5">
+          CURRENT STATUS
+        </p>
+
+        {/* Visual Anchor: Large Primary Metric beside Badges */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
-            <p className="font-mono text-3xl font-bold leading-none tracking-tight tabular-nums text-foreground">
+            <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
               {formatMetric(a.value, mode)}
-            </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              {meta.label}
-              {mode === "percapita" ? ` · ${a.point.cases.toLocaleString()} cases` : ""}
-              {meta.forecast
-                ? ` · CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
-                : " · PIDSR reported"}
             </p>
           </div>
           <div className="flex flex-col items-end gap-1.5 shrink-0">
             <RiskBadge risk={a.risk} />
-            <SeasonTag season={meta.season} />
-            <OutbreakChip flagged={flagged} season={outbreakSeason} />
+            <SeasonTag
+              season={meta.season}
+              label={SEASON_CONFIG[meta.season].display}
+            />
           </div>
         </div>
 
-        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-          {a.changePct >= 0 ? (
-            <TrendingUp className="size-3.5 shrink-0" style={{ color: "var(--risk-high)" }} />
-          ) : (
-            <TrendingDown className="size-3.5 shrink-0" style={{ color: "var(--risk-low)" }} />
-          )}
-          <span>
-            <strong className="text-foreground font-medium">
+        {/* Labeled Stat Chips Grid */}
+        <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Period
+            </span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {meta.label}
+            </span>
+          </div>
+
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Cases
+            </span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {a.point.cases.toLocaleString()}
+            </span>
+          </div>
+
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+              3-Mo Trend
+            </span>
+            <span
+              className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
+              style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+            >
+              {a.changePct >= 0 ? (
+                <TrendingUp className="size-3 shrink-0" />
+              ) : (
+                <TrendingDown className="size-3 shrink-0" />
+              )}
               {a.changePct >= 0 ? "+" : ""}
               {a.changePct}%
-            </strong>{" "}
-            vs 3 months ago ·{" "}
-            <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national
-            percentile
-          </span>
-        </div>
-      </div>
+            </span>
+          </div>
 
-      {/* Streamlined Data Controls: Data Layers & Classification Metric */}
-      {(onLayerChange || onModeChange) && (
-        <div className="border-t border-border/70 px-4 py-2.5 space-y-2">
-          <div className="grid grid-cols-2 gap-2">
-            {onLayerChange && (
-              <div>
-                <p className="label-caps mb-1 text-[10px]">Data Layer</p>
-                <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
-                  <button
-                    onClick={() => onLayerChange("hotspot")}
-                    className={cn(
-                      "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                      layer === "hotspot"
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    Hotspot
-                  </button>
-                  <button
-                    onClick={() => onLayerChange("density")}
-                    className={cn(
-                      "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                      layer === "density"
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    Density
-                  </button>
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Nat'l Rank
+            </span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {a.percentileRank}th %ile
+            </span>
+          </div>
+
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
+            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Data Source
+            </span>
+            <span className="text-[11px] font-medium text-muted-foreground truncate block">
+              {meta.forecast
+                ? `Prophet Forecast · 95% CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
+                : "DOH Epidemiology Bureau PIDSR Surveillance"}
+            </span>
+          </div>
+        </div>
+
+        {/* Per-100k / Raw-cases Toggle Controls */}
+        {(onModeChange || onLayerChange) && (
+          <div className="mt-3.5 pt-3 border-t border-border/50 space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              {onModeChange && (
+                <div className={onLayerChange ? "" : "col-span-2"}>
+                  <p className="label-caps mb-1 text-[10px] text-muted-foreground">Metric Unit</p>
+                  <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
+                    {(["percapita", "raw"] as MetricMode[]).map((m) => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => onModeChange(m)}
+                        aria-pressed={mode === m}
+                        className={cn(
+                          "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
+                          mode === m
+                            ? "bg-primary/20 text-primary font-semibold shadow-xs"
+                            : "text-muted-foreground hover:text-foreground",
+                        )}
+                      >
+                        {METRIC_META[m].short}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-            {onModeChange && (
-              <div>
-                <p className="label-caps mb-1 text-[10px]">Metric</p>
-                <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
-                  {(["percapita", "raw"] as MetricMode[]).map((m) => (
+              )}
+              {onLayerChange && (
+                <div>
+                  <p className="label-caps mb-1 text-[10px] text-muted-foreground">Data Layer</p>
+                  <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
                     <button
-                      key={m}
-                      onClick={() => onModeChange(m)}
-                      aria-pressed={mode === m}
+                      type="button"
+                      onClick={() => onLayerChange("hotspot")}
                       className={cn(
                         "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                        mode === m
+                        layer === "hotspot"
                           ? "bg-primary/20 text-primary font-semibold shadow-xs"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
-                      {METRIC_META[m].short}
+                      Hotspot
                     </button>
-                  ))}
+                    <button
+                      type="button"
+                      onClick={() => onLayerChange("density")}
+                      className={cn(
+                        "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
+                        layer === "density"
+                          ? "bg-primary/20 text-primary font-semibold shadow-xs"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      Density
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </section>
+
+      {/* 3. Forecast & Outlook Card */}
+      <section className="border-b border-border/70 bg-card/20 px-4 py-3.5">
+        <p className="label-caps text-[10px] text-muted-foreground/80 tracking-wider mb-2">
+          FORECAST & OUTLOOK
+        </p>
+
+        {/* Outbreak Outlook Summary Text */}
+        {outlookData[selectedSeason] && (
+          <div className="space-y-1">
+            <OutbreakHeadline season={selectedSeason} ind={outlookData[selectedSeason]} />
+            <SeasonBasis isManual={selectedSeason !== REPORT_UPCOMING_SEASON} />
+          </div>
+        )}
+
+        {/* Season Comparison Tool */}
+        <div className="mt-3 rounded-lg bg-secondary/30 border border-border/60 p-2.5">
+          {/* Season Selector Pills */}
+          <div className="grid grid-cols-2 gap-1.5">
+            {(["dry", "wet"] as Season[]).map((s) => {
+              const isSelected = selectedSeason === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => handleSeasonChange(s)}
+                  aria-pressed={isSelected}
+                  className={cn(
+                    "rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all text-center",
+                    isSelected
+                      ? "border border-primary/50 bg-primary/20 text-primary font-semibold shadow-xs"
+                      : "border border-border/70 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                  )}
+                >
+                  {SEASON_CONFIG[s].display}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Season Data Only */}
+          {(() => {
+            const ind = outlookData[selectedSeason];
+            if (!ind) return null;
+            const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
+            const width = Math.min(100, Math.round((ratio / 1.5) * 100));
+            return (
+              <div className="mt-2.5 space-y-1">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-muted-foreground">Current / P75 threshold</span>
+                  {ind.outbreak && (
+                    <span
+                      className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
+                      style={{
+                        color: "oklch(0.99 0.003 95)",
+                        backgroundColor: "var(--risk-high-solid)",
+                      }}
+                    >
+                      Alert
+                    </span>
+                  )}
+                </div>
+                <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
+                  {Math.round(ind.season_avg).toLocaleString()}{" "}
+                  <span className="font-normal text-xs text-muted-foreground">/</span>{" "}
+                  {Math.round(ind.season_p75).toLocaleString()}{" "}
+                  <span className="font-normal text-[11px] text-muted-foreground">cases</span>
+                </p>
+                <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                    style={{ width: `${width}%`, backgroundColor: "var(--risk-high)" }}
+                  />
                 </div>
               </div>
-            )}
+            );
+          })()}
+        </div>
+
+        {/* 12-Month Forecast Horizon */}
+        <div className="mt-4 pt-3 border-t border-border/60">
+          <div className="flex items-center justify-between mb-2.5">
+            <p className="label-caps text-[10px] text-muted-foreground/80">12-Month Forecast Horizon</p>
+            <span className="text-[10px] text-muted-foreground">Range / 95% CI</span>
           </div>
-          <p className="text-[10px] leading-tight text-muted-foreground">
-            Hotspots ranked on{" "}
-            <span className="text-foreground">{METRIC_META[mode].label.toLowerCase()}</span>.
-          </p>
-        </div>
-      )}
 
-      {/* Outbreak outlook */}
-      {outlookData[outbreakSeason] && (
-        <div className="border-t border-border/70 px-4 py-3">
-          <p className="label-caps mb-1.5 text-[10px]">Outbreak outlook</p>
-          <OutbreakHeadline season={outbreakSeason} ind={outlookData[outbreakSeason]} />
-          <SeasonBasis isManual={outbreakSeason !== REPORT_UPCOMING_SEASON} />
-          <button
-            onClick={() => setCompareOpen((o) => !o)}
-            aria-expanded={compareOpen}
-            className="mt-2 flex w-full items-center justify-between rounded-lg border border-border/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground"
-          >
-            Compare seasons
-            <ChevronDown
-              className={cn("size-3.5 transition-transform", compareOpen && "rotate-180")}
-            />
-          </button>
-          {compareOpen && (
-            <div className="mt-2">
-              <div className="mb-2 grid grid-cols-2 gap-1.5 text-[11px]">
-                <button
-                  onClick={() => onOutbreakSeasonChange?.("dry")}
-                  aria-pressed={outbreakSeason === "dry"}
-                  className={cn(
-                    "rounded-lg border px-2 py-1 text-left transition-colors",
-                    outbreakSeason === "dry"
-                      ? "border-primary/50 bg-primary/15 text-primary"
-                      : "border-border/80 text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  Dry · Jan–Mar
-                </button>
-                <button
-                  onClick={() => onOutbreakSeasonChange?.("wet")}
-                  aria-pressed={outbreakSeason === "wet"}
-                  className={cn(
-                    "rounded-lg border px-2 py-1 text-left transition-colors",
-                    outbreakSeason === "wet"
-                      ? "border-primary/50 bg-primary/15 text-primary"
-                      : "border-border/80 text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  Wet · Jul–Sep
-                </button>
+          <ul className="space-y-2.5">
+            {/* Highlighted Current Month Anchor */}
+            <li className="flex items-center gap-2.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs transition-colors">
+              <div className="w-20 shrink-0 flex items-center gap-1.5">
+                <span className="font-mono text-[11px] font-bold text-primary">{a.point.label}</span>
+                <span className="rounded bg-primary/25 px-1 py-0.2 text-[8px] font-semibold uppercase tracking-wider text-primary">
+                  Now
+                </span>
               </div>
-              {(["dry", "wet"] as Season[]).map((s) => {
-                const ind = outlookData[s];
-                if (!ind) return null;
-                const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
-                const width = Math.min(100, Math.round((ratio / 1.5) * 100));
-                return (
-                  <div
-                    key={s}
-                    className={cn(
-                      "mt-1.5 rounded-lg bg-secondary/50 px-2.5 py-2 transition-opacity",
-                      s !== outbreakSeason && "opacity-45",
-                    )}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="label-caps capitalize">{s} window</span>
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
-                        style={
-                          ind.outbreak
-                            ? {
-                                color: "oklch(0.99 0.003 95)",
-                                backgroundColor: "var(--risk-high-solid)",
-                              }
-                            : {
-                                color: "var(--risk-low)",
-                                backgroundColor:
-                                  "color-mix(in oklab, var(--risk-low), transparent 85%)",
-                              }
-                        }
-                      >
-                        {ind.outbreak ? "Alert" : "Clear"}
-                      </span>
-                    </div>
-                    <p className="mt-1 font-mono tabular-nums text-foreground">
-                      {Math.round(ind.season_avg).toLocaleString()} /{" "}
-                      {Math.round(ind.season_p75).toLocaleString()} P75
-                    </p>
-                    <div className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
-                      <div
-                        className="absolute inset-y-0 left-0 rounded-full"
-                        style={{ width: `${width}%`, backgroundColor: "var(--risk-high)" }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      )}
+              <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                <span
+                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                  style={{
+                    width: `${Math.min(100, (a.value / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
+                    backgroundColor: RISK_META[a.risk].color,
+                  }}
+                />
+              </span>
+              <span className="w-24 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-foreground">
+                {formatMetric(a.value, mode)}
+              </span>
+            </li>
 
-      {/* Progressive Disclosure: Collapsible Model Validation */}
-      <div className="border-t border-border/70 px-4 py-2.5">
+            {/* 12 Forecast Horizon Bars */}
+            {a.forecastWindow.map((p) => {
+              const v = metricValue(p.cases, a.region, mode);
+              const risk: RiskLevel = classify(v, a.thresholds);
+              const seasonConf = SEASON_CONFIG[p.season];
+              return (
+                <li key={p.index} className="flex items-center gap-2.5 px-2.5 py-1 text-xs">
+                  <div className="w-20 shrink-0 flex items-center gap-1.5">
+                    <span className="font-mono text-[11px] text-muted-foreground">{p.label}</span>
+                    <span
+                      className="size-1.5 rounded-full shrink-0"
+                      title={seasonConf.display}
+                      style={{
+                        backgroundColor: p.season === "wet" ? "var(--wet)" : "var(--dry)",
+                      }}
+                    />
+                  </div>
+                  <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${Math.min(100, (v / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
+                        backgroundColor: RISK_META[risk].color,
+                      }}
+                    />
+                  </span>
+                  <span className="w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-muted-foreground">
+                    {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
+                    {formatMetric(metricValue(p.upper, a.region, mode), mode)}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      {/* 4. Model Info (collapsed by default, expandable) */}
+      <section className="border-b border-border/70 bg-card/10 px-4 py-2.5">
         <details className="group [&_summary::-webkit-details-marker]:hidden">
           <summary className="flex cursor-pointer items-center justify-between py-1 text-xs select-none">
-            <span className="label-caps text-[10px]">Model validation</span>
+            <span className="label-caps text-[10px] text-muted-foreground/80">MODEL INFO</span>
             <div className="flex items-center gap-1.5">
-              <StatusChip className="text-[10px] py-0.5 px-2">
+              <StatusChip className="text-[10px] py-0.5 px-2 text-muted-foreground">
                 {validation.label} · MAPE {validation.mape}%
               </StatusChip>
               <ChevronDown className="size-3.5 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
@@ -320,65 +433,27 @@ export function ForecastCard({
               ].map((m) => (
                 <div
                   key={m.k}
-                  className="rounded-lg bg-secondary/50 px-2 py-1.5 border border-border/40"
+                  className="rounded-lg bg-secondary/40 px-2 py-1.5 border border-border/40"
                 >
-                  <p className="label-caps text-[9px]">{m.k}</p>
-                  <p className="font-mono text-xs font-semibold tabular-nums mt-0.5">{m.v}</p>
+                  <p className="label-caps text-[9px] text-muted-foreground/70">{m.k}</p>
+                  <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
+                    {m.v}
+                  </p>
                 </div>
               ))}
             </div>
-            <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
+            <p className="text-[10px] leading-relaxed text-muted-foreground/80">{validation.note}</p>
           </div>
         </details>
-      </div>
+      </section>
 
-      {/* 12-Month Forecast Horizon */}
-      <div className="border-t border-border/70 px-4 py-3">
-        <p className="label-caps mb-2 text-[10px]">12-month forecast</p>
-        <ul className="space-y-2">
-          {a.forecastWindow.map((p) => {
-            const v = metricValue(p.cases, a.region, mode);
-            const risk: RiskLevel = classify(v, a.thresholds);
-            return (
-              <li key={p.index} className="flex items-center gap-2.5 text-xs">
-                <span className="w-16 font-mono text-[11px] text-muted-foreground">{p.label}</span>
-                <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                  <span
-                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (v / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
-                      backgroundColor: RISK_META[risk].color,
-                    }}
-                  />
-                </span>
-                <span className="w-24 text-right font-mono text-[11px] tabular-nums text-foreground/90">
-                  {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
-                  {formatMetric(metricValue(p.upper, a.region, mode), mode)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      {/* Dominant Illness & Recommended Intervention */}
-      <div className="border-t border-border/70 px-4 py-3">
-        <p className="label-caps mb-1 text-[10px]">Dominant illness</p>
-        <p className="text-sm font-semibold text-foreground">{a.dominantIllness.name}</p>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">{a.dominantIllness.driver}</p>
-        <p className="label-caps mt-3 mb-1 text-[10px]">Recommended intervention</p>
-        <p className="text-xs leading-relaxed text-foreground/90">
-          <span className="font-semibold text-primary">{recs[0]!.title}.</span> {recs[0]!.detail}
-        </p>
-      </div>
-
-      {/* Action CTA */}
+      {/* Pinned Action CTA (Unchanged) */}
       <div
         className={cn(
-          "border-t border-border/70 px-4 py-3",
+          "px-4 py-3",
           isSheet
-            ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3"
-            : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10",
+            ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3 border-t border-border/70"
+            : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10 border-t border-border/70",
         )}
       >
         <Link
@@ -393,65 +468,41 @@ export function ForecastCard({
   );
 }
 
-const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Dry · Jan–Mar",
-  wet: "Wet · Jul–Sep",
-};
-
 function SeasonBasis({ isManual }: { isManual: boolean }) {
   const start = SEASON_START_MONTH[REPORT_UPCOMING_SEASON];
   return (
     <p
       className={cn(
-        "mt-1.5 text-[10px] leading-relaxed",
+        "mt-1 text-[10px] leading-relaxed",
         isManual ? "text-muted-foreground/70" : "text-muted-foreground",
       )}
     >
       Based on the current report date ({REPORT_DATE}) — upcoming season derived from a fixed
-      calendar rule (wet: Jun–Nov, dry: Dec–May), starting {start}.{" "}
+      calendar rule (wet: {SEASON_CONFIG.wet.months}, dry: {SEASON_CONFIG.dry.months}), starting {start}.{" "}
       {isManual && "Showing the other season for comparison."}
     </p>
   );
 }
 
-function OutbreakHeadline({ season, ind }: { season: Season; ind: OutbreakIndicator }) {
+function OutbreakHeadline({ season, ind }: { season: Season; ind?: OutbreakIndicator }) {
+  if (!ind) return null;
   const cap = season === "dry" ? "Dry" : "Wet";
+  const display = SEASON_CONFIG[season].display;
   const avg = Math.round(ind.season_avg).toLocaleString();
   const p75 = Math.round(ind.season_p75).toLocaleString();
   return ind.outbreak ? (
     <p className="text-xs leading-relaxed text-foreground/90">
       <span className="font-semibold text-foreground">
-        Next season ({SEASON_WINDOW[season]}): outbreak alert.
+        Next season ({display}): outbreak alert.
       </span>{" "}
       Expected cases ({avg}) exceed this region's historical {cap}-season P75 threshold ({p75}).
     </p>
   ) : (
     <p className="text-xs leading-relaxed text-foreground/90">
       <span className="font-semibold text-foreground">
-        Next season ({SEASON_WINDOW[season]}): no outbreak alert.
+        Next season ({display}): no outbreak alert.
       </span>{" "}
       Expected cases within this region's normal seasonal range.
     </p>
-  );
-}
-
-function OutbreakChip({ flagged, season }: { flagged: boolean; season: Season }) {
-  if (!flagged) {
-    return (
-      <span className="inline-flex items-center gap-1 uppercase tracking-wider rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-        {season} outbreak · no alert
-      </span>
-    );
-  }
-  return (
-    <span
-      className="inline-flex items-center gap-1 uppercase tracking-wider rounded-full px-2 py-0.5 text-[10px] font-medium"
-      style={{
-        color: "oklch(0.99 0.003 95)",
-        backgroundColor: RISK_META.high.solidColor,
-      }}
-    >
-      {season} outbreak alert
-    </span>
   );
 }

@@ -38,14 +38,22 @@ export function RiskDot({ risk }: { risk: RiskLevel }) {
   );
 }
 
-export function SeasonTag({ season }: { season: "wet" | "dry" }) {
+export function SeasonTag({
+  season,
+  label,
+  className,
+}: {
+  season: "wet" | "dry";
+  label?: string;
+  className?: string;
+}) {
   const color = season === "wet" ? "var(--wet)" : "var(--dry)";
   return (
     <span
-      className="rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wider"
+      className={cn("rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wider font-medium", className)}
       style={{ color, backgroundColor: `color-mix(in oklab, ${color}, transparent 88%)` }}
     >
-      {season} season
+      {label ?? `${season} season`}
     </span>
   );
 }

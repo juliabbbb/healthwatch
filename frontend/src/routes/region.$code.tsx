@@ -148,7 +148,7 @@ function RegionDetail() {
       {/* Outbreak outlook */}
       <Panel
         title="Outbreak outlook — dry vs wet"
-        subtitle="Season-average forecast for the coming dry (Jan–Mar) and wet (Jul–Sep) windows vs. the region's long-run seasonal P75 baseline."
+        subtitle="Season-average forecast for the coming dry (Dec–May) and wet (Jun–Nov) windows vs. the region's long-run seasonal P75 baseline."
       >
         <SeasonalOutbreakView code={code} />
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
