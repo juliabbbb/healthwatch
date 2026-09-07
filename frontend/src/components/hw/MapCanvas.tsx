@@ -26,7 +26,7 @@ interface Props {
   monthIndex: number;
   mode: MetricMode;
   selectedCode: string | null;
-  onSelect: (code: string) => void;
+  onSelect: (code: string | null) => void;
   flyToCode?: string | null;
   outbreakSeason?: Season;
   showOutbreakMarkers?: boolean;
@@ -109,6 +109,11 @@ export default function MapCanvas({
       });
       mapRef.current = map;
 
+      // Tap on empty map background dismisses selected region
+      map.on("click", () => {
+        stateRef.current.onSelect(null);
+      });
+
       tileRef.current = L.tileLayer(
         darkRef.current ? TILE_URLS.dark : TILE_URLS.light,
         {
@@ -148,7 +153,10 @@ export default function MapCanvas({
             className: "hw-tooltip",
             opacity: 0.9,
           });
-          lyr.on("click", () => stateRef.current.onSelect(region.code));
+          lyr.on("click", (e: import("leaflet").LeafletMouseEvent) => {
+            if (e?.originalEvent) L.DomEvent.stopPropagation(e);
+            stateRef.current.onSelect(region.code);
+          });
           lyr.on("mouseover", () =>
             (lyr as unknown as { setStyle: (o: PathOptions) => void }).setStyle({
               fillOpacity: 0.85,

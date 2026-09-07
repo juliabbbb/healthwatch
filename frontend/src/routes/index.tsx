@@ -70,7 +70,7 @@ function MapView() {
 
   const meta = monthMeta(monthIndex);
 
-  const handleSelect = useCallback((code: string) => setSelected(code), []);
+  const handleSelect = useCallback((code: string | null) => setSelected(code), []);
   const handleFocusRegion = useCallback((code: string) => {
     setSelected(code);
     setFlyTo(code);
@@ -116,7 +116,7 @@ function MapView() {
         <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
       </div>
 
-{/* 3. MOBILE ONLY: Top-Left Floating National Overview Trigger Pill */}
+      {/* 3. MOBILE ONLY: Top-Left Floating National Overview Trigger Pill */}
       <div className="pointer-events-auto absolute left-3 top-3 z-30 flex md:hidden items-center">
         <button
           onClick={() => setMobileNationalOpen(true)}
@@ -151,19 +151,17 @@ function MapView() {
         </div>
       )}
 
-      {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Hidden if national modal is open) */}
-      {selected && !mobileNationalOpen && (
-        <MobileBottomSheet
-          regionCode={selected}
-          illness={illness}
-          monthIndex={monthIndex}
-          mode={mode}
-          onModeChange={setMode}
-          layer={layer}
-          onLayerChange={setLayer}
-          onClose={() => setSelected(null)}
-        />
-      )}
+      {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}
+      <MobileBottomSheet
+        regionCode={mobileNationalOpen ? null : selected}
+        illness={illness}
+        monthIndex={monthIndex}
+        mode={mode}
+        onModeChange={setMode}
+        layer={layer}
+        onLayerChange={setLayer}
+        onClose={() => setSelected(null)}
+      />
 
       {/* 7. DESKTOP ONLY: Repositioned Logo (Bottom-Left) */}
       <div className="pointer-events-none absolute left-4 bottom-20 z-30 hidden md:block">
@@ -178,11 +176,13 @@ function MapView() {
         </div>
       </div>
 
-      {/* 8. Timeline Scrubber (Clean gap above peek sheet on mobile, docked at bottom on desktop) */}
+      {/* 8. DatePlayer / Timeline Scrubber (Mutually exclusive with MobileBottomSheet on mobile) */}
       <div
-        className={`absolute inset-x-3 md:inset-x-4 z-30 transition-all duration-300 ${
-          selected ? "bottom-[4.8rem] sm:bottom-[5.25rem] md:bottom-4" : "bottom-3 md:bottom-4"
-        } ${mobileNationalOpen ? "opacity-0 pointer-events-none md:opacity-100 md:pointer-events-auto" : ""}`}
+        className={`absolute inset-x-3 md:inset-x-4 z-30 transition-all duration-300 ease-in-out md:bottom-4 md:translate-y-0 md:opacity-100 md:pointer-events-auto ${
+          selected || mobileNationalOpen
+            ? "bottom-3 translate-y-16 opacity-0 pointer-events-none"
+            : "bottom-3 translate-y-0 opacity-100 pointer-events-auto"
+        }`}
       >
         <TimelineScrubber
           monthIndex={monthIndex}
