@@ -76,9 +76,9 @@ export function NationalSnapshot({
       </div>
 
       {/* 2. Key Metrics Grid (3 Cards: stacked on mobile, 3 cols on desktop) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 md:grid md:grid-cols-3 gap-3 md:gap-4">
         {/* Card A: National Incidence */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
+        <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3 min-w-0 md:min-w-0">
           <p className="label-caps text-[10px]">National Incidence</p>
           <div>
             <p className="font-mono text-3xl font-bold tabular-nums tracking-normal text-foreground leading-none">
@@ -91,7 +91,7 @@ export function NationalSnapshot({
         </div>
 
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
-        <div className="relative rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
+        <div className="relative rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3 min-w-0 md:min-w-0">
           <div className="flex items-center justify-between gap-2">
             <p className="label-caps text-[10px] shrink-0">Risk Distribution</p>
             <span
@@ -137,7 +137,7 @@ export function NationalSnapshot({
         </div>
 
         {/* Card C: Dominant Illness */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
+        <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3 min-w-0 md:min-w-0">
           <p className="label-caps text-[10px]">Dominant Illness</p>
           <div>
             <p className="text-base font-bold text-foreground">{dominantIllness}</p>
@@ -149,10 +149,10 @@ export function NationalSnapshot({
       </div>
 
       {/* 3. Controls Section: Illness Filter & Metric Mode */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3 md:flex-row md:flex-nowrap md:items-center md:justify-between">
         {/* Illness Filters */}
         {onIllnessChange && (
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
             <span className="label-caps text-[10px] shrink-0">Illness:</span>
             <div className="flex flex-wrap items-center gap-1">
               <button
