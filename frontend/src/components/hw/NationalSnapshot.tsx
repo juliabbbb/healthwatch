@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Info } from "lucide-react";
+import { Info, X } from "lucide-react";
 import {
   ILLNESSES,
   METRIC_META,
@@ -45,6 +45,24 @@ export function NationalSnapshot({
   className?: string;
 }) {
   const [legendOpen, setLegendOpen] = useState(false);
+  const legendRef = useRef<HTMLDivElement>(null);
+
+  // Close legend popover on outside click
+  useEffect(() => {
+    if (!legendOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (legendRef.current && !legendRef.current.contains(e.target as Node)) {
+        setLegendOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [legendOpen]);
+
   return (
     <div
       className={cn(
@@ -75,12 +93,14 @@ export function NationalSnapshot({
         <LiveClock />
       </div>
 
-      {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and zero text clipping) */}
+      {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
       <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
         {/* Card A: National Incidence */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0 overflow-hidden">
-          <p className="label-caps text-[10px] text-muted-foreground truncate">National Incidence</p>
-          <div className="mt-1.5">
+        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+          <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+            National Incidence
+          </p>
+          <div className="mt-2">
             <p className="font-mono text-2xl sm:text-3xl font-bold tabular-nums tracking-tight text-foreground leading-none">
               {formatMetric(value, mode)}
             </p>
@@ -91,10 +111,13 @@ export function NationalSnapshot({
         </div>
 
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
-        <div className="relative rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0 overflow-hidden">
-          <div className="flex items-center justify-between gap-1 min-w-0">
-            <p className="label-caps text-[10px] text-muted-foreground truncate">Risk Distribution</p>
-            <span
+        <div className="relative rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+          <div className="flex items-start justify-between gap-1 min-w-0">
+            <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+              Risk Distribution
+            </p>
+            <div
+              ref={legendRef}
               className="relative shrink-0 flex items-center"
               onMouseEnter={() => setLegendOpen(true)}
               onMouseLeave={() => setLegendOpen(false)}
@@ -109,14 +132,36 @@ export function NationalSnapshot({
                 <Info className="size-2.5" />
               </button>
               {legendOpen && (
-                <div className="glass-panel absolute right-0 top-full z-50 mt-1.5 w-56 sm:w-64 rounded-lg border border-border p-2.5 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
-                  Colors show monthly risk tier (Low/Moderate/High). The alert marker shows a
-                  seasonal outbreak flag for the upcoming dry or wet season.
+                <div className="absolute right-0 top-full z-50 mt-2 w-64 sm:w-72 rounded-xl border border-border bg-card/95 p-3 text-xs text-foreground shadow-2xl backdrop-blur-md">
+                  <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-border/60">
+                    <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-foreground">
+                      Risk Tier Guide
+                    </span>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLegendOpen(false);
+                      }}
+                      className="text-muted-foreground hover:text-foreground text-xs p-0.5 rounded cursor-pointer"
+                      aria-label="Close"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-muted-foreground">
+                    Colors show monthly risk tier (<span className="text-risk-low font-semibold">Low</span> /{" "}
+                    <span className="text-risk-moderate font-semibold">Moderate</span> /{" "}
+                    <span className="text-risk-high font-semibold">High</span>).
+                  </p>
+                  <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
+                    The alert marker shows a seasonal outbreak flag for the upcoming dry or wet season.
+                  </p>
                 </div>
               )}
-            </span>
+            </div>
           </div>
-          <div className="flex flex-col gap-1 mt-1.5">
+          <div className="flex flex-col gap-1 mt-2">
             {(["high", "moderate", "low"] as RiskLevel[]).map((r) => (
               <div key={r} className="flex items-center justify-between gap-1 text-xs">
                 <span className="flex items-center gap-1.5 min-w-0">
@@ -137,9 +182,11 @@ export function NationalSnapshot({
         </div>
 
         {/* Card C: Dominant Illness */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0 overflow-hidden">
-          <p className="label-caps text-[10px] text-muted-foreground truncate">Dominant Illness</p>
-          <div className="mt-1.5">
+        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+          <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+            Dominant Illness
+          </p>
+          <div className="mt-2">
             <p className="text-base sm:text-lg font-bold text-foreground truncate">{dominantIllness}</p>
             <p className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground leading-tight truncate">
               Primary outbreak driver
@@ -242,3 +289,4 @@ export function NationalSnapshot({
     </div>
   );
 }
+
