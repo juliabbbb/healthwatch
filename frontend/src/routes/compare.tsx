@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   ArrowUpRight,
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ChevronUp,
+  History,
+  Info,
   Layers,
+  Maximize2,
   SlidersHorizontal,
   Table,
   TrendingDown,
@@ -20,13 +21,16 @@ import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import {
   CURRENT_MONTH_INDEX,
+  HIST_MONTHS,
   ILLNESSES,
   METRIC_META,
   REGIONS,
   RISK_META,
+  TOTAL_MONTHS,
   assessRegion,
   formatMetric,
   metricValue,
+  modelMetrics,
   monthMeta,
   recommendations,
   seriesFor,
@@ -61,27 +65,33 @@ export const Route = createFileRoute("/compare")({
 });
 
 export default function ComparePage() {
-  // Spec #2: Empty default state — no preloaded regions on first open
+  // Spec #1: Top region selection row is the single source of truth (starts empty per #2)
   const [selected, setSelected] = useState<string[]>([]);
   const [illness, setIllness] = useState("all");
-  // Spec #2: Month picker/slider control state (1 to 12 months horizon)
+
+  // Spec #2: Month slider extended to include past & forecast months (-12m to +12m)
+  // Default to +6m (standard 6-month operational baseline)
   const [horizon, setHorizon] = useState(6);
   const [season, setSeason] = useState<"all" | "wet" | "dry">("all");
   const [mode, setMode] = useState<MetricMode>("percapita");
 
-  // Spec #2 & #4: Centered floating modal state for Regional Benchmark Reference Table
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [focusedRegionCode, setFocusedRegionCode] = useState<string | null>(null);
-  // Spec #4: Interventions load on click, not automatically (initially empty)
+  // Spec #3 & #4: Centered floating modal state for Regional Benchmark Reference Table
+  const [isBenchmarkModalOpen, setIsBenchmarkModalOpen] = useState(false);
+  const [benchmarkFocusedRegion, setBenchmarkFocusedRegion] = useState<string | null>(null);
+  // Spec #4: Interventions load on click inside the benchmark table, not automatically
   const [expandedInterventions, setExpandedInterventions] = useState<Record<string, boolean>>({});
 
-  // Ref for multi-select slider deck horizontal scrolling
-  const sliderTrackRef = useRef<HTMLDivElement>(null);
+  // Spec #4: Dedicated Detailed Card View Modal state (distinct from benchmark table)
+  const [detailedCardRegionCode, setDetailedCardRegionCode] = useState<string | null>(null);
 
-  const monthIndex = CURRENT_MONTH_INDEX + horizon;
+  // Computed month index within bounds [0, TOTAL_MONTHS - 1]
+  const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
   const currentMonth = monthMeta(monthIndex);
-  const meta = METRIC_META[mode];
+  const isHistorical = horizon < 0;
+  const isCurrent = horizon === 0;
+  const isForecast = horizon > 0;
 
+  const meta = METRIC_META[mode];
   const currentSeasonLabel =
     currentMonth.season === "wet" ? SEASON_CONFIG.wet.display : SEASON_CONFIG.dry.display;
 
@@ -105,7 +115,7 @@ export default function ComparePage() {
     return max;
   }, [rows, illness, monthIndex, mode]);
 
-  // Selection toggle handlers
+  // Selection toggle handlers (Single source of truth per Spec #1)
   const toggle = useCallback((code: string) => {
     setSelected((prev) => {
       if (prev.includes(code)) {
@@ -127,13 +137,18 @@ export default function ComparePage() {
     setSelected([]);
   };
 
-  // Spec #2: Clicking a card opens the centered floating modal
-  const handleCardClick = (code: string) => {
-    setFocusedRegionCode(code);
-    setIsModalOpen(true);
+  // Spec #4: Distinct trigger for opening the Regional Benchmark Reference Table modal
+  const handleOpenBenchmarkTable = (code?: string) => {
+    if (code) setBenchmarkFocusedRegion(code);
+    setIsBenchmarkModalOpen(true);
   };
 
-  // Spec #4: Toggle intervention expansion for a specific region in the benchmark table
+  // Spec #4: Distinct trigger for opening the Detailed Card View modal
+  const handleOpenDetailedCard = (code: string) => {
+    setDetailedCardRegionCode(code);
+  };
+
+  // Toggle intervention expansion for a specific region in the benchmark table
   const toggleInterventions = (code: string) => {
     setExpandedInterventions((prev) => ({
       ...prev,
@@ -141,26 +156,31 @@ export default function ComparePage() {
     }));
   };
 
-  // Horizontal scroll controls for multi-select slider
-  const scrollSlider = (direction: "left" | "right") => {
-    if (!sliderTrackRef.current) return;
-    const offset = direction === "left" ? -280 : 280;
-    sliderTrackRef.current.scrollBy({ left: offset, behavior: "smooth" });
-  };
-
-  // Close modal on Escape key
+  // Close modals on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isModalOpen) {
-        setIsModalOpen(false);
+      if (e.key === "Escape") {
+        if (isBenchmarkModalOpen) setIsBenchmarkModalOpen(false);
+        if (detailedCardRegionCode) setDetailedCardRegionCode(null);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isModalOpen]);
+  }, [isBenchmarkModalOpen, detailedCardRegionCode]);
+
+  // Detailed assessment object for the active detailed card modal
+  const detailedAssessment = useMemo(() => {
+    if (!detailedCardRegionCode) return null;
+    return assessRegion(detailedCardRegionCode, illness, monthIndex, mode);
+  }, [detailedCardRegionCode, illness, monthIndex, mode]);
+
+  const detailedMetrics = useMemo(() => {
+    if (!detailedCardRegionCode) return null;
+    return modelMetrics(detailedCardRegionCode, illness);
+  }, [detailedCardRegionCode, illness]);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8 pb-32">
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-3 sm:px-6 py-6 sm:py-8 pb-32">
       {/* Navigation & Header */}
       <Link
         to="/"
@@ -172,7 +192,7 @@ export default function ComparePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
-            Comparative dashboard
+            Comparative Dashboard
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-3xl leading-relaxed">
             Side-by-side benchmark of Philippine regions on forecast load, risk tier and public
@@ -185,7 +205,7 @@ export default function ComparePage() {
 
       {/* Top Filter & Selection Toolbar */}
       <div className="mt-6 space-y-4">
-        {/* Spec #5: Aligned, clearly separated region selection buttons with distinct selected states */}
+        {/* Spec #1 & #5: Single source of truth Region Selection row with responsive wrapping & checkmark states */}
         <div>
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
@@ -228,8 +248,8 @@ export default function ComparePage() {
             </div>
           </div>
 
-          {/* Spec #5: Equal height (h-8), equal spacing (gap-2), baseline aligned, clear border separation */}
-          <div className="flex flex-wrap gap-2 items-center">
+          {/* Equal height (h-8), equal spacing, baseline aligned, clear border separation */}
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
             {REGIONS.map((r) => {
               const isSelected = selected.includes(r.code);
               return (
@@ -239,7 +259,7 @@ export default function ComparePage() {
                   onClick={() => toggle(r.code)}
                   aria-pressed={isSelected}
                   className={cn(
-                    "h-8 px-2.5 py-1 text-xs rounded-lg font-medium inline-flex items-center gap-1.5 transition-all select-none border",
+                    "h-8 px-2.5 py-1 text-xs rounded-lg font-medium inline-flex items-center gap-1.5 transition-all select-none border min-h-[32px]",
                     isSelected
                       ? "bg-primary text-primary-foreground border-primary font-semibold shadow-xs"
                       : "bg-secondary/20 hover:bg-secondary/50 text-muted-foreground hover:text-foreground border-border/80",
@@ -253,167 +273,102 @@ export default function ComparePage() {
           </div>
         </div>
 
-        {/* Spec #2: Month Picker / Slider alongside selection controls */}
-        <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-primary/10 p-2 text-primary">
-              <SlidersHorizontal className="size-4" />
-            </div>
-            <div>
-              <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
-                Surveillance & Forecast Month
-              </p>
-              <div className="flex items-center gap-2 mt-0.5">
-                <span className="font-mono text-sm font-bold text-foreground">
-                  {currentMonth.label}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  (+{horizon}m {horizon === 6 ? "baseline" : "horizon"})
-                </span>
-                <span
-                  className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                  style={{
-                    backgroundColor: currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
-                    color: "#ffffff",
-                  }}
-                >
-                  {currentSeasonLabel}
-                </span>
+        {/* Spec #2 & #5: Extended Month Picker / Slider (-12m past to +12m forecast) */}
+        <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Temporal Status Headline */}
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 p-2 text-primary shrink-0">
+                <SlidersHorizontal className="size-4" />
               </div>
-            </div>
-          </div>
-
-          {/* Horizon Scrub Slider */}
-          <div className="flex items-center gap-3 flex-1 max-w-md min-w-[240px]">
-            <span className="text-[10px] font-mono text-muted-foreground shrink-0">+1m</span>
-            <input
-              type="range"
-              min={1}
-              max={12}
-              step={1}
-              value={horizon}
-              onChange={(e) => setHorizon(Number(e.target.value))}
-              className="w-full accent-primary h-2 cursor-pointer bg-secondary rounded-lg"
-              aria-label="Forecast horizon in months"
-            />
-            <span className="text-[10px] font-mono text-muted-foreground shrink-0">+12m</span>
-            <div className="flex items-center gap-1 shrink-0 ml-1">
-              {[1, 3, 6, 12].map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => setHorizon(h)}
-                  className={cn(
-                    "rounded-md px-2 py-1 text-[10px] font-mono font-medium transition-colors border",
-                    horizon === h
-                      ? "border-primary bg-primary/15 text-primary font-bold"
-                      : "border-border/60 text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {h}m
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Spec #6: Prominent, freely-usable Multi-Select Slider */}
-        <div className="rounded-xl border border-border/80 bg-card/60 p-4 shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <p className="label-caps text-[11px] font-semibold text-foreground">
-                  Multi-Region Selector Slider
+              <div>
+                <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                  Surveillance & Forecast Period
                 </p>
-                <span className="text-[11px] text-muted-foreground">
-                  Pick specific cards freely to compare
-                </span>
+                <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                  <span className="font-mono text-base font-bold text-foreground">
+                    {currentMonth.label}
+                  </span>
+                  <span
+                    className={cn(
+                      "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
+                      isHistorical && "bg-secondary text-muted-foreground border-border",
+                      isCurrent && "bg-primary/20 text-primary border-primary/40",
+                      isForecast &&
+                        "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+                    )}
+                  >
+                    {isHistorical && `${Math.abs(horizon)}m past reported`}
+                    {isCurrent && "Current baseline (Now)"}
+                    {isForecast && `+${horizon}m forecast`}
+                  </span>
+                  <span
+                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                    style={{
+                      backgroundColor: currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
+                      color: "#ffffff",
+                    }}
+                  >
+                    {currentSeasonLabel}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => scrollSlider("left")}
-                aria-label="Slide left"
-                className="rounded-lg border border-border/80 p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                <ChevronLeft className="size-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => scrollSlider("right")}
-                aria-label="Slide right"
-                className="rounded-lg border border-border/80 p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-              >
-                <ChevronRight className="size-4" />
-              </button>
+            {/* Slider Scrubber & Indicator Track */}
+            <div className="flex flex-col gap-1.5 w-full md:max-w-md">
+              <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+                <span className="flex items-center gap-1">
+                  <History className="size-3" />
+                  <span>Past (-12m)</span>
+                </span>
+                <span className={cn(horizon === 0 && "text-primary font-bold")}>Now (0)</span>
+                <span>Forecast (+12m)</span>
+              </div>
+
+              {/* Range slider with generous touch target for mobile */}
+              <input
+                type="range"
+                min={-12}
+                max={12}
+                step={1}
+                value={horizon}
+                onChange={(e) => setHorizon(Number(e.target.value))}
+                className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
+                aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
+              />
+
+              {/* Quick Jump Buttons covering both Past and Future */}
+              <div className="flex flex-wrap items-center justify-between gap-1 pt-0.5">
+                {[
+                  { label: "-12m", val: -12 },
+                  { label: "-6m", val: -6 },
+                  { label: "-3m", val: -3 },
+                  { label: "Now", val: 0 },
+                  { label: "+3m", val: 3 },
+                  { label: "+6m", val: 6 },
+                  { label: "+12m", val: 12 },
+                ].map((s) => (
+                  <button
+                    key={s.label}
+                    type="button"
+                    onClick={() => setHorizon(s.val)}
+                    className={cn(
+                      "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center",
+                      horizon === s.val
+                        ? "border-primary bg-primary/15 text-primary font-bold shadow-xs"
+                        : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
+                    )}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-
-          {/* Slider track of freeform selectable cards */}
-          <div
-            ref={sliderTrackRef}
-            className="flex gap-3 overflow-x-auto pb-2 pt-1 hw-scroll snap-x scroll-smooth"
-          >
-            {REGIONS.map((r) => {
-              const isSelected = selected.includes(r.code);
-              return (
-                <div
-                  key={r.code}
-                  onClick={() => toggle(r.code)}
-                  className={cn(
-                    "w-48 shrink-0 snap-start flex flex-col justify-between rounded-xl border p-3.5 transition-all duration-200 cursor-pointer select-none",
-                    isSelected
-                      ? "border-primary bg-primary/10 shadow-sm ring-1 ring-primary/40"
-                      : "border-border/70 bg-card/80 hover:border-primary/40 hover:bg-card hover:shadow-xs",
-                  )}
-                >
-                  <div>
-                    <div className="flex items-center justify-between gap-1">
-                      <span className="label-caps text-xs font-bold text-foreground">
-                        {r.short}
-                      </span>
-                      <span className="rounded bg-secondary px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground uppercase">
-                        {r.island}
-                      </span>
-                    </div>
-                    <p className="text-xs font-semibold text-foreground truncate mt-1">{r.name}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {r.density.toLocaleString()} persons/km²
-                    </p>
-                  </div>
-
-                  {/* Prominent freeform selection toggle switch */}
-                  <div className="mt-3 pt-2.5 border-t border-border/50 flex items-center justify-between">
-                    <span className="text-[10px] font-medium text-muted-foreground">
-                      {isSelected ? "In comparison" : "Add to deck"}
-                    </span>
-                    <div
-                      className={cn(
-                        "h-5 px-2 rounded-full inline-flex items-center gap-1 text-[10px] font-semibold transition-colors border",
-                        isSelected
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-secondary/40 text-muted-foreground border-border/70",
-                      )}
-                    >
-                      {isSelected ? (
-                        <>
-                          <Check className="size-3 stroke-[2.5]" />
-                          <span>Active</span>
-                        </>
-                      ) : (
-                        <span>+ Pick</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
 
-        {/* Secondary filters (Illness, Season, Mode) */}
+        {/* Secondary filters (Illness, Season convention, Metric mode) */}
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
           {/* Illness */}
           <Chip active={illness === "all"} onClick={() => setIllness("all")}>
@@ -449,9 +404,8 @@ export default function ComparePage() {
         </div>
       </div>
 
-      {/* Main Comparative Section */}
+      {/* Primary Comparison Section: Spec #1 populated directly from top selection */}
       <section className="mt-8">
-        {/* Spec #2: Empty default state when no regions are selected */}
         {selected.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border bg-card/20 py-16 px-6 text-center max-w-xl mx-auto my-6">
             <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-secondary/50 text-muted-foreground">
@@ -461,9 +415,8 @@ export default function ComparePage() {
               No regions selected for comparison
             </h3>
             <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
-              Use the region buttons or the multi-select slider above to choose regions to compare.
-              Once selected, side-by-side cards with actual vs. predicted case trends will appear
-              here.
+              Use the region buttons above to choose regions to compare. Once selected, side-by-side
+              cards with actual vs. predicted case trends will appear here.
             </p>
             <div className="mt-5">
               <button
@@ -477,39 +430,38 @@ export default function ComparePage() {
           </div>
         ) : (
           <div>
-            {/* Side-by-Side Region Overview Cards */}
-            <div className="flex items-center justify-between mb-3">
+            {/* Section Header with Benchmark Table Modal launcher */}
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
               <div>
                 <p className="label-caps text-[11px] font-semibold text-foreground tracking-wider">
                   Side-by-Side Regional Overview ({selected.length} active)
                 </p>
                 <p className="text-[11px] text-muted-foreground">
-                  Global scale: 0–{formatMetric(globalMax, mode)} {meta.unit} · Tap any card to open
-                  the centered benchmark table
+                  Global scale: 0–{formatMetric(globalMax, mode)} {meta.unit} · Tap card for
+                  detailed view or use button below for benchmark table
                 </p>
               </div>
+
               <button
                 type="button"
-                onClick={() => {
-                  setFocusedRegionCode(rows[0]?.region.code ?? null);
-                  setIsModalOpen(true);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+                onClick={() => handleOpenBenchmarkTable(rows[0]?.region.code)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors shadow-xs"
               >
                 <Table className="size-3.5" />
                 <span>Open Benchmark Table Modal</span>
               </button>
             </div>
 
-            <div className="flex gap-3.5 overflow-x-auto pb-4 pt-1 hw-scroll snap-x">
+            {/* Spec #1 & #5: Responsive Card Grid (stacks on mobile, multi-column on tablet/desktop) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {rows.map((a) => (
                 <div
                   key={a.region.code}
-                  onClick={() => handleCardClick(a.region.code)}
-                  className="group w-72 sm:w-80 shrink-0 snap-start flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 cursor-pointer select-none hover:border-primary/50 hover:bg-card hover:shadow-md"
+                  onClick={() => handleOpenDetailedCard(a.region.code)}
+                  className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 cursor-pointer select-none hover:border-primary/50 hover:bg-card hover:shadow-md"
                 >
                   <div>
-                    {/* Card Header: Region short code, density & quick-remove button */}
+                    {/* Card Header: Region short code, density & action buttons */}
                     <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-2.5">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
@@ -531,6 +483,13 @@ export default function ComparePage() {
 
                       <div className="flex items-center gap-1 shrink-0">
                         <RiskBadge risk={a.risk} />
+                        {/* Expand Icon indicator for Detailed Card View */}
+                        <div
+                          title="Click card for detailed view"
+                          className="rounded-md p-1 text-muted-foreground/50 group-hover:text-primary transition-colors"
+                        >
+                          <Maximize2 className="size-3.5" />
+                        </div>
                         {/* Quick-remove button with stopPropagation */}
                         <button
                           type="button"
@@ -550,7 +509,7 @@ export default function ComparePage() {
                     <div className="mt-3 flex items-baseline justify-between gap-2">
                       <div>
                         <p className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground">
-                          Predicted · {meta.unit}
+                          {currentMonth.forecast ? "Predicted" : "Reported"} · {meta.unit}
                         </p>
                         <p className="font-mono text-2xl font-bold tabular-nums text-foreground leading-tight">
                           {formatMetric(a.value, mode)}
@@ -597,7 +556,7 @@ export default function ComparePage() {
                       </div>
                     </div>
 
-                    {/* Spec #2: On-demand Mini-Chart showing actual cases and predicted cases */}
+                    {/* Mini-Chart showing actual cases and predicted cases */}
                     <div className="mt-3.5">
                       <RegionSparkline
                         regionCode={a.region.code}
@@ -610,12 +569,20 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                  {/* Spec #3: Removed redundant bottom-right intervention button; clean drilldown prompt */}
-                  <div className="mt-4 pt-2.5 border-t border-border/50 flex items-center justify-between text-xs">
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-primary group-hover:underline">
-                      <Table className="size-3.5 shrink-0" />
-                      <span>Benchmark details</span>
-                    </span>
+                  {/* Spec #4: Card Footer with isolated, distinct Benchmark Table trigger button */}
+                  <div className="mt-4 pt-2.5 border-t border-border/50 flex items-center justify-between gap-2 text-xs">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenBenchmarkTable(a.region.code);
+                      }}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary hover:bg-primary/20 transition-colors min-h-[30px]"
+                    >
+                      <Table className="size-3" />
+                      <span>Benchmark Table</span>
+                    </button>
+
                     <span className="text-[10px] text-muted-foreground/80 font-mono">
                       95% CI: {formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–
                       {formatMetric(metricValue(a.point.upper, a.region, mode), mode)}
@@ -636,12 +603,12 @@ export default function ComparePage() {
           surveillance.
         </p>
         <p className="font-mono text-[10px]">
-          Operational horizon: +{horizon}m · Metric: {meta.label}
+          Surveillance month index: {monthIndex} · Metric: {meta.label}
         </p>
       </div>
 
-      {/* Spec #2: Upgraded Regional Benchmark Reference Table as a FLOATING MODAL centered in middle of screen */}
-      {isModalOpen && rows.length > 0 && (
+      {/* Spec #3 & #4: Centered Floating Modal for Regional Benchmark Reference Table */}
+      {isBenchmarkModalOpen && rows.length > 0 && (
         <div
           role="dialog"
           aria-modal="true"
@@ -649,13 +616,13 @@ export default function ComparePage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
-              setIsModalOpen(false);
+              setIsBenchmarkModalOpen(false);
             }
           }}
         >
-          <div className="relative w-full max-w-5xl max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-border/70 px-5 py-4 bg-secondary/20">
+            <div className="flex items-center justify-between border-b border-border/70 px-4 sm:px-5 py-3.5 sm:py-4 bg-secondary/20">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="rounded-lg bg-primary/15 p-2 text-primary">
                   <Table className="size-4" />
@@ -672,37 +639,35 @@ export default function ComparePage() {
               </div>
 
               <div className="flex items-center gap-3">
-                <span className="text-xs text-muted-foreground font-mono">
+                <span className="text-xs text-muted-foreground font-mono hidden sm:inline">
                   {rows.length} region{rows.length !== 1 ? "s" : ""}
                 </span>
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
+                  onClick={() => setIsBenchmarkModalOpen(false)}
                   aria-label="Close benchmark table modal"
-                  className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground min-h-[36px] min-w-[36px] flex items-center justify-center"
                 >
                   <X className="size-4" />
                 </button>
               </div>
             </div>
 
-            {/* Modal Body: Spec #1 Upgraded Table with clear field divisions & Spec #4 On-click Interventions */}
-            <div className="overflow-y-auto p-5 hw-scroll space-y-4 max-h-[calc(88vh-4.5rem)]">
+            {/* Modal Body: Upgraded Table with clear divisions & On-click Interventions */}
+            <div className="overflow-y-auto p-3 sm:p-5 hw-scroll space-y-4 max-h-[calc(90vh-4.5rem)]">
               <div className="overflow-x-auto rounded-xl border border-border/80 shadow-xs">
-                <table className="w-full min-w-[760px] text-left text-xs border-collapse">
-                  {/* Spec #1: Clear field labels/headers with consistent divisions */}
+                <table className="w-full min-w-[720px] text-left text-xs border-collapse">
                   <thead className="label-caps">
                     <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
                       <th className="px-4 py-3 border-r border-border/50">Region</th>
                       <th className="px-3 py-3 border-r border-border/50">Risk</th>
                       <th className="px-3 py-3 text-right border-r border-border/50">
-                        Predicted ({meta.unit})
+                        {currentMonth.forecast ? "Predicted" : "Reported"} ({meta.unit})
                       </th>
                       <th className="px-3 py-3 text-right border-r border-border/50">95% CI</th>
                       <th className="px-3 py-3 text-right border-r border-border/50">Percentile</th>
                       <th className="px-3 py-3 text-right border-r border-border/50">3m Change</th>
                       <th className="px-3 py-3 border-r border-border/50">Dominant Illness</th>
-                      {/* Spec #4: Interventions column */}
                       <th className="px-4 py-3 text-center">Interventions</th>
                     </tr>
                   </thead>
@@ -710,7 +675,7 @@ export default function ComparePage() {
                     {rows.map((a) => {
                       const isExpanded = Boolean(expandedInterventions[a.region.code]);
                       const recs = recommendations(a);
-                      const isFocused = focusedRegionCode === a.region.code;
+                      const isFocused = benchmarkFocusedRegion === a.region.code;
 
                       return (
                         <tr
@@ -720,7 +685,6 @@ export default function ComparePage() {
                             isFocused && "ring-1 ring-primary/40 bg-primary/5",
                           )}
                         >
-                          {/* Spec #1: Vertical cell borders (border-r) & spaced column gutters (px-3.5 py-3) */}
                           <td className="px-4 py-3 font-medium border-r border-border/40">
                             <div className="flex items-center gap-1.5">
                               <span className="font-semibold text-foreground">{a.region.name}</span>
@@ -761,14 +725,13 @@ export default function ComparePage() {
                             {a.dominantIllness.shortName}
                           </td>
 
-                          {/* Spec #4: Interventions field/button that loads on click, not automatically */}
                           <td className="px-4 py-3 text-center">
                             <button
                               type="button"
                               onClick={() => toggleInterventions(a.region.code)}
                               aria-expanded={isExpanded}
                               className={cn(
-                                "inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors border",
+                                "inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors border min-h-[28px]",
                                 isExpanded
                                   ? "bg-primary text-primary-foreground border-primary shadow-xs font-semibold"
                                   : "border-border/80 text-primary hover:bg-primary/10",
@@ -789,11 +752,11 @@ export default function ComparePage() {
                 </table>
               </div>
 
-              {/* Spec #4: Interventions Content Revealed ONLY on deliberate user click */}
+              {/* Spec #3: Expanded Interventions — Duplicate diagnostic details removed per spec */}
               {rows.some((r) => expandedInterventions[r.region.code]) && (
                 <div className="space-y-4 pt-2">
                   <p className="label-caps text-[10px] text-muted-foreground uppercase tracking-wider">
-                    Expanded Public Health Interventions
+                    Recommended Public Health Actions
                   </p>
                   {rows
                     .filter((r) => expandedInterventions[r.region.code])
@@ -804,32 +767,16 @@ export default function ComparePage() {
                           key={`expanded-${a.region.code}`}
                           className="rounded-xl border border-border/80 bg-secondary/20 p-4 shadow-xs space-y-3 animate-in fade-in slide-in-from-top-1 duration-200"
                         >
-                          <div className="flex items-start justify-between gap-2 border-b border-border/60 pb-2.5">
-                            <div>
-                              <div className="flex items-center gap-1.5">
-                                <span className="label-caps font-bold text-foreground">
-                                  {a.region.short}
-                                </span>
-                                <span className="text-[10px] text-muted-foreground">·</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {a.region.name}
-                                </span>
-                              </div>
-                              <p className="text-[11px] text-muted-foreground mt-0.5">
-                                Triggered by a{" "}
-                                <span className="font-semibold text-foreground capitalize">
-                                  {a.risk}
-                                </span>{" "}
-                                tier at{" "}
-                                <span className="font-mono font-bold text-foreground">
-                                  {formatMetric(a.value, mode)} {meta.unit}
-                                </span>{" "}
-                                ({a.percentileRank}th national percentile). Dominant illness:{" "}
-                                <span className="font-medium text-foreground">
-                                  {a.dominantIllness.shortName}
-                                </span>
-                                .
-                              </p>
+                          {/* Region Header (clean, without repeating columns already visible in table) */}
+                          <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+                            <div className="flex items-center gap-1.5">
+                              <span className="label-caps font-bold text-foreground text-xs">
+                                {a.region.short}
+                              </span>
+                              <span className="text-[10px] text-muted-foreground">·</span>
+                              <span className="text-xs font-semibold text-foreground">
+                                {a.region.name}
+                              </span>
                             </div>
                             <RiskBadge risk={a.risk} />
                           </div>
@@ -852,7 +799,7 @@ export default function ComparePage() {
                             ))}
                           </div>
 
-                          {/* Spec #4: Button labeled to open full region analysis page */}
+                          {/* Button to open full region analysis page */}
                           <div className="pt-2 flex justify-end">
                             <Link
                               to="/region/$code"
@@ -868,6 +815,209 @@ export default function ComparePage() {
                     })}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Spec #4: Detailed Card View Modal (Triggered by clicking card body) */}
+      {detailedAssessment && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="detailed-card-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setDetailedCardRegionCode(null);
+            }
+          }}
+        >
+          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex items-start justify-between border-b border-border/70 p-4 sm:p-5 bg-card/50">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="label-caps text-xs font-bold text-foreground">
+                    {detailedAssessment.region.short}
+                  </span>
+                  <span className="text-muted-foreground text-xs">·</span>
+                  <span className="text-xs text-muted-foreground">
+                    {detailedAssessment.region.classification}
+                  </span>
+                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground uppercase">
+                    {detailedAssessment.region.island}
+                  </span>
+                </div>
+                <h2
+                  id="detailed-card-title"
+                  className="text-lg sm:text-xl font-bold text-foreground mt-0.5"
+                >
+                  {detailedAssessment.region.name}
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {detailedAssessment.region.density.toLocaleString()} persons/km² ·{" "}
+                  {detailedAssessment.region.population.toLocaleString()} population
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <RiskBadge risk={detailedAssessment.risk} />
+                <button
+                  type="button"
+                  onClick={() => setDetailedCardRegionCode(null)}
+                  aria-label="Close detailed card view"
+                  className="rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground min-h-[36px] min-w-[36px] flex items-center justify-center"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Body */}
+            <div className="overflow-y-auto p-4 sm:p-5 hw-scroll space-y-5">
+              {/* Primary Metric & Key Stats Strip */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                    {currentMonth.forecast ? "Predicted Volume" : "Reported Cases"}
+                  </p>
+                  <p className="font-mono text-xl sm:text-2xl font-bold text-foreground mt-0.5">
+                    {formatMetric(detailedAssessment.value, mode)}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">{meta.unit}</p>
+                </div>
+
+                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                    3-Mo Trajectory
+                  </p>
+                  <p
+                    className="font-mono text-xl sm:text-2xl font-bold mt-0.5"
+                    style={{
+                      color:
+                        detailedAssessment.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)",
+                    }}
+                  >
+                    {detailedAssessment.changePct >= 0 ? "+" : ""}
+                    {detailedAssessment.changePct}%
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">vs preceding quarter</p>
+                </div>
+
+                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                    National Percentile
+                  </p>
+                  <p className="font-mono text-xl sm:text-2xl font-bold text-foreground mt-0.5">
+                    {detailedAssessment.percentileRank}th
+                  </p>
+                  <p className="text-[10px] text-muted-foreground">seasonal distribution</p>
+                </div>
+
+                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
+                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                    Dominant Pathology
+                  </p>
+                  <p className="text-sm font-bold text-foreground truncate mt-1">
+                    {detailedAssessment.dominantIllness.shortName}
+                  </p>
+                  <p className="text-[10px] text-muted-foreground truncate">
+                    {detailedAssessment.dominantIllness.season} season driver
+                  </p>
+                </div>
+              </div>
+
+              {/* Expanded Detailed Trajectory Chart */}
+              <div className="rounded-xl border border-border/80 bg-card p-4 shadow-xs">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-foreground">
+                    Detailed Surveillance & Forecast Trajectory
+                  </p>
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    Target: {currentMonth.label}
+                  </span>
+                </div>
+
+                <DetailedChart
+                  regionCode={detailedAssessment.region.code}
+                  illness={illness}
+                  monthIndex={monthIndex}
+                  mode={mode}
+                  riskColor={RISK_META[detailedAssessment.risk].color}
+                />
+              </div>
+
+              {/* Model Validation & Epidemiological Notes */}
+              {detailedMetrics && (
+                <div className="rounded-xl border border-border/60 bg-secondary/15 p-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="label-caps text-[10px] font-semibold text-muted-foreground">
+                      Prophet Model Backtest & Reliability
+                    </p>
+                    <span
+                      className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase"
+                      style={{
+                        backgroundColor: RISK_META[detailedMetrics.tone].color,
+                        color: "#ffffff",
+                      }}
+                    >
+                      {detailedMetrics.label} Reliability
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-xs">
+                    <div className="rounded bg-card/60 p-2 border border-border/40">
+                      <span className="text-[9px] uppercase text-muted-foreground block">MAPE</span>
+                      <span className="font-bold text-foreground">{detailedMetrics.mape}%</span>
+                    </div>
+                    <div className="rounded bg-card/60 p-2 border border-border/40">
+                      <span className="text-[9px] uppercase text-muted-foreground block">MAE</span>
+                      <span className="font-bold text-foreground">
+                        {detailedMetrics.mae.toFixed(1)}
+                      </span>
+                    </div>
+                    <div className="rounded bg-card/60 p-2 border border-border/40">
+                      <span className="text-[9px] uppercase text-muted-foreground block">RMSE</span>
+                      <span className="font-bold text-foreground">
+                        {detailedMetrics.rmse.toFixed(1)}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground pt-1 leading-relaxed">
+                    {detailedMetrics.note} Primary transmission driver:{" "}
+                    <span className="text-foreground font-medium">
+                      {detailedAssessment.dominantIllness.driver}
+                    </span>
+                    .
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer with Links */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 p-4 bg-secondary/20">
+              <button
+                type="button"
+                onClick={() => {
+                  setBenchmarkFocusedRegion(detailedAssessment.region.code);
+                  setDetailedCardRegionCode(null);
+                  setIsBenchmarkModalOpen(true);
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
+              >
+                <Table className="size-3.5 text-primary" />
+                <span>Open in Benchmark Table</span>
+              </button>
+
+              <Link
+                to="/region/$code"
+                params={{ code: detailedAssessment.region.code }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-95 transition-all shadow-xs"
+              >
+                <span>Open Full {detailedAssessment.region.short} Analysis</span>
+                <ArrowUpRight className="size-3.5" />
+              </Link>
             </div>
           </div>
         </div>
@@ -890,7 +1040,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors",
+        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors min-h-[28px]",
         active
           ? "border-primary/50 bg-primary/15 text-primary font-medium"
           : "border-border text-muted-foreground hover:text-foreground",
@@ -910,7 +1060,7 @@ interface SparklineProps {
   riskColor: string;
 }
 
-// Spec #2: On-demand Mini-Chart showing actual cases and predicted cases
+// Compact Mini-Chart showing actual cases and predicted cases
 function RegionSparkline({
   regionCode,
   illness,
@@ -969,7 +1119,7 @@ function RegionSparkline({
 
   return (
     <div className="w-full">
-      {/* Spec #2: Visual mini-chart legend showing Actual vs Predicted */}
+      {/* Visual mini-chart legend showing Actual vs Predicted */}
       <div className="flex items-center justify-between text-[9px] text-muted-foreground mb-1 font-mono">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex items-center gap-1">
@@ -995,13 +1145,6 @@ function RegionSparkline({
           className="h-full w-full overflow-visible"
           preserveAspectRatio="none"
         >
-          <defs>
-            <linearGradient id={`grad-forecast-${regionCode}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={riskColor} stopOpacity="0.25" />
-              <stop offset="100%" stopColor={riskColor} stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
           {/* Reference line for 50% scale */}
           <line
             x1="8"
@@ -1026,7 +1169,7 @@ function RegionSparkline({
             />
           )}
 
-          {/* Forecast series: Dashed high-contrast line with risk tone */}
+          {/* Forecast series: Dashed line with risk tone */}
           {forecastPath && (
             <path
               d={forecastPath}
@@ -1053,6 +1196,201 @@ function RegionSparkline({
       <div className="flex items-center justify-between text-[8px] text-muted-foreground/80 mt-0.5 font-mono">
         <span>{firstPoint.label}</span>
         <span>Target: {lastPoint.label}</span>
+      </div>
+    </div>
+  );
+}
+
+// Expanded Detailed Chart for the Detailed Card View Modal (Spec #4)
+function DetailedChart({
+  regionCode,
+  illness,
+  monthIndex,
+  mode,
+  riskColor,
+}: {
+  regionCode: string;
+  illness: string;
+  monthIndex: number;
+  mode: MetricMode;
+  riskColor: string;
+}) {
+  const series = seriesFor(regionCode, illness);
+  const region = useMemo(() => REGIONS.find((r) => r.code === regionCode)!, [regionCode]);
+
+  // Extended 24-month window for high-resolution analysis
+  const windowSlice = useMemo(() => {
+    return series.slice(Math.max(0, monthIndex - 18), monthIndex + 1);
+  }, [series, monthIndex]);
+
+  const width = 560;
+  const height = 180;
+  const padLeft = 40;
+  const padRight = 16;
+  const padTop = 16;
+  const padBottom = 28;
+  const drawWidth = width - padLeft - padRight;
+  const drawHeight = height - padTop - padBottom;
+
+  const maxVal = useMemo(() => {
+    let m = 0.01;
+    for (const p of windowSlice) {
+      const v = metricValue(p.upper || p.cases, region, mode);
+      if (v > m) m = v;
+    }
+    return m * 1.1;
+  }, [windowSlice, region, mode]);
+
+  const points = useMemo(() => {
+    return windowSlice.map((p, i) => {
+      const v = metricValue(p.cases, region, mode);
+      const vLower = metricValue(p.lower || p.cases * 0.85, region, mode);
+      const vUpper = metricValue(p.upper || p.cases * 1.15, region, mode);
+
+      const x =
+        windowSlice.length <= 1
+          ? padLeft + drawWidth / 2
+          : padLeft + (i / (windowSlice.length - 1)) * drawWidth;
+      const y = padTop + drawHeight - (v / maxVal) * drawHeight;
+      const yLower = padTop + drawHeight - (vLower / maxVal) * drawHeight;
+      const yUpper = padTop + drawHeight - (vUpper / maxVal) * drawHeight;
+
+      return { x, y, yLower, yUpper, v, forecast: p.forecast, label: p.label };
+    });
+  }, [windowSlice, region, mode, maxVal, drawWidth, drawHeight]);
+
+  if (points.length === 0) return null;
+
+  const actualPoints = points.filter((p) => !p.forecast);
+  const predictedPoints = points.filter((p) => p.forecast);
+
+  const forecastBridgePoints =
+    actualPoints.length > 0 && predictedPoints.length > 0
+      ? [actualPoints[actualPoints.length - 1]!, ...predictedPoints]
+      : predictedPoints;
+
+  const actualPath = actualPoints.reduce((acc, pt, idx) => {
+    return `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+  }, "");
+
+  const forecastPath = forecastBridgePoints.reduce((acc, pt, idx) => {
+    return `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
+  }, "");
+
+  // Area polygon for forecast CI envelope
+  const ciAreaPath =
+    predictedPoints.length > 1
+      ? `${predictedPoints.reduce((acc, pt, idx) => `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.yUpper.toFixed(1)}`, "")} ${[...predictedPoints].reverse().reduce((acc, pt) => `${acc} L ${pt.x.toFixed(1)} ${pt.yLower.toFixed(1)}`, "")} Z`
+      : "";
+
+  const lastPoint = points[points.length - 1]!;
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mb-2">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-foreground" />
+            <span className="text-foreground">Actual</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="size-2 rounded-full" style={{ backgroundColor: riskColor }} />
+            <span style={{ color: riskColor }}>Predicted & 95% CI</span>
+          </span>
+        </div>
+        <span>Peak {formatMetric(maxVal, mode)}</span>
+      </div>
+
+      <div className="h-[180px] w-full rounded-lg bg-secondary/20 border border-border/50 overflow-hidden">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="h-full w-full overflow-visible"
+          preserveAspectRatio="none"
+        >
+          {/* Horizontal Grid lines */}
+          {[0, 0.5, 1].map((ratio) => {
+            const y = padTop + drawHeight * (1 - ratio);
+            return (
+              <g key={ratio}>
+                <line
+                  x1={padLeft}
+                  y1={y}
+                  x2={width - padRight}
+                  y2={y}
+                  stroke="var(--border)"
+                  strokeDasharray="3 3"
+                  strokeWidth="0.8"
+                />
+                <text
+                  x={padLeft - 6}
+                  y={y + 3}
+                  textAnchor="end"
+                  fontSize="9"
+                  fill="var(--muted-foreground)"
+                  className="font-mono"
+                >
+                  {formatMetric(maxVal * ratio, mode)}
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Forecast 95% CI Envelope */}
+          {ciAreaPath && <path d={ciAreaPath} fill={riskColor} fillOpacity="0.15" />}
+
+          {/* Actual series */}
+          {actualPath && (
+            <path
+              d={actualPath}
+              fill="none"
+              stroke="var(--foreground)"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {/* Forecast series */}
+          {forecastPath && (
+            <path
+              d={forecastPath}
+              fill="none"
+              stroke={riskColor}
+              strokeWidth="2.2"
+              strokeDasharray="4 3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+
+          {/* Highlight Target Endpoint Node */}
+          <circle
+            cx={lastPoint.x}
+            cy={lastPoint.y}
+            r="4.5"
+            fill="var(--background)"
+            stroke={riskColor}
+            strokeWidth="2.5"
+          />
+
+          {/* X Axis month labels (spaced every 4th point) */}
+          {points.map((p, idx) => {
+            if (idx % 4 !== 0 && idx !== points.length - 1) return null;
+            return (
+              <text
+                key={p.label}
+                x={p.x}
+                y={height - 8}
+                textAnchor="middle"
+                fontSize="9"
+                fill="var(--muted-foreground)"
+                className="font-mono"
+              >
+                {p.label.slice(5)}
+              </text>
+            );
+          })}
+        </svg>
       </div>
     </div>
   );
