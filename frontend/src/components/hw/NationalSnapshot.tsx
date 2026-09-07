@@ -75,13 +75,13 @@ export function NationalSnapshot({
         <LiveClock />
       </div>
 
-      {/* 2. Spacious Key Metrics Grid (3 Independent Cards) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      {/* 2. Key Metrics Grid (3 Cards: stacked on mobile, 3 cols on desktop) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {/* Card A: National Incidence */}
         <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
           <p className="label-caps text-[10px]">National Incidence</p>
           <div>
-            <p className="font-mono text-3xl font-bold tracking-tight tabular-nums text-foreground leading-none">
+            <p className="font-mono text-3xl font-bold tabular-nums tracking-normal text-foreground leading-none">
               {formatMetric(value, mode)}
             </p>
             <p className="mt-1.5 text-[11px] text-muted-foreground font-medium">
@@ -91,11 +91,11 @@ export function NationalSnapshot({
         </div>
 
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <p className="label-caps text-[10px]">Risk Distribution</p>
+        <div className="relative rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-2">
+            <p className="label-caps text-[10px] shrink-0">Risk Distribution</p>
             <span
-              className="relative"
+              className="relative shrink-0"
               onMouseEnter={() => setLegendOpen(true)}
               onMouseLeave={() => setLegendOpen(false)}
             >
@@ -109,14 +109,14 @@ export function NationalSnapshot({
                 <Info className="size-3" />
               </button>
               {legendOpen && (
-                <div className="glass-panel absolute left-0 top-full z-50 mt-1.5 w-64 rounded-lg border border-border p-2.5 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
+                <div className="glass-panel absolute right-0 top-full z-50 mt-1.5 w-56 sm:w-64 rounded-lg border border-border p-2.5 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
                   Colors show monthly risk tier (Low/Moderate/High). The alert marker shows a
                   seasonal outbreak flag for the upcoming dry or wet season.
                 </div>
               )}
             </span>
           </div>
-          <div className="flex flex-row sm:flex-col gap-2.5">
+          <div className="flex flex-col gap-2.5">
             {(["high", "moderate", "low"] as RiskLevel[]).map((r) => (
               <div key={r} className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
@@ -149,16 +149,17 @@ export function NationalSnapshot({
       </div>
 
       {/* 3. Controls Section: Illness Filter & Metric Mode */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-border/70 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3">
         {/* Illness Filters */}
         {onIllnessChange && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="label-caps text-[10px] shrink-0">Illness:</span>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <button
+                type="button"
                 onClick={() => onIllnessChange("all")}
                 className={cn(
-                  "rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                  "rounded-lg border px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
                   illness === "all"
                     ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
                     : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
@@ -168,10 +169,11 @@ export function NationalSnapshot({
               </button>
               {ILLNESSES.map((i) => (
                 <button
+                  type="button"
                   key={i.id}
                   onClick={() => onIllnessChange(i.id)}
                   className={cn(
-                    "rounded-lg border px-2.5 py-1 text-[11px] font-medium transition-colors",
+                    "rounded-lg border px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
                     illness === i.id
                       ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
                       : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
@@ -188,14 +190,15 @@ export function NationalSnapshot({
         {onModeChange && (
           <div className="flex items-center gap-2 shrink-0">
             <span className="label-caps text-[10px] shrink-0">Metric:</span>
-            <div className="flex rounded-lg border border-border/80 bg-secondary/30 p-0.5">
+            <div className="flex items-center rounded-lg border border-border/80 bg-secondary/30 p-0.5">
               {(["percapita", "raw"] as MetricMode[]).map((m) => (
                 <button
+                  type="button"
                   key={m}
                   onClick={() => onModeChange(m)}
                   aria-pressed={mode === m}
                   className={cn(
-                    "rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors",
+                    "rounded-md px-2.5 py-1 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
                     mode === m
                       ? "bg-primary/20 text-primary font-semibold shadow-xs"
                       : "text-muted-foreground hover:text-foreground",
@@ -211,13 +214,14 @@ export function NationalSnapshot({
         {/* Outbreak Marker Layer Toggle (opt-in, default off) */}
         {onOutbreakMarkersChange && (
           <button
+            type="button"
             onClick={() => onOutbreakMarkersChange(!showOutbreakMarkers)}
             aria-pressed={showOutbreakMarkers}
             className={cn(
-              "rounded-full border px-2.5 py-0.5 text-[11px] transition-colors",
+              "rounded-lg border px-3 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer",
               showOutbreakMarkers
-                ? "border-primary/50 bg-primary/15 text-primary font-medium"
-                : "border-border text-muted-foreground hover:text-foreground",
+                ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
+                : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
             )}
           >
             Outbreak markers: {showOutbreakMarkers ? "on" : "off"}
