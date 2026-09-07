@@ -133,25 +133,42 @@ export function ForecastCard({
               {formatMetric(a.value, mode)}
             </p>
 
-            {/* Integrated Per 100k / Raw Cases toggle (no standalone header) */}
+            {/* Animated iOS-style sliding switch toggle for Per 100k / Raw Cases */}
             {onModeChange && (
-              <div className="mt-2 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30">
-                {(["percapita", "raw"] as MetricMode[]).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => onModeChange(m)}
-                    aria-pressed={mode === m}
-                    className={cn(
-                      "rounded-md px-2 py-0.5 text-[10px] font-medium transition-colors text-center",
-                      mode === m
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {METRIC_META[m].short}
-                  </button>
-                ))}
+              <div
+                role="radiogroup"
+                aria-label="Metric representation"
+                className="relative mt-2.5 inline-flex h-7 w-44 items-center rounded-full border border-border/80 bg-secondary/50 p-0.5 shadow-inner select-none"
+              >
+                {/* Sliding indicator pill */}
+                <div
+                  className={cn(
+                    "absolute top-0.5 bottom-0.5 w-[calc(50%-3px)] rounded-full bg-primary shadow-xs transition-all duration-200 ease-out",
+                    mode === "percapita" ? "left-0.5" : "left-[calc(50%+1.5px)]",
+                  )}
+                  aria-hidden="true"
+                />
+
+                {(["percapita", "raw"] as MetricMode[]).map((m) => {
+                  const isActive = mode === m;
+                  return (
+                    <button
+                      key={m}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
+                      onClick={() => onModeChange(m)}
+                      className={cn(
+                        "relative z-10 flex-1 text-center text-[10px] font-semibold transition-colors duration-200 py-0.5",
+                        isActive
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      {METRIC_META[m].short}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
