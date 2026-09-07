@@ -200,6 +200,8 @@ pipeline_runs = Table(
 def _engine():
     db_url = os.environ.get("DATABASE_URL")
     if db_url:
+        if db_url.startswith("postgres://"):
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
         engine = create_engine(db_url, pool_pre_ping=True)
     else:
         ingest.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
