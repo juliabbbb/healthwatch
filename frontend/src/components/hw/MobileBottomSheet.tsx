@@ -81,7 +81,7 @@ export function MobileBottomSheet({
   return (
     <div
       className={cn(
-        "pointer-events-auto fixed inset-x-0 bottom-0 z-[600] flex flex-col transition-all duration-300 ease-out md:hidden",
+        "pointer-events-none fixed inset-x-0 bottom-0 z-[600] flex flex-col transition-all duration-300 ease-out md:hidden",
         isExpanded ? "h-[85vh]" : "h-auto",
       )}
     >
@@ -89,7 +89,7 @@ export function MobileBottomSheet({
       {isExpanded && (
         <div
           onClick={() => setIsExpanded(false)}
-          className="fixed inset-0 z-[-1] bg-black/60 backdrop-blur-xs transition-opacity duration-300"
+          className="pointer-events-auto fixed inset-0 z-[-1] bg-black/65 backdrop-blur-xs transition-opacity duration-300"
           aria-hidden="true"
         />
       )}
@@ -97,7 +97,7 @@ export function MobileBottomSheet({
       {/* Main Drawer Container */}
       <div
         className={cn(
-          "flex flex-col w-full h-full rounded-t-2xl border-t border-x border-border/80 bg-card/98 backdrop-blur-2xl shadow-2xl transition-all duration-300 overflow-hidden",
+          "pointer-events-auto flex flex-col w-full h-full rounded-t-2xl border-t border-x border-border/80 bg-card/98 backdrop-blur-2xl shadow-2xl transition-all duration-300 overflow-hidden",
           !isExpanded && "pb-1 sm:pb-2",
         )}
       >
@@ -110,11 +110,11 @@ export function MobileBottomSheet({
           role="button"
           tabIndex={0}
           aria-expanded={isExpanded}
-          aria-label={isExpanded ? "Collapse region drawer" : "Expand region drawer"}
-          className="cursor-pointer select-none border-b border-border/40 px-3 pt-1.5 pb-2 active:bg-secondary/30 transition-colors"
+          aria-label={isExpanded ? "Collapse region details" : "Expand region details sheet"}
+          className="group cursor-pointer select-none border-b border-border/40 px-3.5 pt-2 pb-2.5 active:bg-secondary/40 transition-colors"
         >
-          {/* Pull indicator */}
-          <div className="mx-auto mb-1.5 h-1 w-10 rounded-full bg-muted-foreground/30 transition-colors hover:bg-muted-foreground/50" />
+          {/* Tactile Pull indicator */}
+          <div className="mx-auto mb-2 h-1.5 w-12 rounded-full bg-muted-foreground/40 transition-all duration-200 group-hover:bg-primary/60 group-hover:w-14" />
 
           {/* Compact Single-Row Peek Content */}
           <div className="flex items-center justify-between gap-2 min-w-0">

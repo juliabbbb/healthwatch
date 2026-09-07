@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { Activity, Globe, X } from "lucide-react";
+import { Activity, ChevronDown, Globe, X } from "lucide-react";
 import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
@@ -120,11 +120,13 @@ function MapView() {
       <div className="pointer-events-auto absolute left-3 top-3 z-30 flex md:hidden items-center">
         <button
           onClick={() => setMobileNationalOpen(true)}
-          aria-label="Open national overview"
-          className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-foreground shadow-md active:scale-95 transition-transform border border-border/80"
+          aria-label="Open national surveillance overview"
+          aria-expanded={mobileNationalOpen}
+          className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-foreground shadow-md hover:shadow-lg hover:border-primary/50 hover:bg-secondary/60 active:scale-95 transition-all duration-150 border border-border/80 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
         >
-          <Globe className="size-3.5 text-primary shrink-0" />
+          <Globe className="size-3.5 text-primary shrink-0 transition-transform group-hover:scale-110" />
           <span>PH · {counts.high} High</span>
+          <ChevronDown className="size-3 text-muted-foreground/80 shrink-0 ml-0.5 transition-transform duration-150 group-hover:translate-y-0.5" />
         </button>
       </div>
 

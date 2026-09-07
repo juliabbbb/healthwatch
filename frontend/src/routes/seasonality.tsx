@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Bot, Waves } from "lucide-react";
+import { ArrowLeft, Bot, MoreHorizontal, Sparkles, Waves } from "lucide-react";
 import { AcfChart, DecompositionChart } from "@/components/hw/Charts";
 import { AIExplanationModal, type SeasonalityComponent } from "@/components/hw/AIExplanationModal";
 import {
@@ -50,7 +50,7 @@ function SeasonalityPage() {
   const [illness, setIllness] = useState("all");
   const region = REGION_BY_CODE[code]!;
 
-  // Right-click → AI explanation workflow. Opt-in: when the setting is off,
+  // Right-click or CTA button tap → AI explanation workflow. Opt-in: when the setting is off,
   // choosing an AI action opens Settings instead and makes zero requests.
   const [aiEnabled] = useAiAnalysisSetting();
   const [menu, setMenu] = useState<ContextMenuAnchor | null>(null);
@@ -59,7 +59,16 @@ function SeasonalityPage() {
 
   const openMenu = (e: React.MouseEvent, section: string) => {
     e.preventDefault();
-    setMenu({ x: e.clientX, y: e.clientY, section });
+    e.stopPropagation();
+    let x = e.clientX;
+    let y = e.clientY;
+
+    if (e.currentTarget && (!x || !y || e.type === "click")) {
+      const rect = e.currentTarget.getBoundingClientRect();
+      x = rect.left + Math.min(rect.width / 2, 120);
+      y = rect.bottom + 4;
+    }
+    setMenu({ x, y, section });
   };
 
   const requestExplain = (component: SeasonalityComponent) => {
@@ -175,47 +184,74 @@ function SeasonalityPage() {
         </div>
       </div>
 
-      <div
-        className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-        onContextMenu={(e) => openMenu(e, "kpis")}
-      >
-        <Kpi
-          label="Seasonality strength"
-          value={`${Math.round(stats.strength * 100)}%`}
-          sub="var(seasonal) / (var(seasonal) + var(residual))"
-        />
-        <Kpi
-          label="ACF at lag 12"
-          value={stats.lag12.toFixed(2)}
-          sub={
-            stats.lag12 > 0.4
-              ? "Strong annual cycle confirmed"
-              : "Weak annual cycle — check drivers"
-          }
-        />
-        <Kpi
-          label="Dominant cycle"
-          value={`${stats.peak.lag} months`}
-          sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 6) ${stats.lag6.toFixed(2)}`}
-        />
-        <Kpi
-          label="Typical peak"
-          value={stats.peakMonth}
-          sub={`Median seasonal index · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
-        />
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <p className="label-caps text-xs">Summary Metrics</p>
+          <button
+            onClick={(e) => openMenu(e, "kpis")}
+            aria-label="Open AI analysis options for summary metrics"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 cursor-pointer"
+          >
+            <Sparkles className="size-3.5" />
+            <span>AI Options</span>
+            <MoreHorizontal className="size-3.5 text-primary/70" />
+          </button>
+        </div>
+        <div
+          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+          onContextMenu={(e) => openMenu(e, "kpis")}
+        >
+          <Kpi
+            label="Seasonality strength"
+            value={`${Math.round(stats.strength * 100)}%`}
+            sub="var(seasonal) / (var(seasonal) + var(residual))"
+          />
+          <Kpi
+            label="ACF at lag 12"
+            value={stats.lag12.toFixed(2)}
+            sub={
+              stats.lag12 > 0.4
+                ? "Strong annual cycle confirmed"
+                : "Weak annual cycle — check drivers"
+            }
+          />
+          <Kpi
+            label="Dominant cycle"
+            value={`${stats.peak.lag} months`}
+            sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 6) ${stats.lag6.toFixed(2)}`}
+          />
+          <Kpi
+            label="Typical peak"
+            value={stats.peakMonth}
+            sub={`Median seasonal index · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
+          />
+        </div>
       </div>
 
       <section
         className="mt-6 rounded-xl border border-border bg-card/40 p-4"
         onContextMenu={(e) => openMenu(e, "decomposition")}
       >
-        <h2 className="text-lg">Trend / seasonality / noise</h2>
-        <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
-          {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026 split
-          into a 12-month centred moving-average trend, a month-of-year seasonal index and the
-          irregular remainder.
-        </p>
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div>
+            <h2 className="text-lg font-semibold">Trend / seasonality / noise</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026 split
+              into a 12-month centred moving-average trend, a month-of-year seasonal index and the
+              irregular remainder.
+            </p>
+          </div>
+          <button
+            onClick={(e) => openMenu(e, "decomposition")}
+            aria-label="Open AI analysis menu for decomposition chart"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer"
+          >
+            <Sparkles className="size-3.5" />
+            <span>AI Analysis</span>
+            <MoreHorizontal className="size-3.5 text-primary/70" />
+          </button>
+        </div>
+        <div className="grid gap-4 lg:grid-cols-2 mt-3">
           {(
             [
               ["observed", "Observed series"],
@@ -236,12 +272,27 @@ function SeasonalityPage() {
         className="mt-6 rounded-xl border border-border bg-card/40 p-4"
         onContextMenu={(e) => openMenu(e, "acf")}
       >
-        <h2 className="text-lg">12-month cycle indicators</h2>
-        <p className="mb-3 mt-0.5 text-xs text-muted-foreground">
-          Autocorrelation of the observed series against itself at increasing lags. A pronounced
-          spike at lag 12 (marked) is the signature of a recurring annual outbreak cycle.
-        </p>
-        <AcfChart regionCode={code} illness={illness} height={200} />
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div>
+            <h2 className="text-lg font-semibold">12-month cycle indicators</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Autocorrelation of the observed series against itself at increasing lags. A pronounced
+              spike at lag 12 (marked) is the signature of a recurring annual outbreak cycle.
+            </p>
+          </div>
+          <button
+            onClick={(e) => openMenu(e, "acf")}
+            aria-label="Open AI analysis menu for cycle indicators chart"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer"
+          >
+            <Sparkles className="size-3.5" />
+            <span>AI Analysis</span>
+            <MoreHorizontal className="size-3.5 text-primary/70" />
+          </button>
+        </div>
+        <div className="mt-3">
+          <AcfChart regionCode={code} illness={illness} height={200} />
+        </div>
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           <SeasonTag season="wet" />
           <span>

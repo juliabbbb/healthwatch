@@ -60,9 +60,9 @@ export function SeasonalityContextMenu({
 
   if (!anchor) return null;
 
-  const estimatedHeight = actions.length * ITEM_HEIGHT + 16;
-  const left = Math.min(anchor.x, window.innerWidth - MENU_WIDTH - 8);
-  const top = Math.min(anchor.y, window.innerHeight - estimatedHeight - 8);
+  const estimatedHeight = actions.length * ITEM_HEIGHT + 60;
+  const left = Math.max(8, Math.min(anchor.x, window.innerWidth - MENU_WIDTH - 8));
+  const top = Math.max(8, Math.min(anchor.y, window.innerHeight - estimatedHeight - 8));
 
   return (
     <div

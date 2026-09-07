@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
-import { ArrowLeft, GitCompare } from "lucide-react";
+import { ArrowLeft, GitCompare, Sparkles } from "lucide-react";
 import { AcfChart, DecompositionChart, ForecastChart } from "@/components/hw/Charts";
 import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
@@ -198,6 +198,15 @@ function RegionDetail() {
       <Panel
         title="Seasonal pattern decomposition"
         subtitle="Observed series split into trend, month-of-year seasonality and irregular residual (STL-equivalent)."
+        action={
+          <Link
+            to="/seasonality"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 shrink-0"
+          >
+            <Sparkles className="size-3.5" />
+            <span>AI Analysis</span>
+          </Link>
+        }
       >
         <div className="grid gap-4 lg:grid-cols-2">
           {(["observed", "trend", "seasonal", "residual"] as const).map((c) => (
@@ -254,15 +263,22 @@ function Panel({
   title,
   subtitle,
   children,
+  action,
 }: {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
+  action?: React.ReactNode;
 }) {
   return (
     <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
-      <h2 className="text-lg">{title}</h2>
-      {subtitle && <p className="mb-3 mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <h2 className="text-lg">{title}</h2>
+          {subtitle && <p className="mb-3 mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
+        </div>
+        {action}
+      </div>
       {children}
     </section>
   );
