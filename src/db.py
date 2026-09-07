@@ -227,7 +227,7 @@ def _region_code(label):
 
 
 def _to_mid(dates, col="target_date"):
-    return pd.to_datetime(dates).dt.to_period("M").dt.to_timestamp()
+    return pd.to_datetime(dates).dt.to_period("M").dt.to_timestamp().dt.date
 
 
 def _load_csv(name):
@@ -302,7 +302,7 @@ def build_db():
                 out = out.drop(columns=[c for c in drop if c in out.columns])
             return out
 
-        fcst = _remap(_load_csv("forecasts.csv"), "region_code")
+        fcst = _remap(_load_csv("forecasts.csv"), "region_code", date_col="target_date")
         if fcst is not None and not fcst.empty:
             conn.execute(forecasts.insert(), fcst.to_dict(orient="records"))
 

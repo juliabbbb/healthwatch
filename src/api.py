@@ -634,7 +634,7 @@ def status():
         "generated_at": generated.isoformat(),
         "data_through": {
             "date": last_date.date().isoformat(),
-            "month": f"{last_date.year}-{last_date.month:02d}",
+            "month": f"{int(last_date.year)}-{int(last_date.month):02d}",
         },
         "supported_diseases": SUPPORTED_DISEASES,
     }

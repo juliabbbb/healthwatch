@@ -438,7 +438,7 @@ export default function ComparePage() {
                 </p>
                 <p className="text-[11px] text-muted-foreground">
                   Global scale: 0–{formatMetric(globalMax, mode)} {meta.unit} · Tap card for
-                  detailed view or use button below for benchmark table
+                  detailed view
                 </p>
               </div>
 
@@ -569,19 +569,17 @@ export default function ComparePage() {
                     </div>
                   </div>
 
-                  {/* Spec #4: Card Footer with isolated, distinct Benchmark Table trigger button */}
+                  {/* Card Footer: Open Full Regional Analysis button & 95% CI */}
                   <div className="mt-4 pt-2.5 border-t border-border/50 flex items-center justify-between gap-2 text-xs">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpenBenchmarkTable(a.region.code);
-                      }}
+                    <Link
+                      to="/region/$code"
+                      params={{ code: a.region.code }}
+                      onClick={(e) => e.stopPropagation()}
                       className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary hover:bg-primary/20 transition-colors min-h-[30px]"
                     >
-                      <Table className="size-3" />
-                      <span>Benchmark Table</span>
-                    </button>
+                      <span>Open full {a.region.short} analysis</span>
+                      <ArrowUpRight className="size-3" />
+                    </Link>
 
                     <span className="text-[10px] text-muted-foreground/80 font-mono">
                       95% CI: {formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–
@@ -996,24 +994,11 @@ export default function ComparePage() {
             </div>
 
             {/* Footer with Links */}
-            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 p-4 bg-secondary/20">
-              <button
-                type="button"
-                onClick={() => {
-                  setBenchmarkFocusedRegion(detailedAssessment.region.code);
-                  setDetailedCardRegionCode(null);
-                  setIsBenchmarkModalOpen(true);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card px-3.5 py-1.5 text-xs font-semibold text-foreground hover:bg-secondary transition-colors"
-              >
-                <Table className="size-3.5 text-primary" />
-                <span>Open in Benchmark Table</span>
-              </button>
-
+            <div className="flex items-center justify-end p-4 border-t border-border/70 bg-secondary/20">
               <Link
                 to="/region/$code"
                 params={{ code: detailedAssessment.region.code }}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary px-3.5 py-1.5 text-xs font-semibold text-primary-foreground hover:opacity-95 transition-all shadow-xs"
+                className="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border border-primary/40 bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-95 transition-all shadow-xs"
               >
                 <span>Open Full {detailedAssessment.region.short} Analysis</span>
                 <ArrowUpRight className="size-3.5" />
