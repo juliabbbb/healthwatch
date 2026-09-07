@@ -54,11 +54,11 @@ function Methodology() {
       <Section title="Data sources">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>
-            <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong>{" "}
-            — the PIDSR morbidity-week case series per administrative region, summed to calendar
-            months, republished for open research by the UPRI-NOAH dengue-rainfall dataset
-            (Zenodo 10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every
-            series in the system.
+            <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong> — the
+            PIDSR morbidity-week case series per administrative region, summed to calendar months,
+            republished for open research by the UPRI-NOAH dengue-rainfall dataset (Zenodo
+            10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every series
+            in the system.
           </li>
           <li>
             <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
@@ -67,8 +67,8 @@ function Methodology() {
         </ul>
         <p className="mt-3 rounded-lg border border-border bg-card/60 p-3 text-xs text-muted-foreground">
           This dashboard runs live: case series, forecasts, risk tiers and validation metrics are
-          served by a FastAPI backend reading from a PostgreSQL database on Supabase, built
-          entirely by the Python pipeline (<code>src/</code>). No values shown are synthetic.
+          served by a FastAPI backend reading from a PostgreSQL database on Supabase, built entirely
+          by the Python pipeline (<code>src/</code>). No values shown are synthetic.
         </p>
       </Section>
 
@@ -80,10 +80,10 @@ function Methodology() {
             series per region (56 months: January 2022 through August 2026).
           </li>
           <li>
-            <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry season
-            flag; non-negativity clipping is enforced on all counts before modelling. Lag features
-            (1 and 12 months) and a 3-month rolling mean capture short-memory and same-month-last-year
-            persistence.
+            <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry
+            season flag; non-negativity clipping is enforced on all counts before modelling. Lag
+            features (1 and 12 months) and a 3-month rolling mean capture short-memory and
+            same-month-last-year persistence.
           </li>
           <li>
             <strong>Forecasting model.</strong> One <strong>Prophet</strong> model per region
@@ -117,9 +117,9 @@ function Methodology() {
         </ul>
         <p className="mt-3 text-sm text-foreground/85">
           Reported metrics per region: MAE, RMSE, MAPE, and{" "}
-          <strong>skill versus a seasonal-naïve baseline</strong> (“same month last year”). Raw
-          MAPE alone is not used for tiering because near-zero case months inflate it into triple
-          digits even when forecasts are epidemiologically useful.
+          <strong>skill versus a seasonal-naïve baseline</strong> (“same month last year”). Raw MAPE
+          alone is not used for tiering because near-zero case months inflate it into triple digits
+          even when forecasts are epidemiologically useful.
         </p>
       </Section>
 
@@ -163,11 +163,10 @@ function Methodology() {
       <Section title="Seasonal outbreak indicator">
         <p className="text-sm text-foreground/85">
           On top of the monthly tier, the pipeline publishes a season-level outbreak flag for the
-          coming{" "}
-          <strong>dry window (Jan–Mar)</strong> and{" "}
-          <strong>wet window (Jul–Sep, the climatological peak)</strong>. Each purpose-built
-          Prophet probe forecasts the 3 months of that window; a region is flagged when either
-          rule fires on the probe:
+          coming <strong>dry window (Jan–Mar)</strong> and{" "}
+          <strong>wet window (Jul–Sep, the climatological peak)</strong>. Each purpose-built Prophet
+          probe forecasts the 3 months of that window; a region is flagged when either rule fires on
+          the probe:
         </p>
         <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
           <li>
@@ -182,11 +181,10 @@ function Methodology() {
         <p className="mt-3 text-sm text-foreground/85">
           The upcoming season used for outbreak detection is determined automatically from the
           current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May, per PAGASA's
-          climatological definition) — it is not pulled from PAGASA or any live weather source.
-          This keeps the indicator reproducible and directly
-          implements Objective 2's goal of predicting cases "during an upcoming season (dry or
-          wet)" as the basis for outbreak detection (Objective 2 → feeds Objective 3's
-          classification).
+          climatological definition) — it is not pulled from PAGASA or any live weather source. This
+          keeps the indicator reproducible and directly implements Objective 2's goal of predicting
+          cases "during an upcoming season (dry or wet)" as the basis for outbreak detection
+          (Objective 2 → feeds Objective 3's classification).
         </p>
         <p className="mt-3 text-sm text-foreground/85">
           Crucially, these flags were <strong>locked without retuning</strong> after a prospective
@@ -195,18 +193,18 @@ function Methodology() {
           flag scored <strong>precision 0.43, recall 0.68, F1 0.53</strong> (13 true positives, 17
           false positives, 6 missed surges). Dry-season accuracy was strong while the wet season
           over-warns rather than misses a surge; that conservative posture is deliberate for a
-          public-health alerting layer and is the reason wet-season flags are framed as a watch,
-          not a confirmation.
+          public-health alerting layer and is the reason wet-season flags are framed as a watch, not
+          a confirmation.
         </p>
       </Section>
 
       <Section title="Known-epidemic check">
         <p className="text-sm text-foreground/85">
           As an independent sanity check, the classification method was run against a real,
-          pre-declared national emergency: DOH declared a national dengue epidemic on 6 August
-          2019. Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
-          standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts
-          with weekly equivalents of the same percentile thresholds:
+          pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
+          Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
+          standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
+          weekly equivalents of the same percentile thresholds:
         </p>
         <div className="mt-3 overflow-hidden rounded-lg border border-border">
           <table className="w-full text-xs">
@@ -236,18 +234,19 @@ function Methodology() {
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
           All 7 of 7 weeks classify as High against the fixture&rsquo;s 2016–2018 weekly reference
-          distribution. Reproduce with{" "}
-          <code>python -m src.validate_known_epidemic</code>.
+          distribution. Reproduce with <code>python -m src.validate_known_epidemic</code>.
         </p>
       </Section>
 
       <Section title="Deterministic rules enforced">
         <ul className="space-y-2 text-sm text-foreground/85">
           <li>Non-negativity: no predicted or lower-bound value may fall below zero.</li>
-          <li>Season flagging: every month carries a calendar-based wet/dry tag, shaded on all charts.</li>
           <li>
-            Transparent tiers: thresholds are plain percentiles — reproducible without refitting
-            any model.
+            Season flagging: every month carries a calendar-based wet/dry tag, shaded on all charts.
+          </li>
+          <li>
+            Transparent tiers: thresholds are plain percentiles — reproducible without refitting any
+            model.
           </li>
         </ul>
       </Section>
@@ -301,9 +300,9 @@ function Methodology() {
             showing estimated events.
           </li>
           <li>
-            <strong>No weather map layers.</strong> Precipitation, temperature and humidity
-            overlays were removed because they are not live feeds; the model's only
-            weather-adjacent signal is the deterministic calendar-based wet/dry season flag.
+            <strong>No weather map layers.</strong> Precipitation, temperature and humidity overlays
+            were removed because they are not live feeds; the model's only weather-adjacent signal
+            is the deterministic calendar-based wet/dry season flag.
           </li>
           <li>
             Region-level resolution only — province and city-level hotspots are a later phase.

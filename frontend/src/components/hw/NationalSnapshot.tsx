@@ -90,7 +90,7 @@ export function NationalSnapshot({
           </div>
         </div>
 
-{/* Card B: Regional Risk Breakdown with legend tooltip */}
+        {/* Card B: Regional Risk Breakdown with legend tooltip */}
         <div className="rounded-xl border border-border/70 bg-secondary/30 px-4 py-4 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <p className="label-caps text-[10px]">Risk Distribution</p>

@@ -1,14 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { ChevronDown, X } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
-import {
-  METRIC_META,
-  assessRegion,
-  formatMetric,
-  monthMeta,
-  type MetricMode,
-} from "@/lib/healthwatch/data";
+import { METRIC_META, assessRegion, formatMetric, type MetricMode } from "@/lib/healthwatch/data";
 import { RiskBadge } from "./RiskBadge";
 import { ForecastCard } from "./ForecastCard";
 
@@ -36,14 +30,21 @@ export function MobileBottomSheet({
   const [isExpanded, setIsExpanded] = useState(false);
   const [lastRegionCode, setLastRegionCode] = useState<string | null>(regionCode);
 
-  const touchStartY = useRef<number | null>(null);
-  const touchCurrentY = useRef<number | null>(null);
+  // Real-time gesture drag state
+  const [dragOffsetY, setDragOffsetY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const dragStartPos = useRef<{ y: number; time: number } | null>(null);
+  const currentDragPos = useRef<{ y: number; time: number } | null>(null);
+  const isExpandedRef = useRef(isExpanded);
+  isExpandedRef.current = isExpanded;
 
   // Maintain active region code during exit animation
   useEffect(() => {
     if (regionCode) {
       setLastRegionCode(regionCode);
       setIsExpanded(false);
+      setDragOffsetY(0);
     }
   }, [regionCode]);
 
@@ -56,52 +57,128 @@ export function MobileBottomSheet({
   const a = assessRegion(activeCode, illness, monthIndex, mode);
   const unit = METRIC_META[mode].unit;
 
-  // Touch gesture handlers for dragging card/sheet
-  const handleTouchStart = (e: React.TouchEvent) => {
-    const first = e.touches[0];
-    if (!first) return;
-    touchStartY.current = first.clientY;
-    touchCurrentY.current = first.clientY;
+  // Touch & Pointer Gesture Handlers
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== undefined && e.button !== 0) return;
+
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    } catch {
+      // Fallback if capture unavailable
+    }
+
+    const now = performance.now();
+    dragStartPos.current = { y: e.clientY, time: now };
+    currentDragPos.current = { y: e.clientY, time: now };
+    setIsDragging(true);
+    setDragOffsetY(0);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    const first = e.touches[0];
-    if (!first) return;
-    touchCurrentY.current = first.clientY;
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || !dragStartPos.current) return;
+
+    const now = performance.now();
+    const currentY = e.clientY;
+    currentDragPos.current = { y: currentY, time: now };
+
+    const deltaY = currentY - dragStartPos.current.y;
+
+    if (isExpandedRef.current) {
+      // Expanded sheet dragging logic
+      if (deltaY > 0) {
+        // Dragging down towards collapse
+        setDragOffsetY(deltaY);
+      } else {
+        // Dragging up past top limit (elastic rubber-band resistance)
+        setDragOffsetY(deltaY * 0.2);
+      }
+    } else {
+      // Collapsed floating card dragging logic
+      setDragOffsetY(deltaY);
+    }
   };
 
-  const handleTouchEnd = () => {
-    const startY = touchStartY.current;
-    const endY = touchCurrentY.current;
-    if (startY !== null && endY !== null) {
-      const deltaY = endY - startY;
-      // Dragged upwards -> expand to full sheet
-      if (deltaY < -30) {
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging || !dragStartPos.current) return;
+
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Ignore
+    }
+
+    const startY = dragStartPos.current.y;
+    const startTime = dragStartPos.current.time;
+    const endY = currentDragPos.current?.y ?? e.clientY;
+    const endTime = currentDragPos.current?.time ?? performance.now();
+
+    const deltaY = endY - startY;
+    const deltaTime = Math.max(1, endTime - startTime);
+    const velocityY = deltaY / deltaTime; // px/ms
+
+    setIsDragging(false);
+
+    // Tap / Click threshold check (< 6px movement)
+    if (Math.abs(deltaY) < 6) {
+      setIsExpanded((prev) => !prev);
+      setDragOffsetY(0);
+      dragStartPos.current = null;
+      currentDragPos.current = null;
+      return;
+    }
+
+    if (isExpandedRef.current) {
+      // In Expanded mode: drag down > 70px or fast swipe down -> Collapse
+      if (deltaY > 70 || velocityY > 0.35) {
+        setIsExpanded(false);
+      }
+    } else {
+      // In Collapsed mode: drag up > 50px or fast swipe up -> Expand
+      if (deltaY < -50 || velocityY < -0.35) {
         setIsExpanded(true);
       }
-      // Dragged downwards
-      else if (deltaY > 30) {
-        if (isExpanded) {
-          // If expanded, collapse back to floating summary card
-          setIsExpanded(false);
-        } else if (onClose) {
-          // If already collapsed, dismiss region entirely
+      // Drag down > 70px or fast swipe down -> Dismiss
+      else if (deltaY > 70 || velocityY > 0.4) {
+        if (onClose) {
           onClose();
         }
       }
     }
-    touchStartY.current = null;
-    touchCurrentY.current = null;
+
+    setDragOffsetY(0);
+    dragStartPos.current = null;
+    currentDragPos.current = null;
   };
+
+  const handlePointerCancel = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDragging) return;
+    try {
+      (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+    } catch {
+      // Ignore if pointer capture was already released or unavailable
+    }
+    setIsDragging(false);
+    setDragOffsetY(0);
+    dragStartPos.current = null;
+    currentDragPos.current = null;
+  };
+
+  // Dynamic backdrop opacity calculation during drag
+  const calculatedOpacity = isExpanded
+    ? Math.max(0, 1 - (isDragging && dragOffsetY > 0 ? dragOffsetY / 350 : 0))
+    : Math.min(1, isDragging && dragOffsetY < 0 ? -dragOffsetY / 250 : 0);
+
+  const showBackdrop = isVisible && (isExpanded || (isDragging && dragOffsetY < -30));
 
   return (
     <>
-      {/* 1. Backdrop Overlay (Appears only when Expanded state is active) */}
+      {/* 1. Backdrop Overlay */}
       <div
         onClick={() => setIsExpanded(false)}
+        style={{ opacity: showBackdrop ? calculatedOpacity : 0 }}
         className={cn(
           "fixed inset-0 z-[590] bg-black/60 backdrop-blur-xs transition-opacity duration-300 md:hidden",
-          isVisible && isExpanded ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+          showBackdrop ? "pointer-events-auto" : "pointer-events-none",
         )}
         aria-hidden="true"
       />
@@ -109,18 +186,19 @@ export function MobileBottomSheet({
       {/* 2. State-driven Sheet / Floating Card Container */}
       <div
         className={cn(
-          "fixed z-[600] flex flex-col md:hidden transition-all duration-300 ease-in-out",
-          // Mutually Exclusive Geometry:
-          // Expanded -> Snaps to fill ~85vh vertically, 0 side/bottom margins
-          // Collapsed -> Compact floating card with side & bottom margins over the map
+          "fixed z-[600] flex flex-col md:hidden",
           isExpanded
             ? "inset-x-0 bottom-0 h-[85vh] px-0 pb-0"
             : "inset-x-3 bottom-3 h-auto max-w-lg mx-auto",
-          // Entry/Exit Motion: Smooth slide up/down + opacity fade
-          isVisible
-            ? "translate-y-0 opacity-100 pointer-events-auto"
-            : "translate-y-[120%] opacity-0 pointer-events-none",
+          isVisible ? "pointer-events-auto" : "pointer-events-none",
         )}
+        style={{
+          transform: isVisible ? `translateY(${dragOffsetY}px)` : "translateY(120%)",
+          opacity: isVisible ? 1 : 0,
+          transition: isDragging
+            ? "none"
+            : "transform 320ms cubic-bezier(0.32, 0.72, 0, 1), height 320ms cubic-bezier(0.32, 0.72, 0, 1), opacity 250ms ease",
+        }}
       >
         {/* Main Card Surface */}
         <div
@@ -131,18 +209,25 @@ export function MobileBottomSheet({
         >
           {/* Header & Touch Drag Handle */}
           <div
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            onClick={() => setIsExpanded(!isExpanded)}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerCancel}
             role="button"
             tabIndex={0}
             aria-expanded={isExpanded}
             aria-label={isExpanded ? "Collapse region details" : "Expand region details sheet"}
-            className="group cursor-pointer select-none border-b border-border/40 px-3.5 pt-2.5 pb-3 active:bg-secondary/40 transition-colors shrink-0"
+            className="group cursor-grab active:cursor-grabbing select-none touch-none border-b border-border/40 px-3.5 pt-2.5 pb-3 active:bg-secondary/40 transition-colors shrink-0"
           >
             {/* Pill Drag Handle Affordance */}
-            <div className="mx-auto mb-2.5 h-1.5 w-12 rounded-full bg-muted-foreground/40 transition-all duration-200 group-hover:bg-primary/60 group-hover:w-14" />
+            <div
+              className={cn(
+                "mx-auto mb-2.5 h-1.5 rounded-full transition-all duration-200",
+                isDragging
+                  ? "bg-primary w-16 scale-y-110"
+                  : "w-12 bg-muted-foreground/40 group-hover:bg-primary/60 group-hover:w-14",
+              )}
+            />
 
             {/* Single-Row Summary Bar */}
             <div className="flex items-center justify-between gap-2.5 min-w-0">
@@ -169,27 +254,27 @@ export function MobileBottomSheet({
 
                 <RiskBadge risk={a.risk} />
 
-                {/* Chevron expand/collapse toggle button */}
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsExpanded((prev) => !prev);
-                  }}
-                  aria-label={isExpanded ? "Collapse region details" : "Expand region details"}
-                  className="rounded-lg p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors active:scale-95"
-                >
-                  {isExpanded ? (
+                {/* Chevron collapse button (Only rendered when expanded) */}
+                {isExpanded && (
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsExpanded(false);
+                    }}
+                    aria-label="Collapse region details"
+                    className="rounded-lg p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors active:scale-95"
+                  >
                     <ChevronDown className="size-4" />
-                  ) : (
-                    <ChevronUp className="size-4" />
-                  )}
-                </button>
+                  </button>
+                )}
 
                 {/* Dismiss Close (X) button */}
                 {onClose && (
                   <button
                     type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
                     onClick={(e) => {
                       e.stopPropagation();
                       onClose();
@@ -226,4 +311,3 @@ export function MobileBottomSheet({
     </>
   );
 }
-

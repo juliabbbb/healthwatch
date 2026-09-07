@@ -78,7 +78,8 @@ export function NotificationBell({ items }: { items: AlertItem[] }) {
       </button>
 
       {/* Panel rendered via portal — completely outside any stacking context */}
-      {mounted && open &&
+      {mounted &&
+        open &&
         createPortal(
           <NotificationPortalPanel
             items={items}
@@ -86,8 +87,7 @@ export function NotificationBell({ items }: { items: AlertItem[] }) {
             onClose={() => setOpen(false)}
           />,
           document.body,
-        )
-      }
+        )}
     </>
   );
 }
@@ -160,13 +160,7 @@ function NotificationPortalPanel({
   );
 }
 
-function NotificationContent({
-  items,
-  onClose,
-}: {
-  items: AlertItem[];
-  onClose: () => void;
-}) {
+function NotificationContent({ items, onClose }: { items: AlertItem[]; onClose: () => void }) {
   return (
     <>
       {/* Header */}
@@ -235,9 +229,7 @@ function NotificationContent({
                     {a.month}
                   </span>
                 </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {a.detail}
-                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{a.detail}</p>
               </div>
             </Link>
           </li>

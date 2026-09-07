@@ -108,10 +108,7 @@ export function deriveAlerts(
     outbreak: 1,
     crossing: 2,
   };
-  return out.sort(
-    (x, y) =>
-      weight[x.kind] !== weight[y.kind]
-        ? weight[x.kind] - weight[y.kind]
-        : y.order - x.order,
+  return out.sort((x, y) =>
+    weight[x.kind] !== weight[y.kind] ? weight[x.kind] - weight[y.kind] : y.order - x.order,
   );
 }

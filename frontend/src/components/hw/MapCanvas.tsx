@@ -55,12 +55,7 @@ function prefersDark(): boolean {
 const OUTBREAK_MARKER_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.4" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="1.6"/><circle cx="7" cy="7" r="5.4" fill="color-mix(in oklab, var(--risk-high) 32%, transparent)" stroke="var(--risk-high)" stroke-width="1.4"/></svg>';
 
-function fillFor(
-  region: Region,
-  illness: string,
-  monthIndex: number,
-  mode: MetricMode,
-): string {
+function fillFor(region: Region, illness: string, monthIndex: number, mode: MetricMode): string {
   // Region fill always reflects the risk tier, whatever is overlaid on top.
   return RISK_META[assessRegion(region.code, illness, monthIndex, mode).risk].color;
 }
@@ -114,13 +109,10 @@ export default function MapCanvas({
         stateRef.current.onSelect(null);
       });
 
-      tileRef.current = L.tileLayer(
-        darkRef.current ? TILE_URLS.dark : TILE_URLS.light,
-        {
-          attribution: CARTO_ATTRIBUTION,
-          maxZoom: 12,
-        },
-      ).addTo(map);
+      tileRef.current = L.tileLayer(darkRef.current ? TILE_URLS.dark : TILE_URLS.light, {
+        attribution: CARTO_ATTRIBUTION,
+        maxZoom: 12,
+      }).addTo(map);
 
       const res = await fetch("/geo/ph-regions.geojson");
       const geo = await res.json();

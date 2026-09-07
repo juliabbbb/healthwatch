@@ -8,7 +8,14 @@ import { ForecastCard } from "@/components/hw/ForecastCard";
 import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
-import { CURRENT_MONTH_INDEX, REPORT_UPCOMING_SEASON, assessAll, monthMeta, type MetricMode, type Season } from "@/lib/healthwatch/data";
+import {
+  CURRENT_MONTH_INDEX,
+  REPORT_UPCOMING_SEASON,
+  assessAll,
+  monthMeta,
+  type MetricMode,
+  type Season,
+} from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
@@ -100,18 +107,18 @@ function MapView() {
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
       <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-8.5rem)] w-[26rem] flex-col items-start gap-3">
         <NationalSnapshot
-              monthLabel={meta.label}
-              isForecast={meta.forecast}
-              value={mode === "raw" ? totalCases : nationalPer100k}
-              mode={mode}
-              onModeChange={setMode}
-              illness={illness}
-              onIllnessChange={setIllness}
-              counts={counts}
-              dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
-              showOutbreakMarkers={showOutbreakMarkers}
-              onOutbreakMarkersChange={setShowOutbreakMarkers}
-            />
+          monthLabel={meta.label}
+          isForecast={meta.forecast}
+          value={mode === "raw" ? totalCases : nationalPer100k}
+          mode={mode}
+          onModeChange={setMode}
+          illness={illness}
+          onIllnessChange={setIllness}
+          counts={counts}
+          dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
+          showOutbreakMarkers={showOutbreakMarkers}
+          onOutbreakMarkersChange={setShowOutbreakMarkers}
+        />
 
         <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
       </div>
@@ -168,7 +175,9 @@ function MapView() {
         <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 shadow-md">
           <Activity className="size-5 text-primary" />
           <div>
-            <p className="text-sm font-bold leading-none tracking-wide text-foreground">HEALTHWATCH</p>
+            <p className="text-sm font-bold leading-none tracking-wide text-foreground">
+              HEALTHWATCH
+            </p>
             <p className="mt-1 text-[10px] text-muted-foreground font-medium">
               DOH · LGU outbreak decision support
             </p>
@@ -195,16 +204,14 @@ function MapView() {
       {/* 9. MOBILE ONLY: Slide-Over Drawer for National Overview & Alerts (Full width alignment) */}
       {mobileNationalOpen && (
         <div className="fixed inset-0 z-[700] flex flex-col justify-end bg-black/70 backdrop-blur-sm md:hidden animate-in fade-in-0 duration-200">
-          <div
-            onClick={() => setMobileNationalOpen(false)}
-            className="flex-1"
-            aria-hidden="true"
-          />
+          <div onClick={() => setMobileNationalOpen(false)} className="flex-1" aria-hidden="true" />
           <div className="flex max-h-[88vh] flex-col rounded-t-2xl border-t border-border/80 bg-card/98 backdrop-blur-2xl p-4 sm:p-5 shadow-2xl animate-in slide-in-from-bottom duration-300 overflow-y-auto hw-scroll">
             <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-3">
               <div className="flex items-center gap-2">
                 <Globe className="size-4 text-primary" />
-                <h2 className="text-sm font-bold text-foreground">National Surveillance Overview</h2>
+                <h2 className="text-sm font-bold text-foreground">
+                  National Surveillance Overview
+                </h2>
               </div>
               <button
                 onClick={() => setMobileNationalOpen(false)}

@@ -180,7 +180,8 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
       </div>
 
       {/* ===================== MOBILE SEARCH OVERLAY MODAL ===================== */}
-      {mounted && mobileSearchOpen &&
+      {mounted &&
+        mobileSearchOpen &&
         createPortal(
           <div
             style={{ zIndex: 9960 }}
@@ -266,11 +267,11 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
             </div>
           </div>,
           document.body,
-        )
-      }
+        )}
 
       {/* ===================== MOBILE HAMBURGER MENU MODAL (VERTICALLY CENTERED & TOP OF CARDS) ===================== */}
-      {mounted && mobileMenuOpen &&
+      {mounted &&
+        mobileMenuOpen &&
         createPortal(
           <div
             style={{ zIndex: 9950 }}
@@ -290,7 +291,9 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
               <div className="flex items-center justify-between border-b border-border/70 pb-3">
                 <div>
                   <h2 className="text-base font-bold text-foreground">HEALTHWATCH</h2>
-                  <p className="text-[10px] text-muted-foreground font-medium">Outbreak Decision Support</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    Outbreak Decision Support
+                  </p>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
@@ -338,7 +341,11 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                     onClick={toggleTheme}
                     className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
-                    {theme === "dark" ? <Sun className="size-4 text-primary" /> : <Moon className="size-4 text-primary" />}
+                    {theme === "dark" ? (
+                      <Sun className="size-4 text-primary" />
+                    ) : (
+                      <Moon className="size-4 text-primary" />
+                    )}
                     <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
                   </button>
                   <button
@@ -373,8 +380,7 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
             </div>
           </div>,
           document.body,
-        )
-      }
+        )}
 
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>

@@ -70,9 +70,7 @@ export function ForecastCard({
   return (
     <div
       className={cn(
-        isSheet
-          ? "w-full"
-          : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl",
+        isSheet ? "w-full" : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl",
         className,
       )}
     >
@@ -81,7 +79,9 @@ export function ForecastCard({
         <div className="flex items-start justify-between gap-2 border-b border-border/70 px-4 py-3">
           <div className="min-w-0 flex-1">
             <p className="label-caps">{a.region.short}</p>
-            <h2 className="text-lg font-semibold leading-tight text-foreground truncate">{a.region.name}</h2>
+            <h2 className="text-lg font-semibold leading-tight text-foreground truncate">
+              {a.region.name}
+            </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
             </p>
@@ -134,7 +134,9 @@ export function ForecastCard({
               {a.changePct >= 0 ? "+" : ""}
               {a.changePct}%
             </strong>{" "}
-            vs 3 months ago · <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national percentile
+            vs 3 months ago ·{" "}
+            <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national
+            percentile
           </span>
         </div>
       </div>
@@ -196,7 +198,8 @@ export function ForecastCard({
             )}
           </div>
           <p className="text-[10px] leading-tight text-muted-foreground">
-            Hotspots ranked on <span className="text-foreground">{METRIC_META[mode].label.toLowerCase()}</span>.
+            Hotspots ranked on{" "}
+            <span className="text-foreground">{METRIC_META[mode].label.toLowerCase()}</span>.
           </p>
         </div>
       )}
@@ -264,15 +267,23 @@ export function ForecastCard({
                         className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
                         style={
                           ind.outbreak
-                            ? { color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }
-                            : { color: "var(--risk-low)", backgroundColor: "color-mix(in oklab, var(--risk-low), transparent 85%)" }
+                            ? {
+                                color: "oklch(0.99 0.003 95)",
+                                backgroundColor: "var(--risk-high-solid)",
+                              }
+                            : {
+                                color: "var(--risk-low)",
+                                backgroundColor:
+                                  "color-mix(in oklab, var(--risk-low), transparent 85%)",
+                              }
                         }
                       >
                         {ind.outbreak ? "Alert" : "Clear"}
                       </span>
                     </div>
                     <p className="mt-1 font-mono tabular-nums text-foreground">
-                      {Math.round(ind.season_avg).toLocaleString()} / {Math.round(ind.season_p75).toLocaleString()} P75
+                      {Math.round(ind.season_avg).toLocaleString()} /{" "}
+                      {Math.round(ind.season_p75).toLocaleString()} P75
                     </p>
                     <div className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
                       <div
@@ -307,7 +318,10 @@ export function ForecastCard({
                 { k: "RMSE", v: validation.rmse.toLocaleString() },
                 { k: "MAPE", v: `${validation.mape}%` },
               ].map((m) => (
-                <div key={m.k} className="rounded-lg bg-secondary/50 px-2 py-1.5 border border-border/40">
+                <div
+                  key={m.k}
+                  className="rounded-lg bg-secondary/50 px-2 py-1.5 border border-border/40"
+                >
                   <p className="label-caps text-[9px]">{m.k}</p>
                   <p className="font-mono text-xs font-semibold tabular-nums mt-0.5">{m.v}</p>
                 </div>
@@ -359,10 +373,14 @@ export function ForecastCard({
       </div>
 
       {/* Action CTA */}
-      <div className={cn(
-        "border-t border-border/70 px-4 py-3",
-        isSheet ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3" : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10"
-      )}>
+      <div
+        className={cn(
+          "border-t border-border/70 px-4 py-3",
+          isSheet
+            ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3"
+            : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10",
+        )}
+      >
         <Link
           to="/region/$code"
           params={{ code: regionCode }}
@@ -389,8 +407,8 @@ function SeasonBasis({ isManual }: { isManual: boolean }) {
         isManual ? "text-muted-foreground/70" : "text-muted-foreground",
       )}
     >
-      Based on the current report date ({REPORT_DATE}) — upcoming season derived
-      from a fixed calendar rule (wet: Jun–Nov, dry: Dec–May), starting {start}.{" "}
+      Based on the current report date ({REPORT_DATE}) — upcoming season derived from a fixed
+      calendar rule (wet: Jun–Nov, dry: Dec–May), starting {start}.{" "}
       {isManual && "Showing the other season for comparison."}
     </p>
   );

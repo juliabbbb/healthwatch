@@ -48,7 +48,10 @@ for (const region of REGIONS) {
     decomposePoints += decomp.length;
 
     const corr = acf(region.code, illness);
-    if (corr.length !== 60 || !corr.every((c) => Number.isFinite(c.value) && Math.abs(c.value) <= 1))
+    if (
+      corr.length !== 60 ||
+      !corr.every((c) => Number.isFinite(c.value) && Math.abs(c.value) <= 1)
+    )
       fail(`${region.short}/${illness}: bad ACF output`);
   }
 
@@ -57,7 +60,9 @@ for (const region of REGIONS) {
       for (const mode of modes) {
         const t = getThresholds(illness, week, mode);
         if (!(Number.isFinite(t.p50) && Number.isFinite(t.p75) && t.p50 <= t.p75))
-          fail(`${region.short}/${illness}/wk${week}/${mode}: invalid thresholds ${JSON.stringify(t)}`);
+          fail(
+            `${region.short}/${illness}/wk${week}/${mode}: invalid thresholds ${JSON.stringify(t)}`,
+          );
         const pooled = pooledValues(illness, week, mode);
         if (!pooled.length) fail(`${region.short}/${illness}/wk${week}/${mode}: empty pool`);
       }

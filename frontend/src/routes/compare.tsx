@@ -100,11 +100,11 @@ export default function ComparePage() {
             </Chip>
           ))}
           <span className="mx-2 h-5 w-px bg-border" />
-          { [4, 8, 12].map((h) => (
-          <Chip key={h} active={horizon === h} onClick={() => setHorizon(h)}>
-            {h}m
-          </Chip>
-        ))}
+          {[4, 8, 12].map((h) => (
+            <Chip key={h} active={horizon === h} onClick={() => setHorizon(h)}>
+              {h}m
+            </Chip>
+          ))}
           <span className="mx-2 h-5 w-px bg-border" />
           {(["all", "wet", "dry"] as const).map((s) => (
             <Chip key={s} active={season === s} onClick={() => setSeason(s)}>

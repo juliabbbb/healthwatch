@@ -45,4 +45,3 @@ export function useAiAnalysisSetting(): [boolean, (value: boolean) => void] {
 
   return [enabled, set];
 }
-

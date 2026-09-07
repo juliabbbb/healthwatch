@@ -66,7 +66,12 @@ export function TimelineScrubber({
   );
 
   return (
-    <div className={cn("glass-panel pointer-events-auto rounded-xl px-2.5 py-2 sm:px-4 sm:py-3 shadow-lg", className)}>
+    <div
+      className={cn(
+        "glass-panel pointer-events-auto rounded-xl px-2.5 py-2 sm:px-4 sm:py-3 shadow-lg",
+        className,
+      )}
+    >
       <div className="flex items-center gap-1.5 sm:gap-3">
         {/* Transport — icon-only cluster */}
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
@@ -102,8 +107,7 @@ export function TimelineScrubber({
               style={{
                 left: `${histPct}%`,
                 right: 0,
-                backgroundColor:
-                  "color-mix(in oklab, var(--risk-moderate), transparent 80%)",
+                backgroundColor: "color-mix(in oklab, var(--risk-moderate), transparent 80%)",
               }}
             />
           </div>
@@ -120,7 +124,9 @@ export function TimelineScrubber({
 
         {/* Readout */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2 text-xs">
-          <span className="font-mono text-[11px] sm:text-xs font-semibold tabular-nums text-foreground">{meta.label}</span>
+          <span className="font-mono text-[11px] sm:text-xs font-semibold tabular-nums text-foreground">
+            {meta.label}
+          </span>
           <span className="hidden sm:inline-flex">
             <SeasonTag season={meta.season} />
           </span>

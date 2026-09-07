@@ -398,11 +398,12 @@ export async function loadHealthwatchData(): Promise<void> {
           folds: m.months,
           label: m.confidence.label,
           tone: m.confidence.tone,
-          note: m.confidence.tone === "low"
-            ? "Model error is small relative to monthly case counts."
-            : m.confidence.tone === "moderate"
-              ? "Reasonable accuracy on holdout months."
-              : "Volatile series inflates error metrics.",
+          note:
+            m.confidence.tone === "low"
+              ? "Model error is small relative to monthly case counts."
+              : m.confidence.tone === "moderate"
+                ? "Reasonable accuracy on holdout months."
+                : "Volatile series inflates error metrics.",
           mae: m.mae,
           rmse: m.rmse,
           mape: m.mape,
@@ -879,9 +880,8 @@ const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>
 
 function regionCodeForApiLabel(label: string): string | null {
   const lowered = label.toLowerCase();
-  const direct = REGIONS.find(
-    (r) =>
-      [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
+  const direct = REGIONS.find((r) =>
+    [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
   );
   if (direct) return direct.code;
   const prefix = label.split(" (")[0]!.toLowerCase();
@@ -903,9 +903,7 @@ async function loadOutbreakData(): Promise<void> {
 }
 
 /** Per-season outbreak outlook for a region code (dengue pilot). */
-export function getOutbreak(
-  regionCode: string,
-): Partial<Record<Season, OutbreakIndicator>> {
+export function getOutbreak(regionCode: string): Partial<Record<Season, OutbreakIndicator>> {
   return outbreakCache.get(regionCode) ?? {};
 }
 

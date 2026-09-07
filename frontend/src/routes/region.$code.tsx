@@ -152,9 +152,9 @@ function RegionDetail() {
       >
         <SeasonalOutbreakView code={code} />
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Prospective validation against real 2025 data: dry-season detection F1
-          0.90 (precision 0.93 / recall 0.88 across regions); the wet season by
-          design favours recall and over-warns rather than missing a surge.
+          Prospective validation against real 2025 data: dry-season detection F1 0.90 (precision
+          0.93 / recall 0.88 across regions); the wet season by design favours recall and over-warns
+          rather than missing a surge.
         </p>
       </Panel>
 
@@ -244,7 +244,6 @@ function RegionDetail() {
           <AIAnalysisPanel regionCode={code} />
         </Panel>
       )}
-
     </main>
   );
 }
@@ -319,10 +318,7 @@ function SeasonalOutbreakView({ code }: { code: string }) {
         const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
         const width = Math.min(100, Math.round((ratio / 1.5) * 100));
         return (
-          <div
-            key={season}
-            className="rounded-lg border border-border bg-card/60 p-3"
-          >
+          <div key={season} className="rounded-lg border border-border bg-card/60 p-3">
             <div className="flex items-center justify-between">
               <p className="label-caps capitalize">{season} season outlook</p>
               <span

@@ -236,9 +236,9 @@ function SeasonalityPage() {
           <div>
             <h2 className="text-lg font-semibold">Trend / seasonality / noise</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026 split
-              into a 12-month centred moving-average trend, a month-of-year seasonal index and the
-              irregular remainder.
+              {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026
+              split into a 12-month centred moving-average trend, a month-of-year seasonal index and
+              the irregular remainder.
             </p>
           </div>
           <button
