@@ -1,8 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { ArrowLeft, Bot, MoreHorizontal, Sparkles, Waves } from "lucide-react";
-import { AcfChart, DecompositionChart } from "@/components/hw/Charts";
-import { AIExplanationModal, type SeasonalityComponent } from "@/components/hw/AIExplanationModal";
+import {
+  ArrowLeft,
+  Bot,
+  Copy,
+  Download,
+  Maximize2,
+  MoreHorizontal,
+  Sparkles,
+  Waves,
+  TrendingUp,
+  Info,
+} from "lucide-react";
+import { SeasonalityChartCard } from "@/components/hw/SeasonalityChartCard";
+import { ChartExpandModal } from "@/components/hw/ChartExpandModal";
+import { AIExplanationModal } from "@/components/hw/AIExplanationModal";
 import {
   SeasonalityContextMenu,
   type ContextMenuAction,
@@ -12,7 +24,14 @@ import { SeasonTag } from "@/components/hw/RiskBadge";
 import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
-import { ILLNESSES, REGIONS, REGION_BY_CODE, acf, decompose } from "@/lib/healthwatch/data";
+import {
+  ILLNESSES,
+  REGIONS,
+  REGION_BY_CODE,
+  acf,
+  decompose,
+  type SeasonalityComponent,
+} from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -45,7 +64,7 @@ function variance(values: number[]) {
   return values.reduce((a, v) => a + (v - mean) ** 2, 0) / values.length;
 }
 
-function SeasonalityPage() {
+export function SeasonalityPage() {
   const [code, setCode] = useState("130000000");
   const [illness, setIllness] = useState("all");
   const region = REGION_BY_CODE[code]!;
@@ -55,9 +74,10 @@ function SeasonalityPage() {
   const [aiEnabled] = useAiAnalysisSetting();
   const [menu, setMenu] = useState<ContextMenuAnchor | null>(null);
   const [explainComponent, setExplainComponent] = useState<SeasonalityComponent | null>(null);
+  const [expandComponent, setExpandComponent] = useState<SeasonalityComponent | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  const openMenu = (e: React.MouseEvent, section: string) => {
+  const openMenu = (e: React.MouseEvent, section: string, title?: string) => {
     e.preventDefault();
     e.stopPropagation();
     let x = e.clientX;
@@ -68,7 +88,7 @@ function SeasonalityPage() {
       x = rect.left + Math.min(rect.width / 2, 120);
       y = rect.bottom + 4;
     }
-    setMenu({ x, y, section });
+    setMenu({ x, y, section, title });
   };
 
   const requestExplain = (component: SeasonalityComponent) => {
@@ -79,42 +99,21 @@ function SeasonalityPage() {
     setExplainComponent(component);
   };
 
-  const sectionComponent: Record<string, SeasonalityComponent> = {
-    kpis: "observed",
-    decomposition: "observed",
-    acf: "acf",
-  };
-
-  const menuActions: ContextMenuAction[] = [
-    {
-      id: "explain",
-      label: "Explain chart with AI",
-      hint: aiEnabled ? undefined : "Opens settings — AI is off",
-      icon: Bot,
-      run: () => requestExplain(menu ? (sectionComponent[menu.section] ?? "observed") : "observed"),
-    },
-    {
-      id: "pattern",
-      label: "Analyze seasonal pattern",
-      hint: aiEnabled ? undefined : "Opens settings — AI is off",
-      icon: Waves,
-      run: () => requestExplain("seasonal"),
-    },
-  ];
+  const decompData = useMemo(() => decompose(code, illness), [code, illness]);
+  const acfData = useMemo(() => acf(code, illness, 24), [code, illness]);
 
   const stats = useMemo(() => {
-    const d = decompose(code, illness);
-    const a = acf(code, illness, 24);
-    const seasonalVar = variance(d.map((p) => p.seasonal));
-    const residualVar = variance(d.map((p) => p.residual));
-    const trendVals = d.map((p) => p.trend);
+    const seasonalVar = variance(decompData.map((p) => p.seasonal));
+    const residualVar = variance(decompData.map((p) => p.residual));
+    const trendVals = decompData.map((p) => p.trend);
     const strength = seasonalVar / (seasonalVar + residualVar || 1);
-    const lag12 = a.find((p) => p.lag === 12)?.value ?? 0;
-    const lag6 = a.find((p) => p.lag === 6)?.value ?? 0;
-    const peak = a.reduce((best, p) => (p.value > best.value ? p : best), a[0]!);
+    const lag12 = acfData.find((p) => p.lag === 12)?.value ?? 0;
+    const lag6 = acfData.find((p) => p.lag === 6)?.value ?? 0;
+    const peak = acfData.reduce((best, p) => (p.value > best.value ? p : best), acfData[0]!);
+    
     // Peak calendar month of the seasonal component.
     const byMonth = new Map<number, number>();
-    d.forEach((p, i) => byMonth.set((i % 12) + 1, p.seasonal));
+    decompData.forEach((p, i) => byMonth.set((i % 12) + 1, p.seasonal));
     let peakMonthIdx = 1;
     let peakVal = -Infinity;
     byMonth.forEach((v, m) => {
@@ -123,6 +122,7 @@ function SeasonalityPage() {
         peakMonthIdx = m;
       }
     });
+
     const trendChange =
       trendVals.length > 24
         ? Math.round(
@@ -132,20 +132,165 @@ function SeasonalityPage() {
           )
         : 0;
     const peakMonth = MONTHS[Math.min(11, Math.max(0, peakMonthIdx - 1))]!;
-    return { strength, lag12, lag6, peak, peakMonth, trendChange };
-  }, [code, illness]);
+    const latestObserved = decompData.at(-1)?.observed ?? 0;
+    const residualStd = Math.round(Math.sqrt(residualVar));
+
+    return {
+      strength,
+      lag12,
+      lag6,
+      peak,
+      peakMonth,
+      trendChange,
+      latestObserved,
+      residualStd,
+    };
+  }, [decompData, acfData]);
+
+  const exportCsv = (comp: SeasonalityComponent) => {
+    let csvContent = "";
+    if (comp === "acf") {
+      csvContent =
+        "Lag_Months,Autocorrelation_Value,Region,Illness\n" +
+        acfData
+          .map((d) => `${d.lag},${d.value},"${region.name}","${illness}"`)
+          .join("\n");
+    } else {
+      csvContent =
+        `Month_Label,${comp.toUpperCase()}_Value,Season,Region,Illness\n` +
+        decompData
+          .map(
+            (d) =>
+              `${d.label},${d[comp as keyof typeof d]},${d.season},"${region.name}","${illness}"`,
+          )
+          .join("\n");
+    }
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `healthwatch_${region.short}_${comp}_data.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const copyDataJson = async (comp: SeasonalityComponent) => {
+    let text = "";
+    if (comp === "acf") {
+      text = JSON.stringify(acfData, null, 2);
+    } else {
+      const rows = decompData.map((d) => ({
+        month: d.label,
+        [comp]: d[comp as keyof typeof d],
+        season: d.season,
+      }));
+      text = JSON.stringify(rows, null, 2);
+    }
+    await navigator.clipboard.writeText(text);
+  };
+
+  // Build tailored menu actions based on the active anchor section / component
+  const menuActions = useMemo((): ContextMenuAction[] => {
+    if (!menu) return [];
+
+    const isChartComponent = [
+      "observed",
+      "trend",
+      "seasonal",
+      "residual",
+      "acf",
+    ].includes(menu.section);
+
+    if (isChartComponent) {
+      const comp = menu.section as SeasonalityComponent;
+      return [
+        {
+          id: `explain-${comp}`,
+          label: "Explain with AI",
+          hint: aiEnabled ? "Generates plain-language insight" : "Opens settings — AI is off",
+          icon: Sparkles,
+          run: () => requestExplain(comp),
+        },
+        {
+          id: `expand-${comp}`,
+          label: "Expand & Inspect",
+          hint: "High-resolution view and statistics",
+          icon: Maximize2,
+          run: () => setExpandComponent(comp),
+        },
+        {
+          id: `export-${comp}`,
+          label: "Export to CSV",
+          hint: "Download raw time series dataset",
+          icon: Download,
+          run: () => exportCsv(comp),
+        },
+        {
+          id: `copy-${comp}`,
+          label: "Copy JSON Data",
+          hint: "Copy values to clipboard",
+          icon: Copy,
+          run: () => void copyDataJson(comp),
+        },
+      ];
+    }
+
+    if (menu.section === "kpis") {
+      return [
+        {
+          id: "explain-kpis",
+          label: "Explain Summary Metrics",
+          hint: aiEnabled ? "AI summary of key seasonal indicators" : "Opens settings — AI is off",
+          icon: Sparkles,
+          run: () => requestExplain("observed"),
+        },
+        {
+          id: "explain-seasonality",
+          label: "Analyze Annual Rhythm",
+          hint: aiEnabled ? "Deep dive into wet/dry cycle" : "Opens settings — AI is off",
+          icon: Waves,
+          run: () => requestExplain("seasonal"),
+        },
+      ];
+    }
+
+    // Default section menu (overview decomposition)
+    return [
+      {
+        id: "explain-decomp",
+        label: "Explain Full Decomposition",
+        hint: aiEnabled ? undefined : "Opens settings — AI is off",
+        icon: Sparkles,
+        run: () => requestExplain("observed"),
+      },
+      {
+        id: "pattern",
+        label: "Analyze Seasonal Rhythm",
+        hint: aiEnabled ? undefined : "Opens settings — AI is off",
+        icon: Waves,
+        run: () => requestExplain("seasonal"),
+      },
+    ];
+  }, [menu, aiEnabled, decompData, acfData, region, illness]);
 
   // PAGASA defines the wet season as June–November (6 months).
   const wetMonths = 6;
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-6 py-8">
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8">
       <Link
         to="/"
-        className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-3.5" /> Back to map
       </Link>
+      
+      {/* Header Banner */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
@@ -153,17 +298,20 @@ function SeasonalityPage() {
               items={["Prophet", "12-month centred MA trend", "ACF · lags 1–24", "Monthly data"]}
             />
           </div>
-          <h1 className="text-3xl">Seasonal pattern identification</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Seasonal Pattern Identification
+          </h1>
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-3xl">
             Decompose any regional illness series into trend, seasonality and noise, then confirm
-            the recurring annual cycle with 12-month autocorrelation.
+            the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs text-muted-foreground">
-          <Waves className="size-3.5" /> {wetMonths} wet-season months · {region.island}
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
+          <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months · {region.island}
         </span>
       </div>
 
+      {/* Region & Disease Filters */}
       <div className="mt-6 space-y-3">
         <div className="flex flex-wrap gap-1.5">
           {REGIONS.map((r) => (
@@ -184,22 +332,23 @@ function SeasonalityPage() {
         </div>
       </div>
 
+      {/* Summary KPI Metrics */}
       <div className="mt-6">
-        <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="mb-2.5 flex items-center justify-between gap-2">
           <p className="label-caps text-xs">Summary Metrics</p>
           <button
-            onClick={(e) => openMenu(e, "kpis")}
+            onClick={(e) => openMenu(e, "kpis", "Summary Metrics")}
             aria-label="Open AI analysis options for summary metrics"
-            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 cursor-pointer"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 cursor-pointer touch-manipulation"
           >
-            <Sparkles className="size-3.5" />
+            <Sparkles className="size-3.5 text-primary" />
             <span>AI Options</span>
             <MoreHorizontal className="size-3.5 text-primary/70" />
           </button>
         </div>
         <div
           className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onContextMenu={(e) => openMenu(e, "kpis")}
+          onContextMenu={(e) => openMenu(e, "kpis", "Summary Metrics")}
         >
           <Kpi
             label="Seasonality strength"
@@ -228,13 +377,13 @@ function SeasonalityPage() {
         </div>
       </div>
 
-      <section
-        className="mt-6 rounded-xl border border-border bg-card/40 p-4"
-        onContextMenu={(e) => openMenu(e, "decomposition")}
-      >
-        <div className="flex items-start justify-between gap-2 mb-2">
+      {/* 2x2 Decomposition Section with Per-Chart AI Analysis and Options */}
+      <section className="mt-6 rounded-2xl border border-border/80 bg-card/30 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
-            <h2 className="text-lg font-semibold">Trend / seasonality / noise</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Trend / seasonality / noise
+            </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026
               split into a 12-month centred moving-average trend, a month-of-year seasonal index and
@@ -242,57 +391,111 @@ function SeasonalityPage() {
             </p>
           </div>
           <button
-            onClick={(e) => openMenu(e, "decomposition")}
-            aria-label="Open AI analysis menu for decomposition chart"
-            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer"
+            onClick={(e) => openMenu(e, "decomposition", "Full Decomposition")}
+            aria-label="Open AI analysis overview menu"
+            className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer touch-manipulation"
           >
             <Sparkles className="size-3.5" />
-            <span>AI Analysis</span>
+            <span>AI Overview</span>
             <MoreHorizontal className="size-3.5 text-primary/70" />
           </button>
         </div>
-        <div className="grid gap-4 lg:grid-cols-2 mt-3">
-          {(
-            [
-              ["observed", "Observed series"],
-              ["trend", "Trend component"],
-              ["seasonal", "Seasonality component"],
-              ["residual", "Noise (residual)"],
-            ] as const
-          ).map(([c, title]) => (
-            <div key={c}>
-              <p className="label-caps mb-1">{title}</p>
-              <DecompositionChart regionCode={code} illness={illness} component={c} height={160} />
-            </div>
-          ))}
+
+        {/* 4 Dedicated Chart Cards Grid (1 col on mobile, 2 cols on lg) */}
+        <div className="grid gap-4 lg:grid-cols-2">
+          {/* 1. Observed Series */}
+          <SeasonalityChartCard
+            regionCode={code}
+            illness={illness}
+            component="observed"
+            title="Observed series"
+            subtitle="Raw monthly surveillance records (2022–2026)"
+            statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
+            height={160}
+            onRequestAI={requestExplain}
+            onExpand={setExpandComponent}
+            onOpenMenu={(e, c) => openMenu(e, c, "Observed series")}
+            onExportCsv={exportCsv}
+          />
+
+          {/* 2. Trend Component */}
+          <SeasonalityChartCard
+            regionCode={code}
+            illness={illness}
+            component="trend"
+            title="Trend component"
+            subtitle="12-month centred moving average filter"
+            statBadge={{
+              label: "2-yr change",
+              value: `${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`,
+            }}
+            height={160}
+            onRequestAI={requestExplain}
+            onExpand={setExpandComponent}
+            onOpenMenu={(e, c) => openMenu(e, c, "Trend component")}
+            onExportCsv={exportCsv}
+          />
+
+          {/* 3. Seasonality Component */}
+          <SeasonalityChartCard
+            regionCode={code}
+            illness={illness}
+            component="seasonal"
+            title="Seasonality component"
+            subtitle="Month-of-year recurring seasonal index"
+            statBadge={{ label: "Peak month", value: stats.peakMonth }}
+            height={160}
+            onRequestAI={requestExplain}
+            onExpand={setExpandComponent}
+            onOpenMenu={(e, c) => openMenu(e, c, "Seasonality component")}
+            onExportCsv={exportCsv}
+          />
+
+          {/* 4. Noise (Residual) */}
+          <SeasonalityChartCard
+            regionCode={code}
+            illness={illness}
+            component="residual"
+            title="Noise (residual)"
+            subtitle="Irregular remainder after subtracting trend and season"
+            statBadge={{ label: "Std dev", value: `±${stats.residualStd}` }}
+            height={160}
+            onRequestAI={requestExplain}
+            onExpand={setExpandComponent}
+            onOpenMenu={(e, c) => openMenu(e, c, "Noise (residual)")}
+            onExportCsv={exportCsv}
+          />
         </div>
       </section>
 
-      <section
-        className="mt-6 rounded-xl border border-border bg-card/40 p-4"
-        onContextMenu={(e) => openMenu(e, "acf")}
-      >
-        <div className="flex items-start justify-between gap-2 mb-2">
+      {/* 12-Month Cycle Indicators (ACF) with Dedicated AI Analysis */}
+      <section className="mt-6 rounded-2xl border border-border/80 bg-card/30 p-4 sm:p-5 shadow-xs">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
-            <h2 className="text-lg font-semibold">12-month cycle indicators</h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              12-month cycle indicators
+            </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Autocorrelation of the observed series against itself at increasing lags. A pronounced
               spike at lag 12 (marked) is the signature of a recurring annual outbreak cycle.
             </p>
           </div>
-          <button
-            onClick={(e) => openMenu(e, "acf")}
-            aria-label="Open AI analysis menu for cycle indicators chart"
-            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer"
-          >
-            <Sparkles className="size-3.5" />
-            <span>AI Analysis</span>
-            <MoreHorizontal className="size-3.5 text-primary/70" />
-          </button>
         </div>
-        <div className="mt-3">
-          <AcfChart regionCode={code} illness={illness} height={200} />
-        </div>
+
+        <SeasonalityChartCard
+          regionCode={code}
+          illness={illness}
+          component="acf"
+          title="Autocorrelation Function (ACF)"
+          subtitle="Lags 1 to 24 months (dashed line = lag 12 annual mark)"
+          statBadge={{ label: "Lag 12 ACF", value: stats.lag12.toFixed(2) }}
+          height={200}
+          onRequestAI={requestExplain}
+          onExpand={setExpandComponent}
+          onOpenMenu={(e, c) => openMenu(e, c, "12-month cycle indicators")}
+          onExportCsv={exportCsv}
+        />
+
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           <SeasonTag season="wet" />
           <span>
@@ -303,17 +506,37 @@ function SeasonalityPage() {
         </div>
       </section>
 
+      {/* Footer Navigation */}
       <div className="mt-6">
         <Link
           to="/region/$code"
           params={{ code }}
-          className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/50 px-3.5 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
         >
           Open {region.short} forecast detail
         </Link>
       </div>
 
-      <SeasonalityContextMenu anchor={menu} actions={menuActions} onClose={() => setMenu(null)} />
+      {/* Context / Options Menu */}
+      <SeasonalityContextMenu
+        anchor={menu}
+        actions={menuActions}
+        onClose={() => setMenu(null)}
+      />
+
+      {/* Expanded Chart Diagnostics Modal */}
+      <ChartExpandModal
+        open={expandComponent !== null}
+        onOpenChange={(open) => {
+          if (!open) setExpandComponent(null);
+        }}
+        regionCode={code}
+        illness={illness}
+        component={expandComponent}
+        onRequestAI={requestExplain}
+      />
+
+      {/* AI Explanation Modal */}
       <AIExplanationModal
         open={explainComponent !== null}
         onOpenChange={(open) => {
@@ -322,7 +545,10 @@ function SeasonalityPage() {
         regionShort={region.short}
         regionName={region.name}
         component={explainComponent ?? "seasonal"}
+        illness={illness}
       />
+
+      {/* Settings Modal */}
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </main>
   );
@@ -330,9 +556,11 @@ function SeasonalityPage() {
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card/60 p-4">
+    <div className="rounded-xl border border-border/80 bg-card/60 p-4 transition-all hover:border-border hover:bg-card/80">
       <p className="label-caps">{label}</p>
-      <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
+      <p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+        {value}
+      </p>
       <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sub}</p>
     </div>
   );
@@ -351,10 +579,10 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors",
+        "rounded-full border px-3 py-1 text-[11px] capitalize transition-all cursor-pointer touch-manipulation",
         active
-          ? "border-primary/50 bg-primary/15 text-primary"
-          : "border-border text-muted-foreground hover:text-foreground",
+          ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
+          : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary/50",
       )}
     >
       {children}

@@ -58,9 +58,11 @@ const analysisCache = new Map<string, AnalysisResponse>();
 async function requestExplanation(
   regionShort: string,
   component: SeasonalityComponent,
+  illness = "Dengue",
   signal?: AbortSignal,
 ): Promise<AnalysisResponse> {
-  const path = `/analysis/seasonality?region=${encodeURIComponent(regionShort)}&disease=${DISEASE}&component=${component}`;
+  const diseaseParam = illness === "all" ? "Dengue" : illness;
+  const path = `/analysis/seasonality?region=${encodeURIComponent(regionShort)}&disease=${encodeURIComponent(diseaseParam)}&component=${component}`;
   const res = await fetch(`${API_BASE}${path}`, { signal: signal ?? null });
   if (!res.ok) {
     let detail = `request failed (HTTP ${res.status})`;
@@ -81,12 +83,14 @@ export function AIExplanationModal({
   regionShort,
   regionName,
   component,
+  illness = "Dengue",
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   regionShort: string;
   regionName: string;
   component: SeasonalityComponent;
+  illness?: string;
 }) {
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [result, setResult] = useState<AnalysisResponse | null>(null);
@@ -95,7 +99,8 @@ export function AIExplanationModal({
 
   const load = useCallback(
     async (bypassCache: boolean, signal?: AbortSignal) => {
-      const key = `${regionShort}:${DISEASE}:${component}`;
+      const diseaseParam = illness === "all" ? "Dengue" : illness;
+      const key = `${regionShort}:${diseaseParam}:${component}`;
       if (!bypassCache) {
         const cached = analysisCache.get(key);
         if (cached) {
@@ -108,7 +113,7 @@ export function AIExplanationModal({
       setStatus("loading");
       setError(null);
       try {
-        const res = await requestExplanation(regionShort, component, signal);
+        const res = await requestExplanation(regionShort, component, illness, signal);
         analysisCache.set(key, res);
         setResult(res);
         setStatus("success");
@@ -118,7 +123,7 @@ export function AIExplanationModal({
         setStatus("error");
       }
     },
-    [regionShort, component],
+    [regionShort, component, illness],
   );
 
   useEffect(() => {
