@@ -105,7 +105,7 @@ function MapView() {
       </div>
 
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
-      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-8.5rem)] w-[26rem] flex-col items-start gap-3">
+      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-8.5rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3">
         <NationalSnapshot
           monthLabel={meta.label}
           isForecast={meta.forecast}
