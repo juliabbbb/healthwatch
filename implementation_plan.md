@@ -1,106 +1,94 @@
 Standing Directive
 
-You are making two targeted UI improvements to the HEALTHWATCH frontend. First: on the Seasonality page, replace the current "all regions displayed at once" layout with a single dropdown selector, reducing visual clutter and keeping focus on one region's data at a time. Second: on the Compare page, fix the region selection buttons — they must ALL remain visible and accessible, but their layout must be properly spaced, aligned, and visually consistent. These are layout/UX changes only. No data-fetching, no API changes, no computation changes.
+You are adding a chart-type toggle to every existing chart in the HEALTHWATCH frontend. HEALTHWATCH displays Philippine regional disease surveillance data using Recharts. Every existing chart currently renders as a Line Chart (or Area Chart). You will add a toggle button that lets the user switch the same data to a Bar Chart view, and back. This is a UI enhancement only. Do NOT change any data-fetching logic, API calls, query keys, computations, or route structures. Do NOT redesign anything — match the existing visual style exactly.
 
 System Context
-Frontend: React 19 + TypeScript
+Frontend: React 19 + Vite 8 + TypeScript 5.8
+Charting library: Recharts (already installed)
+State management for server data: TanStack React Query
 Styling: Tailwind CSS 4 + Radix UI (shadcn/ui pattern)
-The 18 Philippine regions: NCR, CAR, Region I, II, III, IV-A, IV-B, V, VI, VII, VIII, IX, X, XI, XII, XIII, BARMM
-Seasonality page: currently shows data for all regions, needs to be filtered to one at a time via dropdown
-Compare page: currently has region buttons that are misaligned/inconsistently spaced — all 18 must stay, just fix the layout
+Routing: TanStack Router (file-based)
+Charts are distributed across multiple pages: Seasonality, Forecast/Predictions, Compare, possibly Dashboard/Overview
+All chart components likely live in src/components/ or co-located with route files
 Full Task List
-5.1 — Audit the Current Seasonality Page Layout
-Identify how the current region display works:
-Is it a list of cards? A set of stacked charts? A table with region rows?
-Is there already a selectedRegion state variable, or does the page show all regions simultaneously?
-Identify how the data is fetched: is it one query for all regions, or one per region?
-Identify where the region selection UI currently exists (if at all)
-Document the exact component tree before changing anything
-5.2 — Implement Region Dropdown on Seasonality Page
-Add a selectedRegion state:
+2.1 — Audit All Chart Components
+Search the entire src/ directory for Recharts usage:
+<LineChart, <AreaChart, <ComposedChart, <ResponsiveContainer
+List every file, component name, and the chart type currently used
+Note: some charts may already use ComposedChart — these are the easiest to extend
+Document the full list before making any changes
+2.2 — Create a Reusable ChartTypeToggle Component
+Create file: src/components/ui/ChartTypeToggle.tsx
+This component renders two toggle buttons: "Line" and "Bar"
+Props interface:
 typescript
-  const PHILIPPINE_REGIONS = [
-    "NCR", "CAR", "Region I", "Region II", "Region III",
-    "Region IV-A", "Region IV-B", "Region V", "Region VI",
-    "Region VII", "Region VIII", "Region IX", "Region X",
-    "Region XI", "Region XII", "Region XIII", "BARMM"
-  ];
+  interface ChartTypeToggleProps {
+    value: "line" | "bar";
+    onChange: (type: "line" | "bar") => void;
+  }
+Style using existing Tailwind classes that match the current button style in the app
+Use Radix UI ToggleGroup if it is already imported in the project; otherwise use plain styled <button> elements
+Active state: match the existing active/selected button style already used in the app (e.g., on the region selector buttons)
+Icons: use a simple SVG or text label — "Line" / "Bar" — no external icon library needed unless Lucide is already in the project (check package.json)
+2.3 — Create a useChartType Hook
+Create file: src/hooks/useChartType.ts
+Simple hook that holds chart type state:
+typescript
+  import { useState } from "react";
 
-  const [selectedRegion, setSelectedRegion] = useState<string>("NCR");
-Use a Radix UI Select component (from the existing shadcn/ui setup):
-If Select from shadcn is already in src/components/ui/select.tsx, use it directly
-If not, use the native HTML <select> styled with Tailwind as a fallback
-Dropdown placement: above the chart area, on the same row as the page section title
-Label: "Region:" to the left of the dropdown
-Dropdown width: w-48 or min-w-[12rem] — wide enough for "Region IV-A" without truncation
-Layout row:
-  [ Seasonality Analysis ]        [ Region: ▼ Region III — Central Luzon ]
-5.3 — Filter Chart and Table Data by Selected Region
-After adding the dropdown, the chart and any data table on the Seasonality page must reflect ONLY the selected region's data
-If data is fetched for all regions at once: filter the data client-side using the selectedRegion value
-If data is fetched per region: pass selectedRegion as a query parameter to the useQuery hook — it will automatically refetch when the region changes (TanStack Query handles this)
-DO NOT change the data fetching URL structure unless it is already parameterized by region
-DO NOT change any computation or the shape of the data
-5.4 — Handle Loading State During Region Switch
-When selectedRegion changes and a new API call is triggered, show a loading skeleton where the chart is:
+  export type ChartType = "line" | "bar";
+
+  export function useChartType(defaultType: ChartType = "line") {
+    const [chartType, setChartType] = useState<defaultType>(defaultType);
+    return { chartType, setChartType };
+  }
+This is used by every chart parent component to avoid duplicating state logic
+2.4 — Refactor Each Chart Component to Support Both Types
+For each chart found in Step 2.1, apply this pattern:
+Import both LineChart (or AreaChart) and BarChart, plus Bar and Line from Recharts
+Accept chartType: "line" | "bar" as a prop (or manage state internally if simpler)
+Switch the outer chart component conditionally:
 typescript
-  if (isLoading) return <div className="h-64 animate-pulse bg-slate-100 rounded-lg" />;
-This prevents a flash of stale data from the previous region
-5.5 — Audit the Current Compare Page Button Layout
-Identify the current region selector on the Compare page:
-How many regions are shown? (Should be all 18)
-Are they rendered as a flex-wrap, a grid, or a list?
-What is the current spacing/gap issue? (overflow, misalignment, inconsistent widths, buttons of different heights)
-Are multiple regions selectable simultaneously (multi-select for comparison)?
-Document the exact current layout structure
-5.6 — Fix Compare Page Region Button Layout
-The goal: all 18 region buttons must be visible, accessible, properly spaced, and consistently sized
-Use a CSS Grid layout for predictable alignment:
-tsx
-  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-    {PHILIPPINE_REGIONS.map((region) => (
-      <button
-        key={region}
-        onClick={() => toggleRegion(region)}
-        className={cn(
-          "px-3 py-2 text-sm font-medium rounded-md border transition-colors",
-          "truncate text-center", // prevent text overflow on narrow buttons
-          selectedRegions.includes(region)
-            ? "bg-primary text-primary-foreground border-primary"
-            : "bg-background text-foreground border-border hover:bg-accent"
-        )}
-      >
-        {region}
-      </button>
-    ))}
-  </div>
-Grid columns: 3 on mobile, 4 on small screens, 6 on large — so all 18 fit in exactly 3 rows of 6 on desktop
-Button width: uniform within each column (grid enforces this automatically)
-Button height: uniform — use consistent py-2 padding
-Text: use truncate to handle long names like "Region IV-A" gracefully
-cn() utility: the project already uses this from shadcn — import from lib/utils
-Preserve the existing multi-select toggle logic — only change the layout wrapper and button classes
-5.7 — Preserve Compare Page Functionality
-All 18 region buttons must remain clickable
-Multi-select behavior (if currently present) must be preserved exactly
-The chart/graph that responds to region selection must continue to work
-Only the visual layout of the button group changes — nothing else
-5.8 — Apply Consistent Button Styling
-The Compare page region buttons must visually match the active/inactive style already used in the app
-Check: what color/style does the app use for "active" vs "inactive" buttons elsewhere (e.g., on the nav, on other filter components)?
-Mirror that exact style — do not introduce new design tokens
-If using Tailwind, use the same class names for the active state as the rest of the app
-5.9 — Responsive Check
-After implementing both changes:
-Test the Seasonality dropdown on a narrow viewport (375px) — it must not overflow
-Test the Compare button grid on a narrow viewport — it must wrap to 3 columns and remain scrollable if needed
-Do NOT add horizontal scrolling — let it wrap
-5.10 — Do NOT Touch
-Any data fetching or API calls on either page
-The chart components themselves (Recharts)
-The comparison logic that determines which regions' data is shown in the compare chart
-Any other page (Map, Dashboard, Forecast, etc.)
-PDF export buttons on these pages
+    const ChartComponent = chartType === "bar" ? BarChart : LineChart;
+Switch the series renderer conditionally:
+typescript
+    const SeriesComponent = chartType === "bar" ? Bar : Line;
+Use the same data, XAxis, YAxis, CartesianGrid, Tooltip, Legend props for both — they are identical in Recharts
+For Bar, add radius={[4, 4, 0, 0]} for slightly rounded bar tops (matches modern look)
+For Line, keep existing dot, strokeWidth, and type props as-is
+Wrap the toggle with the chart in the parent component, NOT inside the chart component itself
+2.5 — Multi-Series Charts (Compare Page)
+The Compare page likely renders multiple data series (one per region)
+For Bar charts with multiple series, use BarChart with grouped bars:
+Each region gets its own <Bar dataKey="regionName" /> with its own color
+This is identical to how multiple <Line> components work — one per series
+Do NOT use stacked bars — keep the same grouped approach as the line chart's multi-series display
+2.6 — Placement of the Toggle
+Place the ChartTypeToggle in the top-right corner of each chart's card/container
+It should sit on the same row as the chart title, aligned to the right
+Use flex justify-between items-center on the chart header row
+Example layout:
+  [ Chart Title                          ] [ Line | Bar ]
+  [                                                     ]
+  [              Chart renders here                     ]
+  [                                                     ]
+Do not add extra padding or margin — match existing card spacing exactly
+2.7 — Pages to Update
+
+Apply the toggle to charts on ALL of these pages (based on the audit in 2.1):
+
+Seasonality page — regional seasonality trend chart(s)
+Forecast/Predictions page — forecast line charts (Prophet output)
+Compare page — multi-region comparison charts
+Dashboard/Overview page — any summary charts present
+Any other page that renders a Recharts chart component
+2.8 — Do NOT Touch
+Data fetching (React Query hooks, useQuery calls)
+API endpoints
+Any computation or data transformation logic
+The map page (Leaflet — not a Recharts chart)
+PDF export logic
+Routing configuration
 
 Do NOT change any feature behavior — only what is explicitly stated in each plan
 Do NOT upgrade or downgrade any package versions unless required by the plan

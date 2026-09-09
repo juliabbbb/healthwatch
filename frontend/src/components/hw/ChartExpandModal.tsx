@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Copy,
   Check,
@@ -18,6 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
+import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
+import { useChartType } from "@/hooks/useChartType";
 import { REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
@@ -104,6 +106,13 @@ export function ChartExpandModal({
 }) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<"chart" | "data" | "methodology">("chart");
+  const isAcf = component === "acf";
+  const { chartType, setChartType } = useChartType(isAcf ? "bar" : "line");
+
+  // Reset the chart-type toggle when a different component is opened.
+  useEffect(() => {
+    setChartType(component === "acf" ? "bar" : "line");
+  }, [component, setChartType]);
 
   if (!component) return null;
   const meta = COMPONENT_METADATA[component];
@@ -237,6 +246,7 @@ export function ChartExpandModal({
             </div>
 
             <div className="flex items-center gap-2">
+              <ChartTypeToggle value={chartType} onChange={setChartType} />
               {onRequestAI && (
                 <button
                   type="button"
@@ -336,6 +346,7 @@ export function ChartExpandModal({
                   illness={illness}
                   height={280}
                   endIndex={endIndex}
+                  chartType={chartType}
                 />
               ) : (
                 <DecompositionChart
@@ -344,6 +355,7 @@ export function ChartExpandModal({
                   component={component as "observed" | "trend" | "seasonal" | "residual"}
                   height={280}
                   endIndex={endIndex}
+                  chartType={chartType}
                 />
               )}
             </div>

@@ -6,7 +6,9 @@ import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { InterventionPanel } from "@/components/hw/InterventionPanel";
 import { RiskBadge, SeasonTag } from "@/components/hw/RiskBadge";
+import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { useChartType } from "@/hooks/useChartType";
 import {
   CURRENT_MONTH_INDEX,
   HIST_MONTHS,
@@ -61,6 +63,7 @@ function RegionDetail() {
   const [horizon, setHorizon] = useState(12);
   const [seasonFilter, setSeasonFilter] = useState<"all" | "wet" | "dry">("all");
   const [aiEnabled] = useAiAnalysisSetting();
+  const { chartType: forecastChartType, setChartType: setForecastChartType } = useChartType();
 
   const a = assessRegion(code, illness, CURRENT_MONTH_INDEX + horizon);
   const series = seriesFor(code, illness);
@@ -163,8 +166,14 @@ function RegionDetail() {
       <Panel
         title="Case volume forecast"
         subtitle={`Reported 2022–2026 with ${horizon}-month predicted horizon and 95% interval, wet-season shading.`}
+        action={<ChartTypeToggle value={forecastChartType} onChange={setForecastChartType} />}
       >
-        <ForecastChart regionCode={code} illness={illness} horizon={horizon} />
+        <ForecastChart
+          regionCode={code}
+          illness={illness}
+          horizon={horizon}
+          chartType={forecastChartType}
+        />
         <div className="mt-3 overflow-x-auto">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="label-caps">
@@ -213,24 +222,11 @@ function RegionDetail() {
       >
         <div className="grid gap-4 lg:grid-cols-2">
           {(["observed", "trend", "seasonal", "residual"] as const).map((c) => (
-            <div key={c}>
-              <p className="label-caps mb-1">{c}</p>
-              <DecompositionChart regionCode={code} illness={illness} component={c} />
-            </div>
+            <DecompCell key={c} regionCode={code} illness={illness} component={c} />
           ))}
         </div>
         <div className="mt-4">
-          <p className="label-caps mb-1">Autocorrelation (lag in months)</p>
-          <AcfChart regionCode={code} illness={illness} />
-          <p className="mt-1 text-[11px] text-muted-foreground">
-            The marked spike at lag 12 confirms a recurring annual outbreak cycle for this region.
-          </p>
-          <Link
-            to="/seasonality"
-            className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
-          >
-            Open seasonal pattern identification
-          </Link>
+          <AcfCell regionCode={code} illness={illness} />
         </div>
       </Panel>
 
@@ -307,6 +303,54 @@ function Chip({
     >
       {children}
     </button>
+  );
+}
+
+function DecompCell({
+  regionCode,
+  illness,
+  component,
+}: {
+  regionCode: string;
+  illness: string;
+  component: "observed" | "trend" | "seasonal" | "residual";
+}) {
+  const { chartType, setChartType } = useChartType();
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <p className="label-caps">{component}</p>
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <DecompositionChart
+        regionCode={regionCode}
+        illness={illness}
+        component={component}
+        chartType={chartType}
+      />
+    </div>
+  );
+}
+
+function AcfCell({ regionCode, illness }: { regionCode: string; illness: string }) {
+  const { chartType, setChartType } = useChartType("bar");
+  return (
+    <div>
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <p className="label-caps">Autocorrelation (lag in months)</p>
+        <ChartTypeToggle value={chartType} onChange={setChartType} />
+      </div>
+      <AcfChart regionCode={regionCode} illness={illness} chartType={chartType} />
+      <p className="mt-1 text-[11px] text-muted-foreground">
+        The marked spike at lag 12 confirms a recurring annual outbreak cycle for this region.
+      </p>
+      <Link
+        to="/seasonality"
+        className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs hover:bg-secondary"
+      >
+        Open seasonal pattern identification
+      </Link>
+    </div>
   );
 }
 

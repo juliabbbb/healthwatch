@@ -5,6 +5,7 @@ import {
   CartesianGrid,
   ComposedChart,
   Line,
+  LineChart,
   ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
@@ -12,6 +13,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { ChartType } from "@/hooks/useChartType";
 import {
   HIST_MONTHS,
   METRIC_META,
@@ -100,6 +102,7 @@ export function ForecastChart({
   monthsBack = 36,
   height = 300,
   mode = "raw",
+  chartType = "line",
 }: {
   regionCode: string;
   illness: string;
@@ -107,7 +110,10 @@ export function ForecastChart({
   monthsBack?: number;
   height?: number;
   mode?: MetricMode;
+  chartType?: ChartType;
 }) {
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : ComposedChart;
   const series = seriesFor(regionCode, illness);
   const region = REGION_BY_CODE[regionCode]!;
   const conv = (v: number) => metricValue(v, region, mode);
@@ -135,7 +141,7 @@ export function ForecastChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <ComposedChart data={slice} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
+      <ChartComponent data={slice} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
         {wetBands.map((b, i) => (
           <ReferenceArea
@@ -151,46 +157,92 @@ export function ForecastChart({
         <YAxis {...axis} width={52} domain={[0, "auto"]} />
         <Tooltip
           content={<ForecastTooltip unit={METRIC_META[mode].unit} />}
-          cursor={{ stroke: "var(--border)" }}
+          {...(isBar ? {} : { cursor: { stroke: "var(--border)" } })}
         />
 
-        <Area
-          dataKey="band"
-          stroke="none"
-          fill="var(--chart-3)"
-          fillOpacity={0.22}
-          isAnimationActive={false}
-          name="95% CI"
-        />
-        <Line
-          dataKey="reported"
-          stroke="var(--chart-1)"
-          strokeWidth={1.6}
-          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-1)" }}
-          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: "var(--chart-1)" }}
-          connectNulls
-          name="Reported"
-          isAnimationActive={false}
-        />
-        <Line
-          dataKey="predicted"
-          stroke="var(--chart-3)"
-          strokeWidth={2}
-          strokeDasharray="4 3"
-          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-3)" }}
-          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: "var(--chart-3)" }}
-          connectNulls
-          name="Predicted"
-          isAnimationActive={false}
-        />
-        {/* Rule-adjusted points: hollow markers, reason shown in the tooltip. */}
-        <Line
-          dataKey="adjustedPoint"
-          stroke="none"
-          name="Rule-adjusted"
-          isAnimationActive={false}
-          dot={{ r: 3.4, fill: "var(--background)", stroke: "var(--risk-high)", strokeWidth: 1.4 }}
-        />
+        {isBar ? (
+          <>
+            <Bar
+              dataKey="reported"
+              fill="var(--chart-1)"
+              radius={[4, 4, 0, 0]}
+              name="Reported"
+              isAnimationActive={false}
+            />
+            <Bar
+              dataKey="predicted"
+              fill="var(--chart-3)"
+              radius={[4, 4, 0, 0]}
+              name="Predicted"
+              isAnimationActive={false}
+            />
+          </>
+        ) : (
+          <>
+            <Area
+              dataKey="band"
+              stroke="none"
+              fill="var(--chart-3)"
+              fillOpacity={0.22}
+              isAnimationActive={false}
+              name="95% CI"
+            />
+            <Line
+              dataKey="reported"
+              stroke="var(--chart-1)"
+              strokeWidth={1.6}
+              dot={{
+                r: 2.5,
+                strokeWidth: 1.2,
+                fill: "var(--background)",
+                stroke: "var(--chart-1)",
+              }}
+              activeDot={{
+                r: 5,
+                strokeWidth: 2,
+                fill: "var(--background)",
+                stroke: "var(--chart-1)",
+              }}
+              connectNulls
+              name="Reported"
+              isAnimationActive={false}
+            />
+            <Line
+              dataKey="predicted"
+              stroke="var(--chart-3)"
+              strokeWidth={2}
+              strokeDasharray="4 3"
+              dot={{
+                r: 2.5,
+                strokeWidth: 1.2,
+                fill: "var(--background)",
+                stroke: "var(--chart-3)",
+              }}
+              activeDot={{
+                r: 5,
+                strokeWidth: 2,
+                fill: "var(--background)",
+                stroke: "var(--chart-3)",
+              }}
+              connectNulls
+              name="Predicted"
+              isAnimationActive={false}
+            />
+            {/* Rule-adjusted points: hollow markers, reason shown in the tooltip. */}
+            <Line
+              dataKey="adjustedPoint"
+              stroke="none"
+              name="Rule-adjusted"
+              isAnimationActive={false}
+              dot={{
+                r: 3.4,
+                fill: "var(--background)",
+                stroke: "var(--risk-high)",
+                strokeWidth: 1.4,
+              }}
+            />
+          </>
+        )}
 
         <ReferenceLine
           x={monthMeta(HIST_MONTHS - 1).label}
@@ -203,7 +255,7 @@ export function ForecastChart({
             position: "insideTopRight",
           }}
         />
-      </ComposedChart>
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }
@@ -215,13 +267,17 @@ export function DecompositionChart({
   component,
   height = 150,
   endIndex,
+  chartType = "line",
 }: {
   regionCode: string;
   illness: string;
   component: "observed" | "trend" | "seasonal" | "residual";
   height?: number;
   endIndex?: number | undefined;
+  chartType?: ChartType;
 }) {
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : ComposedChart;
   const data = decompose(regionCode, illness, endIndex);
   const color =
     component === "trend"
@@ -234,7 +290,7 @@ export function DecompositionChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <ComposedChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -14 }}>
+      <ChartComponent data={data} margin={{ top: 4, right: 8, bottom: 0, left: -14 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis dataKey="label" {...axis} minTickGap={60} tickFormatter={formatMonthYear} />
         <YAxis {...axis} width={52} />
@@ -242,15 +298,19 @@ export function DecompositionChart({
         {component === "residual" && (
           <ReferenceLine y={0} stroke="var(--color-muted-foreground)" strokeDasharray="3 3" />
         )}
-        <Line
-          dataKey={component}
-          stroke={color}
-          strokeWidth={component === "observed" ? 1 : 1.8}
-          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: color }}
-          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: color }}
-          isAnimationActive={false}
-        />
-      </ComposedChart>
+        {isBar ? (
+          <Bar dataKey={component} fill={color} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+        ) : (
+          <Line
+            dataKey={component}
+            stroke={color}
+            strokeWidth={component === "observed" ? 1 : 1.8}
+            dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: color }}
+            activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: color }}
+            isAnimationActive={false}
+          />
+        )}
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }
@@ -261,24 +321,44 @@ export function AcfChart({
   illness,
   height = 160,
   endIndex,
+  chartType = "bar",
 }: {
   regionCode: string;
   illness: string;
   height?: number;
   endIndex?: number | undefined;
+  chartType?: ChartType;
 }) {
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : LineChart;
   const data = acf(regionCode, illness, 24, endIndex);
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+      <ChartComponent data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis dataKey="lag" {...axis} minTickGap={14} />
         <YAxis {...axis} width={46} domain={[-1, 1]} />
         <Tooltip {...tooltipStyle} />
         <ReferenceLine y={0} stroke="var(--color-muted-foreground)" />
         <ReferenceLine x={12} stroke="var(--chart-3)" strokeDasharray="3 3" />
-        <Bar dataKey="value" fill="var(--chart-1)" isAnimationActive={false} />
-      </BarChart>
+        {isBar ? (
+          <Bar dataKey="value" fill="var(--chart-1)" isAnimationActive={false} />
+        ) : (
+          <Line
+            dataKey="value"
+            stroke="var(--chart-1)"
+            strokeWidth={1.8}
+            dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-1)" }}
+            activeDot={{
+              r: 5,
+              strokeWidth: 2,
+              fill: "var(--background)",
+              stroke: "var(--chart-1)",
+            }}
+            isAnimationActive={false}
+          />
+        )}
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }

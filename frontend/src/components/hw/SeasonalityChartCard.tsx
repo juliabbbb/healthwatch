@@ -10,6 +10,8 @@ import {
   Info,
 } from "lucide-react";
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
+import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
+import { useChartType } from "@/hooks/useChartType";
 import { type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -73,6 +75,8 @@ export function SeasonalityChartCard({
   chartRef,
 }: SeasonalityChartCardProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const isAcf = component === "acf";
+  const { chartType, setChartType } = useChartType(isAcf ? "bar" : "line");
   const styling = COLOR_MAP[component] ?? {
     dot: "bg-primary",
     border: "border-primary",
@@ -112,6 +116,8 @@ export function SeasonalityChartCard({
 
         {/* Action Controls for this specific chart */}
         <div className="flex items-center gap-1.5 shrink-0">
+          <ChartTypeToggle value={chartType} onChange={setChartType} />
+
           {/* Dedicated Per-Chart AI Analysis Button */}
           <button
             type="button"
@@ -157,7 +163,13 @@ export function SeasonalityChartCard({
       {/* Chart Canvas */}
       <div ref={chartRef} className="mt-1 w-full flex-1">
         {component === "acf" ? (
-          <AcfChart regionCode={regionCode} illness={illness} height={height} endIndex={endIndex} />
+          <AcfChart
+            regionCode={regionCode}
+            illness={illness}
+            height={height}
+            endIndex={endIndex}
+            chartType={chartType}
+          />
         ) : (
           <DecompositionChart
             regionCode={regionCode}
@@ -165,6 +177,7 @@ export function SeasonalityChartCard({
             component={component as "observed" | "trend" | "seasonal" | "residual"}
             height={height}
             endIndex={endIndex}
+            chartType={chartType}
           />
         )}
       </div>
