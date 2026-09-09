@@ -23,7 +23,6 @@ import {
   type ContextMenuAnchor,
 } from "@/components/hw/SeasonalityContextMenu";
 import { SeasonTag } from "@/components/hw/RiskBadge";
-import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { FilterPanel } from "@/components/FilterPanel";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
@@ -305,11 +304,6 @@ export function SeasonalityPage() {
       {/* Header Banner */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
-            <StatusChipRow
-              items={["Prophet", "12-month centred MA trend", "ACF · lags 1–24", "Monthly data"]}
-            />
-          </div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             Seasonal Pattern Identification
           </h1>
