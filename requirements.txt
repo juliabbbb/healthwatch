@@ -1,6 +1,6 @@
 # Runtime dependencies for the FastAPI backend (Render deploy).
-# The API serves the relational DB (local SQLite fallback or Postgres via
-# DATABASE_URL — Supabase/Render) + pandas computations. The ML pipeline
+# The API serves the relational DB (PostgreSQL via DATABASE_URL —
+# Supabase/Render) + pandas computations. The ML pipeline
 # (Prophet) lives in requirements-ml.txt (local training only).
 pandas
 numpy

@@ -1,11 +1,8 @@
 """Relational database layer for the monthly pipeline.
 
 Builds and reads the HEALTHWATCH schema (the ERD source of truth — 9 tables)
-through SQLAlchemy so the SAME schema runs on:
-
-  * a local SQLite file  (data/processed/healthwatch.db) when DATABASE_URL is
-    not set — zero-setup local dev, and
-  * a real PostgreSQL server (Render / Supabase) when DATABASE_URL is set.
+through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
+to be set in the environment.
 
 The pipeline never hand-writes tables: `build_db()` drops and recreates rows
 from the processed CSVs, so a rebuild is fully idempotent. Because this module
@@ -30,11 +27,10 @@ from sqlalchemy import (
     Table,
     Text,
     create_engine,
+    text,
 )
 
 from . import ingest
-
-DB_NAME = "healthwatch.db"
 
 
 def _load_env():
@@ -199,21 +195,37 @@ pipeline_runs = Table(
 
 def _engine():
     db_url = os.environ.get("DATABASE_URL")
-    if db_url:
-        if db_url.startswith("postgres://"):
-            db_url = db_url.replace("postgres://", "postgresql://", 1)
-        engine = create_engine(db_url, pool_pre_ping=True)
-    else:
-        ingest.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-        engine = create_engine(f"sqlite:///{ingest.PROCESSED_DIR / DB_NAME}")
-    return engine
+    if not db_url:
+        raise RuntimeError(
+            "DATABASE_URL environment variable is not set. "
+            "Supabase PostgreSQL connection string is required."
+        )
+    # Supabase connection-pooler guidance: for Render (persistent, short-lived
+    # web workers) use the session pooler on port 5432, or the transaction
+    # pooler on port 6543 with ?pgbouncer=true for serverless workloads.
+    # Ensure ?sslmode=require is present in the URL if not already set.
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    eng = create_engine(
+        db_url,
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+        pool_recycle=300,
+        echo=False,
+    )
+    return eng
 
 
 def engine():
-    """Accessor for the shared engine. Reads DATABASE_URL (Postgres) or falls
-    back to the local SQLite file — see module docstring."""
+    """Accessor for the shared PostgreSQL engine. Requires DATABASE_URL to be
+    set in the environment — see module docstring."""
     if not hasattr(_engine, "_cached"):
         _engine._cached = _engine()
+        with _engine._cached.connect() as conn:
+            conn.execute(text("SELECT 1"))
+            print("Connected to Supabase PostgreSQL")
+            print("Database connection verified.")
     return _engine._cached
 
 
@@ -367,7 +379,7 @@ def _monthly_observation_rows(regional):
     )
 
 
-def read_table(table, db_path=None):
+def read_table(table):
     with engine().connect() as conn:
         return pd.read_sql_table(table, conn)
 
@@ -382,5 +394,4 @@ if __name__ == "__main__":
         for t in metadata.sorted_tables:
             n = pd.read_sql_table(t.name, conn).shape[0]
             print(f"{t.name:<24} {n:>7} rows")
-    label = os.environ.get("DATABASE_URL")
-    print(f"\nDatabase ready ({'postgres via DATABASE_URL' if label else 'sqlite: ' + DB_NAME})")
+    print(f"\nDatabase ready (PostgreSQL via DATABASE_URL)")
