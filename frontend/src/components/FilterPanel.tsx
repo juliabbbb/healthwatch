@@ -1,11 +1,18 @@
-import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface FilterPanelProps {
-  regions: Array<{ code: string; short: string }>;
+  regions: Array<{ code: string; short: string; name?: string }>;
   selectedRegions: string[];
   onRegionToggle: (code: string) => void;
   multiSelectRegion?: boolean;
+  regionDropdown?: boolean;
   regionActions?: Array<{ label: string; onClick: () => void }>;
   selectedCount?: number;
 
@@ -21,6 +28,7 @@ export function FilterPanel({
   selectedRegions,
   onRegionToggle,
   multiSelectRegion = false,
+  regionDropdown = false,
   regionActions,
   selectedCount,
   illnesses,
@@ -35,7 +43,9 @@ export function FilterPanel({
         <div className="min-w-0 md:flex-1">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-foreground">Region</span>
+              {!regionDropdown && (
+                <span className="text-sm font-medium text-foreground">Region</span>
+              )}
               {multiSelectRegion && selectedCount !== undefined && (
                 <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
                   {selectedCount} of {regions.length} selected
@@ -59,10 +69,29 @@ export function FilterPanel({
               </div>
             )}
           </div>
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
-            {regions.map((r) => {
-              const isSelected = selectedRegions.includes(r.code);
-              if (multiSelectRegion) {
+          {regionDropdown ? (
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-foreground shrink-0">Region:</span>
+              <Select
+                value={selectedRegions[0] ?? ""}
+                onValueChange={(value) => onRegionToggle(value)}
+              >
+                <SelectTrigger className="w-full min-w-[12rem]">
+                  <SelectValue placeholder="Select a region" />
+                </SelectTrigger>
+                <SelectContent>
+                  {regions.map((r) => (
+                    <SelectItem key={r.code} value={r.code}>
+                      {r.name ? `${r.short} — ${r.name}` : r.short}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : multiSelectRegion ? (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+              {regions.map((r) => {
+                const isSelected = selectedRegions.includes(r.code);
                 return (
                   <button
                     key={r.code}
@@ -70,24 +99,29 @@ export function FilterPanel({
                     onClick={() => onRegionToggle(r.code)}
                     aria-pressed={isSelected}
                     className={cn(
-                      "h-8 px-2.5 py-1 text-xs rounded-lg font-medium inline-flex items-center gap-1.5 transition-all select-none border min-h-[32px]",
+                      "px-3 py-2 text-sm font-medium rounded-md border transition-colors truncate text-center min-h-[36px]",
                       isSelected
                         ? "bg-primary text-primary-foreground border-primary font-semibold shadow-xs"
-                        : "bg-secondary/20 hover:bg-secondary/50 text-muted-foreground hover:text-foreground border-border/80",
+                        : "bg-background text-foreground border-border hover:bg-accent",
                     )}
                   >
-                    {isSelected && <Check className="size-3.5 shrink-0 stroke-[2.5]" />}
-                    <span>{r.short}</span>
+                    {r.short}
                   </button>
                 );
-              }
-              return (
-                <Chip key={r.code} active={isSelected} onClick={() => onRegionToggle(r.code)}>
-                  {r.short}
-                </Chip>
-              );
-            })}
-          </div>
+              })}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
+              {regions.map((r) => {
+                const isSelected = selectedRegions.includes(r.code);
+                return (
+                  <Chip key={r.code} active={isSelected} onClick={() => onRegionToggle(r.code)}>
+                    {r.short}
+                  </Chip>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Illness */}

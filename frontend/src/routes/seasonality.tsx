@@ -48,6 +48,13 @@ import {
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -409,6 +416,7 @@ export function SeasonalityPage() {
           regions={REGIONS}
           selectedRegions={[code]}
           onRegionToggle={(c) => setCode(c)}
+          regionDropdown
           illnesses={ILLNESSES}
           selectedIllness={illness}
           onIllnessChange={setIllness}
