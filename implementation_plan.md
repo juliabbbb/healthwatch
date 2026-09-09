@@ -1,7 +1,6 @@
-# HEALTHWATCH — Implementation Plan 7 of 8
-**Item:** Add PDF Export to Seasonality Page
-**Execute this plan fully before moving to Plan 8.**
-
+# HEALTHWATCH — Implementation Plan 8 of 8
+**Item:** Fix and Scope the Map Page Export Button
+**This is the final plan.**
 
 ---
 
@@ -13,7 +12,7 @@ This system is a live academic research tool (HealthWatch) with a validated fore
 
 The rule is: if it is not in this plan, do not touch it. If you are unsure whether something is in scope, do not touch it. Stop and flag it instead.
 
-All changes must be surgical, minimal, and scoped to the exact files described below.
+CRITICAL FOR THIS PLAN: Do not touch the Leaflet map component's initialization, configuration, tile layer, choropleth logic, or event handlers in any way. The map is only captured as an image for export — it is not restructured.
 
 ---
 
@@ -23,94 +22,111 @@ HealthWatch is a regional public health decision-support tool for Philippine LGU
 
 **Tech stack (frontend):** React 19 + Vite + TanStack Router + TanStack Query + Tailwind CSS 4 + Recharts + Leaflet + React PDF Renderer + TypeScript 5.8
 
-**DO NOT touch:** FastAPI backend, Prophet pipeline, SQLAlchemy models, Supabase/PostgreSQL config, classification algorithm, evaluation logic, CSV export, routing config, render.yaml, the Compare page PDF template (already fixed in Plan 6).
+**DO NOT touch:** FastAPI backend, Prophet pipeline, SQLAlchemy models, Supabase/PostgreSQL config, classification algorithm, evaluation logic, any PDF template from Plans 6–7, CSV export, routing config, render.yaml, Leaflet map internals.
 
 ---
 
-## ITEM 2 — Add PDF Export to the Seasonality Page
+## ITEM 6 — Fix and Scope the Map Page Export Button
 
 ### Goal
-The Seasonality page currently has no PDF export. Add a PDF export button that matches the Compare page's export button visually, and produce a well-formatted PDF containing all seasonal analysis charts for the selected region and forecast period.
+The map/dashboard/homepage export button currently exports too much (or the wrong content). It must export ONLY: the HealthWatch logo, the Leaflet choropleth map, the right-side information panel, and the National Snapshot section. It must strictly exclude: the date slider, Active Alerts, the page navigation bar, the search bar, and all filter controls.
 
-### Step 1 — Confirm the Compare page export button component
-Open the Compare page. Locate the export button — note its exact component name, file location, and visual style (size, variant, icon if any, label text). The Seasonality page export button must use the same component with the same visual style.
+### Step 1 — Read the current export implementation
+Open the map/dashboard page component. Find the export button and read its current onClick handler completely. Note:
+- What library or method it currently uses for export (html2canvas, a screenshot utility, jsPDF, etc.)
+- What element or ref it currently targets
 
-### Step 2 — Create the Seasonality PDF document component
-Create a new file: `src/components/pdf/SeasonalityPdfDocument.tsx` (or the equivalent PDF components directory the project uses).
+Do not change anything in this step.
 
-This component receives these props:
-```ts
-interface SeasonalityPdfDocumentProps {
-  regionName: string;
-  illnessLabel: string;
-  forecastPeriod: { start: string; end: string }; // "YYYY-MM" values
-  charts: {
-    label: string;       // e.g., "Trend Decomposition", "ACF Chart", "Seasonal Pattern", "Forecast"
-    imageDataUrl: string; // base64 PNG of the chart — see Step 3
-  }[];
-  exportTimestamp: string; // "YYYY-MM" value, will be formatted with formatMonthYear
-}
-```
+### Step 2 — Define the export container
+In the map/dashboard page component JSX, identify the elements that must be included in the export:
 
-The PDF document structure:
+**INCLUDE:**
+- The HealthWatch logo element
+- The Leaflet map container element
+- The right-side information/details panel (risk tier info, region details, outbreak flags)
+- The National Snapshot section (aggregate national stats)
 
-**Page 1 — Cover**
-HealthWatch
-Seasonal Pattern Analysis Report
+**EXCLUDE (do not wrap in the export container — leave them outside):**
+- The date slider
+- The Active Alerts section
+- The page navigation bar
+- The search bar
+- Any other control or filter
 
-Region: [regionName]
-Illness: [illnessLabel]
-Forecast Period: [formatMonthYear(forecastPeriod.start)] to [formatMonthYear(forecastPeriod.end)]
-Generated: [formatMonthYear(exportTimestamp)]
-Source: DOH PIDSR Surveillance Data
+Wrap ONLY the included elements in a single `<div ref={mapExportRef}>` wrapper. If these elements are already inside a shared wrapper that also contains excluded elements, do not use that wrapper — instead add a new inner wrapper around only the included elements. Make the new wrapper `<div ref={mapExportRef} style={{ display: 'contents' }}>` if needed to avoid affecting layout, or a standard `<div>` if it does not break the existing layout.
 
-
-**Pages 2 to N — One chart per page section**
-For each chart in the `charts` array:
-- Section heading: the chart's `label` value (`fontSize: 14, fontWeight: 'bold'`, margin bottom 8pt)
-- Chart image: `<Image src={chart.imageDataUrl} style={{ width: '100%', maxHeight: 380 }} />`
-- If charts are small enough, two charts may share a page — but only if both fit without scaling below legible size. When in doubt, give each chart its own `<View break>`.
-
-**Last Page — Footer note**
-Generated by HealthWatch | Regional Time-Series Analysis System
-Source: DOH PIDSR Surveillance Data | For public health decision support only
-
-
-### Step 3 — Chart-to-image capture
-To pass charts as images to the PDF, use the following approach in the Seasonality page component:
-
-For each Recharts chart currently rendered on the Seasonality page, add a `ref` to its wrapping `<div>`. On export button click, use `html2canvas` (check if already a dependency — if not, `bun add html2canvas`) to capture each chart ref as a PNG data URL.
+### Step 3 — Implement the scoped export
+Use `html2canvas` for the PNG export (check if already a dependency — if not, `bun add html2canvas`).
 
 ```ts
-const captureChart = async (ref: React.RefObject<HTMLDivElement>): Promise<string> => {
-  const canvas = await html2canvas(ref.current!, { backgroundColor: '#ffffff' });
-  return canvas.toDataURL('image/png');
+const handleMapExport = async (format: 'png' | 'pdf') => {
+  if (!mapExportRef.current) return;
+
+  const canvas = await html2canvas(mapExportRef.current, {
+    backgroundColor: '#ffffff',
+    useCORS: true,        // required for Leaflet tile images
+    allowTaint: false,
+    scale: 2,             // 2x for crisp export on high-DPI screens
+  });
+
+  if (format === 'png') {
+    const link = document.createElement('a');
+    link.download = `healthwatch-map-${new Date().toISOString().slice(0, 7)}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  }
+
+  if (format === 'pdf') {
+    const imageDataUrl = canvas.toDataURL('image/png');
+    // Use @react-pdf/renderer to wrap in a PDF with a HealthWatch header
+    // Structure: cover header (logo text + timestamp) → full-width map image → footer
+    // Create an inline PDF document here or in a separate small component
+    // Download using pdf(...).toBlob() + programmatic link
+  }
 };
 ```
 
-Capture all charts sequentially, collect the data URLs into the `charts` array, then trigger the PDF download using `@react-pdf/renderer`'s `pdf(...).toBlob()` and a programmatic download link.
+Note on Leaflet and html2canvas: Leaflet map tiles may not render correctly with html2canvas due to CORS restrictions on tile servers. If tiles do not render in the captured image, use the Leaflet map container's canvas layer directly via `map.getCanvas()` if the renderer is canvas-based, or accept that tile layers may appear blank and only the choropleth overlay captures. Do not attempt to change the Leaflet tile provider or map configuration to work around this — document the limitation as a known constraint instead.
 
-Do not add refs to any element other than the chart wrapper divs. Do not change the chart components themselves.
+### Step 4 — Replace the export button with a two-option dropdown
+Replace the current single export button on the map page with a small dropdown button offering two options:
+- "Export as PNG"
+- "Export as PDF"
 
-### Step 4 — Add the export button to the Seasonality page
-In the Seasonality page component, in the page header area (same row as or directly below the page title), add the export button using the same component as the Compare page. Wire its `onClick` to the chart capture and PDF generation logic from Step 3.
+Use the same dropdown/popover component pattern already established in the project (check if a `<DropdownMenu>` from Radix UI / shadcn is already used elsewhere — if yes, use the same pattern). Do not introduce a new UI library.
 
-The button must be disabled (and show a loading state if the component supports it) while chart capture or PDF generation is in progress.
+Wire each option to `handleMapExport('png')` and `handleMapExport('pdf')` respectively.
 
-### Step 5 — PDF must not include filter controls
-The PDF output must contain only data and charts — not the FilterPanel, not any dropdown, not any slider. The filter values are represented as text metadata on the cover page only (region name, illness, forecast period).
+The button must show a loading/disabled state while export is in progress.
+
+### Step 5 — PDF wrapper for map export
+The PDF version of the map export must contain:
+
+**Page 1:**
+[Header: "HEALTHWATCH" bold, large]
+[Subheader: "PH Outbreak Hotspot Map"]
+[Export timestamp: formatMonthYear(current month)]
+[Full-width map image — from canvas capture]
+[Right panel data as text below the map:
+
+National Risk Tier
+National Snapshot stats
+Any selected region's details currently shown in the right panel]
+[Footer: "Generated by HealthWatch | DOH PIDSR Surveillance Data"]
+
 
 ### What NOT to touch
-- The Compare page's PDF export or template
-- The Compare PDF document component from Plan 6
-- Any chart component's internal implementation
-- Any other page
+- The Leaflet map component — do not reinitialize, reconfigure, or restructure it
+- The Active Alerts component — exclude from export only, do not remove from the UI
+- The date slider — exclude from export only, do not remove from the UI
+- The navigation bar and search bar — exclude from export only, do not remove from the UI
+- Any other page or component
 
 ### Verification
 After this plan is complete:
-- The Seasonality page shows an export button visually matching the Compare page's export button
-- Clicking it produces a downloadable PDF
-- The PDF cover page shows the correct region, illness, forecast period, and timestamp in "Mon YYYY" format
-- All charts rendered on the Seasonality page appear in the PDF as images
-- No filter controls appear in the PDF
-- The Compare page PDF export is still working and unaffected
+- Export as PNG: the downloaded image contains the map, right panel, national snapshot, and logo. It does not contain the date slider, alerts, nav bar, or search bar.
+- Export as PDF: the downloaded PDF contains the same elements as the PNG export plus the HealthWatch header and footer text.
+- The map page UI is completely unchanged — all excluded elements (date slider, alerts, nav, search) still appear and function normally in the browser.
+- The Leaflet map still functions correctly after the ref wrapper was added.
+- No other page is affected.

@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Download,
+  FileText,
+  Image as ImageIcon,
+  Loader2,
   Menu,
   Minus,
   Moon,
@@ -27,9 +31,12 @@ export interface TopToolbarProps {
   onZoom?: (dir: 1 | -1) => void;
   /** Extra icon affordances (e.g. the notification bell) shown first in the actions cluster. */
   trailing?: React.ReactNode;
+  /** Replaces the default print export with a scoped PNG/PDF export dropdown. */
+  onExport?: (format: "png" | "pdf") => void;
+  exporting?: boolean;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
+export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -136,9 +143,51 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
           >
             <Share2 className="size-4" />
           </IconButton>
-          <IconButton label="Export snapshot" onClick={() => window.print()}>
-            <Download className="size-4" />
-          </IconButton>
+          {onExport ? (
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <IconButton
+                  label="Export snapshot"
+                  {...(exporting ? { disabled: exporting } : {})}
+                  className={exporting ? "text-primary" : ""}
+                >
+                  {exporting ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Download className="size-4" />
+                  )}
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={8}
+                  className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
+                >
+                  <DropdownMenu.Item
+                    onSelect={() => onExport("png")}
+                    {...(exporting ? { disabled: exporting } : {})}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  >
+                    <ImageIcon className="size-4 shrink-0 text-primary" />
+                    <span>Export as PNG</span>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onSelect={() => onExport("pdf")}
+                    {...(exporting ? { disabled: exporting } : {})}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  >
+                    <FileText className="size-4 shrink-0 text-primary" />
+                    <span>Export as PDF</span>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          ) : (
+            <IconButton label="Export snapshot" onClick={() => window.print()}>
+              <Download className="size-4" />
+            </IconButton>
+          )}
           {onZoom && (
             <>
               <span className="mx-0.5 h-5 w-px bg-border" />
@@ -366,14 +415,20 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                     <span>{copied ? "Link Copied!" : "Share Link"}</span>
                   </button>
                   <button
+                    disabled={exporting}
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      window.print();
+                      if (onExport) void onExport("pdf");
+                      else window.print();
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98 disabled:opacity-50"
                   >
-                    <Download className="size-4 text-primary" />
-                    <span>Export View</span>
+                    {exporting ? (
+                      <Loader2 className="size-4 text-primary animate-spin" />
+                    ) : (
+                      <Download className="size-4 text-primary" />
+                    )}
+                    <span>{exporting ? "Exporting…" : "Export View"}</span>
                   </button>
                 </div>
               </div>
@@ -430,19 +485,22 @@ function IconButton({
   onClick,
   children,
   className,
+  disabled,
 }: {
   label: string;
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 }) {
   return (
     <button
       title={label}
       aria-label={label}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95",
+        "rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
     >
