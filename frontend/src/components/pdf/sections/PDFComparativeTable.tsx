@@ -21,23 +21,32 @@ export interface PDFComparativeTableProps {
   status: "predicted" | "reported";
 }
 
+const COL_WIDTHS = {
+  region: 140,
+  predicted: 90,
+  ci: 95,
+  percentile: 60,
+  trajectory: 60,
+  risk: 70,
+} as const;
+
 export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) {
   return (
-    <View style={pdfStyles.section} wrap={false}>
+    <View style={pdfStyles.section}>
       <Text style={pdfStyles.sectionTitle}>Comparative Matrix</Text>
       <View style={pdfStyles.table}>
         <View style={pdfStyles.tableHeader}>
-          <Cell flex={2} text="Region" style={pdfStyles.th} />
+          <Cell width={COL_WIDTHS.region} text="Region" style={pdfStyles.th} />
           <Cell
-            flex={1.3}
+            width={COL_WIDTHS.predicted}
             text={status === "predicted" ? "Predicted" : "Reported"}
             style={pdfStyles.th}
-            align="right"
+            alignRight
           />
-          <Cell flex={1.3} text="95% CI" style={pdfStyles.th} align="right" />
-          <Cell flex={1} text="Percentile" style={pdfStyles.th} align="right" />
-          <Cell flex={1} text="3-Mo" style={pdfStyles.th} align="right" />
-          <Cell flex={1} text="Risk" style={pdfStyles.th} center />
+          <Cell width={COL_WIDTHS.ci} text="95% CI" style={pdfStyles.th} alignRight />
+          <Cell width={COL_WIDTHS.percentile} text="Percentile" style={pdfStyles.th} alignRight />
+          <Cell width={COL_WIDTHS.trajectory} text="3-Mo" style={pdfStyles.th} alignRight />
+          <Cell width={COL_WIDTHS.risk} text="Risk" style={pdfStyles.th} center />
         </View>
 
         {rows.map((r, i) => (
@@ -46,31 +55,37 @@ export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) 
             wrap={false}
             style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.slate } : {}]}
           >
-            <Cell flex={2} text={`${r.region} (${r.short})`} style={pdfStyles.td} />
             <Cell
-              flex={1.3}
-              text={r.reported.toLocaleString()}
+              width={COL_WIDTHS.region}
+              text={`${r.region} (${r.short})`}
+              style={pdfStyles.td}
+            />
+            <Cell
+              width={COL_WIDTHS.predicted}
+              text={r.predicted.toLocaleString()}
               style={[pdfStyles.td, { textAlign: "right" }]}
             />
             <Cell
-              flex={1.3}
+              width={COL_WIDTHS.ci}
               text={`${Math.round(r.lower).toLocaleString()}–${Math.round(r.upper).toLocaleString()}`}
               style={[pdfStyles.td, { color: COLORS.muted, textAlign: "right" }]}
             />
             <Cell
-              flex={1}
+              width={COL_WIDTHS.percentile}
               text={`${r.percentile}th`}
               style={[pdfStyles.td, { textAlign: "right" }]}
             />
             <Cell
-              flex={1}
+              width={COL_WIDTHS.trajectory}
               text={`${r.changePct >= 0 ? "+" : ""}${r.changePct}%`}
               style={[
                 pdfStyles.td,
                 { textAlign: "right", color: r.changePct >= 0 ? COLORS.high : COLORS.low },
               ]}
             />
-            <View style={{ flex: 1, alignItems: "center" }}>
+            <View
+              style={{ width: COL_WIDTHS.risk, alignItems: "center", justifyContent: "center" }}
+            >
               <View
                 style={{
                   backgroundColor: riskAccent(r.risk),
@@ -99,25 +114,26 @@ export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) 
 }
 
 function Cell({
-  flex,
+  width,
   text,
   style,
-  align,
+  alignRight,
   center,
 }: {
-  flex: number;
+  width: number;
   text: string;
   style?: StyleProp;
-  align?: "right";
+  alignRight?: boolean;
   center?: boolean;
 }) {
   return (
     <View
       style={{
-        flex,
+        width,
         paddingRight: 4,
         justifyContent: "center",
         ...(center ? { alignItems: "center" as const } : {}),
+        ...(alignRight ? { alignItems: "flex-end" as const } : {}),
       }}
     >
       <Text {...(style ? { style } : {})}>{text}</Text>

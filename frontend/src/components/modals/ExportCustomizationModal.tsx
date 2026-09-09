@@ -205,6 +205,7 @@ export function ExportCustomizationModal({
         seasonalityImage,
         season: monthMeta(monthIndex).season,
         driver: a.dominantIllness.driver,
+        forecastWindow: a.forecastWindow,
       });
     }
 
