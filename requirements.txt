@@ -7,6 +7,7 @@ numpy
 openpyxl
 fastapi
 uvicorn
-anthropic
+groq>=0.9.0
+# anthropic  # keep commented until the Groq swap is verified end-to-end
 sqlalchemy
 psycopg2-binary

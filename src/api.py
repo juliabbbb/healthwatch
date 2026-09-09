@@ -510,56 +510,72 @@ def _narrate_with_gemini(api_key, system_prompt, user_prompt):
     return narrative, used_model
 
 
-def _narrate_with_anthropic(api_key, system_prompt, user_prompt):
+def _narrate_with_groq(api_key, system_prompt, user_prompt):
     try:
-        import anthropic
+        from groq import Groq
     except ImportError:
         raise HTTPException(
             status_code=503,
-            detail="AI-assisted analysis unavailable: anthropic package not installed.",
+            detail="AI-assisted analysis unavailable: groq package not installed.",
         )
 
-    model = os.environ.get("ANTHROPIC_MODEL", "claude-sonnet-4-5")
+    primary_model = "llama-4-scout-17b-16e-instruct"
+    fallback_model = "llama-3.3-70b-versatile"
     try:
-        client = anthropic.Anthropic(api_key=api_key, timeout=30.0, max_retries=0)
-        message = client.messages.create(
-            model=model,
-            max_tokens=400,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
-        narrative = "".join(
-            block.text for block in message.content if getattr(block, "type", "") == "text"
-        ).strip()
-    except Exception as exc:  # timeout, rate limit, auth, bad model id…
+        client = Groq(api_key=api_key, timeout=30.0, max_retries=0)
+        narrative = ""
+        used_model = None
+        for model in [primary_model, fallback_model]:
+            try:
+                message = client.chat.completions.create(
+                    model=model,
+                    max_tokens=400,
+                    temperature=0.3,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                )
+                narrative = (message.choices[0].message.content or "").strip()
+                used_model = model
+                break
+            except Exception as exc:  # timeout, rate limit, auth, bad model id…
+                if model == fallback_model:
+                    raise HTTPException(
+                        status_code=503,
+                        detail=f"AI-assisted analysis failed: {type(exc).__name__}",
+                    )
+    except HTTPException:
+        raise
+    except Exception as exc:  # client construction or network errors
         raise HTTPException(
             status_code=503,
             detail=f"AI-assisted analysis failed: {type(exc).__name__}",
         )
     if not narrative:
         raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
-    return narrative, model
+    return narrative, used_model
 
 
 def _llm_narrate(system_prompt, user_prompt):
     """Shared constrained LLM call for interpretability endpoints.
 
     Provider is picked by which key the server has: GEMINI_API_KEY (free tier
-    at aistudio.google.com) wins over ANTHROPIC_API_KEY. Fails soft (503) on
-    missing key or API errors so no dashboard view ever breaks because of the
-    AI layer."""
+    at aistudio.google.com) wins over GROQ_API_KEY (free at console.groq.com).
+    Fails soft (503) on missing key or API errors so no dashboard view ever
+    breaks because of the AI layer."""
     gemini_key = os.environ.get("GEMINI_API_KEY")
     if gemini_key:
         return _narrate_with_gemini(gemini_key, system_prompt, user_prompt)
 
-    anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
-    if anthropic_key:
-        return _narrate_with_anthropic(anthropic_key, system_prompt, user_prompt)
+    groq_key = os.environ.get("GROQ_API_KEY")
+    if groq_key:
+        return _narrate_with_groq(groq_key, system_prompt, user_prompt)
 
     raise HTTPException(
         status_code=503,
         detail="AI-assisted analysis unavailable: set GEMINI_API_KEY (free tier) "
-        "or ANTHROPIC_API_KEY on the server.",
+        "or GROQ_API_KEY (free at console.groq.com) on the server.",
     )
 
 

@@ -1,115 +1,141 @@
 Standing Directive
 
-You are executing a surgical, production-safe migration of the HEALTHWATCH system's database layer. HEALTHWATCH is a Philippine regional disease surveillance and forecasting platform. The backend uses FastAPI + SQLAlchemy. The database is PostgreSQL via Supabase in production, with a SQLite fallback in local/dev. Your job is to permanently remove the SQLite fallback, all dual-dialect branching code, and any dead weight slowing cold-start or request times — while keeping every feature, chart, computation, ML model, forecast, and design pixel-perfect intact. Do not touch any frontend components, Recharts graphs, Leaflet maps, Prophet forecasting logic, Pandas/NumPy pipelines, or any API route logic. Only the DB layer, engine setup, and dead code are in scope.
+You are replacing the current Anthropic Claude API integration in HEALTHWATCH's AI Analysis assistant with the Groq API, using Llama 4 Scout or Llama 3.3 70B as the model. Groq is free (no credit card required), OpenAI-SDK-compatible, and delivers 300–500 tokens/second on LPU hardware — significantly faster than Claude for this use case. The AI analysis assistant provides disease surveillance insights for Philippine regional health data. The system prompt, response formatting, and frontend display must remain intact. Only the provider, client SDK, model name, and API key env var change. This is a backend-only change.
 
 System Context
-Backend: FastAPI + Uvicorn + SQLAlchemy ORM
-DB: PostgreSQL (Supabase) in prod, SQLite as local fallback (TO BE REMOVED)
-Deployment: Render (backend as a Web Service)
-Env vars already exist: DATABASE_URL (Supabase PostgreSQL connection string)
-ORM: SQLAlchemy (sync, using psycopg2-binary driver)
-Migrations: likely using Alembic or raw SQLAlchemy create_all
-The system has PH regional disease data: cases, forecasts, seasonality scores, hotspot classifications per region
+Backend: FastAPI (Python)
+Current AI provider: Anthropic SDK (anthropic Python package)
+Target AI provider: Groq API (OpenAI-compatible, groq Python package)
+Target model: llama-4-scout-17b-16e-instruct (primary) with llama-3.3-70b-versatile as fallback
+Groq free tier: 30 RPM, 14,400 RPD — sufficient for a surveillance dashboard with low concurrent users
+Groq API key: obtained free from console.groq.com (no credit card)
+Deployment: Render — add GROQ_API_KEY as an environment variable
+The AI analysis likely lives in a dedicated route, e.g., /api/analysis, /api/ai, or similar
 Full Task List
-1.1 — Audit All DB Engine / Session Code
-Search the entire backend codebase for any of these patterns and list every file + line number:
-sqlite
-sqlite:///
-check_same_thread
-StaticPool
-dialect switching or if "sqlite" in DATABASE_URL
-connect_args={"check_same_thread": False}
-Any try/except that falls back to a different DB URL
-Any os.getenv("DATABASE_URL", "sqlite:///...") with a SQLite default
-Document every single occurrence before touching anything
-1.2 — Harden the Database Engine Configuration
-Replace the current engine creation (whatever form it is in) with a single, production-grade PostgreSQL-only configuration:
+3.1 — Audit the Current Anthropic Integration
+Search the backend for all Anthropic SDK usage:
+import anthropic
+from anthropic import
+client.messages.create
+anthropic.Anthropic()
+ANTHROPIC_API_KEY
+Any claude- model string references
+List every file, function, and the exact system prompt being used
+Note the exact message format: whether it uses messages=[{"role": "user", "content": "..."}] or other structure
+Note whether the response is streamed or returned as a single completion
+3.2 — Install the Groq SDK
+Add to requirements.txt:
+  groq>=0.9.0
+Do NOT remove anthropic from requirements yet — keep it commented out until the swap is verified
+Run pip install groq in the development environment to verify it installs cleanly
+3.3 — Create the Groq Client Module
+Create (or replace content of) the AI client file, e.g., backend/services/ai_client.py:
 python
-  from sqlalchemy import create_engine
-  from sqlalchemy.orm import sessionmaker
   import os
+  from groq import Groq
 
-  DATABASE_URL = os.environ["DATABASE_URL"]
-  # Supabase uses a connection pooler — ensure the URL uses the
-  # transaction pooler (port 6543) or session pooler (port 5432)
-  # Add ?sslmode=require if not already present in the URL
+  GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+  if not GROQ_API_KEY:
+      raise RuntimeError(
+          "GROQ_API_KEY environment variable is not set. "
+          "Get a free key at console.groq.com"
+      )
 
-  engine = create_engine(
-      DATABASE_URL,
-      pool_pre_ping=True,         # Detect stale connections
-      pool_size=5,                 # Conservative for Render free tier
-      max_overflow=10,
-      pool_recycle=300,            # Recycle connections every 5 min
-      echo=False,                  # Never log SQL in production
+  groq_client = Groq(api_key=GROQ_API_KEY)
+
+  PRIMARY_MODEL = "llama-4-scout-17b-16e-instruct"
+  FALLBACK_MODEL = "llama-3.3-70b-versatile"
+
+
+  def get_ai_analysis(system_prompt: str, user_message: str) -> str:
+      """
+      Call Groq API for AI analysis. Falls back to secondary model on failure.
+      Returns the assistant's text response as a string.
+      """
+      for model in [PRIMARY_MODEL, FALLBACK_MODEL]:
+          try:
+              response = groq_client.chat.completions.create(
+                  model=model,
+                  messages=[
+                      {"role": "system", "content": system_prompt},
+                      {"role": "user", "content": user_message},
+                  ],
+                  max_tokens=1024,
+                  temperature=0.3,  # Lower temp for factual health analysis
+              )
+              return response.choices[0].message.content
+          except Exception as e:
+              if model == FALLBACK_MODEL:
+                  raise RuntimeError(f"Both Groq models failed: {e}") from e
+              continue
+3.4 — Update the AI Analysis Route / Service
+In the FastAPI route that currently calls the Anthropic client:
+Replace the Anthropic client call with get_ai_analysis(system_prompt, user_message)
+The system_prompt must be PRESERVED exactly as it was — do not rewrite it
+The user_message construction (using the disease data context) must be PRESERVED exactly
+The response structure returned to the frontend must be PRESERVED exactly
+Example replacement:
+python
+  # BEFORE (Anthropic):
+  response = anthropic_client.messages.create(
+      model="claude-...",
+      system=system_prompt,
+      messages=[{"role": "user", "content": user_message}],
+      max_tokens=1024,
   )
+  result_text = response.content[0].text
 
-  SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Remove ALL SQLite-specific arguments (check_same_thread, StaticPool, connect_args)
-If DATABASE_URL is missing from env, raise a clear RuntimeError at startup — do NOT silently fall back
-The error message should read: "DATABASE_URL environment variable is not set. Supabase PostgreSQL connection string is required."
-1.3 — Remove All SQLite Conditional Branches
-Delete every if "sqlite" in DATABASE_URL block and its else/fallback
-Delete any SQLite-specific model overrides (e.g., String columns replacing ARRAY types)
-Delete any StaticPool imports and usage
-Delete any SQLite test fixture setup in test files that create sqlite:///./test.db or similar
-Confirm: after deletion, no reference to sqlite remains anywhere in the backend directory
-1.4 — Validate Supabase Connection String Format
-Supabase provides two connection string types:
-Session pooler (port 5432): for persistent connections, Alembic migrations
-Transaction pooler (port 6543, ?pgbouncer=true): for serverless/short-lived — use this for Render
-Check the current DATABASE_URL in Render environment variables
-If it uses port 5432 (direct), update the recommendation to use port 6543 with ?pgbouncer=true appended, OR use the session pooler at 5432 without pgbouncer flag
-Add ?sslmode=require to the URL if it is not already present
-Document this finding in a comment inside database.py or equivalent
-1.5 — Clean Up Startup Lifespan / App Init
-Locate the FastAPI lifespan context manager or @app.on_event("startup") handler
-Remove any SQLite-specific create_all calls that were used only for local dev
-If using Alembic: ensure alembic upgrade head is the single source of truth for schema
-If NOT using Alembic (using Base.metadata.create_all(bind=engine)): keep this but ensure it uses the PostgreSQL engine only, and add a startup log: "Connected to Supabase PostgreSQL"
-Remove any os.makedirs or file-based DB initialization code that was SQLite-related
-1.6 — Remove Dead Imports and Unused Dependencies
-Search for and remove these imports if they are only used by SQLite code:
-from sqlalchemy.pool import StaticPool
-Any SQLite dialect imports
-Any aiosqlite imports (if present)
-In requirements.txt (or pyproject.toml), remove aiosqlite if present
-Do NOT remove psycopg2-binary — it is required for PostgreSQL
-1.7 — Performance: Connection Warm-Up on Startup
-Add a startup health check that runs a simple query to confirm DB is reachable:
+  # AFTER (Groq):
+  from services.ai_client import get_ai_analysis
+  result_text = get_ai_analysis(system_prompt, user_message)
+The variable result_text (or whatever name is used) feeds into the same response object as before
+3.5 — Handle Streaming (If Currently Used)
+If the current implementation uses SSE (Server-Sent Events) or streaming response:
+Groq also supports streaming: groq_client.chat.completions.create(..., stream=True)
+Streaming with Groq follows the same OpenAI-compatible iterator pattern:
 python
-  from sqlalchemy import text
-  with engine.connect() as conn:
-      conn.execute(text("SELECT 1"))
-  print("Database connection verified.")
-This prevents the first real user request from paying the cold-start DB connection cost
-1.8 — Performance: Dependency Injection Cleanup
-Review the get_db() FastAPI dependency function
-Ensure it uses yield (not return) for proper session cleanup
-Ensure session.close() is in a finally block
-Standard correct pattern:
+    stream = groq_client.chat.completions.create(..., stream=True)
+    for chunk in stream:
+        delta = chunk.choices[0].delta.content or ""
+        yield delta
+Wrap this in a StreamingResponse in FastAPI exactly as it was done with the Anthropic stream
+If NOT streaming: ignore this step
+3.6 — Add the Groq API Key to Render
+In the Render dashboard for the backend Web Service:
+Go to Environment → Add environment variable
+Key: GROQ_API_KEY
+Value: the API key from console.groq.com
+Do NOT commit the API key to the repository
+Add GROQ_API_KEY to .env.example (without value) so it is documented
+3.7 — Remove Anthropic SDK (After Verification)
+After deploying to Render and confirming the AI analysis works end-to-end:
+Remove anthropic from requirements.txt
+Remove ANTHROPIC_API_KEY from Render environment variables
+Remove any import anthropic statements from all backend files
+Run pip uninstall anthropic locally
+3.8 — Rate Limit Awareness
+Groq free tier: 30 RPM per model
+HEALTHWATCH is a low-concurrency dashboard — this is more than sufficient
+If you see 429 errors: add a simple retry with exponential backoff:
 python
-  def get_db():
-      db = SessionLocal()
-      try:
-          yield db
-      finally:
-          db.close()
-Remove any duplicate get_db definitions found in multiple files (consolidate to one location, e.g., database.py)
-1.9 — Final Verification Checklist
-Run a global search: grep -r "sqlite" backend/ (or equivalent) — result must be zero matches
-Run a global search for StaticPool — result must be zero matches
-Confirm DATABASE_URL is read from environment (not hardcoded)
-Confirm pool_pre_ping=True is set (prevents errors after Supabase idle timeouts)
-Confirm no echo=True in the engine (this outputs every SQL query to logs and kills performance)
-Deploy to Render and confirm the health check endpoint (/health or equivalent) returns 200
-Check Render logs for the startup message confirming PostgreSQL connection
-1.10 — Do NOT Touch
-Any Prophet forecasting code
-Any Pandas / NumPy data pipeline
-Any API route handlers (/api/...)
-Any frontend files
-Any Recharts, Leaflet, or PDF renderer code
-Any existing Alembic migration files (only touch env.py if it has SQLite branching)
+  import time
+
+  def get_ai_analysis_with_retry(system_prompt: str, user_message: str, retries=3) -> str:
+      for attempt in range(retries):
+          try:
+              return get_ai_analysis(system_prompt, user_message)
+          except Exception as e:
+              if "429" in str(e) and attempt < retries - 1:
+                  time.sleep(2 ** attempt)
+              else:
+                  raise
+3.9 — Do NOT Touch
+The system prompt content (health analysis instructions for Philippine disease data)
+The data passed to the AI (case counts, region codes, seasonality scores, etc.)
+Any frontend AI display component
+Any loading states or error states in the frontend
+The API route path/URL
+Any other backend routes
 
 Do NOT change any feature behavior — only what is explicitly stated in each plan
 Do NOT upgrade or downgrade any package versions unless required by the plan

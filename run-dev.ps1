@@ -4,7 +4,7 @@ $root = $PSScriptRoot
 
 # Fallback: surface user-scope secrets (e.g. GEMINI_API_KEY) even when this
 # shell was opened before `setx` ran. api.py also reads a repo-root .env file.
-foreach ($name in @('GEMINI_API_KEY', 'ANTHROPIC_API_KEY', 'GEMINI_MODEL', 'ANTHROPIC_MODEL')) {
+foreach ($name in @('GEMINI_API_KEY', 'GROQ_API_KEY', 'GEMINI_MODEL')) {
     if (-not [Environment]::GetEnvironmentVariable($name, 'Process')) {
         $userVal = [Environment]::GetEnvironmentVariable($name, 'User')
         if ($userVal) { Set-Item -Path "Env:$name" -Value $userVal }
