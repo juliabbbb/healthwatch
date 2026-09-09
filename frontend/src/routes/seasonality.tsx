@@ -110,7 +110,7 @@ export function SeasonalityPage() {
     const lag12 = acfData.find((p) => p.lag === 12)?.value ?? 0;
     const lag6 = acfData.find((p) => p.lag === 6)?.value ?? 0;
     const peak = acfData.reduce((best, p) => (p.value > best.value ? p : best), acfData[0]!);
-    
+
     // Peak calendar month of the seasonal component.
     const byMonth = new Map<number, number>();
     decompData.forEach((p, i) => byMonth.set((i % 12) + 1, p.seasonal));
@@ -152,9 +152,7 @@ export function SeasonalityPage() {
     if (comp === "acf") {
       csvContent =
         "Lag_Months,Autocorrelation_Value,Region,Illness\n" +
-        acfData
-          .map((d) => `${d.lag},${d.value},"${region.name}","${illness}"`)
-          .join("\n");
+        acfData.map((d) => `${d.lag},${d.value},"${region.name}","${illness}"`).join("\n");
     } else {
       csvContent =
         `Month_Label,${comp.toUpperCase()}_Value,Season,Region,Illness\n` +
@@ -170,10 +168,7 @@ export function SeasonalityPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute(
-      "download",
-      `healthwatch_${region.short}_${comp}_data.csv`,
-    );
+    link.setAttribute("download", `healthwatch_${region.short}_${comp}_data.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -198,13 +193,9 @@ export function SeasonalityPage() {
   const menuActions = useMemo((): ContextMenuAction[] => {
     if (!menu) return [];
 
-    const isChartComponent = [
-      "observed",
-      "trend",
-      "seasonal",
-      "residual",
-      "acf",
-    ].includes(menu.section);
+    const isChartComponent = ["observed", "trend", "seasonal", "residual", "acf"].includes(
+      menu.section,
+    );
 
     if (isChartComponent) {
       const comp = menu.section as SeasonalityComponent;
@@ -289,7 +280,7 @@ export function SeasonalityPage() {
       >
         <ArrowLeft className="size-3.5" /> Back to map
       </Link>
-      
+
       {/* Header Banner */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
@@ -307,7 +298,8 @@ export function SeasonalityPage() {
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
-          <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months · {region.island}
+          <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months ·{" "}
+          {region.island}
         </span>
       </div>
 
@@ -518,11 +510,7 @@ export function SeasonalityPage() {
       </div>
 
       {/* Context / Options Menu */}
-      <SeasonalityContextMenu
-        anchor={menu}
-        actions={menuActions}
-        onClose={() => setMenu(null)}
-      />
+      <SeasonalityContextMenu anchor={menu} actions={menuActions} onClose={() => setMenu(null)} />
 
       {/* Expanded Chart Diagnostics Modal */}
       <ChartExpandModal

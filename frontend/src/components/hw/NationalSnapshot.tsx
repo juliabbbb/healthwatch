@@ -150,12 +150,14 @@ export function NationalSnapshot({
                     </button>
                   </div>
                   <p className="text-[11px] leading-relaxed text-muted-foreground">
-                    Colors show monthly risk tier (<span className="text-risk-low font-semibold">Low</span> /{" "}
+                    Colors show monthly risk tier (
+                    <span className="text-risk-low font-semibold">Low</span> /{" "}
                     <span className="text-risk-moderate font-semibold">Moderate</span> /{" "}
                     <span className="text-risk-high font-semibold">High</span>).
                   </p>
                   <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                    The alert marker shows a seasonal outbreak flag for the upcoming dry or wet season.
+                    The alert marker shows a seasonal outbreak flag for the upcoming dry or wet
+                    season.
                   </p>
                 </div>
               )}
@@ -187,7 +189,9 @@ export function NationalSnapshot({
             Dominant Illness
           </p>
           <div className="mt-2">
-            <p className="text-base sm:text-lg font-bold text-foreground truncate">{dominantIllness}</p>
+            <p className="text-base sm:text-lg font-bold text-foreground truncate">
+              {dominantIllness}
+            </p>
             <p className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground leading-tight truncate">
               Primary outbreak driver
             </p>
@@ -271,7 +275,8 @@ export function NationalSnapshot({
                   : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
               )}
             >
-              Outbreak markers: <span className="font-semibold">{showOutbreakMarkers ? "on" : "off"}</span>
+              Outbreak markers:{" "}
+              <span className="font-semibold">{showOutbreakMarkers ? "on" : "off"}</span>
             </button>
           )}
         </div>
@@ -289,4 +294,3 @@ export function NationalSnapshot({
     </div>
   );
 }
-

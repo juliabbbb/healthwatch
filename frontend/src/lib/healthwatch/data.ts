@@ -836,8 +836,13 @@ export const getCurrentMonthPHT = (): string => {
   return formatter.format(new Date()); // Outputs "YYYY-MM" (e.g., "2026-09")
 };
 
+export type SeasonalityComponent = "observed" | "trend" | "seasonal" | "residual" | "acf";
+
 export function getMonthIndexFromLabel(label: string): number {
-  const [yStr, mStr] = label.split("-");
+  const parts = label.split("-");
+  const yStr = parts[0];
+  const mStr = parts[1];
+  if (!yStr || !mStr) return HIST_MONTHS - 1;
   const y = parseInt(yStr, 10);
   const m = parseInt(mStr, 10);
   if (isNaN(y) || isNaN(m)) return HIST_MONTHS - 1;

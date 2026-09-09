@@ -41,10 +41,20 @@ import {
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/compare")({
-  validateSearch: (search: Record<string, unknown>): { baseline?: string; horizon?: number } => ({
-    baseline: (search.baseline as string) || getCurrentMonthPHT(),
-    horizon: typeof search.horizon === "number" ? search.horizon : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { baseline?: string; horizon?: number } => {
+    const rawBaseline = search["baseline"];
+    const rawHorizon = search["horizon"];
+    const res: { baseline?: string; horizon?: number } = {};
+    if (typeof rawBaseline === "string" && rawBaseline) {
+      res.baseline = rawBaseline;
+    } else {
+      res.baseline = getCurrentMonthPHT();
+    }
+    if (typeof rawHorizon === "number") {
+      res.horizon = rawHorizon;
+    }
+    return res;
+  },
   head: () => ({
     meta: [
       { title: "Compare Regions — HEALTHWATCH" },
@@ -778,7 +788,9 @@ export default function ComparePage() {
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
                     {formatMetric(detailedAssessment.value, mode)}
                   </p>
-                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">{meta.unit}</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                    {meta.unit}
+                  </p>
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
@@ -795,7 +807,9 @@ export default function ComparePage() {
                     {detailedAssessment.changePct >= 0 ? "+" : ""}
                     {detailedAssessment.changePct}%
                   </p>
-                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">vs preceding quarter</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                    vs preceding quarter
+                  </p>
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
@@ -805,7 +819,9 @@ export default function ComparePage() {
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
                     {detailedAssessment.percentileRank}th
                   </p>
-                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">seasonal distribution</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+                    seasonal distribution
+                  </p>
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
@@ -902,8 +918,15 @@ export default function ComparePage() {
                 </div>
                 <div className="font-mono text-[11px] text-muted-foreground">
                   <span className="font-medium text-foreground/85">95% CI Range:</span>{" "}
-                  {formatMetric(metricValue(detailedAssessment.point.lower, detailedAssessment.region, mode), mode)}–
-                  {formatMetric(metricValue(detailedAssessment.point.upper, detailedAssessment.region, mode), mode)}{" "}
+                  {formatMetric(
+                    metricValue(detailedAssessment.point.lower, detailedAssessment.region, mode),
+                    mode,
+                  )}
+                  –
+                  {formatMetric(
+                    metricValue(detailedAssessment.point.upper, detailedAssessment.region, mode),
+                    mode,
+                  )}{" "}
                   {meta.unit}
                 </div>
               </div>
@@ -993,9 +1016,7 @@ function RegionalOverviewCard({
         <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-2.5">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5">
-              <span className="label-caps font-semibold text-foreground">
-                {a.region.short}
-              </span>
+              <span className="label-caps font-semibold text-foreground">{a.region.short}</span>
               <span className="text-[10px] text-muted-foreground">·</span>
               <span className="text-[10px] text-muted-foreground truncate">
                 {a.region.classification}
@@ -1459,7 +1480,8 @@ function DetailedChart({
               <div className="flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
                 <span>95% CI Bounds:</span>
                 <span className="font-medium text-foreground/80">
-                  {formatMetric(hoveredPoint.vLower, mode)} – {formatMetric(hoveredPoint.vUpper, mode)}
+                  {formatMetric(hoveredPoint.vLower, mode)} –{" "}
+                  {formatMetric(hoveredPoint.vUpper, mode)}
                 </span>
               </div>
             </div>

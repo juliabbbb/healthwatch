@@ -69,14 +69,18 @@ export function SeasonalityChartCard({
   onExportCsv,
 }: SeasonalityChartCardProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const styling = COLOR_MAP[component];
+  const styling = COLOR_MAP[component] ?? {
+    dot: "bg-primary",
+    border: "border-primary",
+    glow: "rgba(59, 130, 246, 0.2)",
+  };
 
   return (
     <div
       onContextMenu={(e) => onOpenMenu(e, component)}
       className={cn(
         "group relative flex flex-col rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 transition-all duration-200",
-        "hover:border-border hover:bg-card/60 hover:shadow-md"
+        "hover:border-border hover:bg-card/60 hover:shadow-md",
       )}
     >
       {/* Header with Title, Badges, and Per-Chart Actions */}

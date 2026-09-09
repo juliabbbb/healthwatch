@@ -10,7 +10,13 @@ import {
   Waves,
   AlertCircle,
 } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
 import { REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
@@ -97,9 +103,10 @@ export function ChartExpandModal({
   const [activeTab, setActiveTab] = useState<"chart" | "data" | "methodology">("chart");
 
   if (!component) return null;
+  const meta = COMPONENT_METADATA[component];
+  if (!meta) return null;
 
   const region = REGION_BY_CODE[regionCode];
-  const meta = COMPONENT_METADATA[component];
   const decompData = decompose(regionCode, illness);
   const acfData = acf(regionCode, illness, 24);
 
@@ -110,9 +117,17 @@ export function ChartExpandModal({
       const lag12 = acfData.find((p) => p.lag === 12)?.value ?? 0;
       const lag6 = acfData.find((p) => p.lag === 6)?.value ?? 0;
       return [
-        { label: "Lag 12 ACF", value: lag12.toFixed(3), hint: lag12 > 0.4 ? "Strong annual cycle" : "Moderate cycle" },
+        {
+          label: "Lag 12 ACF",
+          value: lag12.toFixed(3),
+          hint: lag12 > 0.4 ? "Strong annual cycle" : "Moderate cycle",
+        },
         { label: "Lag 6 ACF", value: lag6.toFixed(3), hint: "Semi-annual relationship" },
-        { label: "Dominant Cycle", value: `${peakLag.lag} months`, hint: `Peak ACF ${peakLag.value.toFixed(3)}` },
+        {
+          label: "Dominant Cycle",
+          value: `${peakLag.lag} months`,
+          hint: `Peak ACF ${peakLag.value.toFixed(3)}`,
+        },
         { label: "Lags Tested", value: `${acfData.length} months`, hint: "1–24 month range" },
       ];
     }
@@ -124,28 +139,56 @@ export function ChartExpandModal({
     const latestVal = values.at(-1) ?? 0;
 
     return [
-      { label: "Latest Value", value: latestVal.toLocaleString(), hint: decompData.at(-1)?.label ?? "" },
-      { label: "Series Average", value: meanVal.toLocaleString(), hint: "Mean across observed months" },
-      { label: "Range (Min / Max)", value: `${minVal.toLocaleString()} — ${maxVal.toLocaleString()}`, hint: `Span: ${(maxVal - minVal).toLocaleString()}` },
-      { label: "Months Analyzed", value: `${values.length} months`, hint: `${decompData[0]?.label} → ${decompData.at(-1)?.label}` },
+      {
+        label: "Latest Value",
+        value: latestVal.toLocaleString(),
+        hint: decompData.at(-1)?.label ?? "",
+      },
+      {
+        label: "Series Average",
+        value: meanVal.toLocaleString(),
+        hint: "Mean across observed months",
+      },
+      {
+        label: "Range (Min / Max)",
+        value: `${minVal.toLocaleString()} — ${maxVal.toLocaleString()}`,
+        hint: `Span: ${(maxVal - minVal).toLocaleString()}`,
+      },
+      {
+        label: "Months Analyzed",
+        value: `${values.length} months`,
+        hint: `${decompData[0]?.label} → ${decompData.at(-1)?.label}`,
+      },
     ];
   })();
 
   const downloadCsv = () => {
     let csvContent = "";
     if (component === "acf") {
-      csvContent = "Lag_Months,Autocorrelation_Value,Region,Illness\n" +
-        acfData.map((d) => `${d.lag},${d.value},"${region?.name ?? regionCode}","${illness}"`).join("\n");
+      csvContent =
+        "Lag_Months,Autocorrelation_Value,Region,Illness\n" +
+        acfData
+          .map((d) => `${d.lag},${d.value},"${region?.name ?? regionCode}","${illness}"`)
+          .join("\n");
     } else {
-      csvContent = `Month_Label,${component.toUpperCase()}_Value,Season,Region,Illness\n` +
-        decompData.map((d) => `${d.label},${d[component as keyof typeof d]},${d.season},"${region?.name ?? regionCode}","${illness}"`).join("\n");
+      csvContent =
+        `Month_Label,${component.toUpperCase()}_Value,Season,Region,Illness\n` +
+        decompData
+          .map(
+            (d) =>
+              `${d.label},${d[component as keyof typeof d]},${d.season},"${region?.name ?? regionCode}","${illness}"`,
+          )
+          .join("\n");
     }
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `healthwatch_${region?.short ?? regionCode}_${component}_data.csv`);
+    link.setAttribute(
+      "download",
+      `healthwatch_${region?.short ?? regionCode}_${component}_data.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -219,7 +262,11 @@ export function ChartExpandModal({
                 title="Copy series JSON to clipboard"
                 className="flex items-center gap-1.5 rounded-lg border border-border bg-card/70 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer"
               >
-                {copied ? <Check className="size-3.5 text-emerald-400" /> : <Copy className="size-3.5" />}
+                {copied ? (
+                  <Check className="size-3.5 text-emerald-400" />
+                ) : (
+                  <Copy className="size-3.5" />
+                )}
                 <span className="hidden sm:inline">{copied ? "Copied" : "Copy JSON"}</span>
               </button>
             </div>
@@ -242,7 +289,7 @@ export function ChartExpandModal({
               "px-3.5 py-2 text-xs font-medium transition-colors border-b-2 -mb-px flex items-center gap-1.5",
               activeTab === "chart"
                 ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <Activity className="size-3.5" />
@@ -255,7 +302,7 @@ export function ChartExpandModal({
               "px-3.5 py-2 text-xs font-medium transition-colors border-b-2 -mb-px flex items-center gap-1.5",
               activeTab === "methodology"
                 ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <Info className="size-3.5" />
@@ -268,7 +315,7 @@ export function ChartExpandModal({
               "px-3.5 py-2 text-xs font-medium transition-colors border-b-2 -mb-px flex items-center gap-1.5",
               activeTab === "data"
                 ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <TrendingUp className="size-3.5" />
@@ -340,7 +387,10 @@ export function ChartExpandModal({
               </p>
               <div className="mt-3 flex items-center gap-2 text-[11px] text-muted-foreground">
                 <AlertCircle className="size-3.5 text-primary" />
-                <span>Computed deterministically from monthly DOH surveillance without synthetic interpolation.</span>
+                <span>
+                  Computed deterministically from monthly DOH surveillance without synthetic
+                  interpolation.
+                </span>
               </div>
             </div>
           </div>

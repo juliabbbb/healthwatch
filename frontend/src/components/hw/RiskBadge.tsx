@@ -50,7 +50,10 @@ export function SeasonTag({
   const color = season === "wet" ? "var(--wet)" : "var(--dry)";
   return (
     <span
-      className={cn("rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wider font-medium", className)}
+      className={cn(
+        "rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wider font-medium",
+        className,
+      )}
       style={{ color, backgroundColor: `color-mix(in oklab, ${color}, transparent 88%)` }}
     >
       {label ?? `${season} season`}

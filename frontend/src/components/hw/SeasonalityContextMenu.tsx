@@ -7,7 +7,7 @@ export interface ContextMenuAnchor {
   y: number;
   /** Which dashboard section or chart component was clicked */
   section: string;
-  title?: string;
+  title?: string | undefined;
 }
 
 export interface ContextMenuAction {
@@ -81,7 +81,7 @@ export function SeasonalityContextMenu({
         aria-label="Chart actions"
         className={cn(
           "glass-panel fixed z-[600] w-60 overflow-hidden rounded-xl py-1.5 shadow-2xl border border-border/90",
-          "animate-in fade-in zoom-in-95 duration-150"
+          "animate-in fade-in zoom-in-95 duration-150",
         )}
         style={{ left, top }}
       >
@@ -107,11 +107,14 @@ export function SeasonalityContextMenu({
                   "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs transition-colors cursor-pointer touch-manipulation",
                   isAiAction
                     ? "bg-primary/10 text-primary font-medium hover:bg-primary/20"
-                    : "text-foreground hover:bg-secondary hover:text-foreground"
+                    : "text-foreground hover:bg-secondary hover:text-foreground",
                 )}
               >
                 <action.icon
-                  className={cn("size-3.5 shrink-0", isAiAction ? "text-primary" : "text-muted-foreground")}
+                  className={cn(
+                    "size-3.5 shrink-0",
+                    isAiAction ? "text-primary" : "text-muted-foreground",
+                  )}
                 />
                 <span className="flex-1 min-w-0">
                   <span className="block truncate">{action.label}</span>
