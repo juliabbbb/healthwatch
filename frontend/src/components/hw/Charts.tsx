@@ -214,13 +214,15 @@ export function DecompositionChart({
   illness,
   component,
   height = 150,
+  endIndex,
 }: {
   regionCode: string;
   illness: string;
   component: "observed" | "trend" | "seasonal" | "residual";
   height?: number;
+  endIndex?: number | undefined;
 }) {
-  const data = decompose(regionCode, illness);
+  const data = decompose(regionCode, illness, endIndex);
   const color =
     component === "trend"
       ? "var(--chart-2)"
@@ -258,12 +260,14 @@ export function AcfChart({
   regionCode,
   illness,
   height = 160,
+  endIndex,
 }: {
   regionCode: string;
   illness: string;
   height?: number;
+  endIndex?: number | undefined;
 }) {
-  const data = acf(regionCode, illness, 24);
+  const data = acf(regionCode, illness, 24, endIndex);
   return (
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>

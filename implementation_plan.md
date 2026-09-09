@@ -1,6 +1,6 @@
-# HEALTHWATCH — Implementation Plan 2 of 8
-**Item:** Unified FilterPanel Component 
-**Execute this plan fully before moving to Plan 3.**
+# HEALTHWATCH — Implementation Plan 3 of 8
+**Item:** Add Date Slider to Seasonality Page 
+**Execute this plan fully before moving to Plan 4.**
 
 
 ---
@@ -27,83 +27,59 @@ HealthWatch is a regional public health decision-support tool for Philippine LGU
 
 ---
 
-## ITEM 3 — Unify the Filter Control Panel Across Seasonality and Compare Pages
+## ITEM 4 — Add a Date Slider to the Seasonality Page
 
 ### Goal
-Both the Seasonality page and the Compare page must use one identical shared FilterPanel component. Same sizing, same spacing, same label style, same control heights, same layout. Currently they have separate implementations that are visually inconsistent.
+The Seasonality page currently has no date/forecast period slider. It must have the same date slider as the Compare page, wired to the FilterPanel (from Plan 2) via `showDateSlider={true}`, and its selected value must drive the Seasonality page's forecast horizon.
 
-### Step 1 — Audit both pages before touching anything
-Open the Seasonality page component and the Compare page component. Read and understand:
-- What component or JSX block handles region selection on each page
-- What component or JSX block handles illness selection on each page
-- What props/state they use (selected values, onChange handlers, available options lists)
-- Whether any shared filter component already exists — if it does, note its location
+### Step 1 — Read the Compare page date slider before touching anything
+Open the Compare page component. Read the date slider's:
+- Component name and file location
+- Props interface (min, max, value, onChange)
+- How its value is stored in state (variable name and type)
+- How its value is passed to the data fetch / TanStack Query hook
+- What the min and max bounds represent (earliest available data month, furthest forecast month)
 
-Do not change anything yet in this step.
+Do not change the Compare page in this step.
 
-### Step 2 — Create the shared FilterPanel component
-Create `src/components/FilterPanel.tsx` (or the established components directory of this project). If a FilterPanel component already exists, extend it — do not replace it entirely without reading its current implementation first.
-
-The FilterPanel must accept these props:
+### Step 2 — Add date slider state to the Seasonality page
+In the Seasonality page component, add a state variable for the selected forecast date using the same type as the Compare page uses. Initialize it to the same default value the Compare page uses.
 
 ```ts
-interface FilterPanelProps {
-  // Region selection
-  regions: string[];                        // list of available region options
-  selectedRegions: string[];                // currently selected regions
-  onRegionsChange: (val: string[]) => void; // handler — keep existing signature
-  multiSelectRegion?: boolean;              // true on Compare, false on Seasonality
-
-  // Illness selection
-  illnesses: string[];                      // list of available illness options
-  selectedIllness: string;                  // currently selected illness
-  onIllnessChange: (val: string) => void;   // handler
-
-  // Date slider (optional — shown only when provided)
-  showDateSlider?: boolean;
-  dateRange?: { min: string; max: string }; // "YYYY-MM" values for slider bounds
-  selectedDate?: string;                    // "YYYY-MM" current slider value
-  onDateChange?: (val: string) => void;     // handler
-}
+// Match the exact type and default the Compare page uses — do not invent a new type
+const [selectedDate, setSelectedDate] = useState<string>(/* same default as Compare */);
 ```
 
-Adapt the prop names to match whatever the existing pages already use — do not force a rename of existing state variables in the parent pages. Use the existing handler signatures.
+### Step 3 — Pass the date slider into FilterPanel on the Seasonality page
+On the Seasonality page, update the `<FilterPanel>` rendered in Plan 2 to include:
 
-### Step 3 — FilterPanel visual layout rules
-The FilterPanel component must implement this layout:
+```tsx
+<FilterPanel
+  // ... existing region and illness props already wired in Plan 2 ...
+  showDateSlider={true}
+  dateRange={{ min: /* earliest month */, max: /* furthest forecast month */ }}
+  selectedDate={selectedDate}
+  onDateChange={setSelectedDate}
+/>
+```
 
-**Desktop (≥ 768px):**
-- Single horizontal row containing all controls
-- Controls are baseline-aligned
-- Each control has a short label above it (`text-sm font-medium` in the project's label color token)
-- Region select and illness select are the same width
-- Date slider (when shown) fills the remaining horizontal space
-- Container: light background using the project's card/surface token, `rounded-lg border border-border px-6 py-4`
-- Gap between controls: `gap-6`
+Use the same min/max bounds the Compare page uses — do not hardcode arbitrary dates. If the bounds come from a TanStack Query result, use the same query on the Seasonality page.
 
-**Mobile (< 768px):**
-- Stacked vertically, each control full width
-- `gap-4` between controls
+### Step 4 — Wire selectedDate to the Seasonality page data fetch
+In the Seasonality page's TanStack Query hook (or wherever the API call is made for chart data), pass `selectedDate` as a parameter to the forecast horizon argument — replacing any hardcoded or default forecast period value currently used. Do not change the API endpoint or the backend — only pass the value as a query parameter that was previously hardcoded.
 
-**Do not introduce any new color tokens.** Use only what is already defined in the project's Tailwind config or CSS custom properties.
-
-### Step 4 — Replace filter sections on both pages
-In the Seasonality page and the Compare page:
-- Remove the existing filter section JSX (region select, illness select, and date slider if present on Compare)
-- Import and render `<FilterPanel>` with the appropriate props, wiring the existing state variables and handlers directly — do not change the state management logic, only the JSX layer
-
-### Step 5 — Spacing between FilterPanel and page content
-After the `<FilterPanel>` closing tag on both pages, ensure there is at least `mt-6` margin before the first content section (charts, tables, etc.).
+### Step 5 — Date label formatting
+All labels on the date slider (tick marks, current value display, tooltip) on the Seasonality page must use `formatMonthYear` from Plan 1. Confirm the Compare page's slider also uses it — if it does not yet, apply it there too as part of this step.
 
 ### What NOT to touch
-- The underlying state variables and their types in either page
-- The TanStack Query hooks or API calls triggered by filter changes
-- Any other page or component not listed here
-- The date slider component itself (only wire it — do not rewrite it)
+- The Compare page's date slider behavior or state
+- The date slider component's internal implementation
+- Any other page or component
+- The FastAPI backend
 
 ### Verification
 After this plan is complete:
-- Both the Seasonality and Compare pages show visually identical filter panels
-- All three controls (region, illness, date slider on Compare) are the same height and baseline-aligned on desktop
-- Changing filters on either page still triggers the correct data fetch and chart update
-- No other page is affected
+- The Seasonality page shows the date slider inside the FilterPanel
+- Moving the slider updates the Seasonality page's charts and data
+- Slider labels show "Sep 2026" format, not "2026-09"
+- The Compare page's slider is unaffected

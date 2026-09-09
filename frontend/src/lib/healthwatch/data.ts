@@ -686,8 +686,14 @@ export interface DecompPoint {
   season: Season;
 }
 
-export function decompose(regionCode: string, illnessId: string | "all"): DecompPoint[] {
-  const series = seriesFor(regionCode, illnessId).filter((p) => !p.forecast);
+export function decompose(
+  regionCode: string,
+  illnessId: string | "all",
+  endIndex?: number,
+): DecompPoint[] {
+  const series = seriesFor(regionCode, illnessId).filter((p) =>
+    endIndex === undefined ? !p.forecast : p.index <= endIndex,
+  );
   const values = series.map((p) => p.cases);
   const half = 6;
   const trend = values.map((_, i) => {
@@ -722,9 +728,9 @@ export function decompose(regionCode: string, illnessId: string | "all"): Decomp
 }
 
 /** Autocorrelation function up to `maxLag` months — reveals the 12-month cycle. */
-export function acf(regionCode: string, illnessId: string | "all", maxLag = 24) {
+export function acf(regionCode: string, illnessId: string | "all", maxLag = 24, endIndex?: number) {
   const values = seriesFor(regionCode, illnessId)
-    .filter((p) => !p.forecast)
+    .filter((p) => (endIndex === undefined ? !p.forecast : p.index <= endIndex))
     .map((p) => p.cases);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const denom = values.reduce((a, v) => a + (v - mean) ** 2, 0) || 1;

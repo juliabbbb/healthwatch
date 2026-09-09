@@ -21,6 +21,7 @@ interface SeasonalityChartCardProps {
   subtitle?: string;
   statBadge?: { label: string; value: string };
   height?: number;
+  endIndex?: number | undefined;
   onRequestAI: (component: SeasonalityComponent) => void;
   onExpand: (component: SeasonalityComponent) => void;
   onOpenMenu: (e: React.MouseEvent, component: SeasonalityComponent) => void;
@@ -63,6 +64,7 @@ export function SeasonalityChartCard({
   subtitle,
   statBadge,
   height = 160,
+  endIndex,
   onRequestAI,
   onExpand,
   onOpenMenu,
@@ -153,13 +155,14 @@ export function SeasonalityChartCard({
       {/* Chart Canvas */}
       <div className="mt-1 w-full flex-1">
         {component === "acf" ? (
-          <AcfChart regionCode={regionCode} illness={illness} height={height} />
+          <AcfChart regionCode={regionCode} illness={illness} height={height} endIndex={endIndex} />
         ) : (
           <DecompositionChart
             regionCode={regionCode}
             illness={illness}
             component={component as "observed" | "trend" | "seasonal" | "residual"}
             height={height}
+            endIndex={endIndex}
           />
         )}
       </div>

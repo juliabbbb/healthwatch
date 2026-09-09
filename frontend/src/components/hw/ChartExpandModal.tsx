@@ -92,6 +92,7 @@ export function ChartExpandModal({
   illness,
   component,
   onRequestAI,
+  endIndex,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -99,6 +100,7 @@ export function ChartExpandModal({
   illness: string;
   component: SeasonalityComponent | null;
   onRequestAI?: (component: SeasonalityComponent) => void;
+  endIndex?: number | undefined;
 }) {
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<"chart" | "data" | "methodology">("chart");
@@ -108,8 +110,8 @@ export function ChartExpandModal({
   if (!meta) return null;
 
   const region = REGION_BY_CODE[regionCode];
-  const decompData = decompose(regionCode, illness);
-  const acfData = acf(regionCode, illness, 24);
+  const decompData = decompose(regionCode, illness, endIndex);
+  const acfData = acf(regionCode, illness, 24, endIndex);
 
   // Compute key stats for this component
   const stats = (() => {
@@ -329,13 +331,19 @@ export function ChartExpandModal({
           <div className="mt-4 space-y-4">
             <div className="rounded-xl border border-border/70 bg-card/60 p-4 shadow-inner">
               {component === "acf" ? (
-                <AcfChart regionCode={regionCode} illness={illness} height={280} />
+                <AcfChart
+                  regionCode={regionCode}
+                  illness={illness}
+                  height={280}
+                  endIndex={endIndex}
+                />
               ) : (
                 <DecompositionChart
                   regionCode={regionCode}
                   illness={illness}
                   component={component as "observed" | "trend" | "seasonal" | "residual"}
                   height={280}
+                  endIndex={endIndex}
                 />
               )}
             </div>

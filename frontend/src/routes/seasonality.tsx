@@ -5,12 +5,14 @@ import {
   Bot,
   Copy,
   Download,
+  History,
+  Info,
   Maximize2,
   MoreHorizontal,
+  SlidersHorizontal,
   Sparkles,
-  Waves,
   TrendingUp,
-  Info,
+  Waves,
 } from "lucide-react";
 import { SeasonalityChartCard } from "@/components/hw/SeasonalityChartCard";
 import { ChartExpandModal } from "@/components/hw/ChartExpandModal";
@@ -24,16 +26,21 @@ import { SeasonTag } from "@/components/hw/RiskBadge";
 import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { FilterPanel } from "@/components/FilterPanel";
+import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import {
+  CURRENT_MONTH_INDEX,
   ILLNESSES,
   REGIONS,
   REGION_BY_CODE,
+  TOTAL_MONTHS,
   acf,
   decompose,
+  monthMeta,
   type SeasonalityComponent,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -68,7 +75,17 @@ function variance(values: number[]) {
 export function SeasonalityPage() {
   const [code, setCode] = useState("130000000");
   const [illness, setIllness] = useState("all");
+  const [horizon, setHorizon] = useState<number>(0);
   const region = REGION_BY_CODE[code]!;
+
+  const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
+  const currentMonth = monthMeta(monthIndex);
+  const baselineMonth = monthMeta(CURRENT_MONTH_INDEX);
+  const isHistorical = horizon < 0;
+  const isCurrent = horizon === 0;
+  const isForecast = horizon > 0;
+  const currentSeasonLabel =
+    currentMonth.season === "wet" ? SEASON_CONFIG.wet.display : SEASON_CONFIG.dry.display;
 
   // Right-click or CTA button tap → AI explanation workflow. Opt-in: when the setting is off,
   // choosing an AI action opens Settings instead and makes zero requests.
@@ -100,8 +117,11 @@ export function SeasonalityPage() {
     setExplainComponent(component);
   };
 
-  const decompData = useMemo(() => decompose(code, illness), [code, illness]);
-  const acfData = useMemo(() => acf(code, illness, 24), [code, illness]);
+  const decompData = useMemo(
+    () => decompose(code, illness, monthIndex),
+    [code, illness, monthIndex],
+  );
+  const acfData = useMemo(() => acf(code, illness, 24, monthIndex), [code, illness, monthIndex]);
 
   const stats = useMemo(() => {
     const seasonalVar = variance(decompData.map((p) => p.seasonal));
@@ -313,6 +333,109 @@ export function SeasonalityPage() {
           illnesses={ILLNESSES}
           selectedIllness={illness}
           onIllnessChange={setIllness}
+          dateSliderSlot={
+            <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* Temporal Status Headline */}
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2 text-primary shrink-0">
+                    <SlidersHorizontal className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                      Surveillance & Forecast Period
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                      <span className="font-mono text-base font-bold text-foreground">
+                        {formatMonthYear(currentMonth.label)}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
+                          isHistorical && "bg-secondary text-muted-foreground border-border",
+                          isCurrent && "bg-primary/20 text-primary border-primary/40",
+                          isForecast &&
+                            "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+                        )}
+                      >
+                        {isHistorical && `${Math.abs(horizon)}m past reported`}
+                        {isCurrent && "Current baseline (Now)"}
+                        {isForecast && `+${horizon}m forecast`}
+                      </span>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                        style={{
+                          backgroundColor:
+                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
+                          color: "#ffffff",
+                        }}
+                      >
+                        {currentSeasonLabel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Slider Scrubber & Indicator Track */}
+                <div className="flex flex-col gap-1.5 w-full md:max-w-md">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+                    <span className="flex items-center gap-1">
+                      <History className="size-3" />
+                      <span>Past (-12m)</span>
+                    </span>
+                    <span
+                      className={cn(
+                        "transition-colors",
+                        horizon === 0 ? "text-primary font-bold" : "text-muted-foreground",
+                      )}
+                    >
+                      Now (0) · {formatMonthYear(baselineMonth.label)}
+                    </span>
+                    <span>Forecast (+12m)</span>
+                  </div>
+
+                  {/* Range slider with generous touch target for mobile */}
+                  <input
+                    type="range"
+                    min={-12}
+                    max={12}
+                    step={1}
+                    value={horizon}
+                    onChange={(e) => setHorizon(Number(e.target.value))}
+                    className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
+                    aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
+                  />
+
+                  {/* Quick Jump Buttons covering both Past and Future */}
+                  <div className="flex flex-wrap items-center justify-between gap-1 pt-0.5">
+                    {[
+                      { label: "-12m", val: -12 },
+                      { label: "-6m", val: -6 },
+                      { label: "-3m", val: -3 },
+                      { label: "Now", val: 0 },
+                      { label: "+3m", val: 3 },
+                      { label: "+6m", val: 6 },
+                      { label: "+12m", val: 12 },
+                    ].map((s) => (
+                      <button
+                        key={s.label}
+                        type="button"
+                        onClick={() => setHorizon(s.val)}
+                        className={cn(
+                          "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center",
+                          horizon === s.val
+                            ? "border-primary bg-primary/15 text-primary font-bold shadow-xs"
+                            : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
+                        )}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          }
         />
       </div>
 
@@ -369,9 +492,10 @@ export function SeasonalityPage() {
               Trend / seasonality / noise
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              {region.name} · {illness === "all" ? "all illnesses" : illness} · observed 2022–2026
-              split into a 12-month centred moving-average trend, a month-of-year seasonal index and
-              the irregular remainder.
+              {region.name} · {illness === "all" ? "all illnesses" : illness} · window{" "}
+              {formatMonthYear(monthMeta(0).label)} – {formatMonthYear(currentMonth.label)} split
+              into a 12-month centred moving-average trend, a month-of-year seasonal index and the
+              irregular remainder.
             </p>
           </div>
           <button
@@ -396,6 +520,7 @@ export function SeasonalityPage() {
             subtitle="Raw monthly surveillance records (2022–2026)"
             statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
             height={160}
+            endIndex={monthIndex}
             onRequestAI={requestExplain}
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Observed series")}
@@ -414,6 +539,7 @@ export function SeasonalityPage() {
               value: `${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`,
             }}
             height={160}
+            endIndex={monthIndex}
             onRequestAI={requestExplain}
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Trend component")}
@@ -429,6 +555,7 @@ export function SeasonalityPage() {
             subtitle="Month-of-year recurring seasonal index"
             statBadge={{ label: "Peak month", value: stats.peakMonth }}
             height={160}
+            endIndex={monthIndex}
             onRequestAI={requestExplain}
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Seasonality component")}
@@ -444,6 +571,7 @@ export function SeasonalityPage() {
             subtitle="Irregular remainder after subtracting trend and season"
             statBadge={{ label: "Std dev", value: `±${stats.residualStd}` }}
             height={160}
+            endIndex={monthIndex}
             onRequestAI={requestExplain}
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Noise (residual)")}
@@ -474,6 +602,7 @@ export function SeasonalityPage() {
           subtitle="Lags 1 to 24 months (dashed line = lag 12 annual mark)"
           statBadge={{ label: "Lag 12 ACF", value: stats.lag12.toFixed(2) }}
           height={200}
+          endIndex={monthIndex}
           onRequestAI={requestExplain}
           onExpand={setExpandComponent}
           onOpenMenu={(e, c) => openMenu(e, c, "12-month cycle indicators")}
@@ -513,6 +642,7 @@ export function SeasonalityPage() {
         regionCode={code}
         illness={illness}
         component={expandComponent}
+        endIndex={monthIndex}
         onRequestAI={requestExplain}
       />
 
