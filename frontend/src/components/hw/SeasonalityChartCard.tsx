@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type Ref } from "react";
 import {
   Bot,
   Check,
@@ -26,6 +26,7 @@ interface SeasonalityChartCardProps {
   onExpand: (component: SeasonalityComponent) => void;
   onOpenMenu: (e: React.MouseEvent, component: SeasonalityComponent) => void;
   onExportCsv?: (component: SeasonalityComponent) => void;
+  chartRef?: Ref<HTMLDivElement>;
 }
 
 const COLOR_MAP: Record<SeasonalityComponent, { dot: string; border: string; glow: string }> = {
@@ -69,6 +70,7 @@ export function SeasonalityChartCard({
   onExpand,
   onOpenMenu,
   onExportCsv,
+  chartRef,
 }: SeasonalityChartCardProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const styling = COLOR_MAP[component] ?? {
@@ -153,7 +155,7 @@ export function SeasonalityChartCard({
       </div>
 
       {/* Chart Canvas */}
-      <div className="mt-1 w-full flex-1">
+      <div ref={chartRef} className="mt-1 w-full flex-1">
         {component === "acf" ? (
           <AcfChart regionCode={regionCode} illness={illness} height={height} endIndex={endIndex} />
         ) : (

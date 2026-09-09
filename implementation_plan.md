@@ -1,6 +1,6 @@
-# HEALTHWATCH — Implementation Plan 6 of 8
-**Item:** Fix PDF Export Formatting — Prevent Overlap with Multiple Regions
-**Execute this plan fully before moving to Plan 7.**
+# HEALTHWATCH — Implementation Plan 7 of 8
+**Item:** Add PDF Export to Seasonality Page
+**Execute this plan fully before moving to Plan 8.**
 
 
 ---
@@ -23,121 +23,94 @@ HealthWatch is a regional public health decision-support tool for Philippine LGU
 
 **Tech stack (frontend):** React 19 + Vite + TanStack Router + TanStack Query + Tailwind CSS 4 + Recharts + Leaflet + React PDF Renderer + TypeScript 5.8
 
-**DO NOT touch:** FastAPI backend, Prophet pipeline, SQLAlchemy models, Supabase/PostgreSQL config, classification algorithm, evaluation logic, CSV export, routing config, render.yaml, any non-PDF component.
+**DO NOT touch:** FastAPI backend, Prophet pipeline, SQLAlchemy models, Supabase/PostgreSQL config, classification algorithm, evaluation logic, CSV export, routing config, render.yaml, the Compare page PDF template (already fixed in Plan 6).
 
 ---
 
-## ITEM 5 — Fix PDF Export Formatting to Prevent Overlap with Multiple Regions
+## ITEM 2 — Add PDF Export to the Seasonality Page
 
 ### Goal
-The current PDF export overlaps content when many regions are selected. Fix this with per-region page breaks, fixed column widths, correct font sizing, a cover page, and a summary page.
+The Seasonality page currently has no PDF export. Add a PDF export button that matches the Compare page's export button visually, and produce a well-formatted PDF containing all seasonal analysis charts for the selected region and forecast period.
 
-### Step 1 — Locate all React PDF document components
-Search the codebase for files that import from `@react-pdf/renderer`. List every file found. These are the only files this plan touches.
+### Step 1 — Confirm the Compare page export button component
+Open the Compare page. Locate the export button — note its exact component name, file location, and visual style (size, variant, icon if any, label text). The Seasonality page export button must use the same component with the same visual style.
 
-### Step 2 — Read the current PDF template structure
-Before changing anything, read the current template structure completely. Identify:
-- Where the loop over selected regions occurs
-- How charts or chart data are rendered in the PDF (as images, as tables, or as React PDF shapes)
-- What the current page margins are
-- What font family is currently used
+### Step 2 — Create the Seasonality PDF document component
+Create a new file: `src/components/pdf/SeasonalityPdfDocument.tsx` (or the equivalent PDF components directory the project uses).
 
-### Step 3 — Implement per-region page breaks
-In the region loop within the PDF document component, wrap each region's content block in a `<View break>`. The `break` prop on a React PDF `<View>` forces a page break before that view.
-
-```tsx
-{selectedRegions.map((region, index) => (
-  <View key={region} break={index > 0}>
-    {/* All content for this region goes here */}
-  </View>
-))}
+This component receives these props:
+```ts
+interface SeasonalityPdfDocumentProps {
+  regionName: string;
+  illnessLabel: string;
+  forecastPeriod: { start: string; end: string }; // "YYYY-MM" values
+  charts: {
+    label: string;       // e.g., "Trend Decomposition", "ACF Chart", "Seasonal Pattern", "Forecast"
+    imageDataUrl: string; // base64 PNG of the chart — see Step 3
+  }[];
+  exportTimestamp: string; // "YYYY-MM" value, will be formatted with formatMonthYear
+}
 ```
 
-Note: `break={index > 0}` skips the page break before the very first region.
+The PDF document structure:
 
-### Step 4 — Per-region page content structure
-Each region block (inside the `<View break>`) must contain the following in order:
+**Page 1 — Cover**
+HealthWatch
+Seasonal Pattern Analysis Report
 
-1. Region name — bold, large text (`fontSize: 18, fontWeight: 'bold'`)
-2. Risk classification badge — a colored `<View>` rectangle with the tier label:
-   - High: background `#EF4444`, white text
-   - Moderate: background `#F59E0B`, white text
-   - Low: background `#22C55E`, white text
-3. Forecast table — monthly predictions for the forecast period (columns: Month | Predicted Cases | Lower Bound | Upper Bound | Risk Tier)
-4. Seasonal Outbreak Indicator — text line showing Rule A and Rule B results for the region
-5. A thin horizontal divider line at the bottom of the section (optional, omit if it creates spacing issues)
-
-### Step 5 — Fix all table column widths
-Every table in the PDF must use explicit column widths that sum to the usable page width. For A4 portrait with standard margins (left: 40pt, right: 40pt), usable width is approximately 515pt.
-
-Example for the forecast table (5 columns):
-```tsx
-// Column widths must sum to ~515pt
-const COL_WIDTHS = {
-  month:          100, // "Sep 2026"
-  predictedCases: 110, // "Predicted Cases"
-  lowerBound:     100, // "Lower Bound"
-  upperBound:     100, // "Upper Bound"
-  riskTier:       105, // "Risk Tier"
-};
-// Total: 515pt
-```
-
-Apply the same fixed-width discipline to every other table in the PDF template. No table column may have undefined or auto width.
-
-### Step 6 — Fix font sizes for dense tables
-- Table header row: `fontSize: 9, fontWeight: 'bold'`
-- Table data rows: `fontSize: 9`
-- If any table has more than 6 columns, reduce to `fontSize: 8`
-- Cell text must not wrap mid-word — set `numberOfLines: 1` on text cells that should not wrap, and ensure column widths are sufficient
-
-### Step 7 — Add a cover page
-Insert a new `<Page>` as the very first page of the `<Document>`. The cover page must contain:
-[HealthWatch logo or system name as styled text]
-[Bold, large: "Regional Outbreak Comparison Report"]
-or "Seasonal Pattern Analysis Report" for the Seasonality PDF
-
-Illness: Dengue
-Forecast Period: [formatted as "Mon YYYY to Mon YYYY" using formatMonthYear]
-Regions Included: [count] regions
-Generated: [current date formatted as "Mon YYYY"]
+Region: [regionName]
+Illness: [illnessLabel]
+Forecast Period: [formatMonthYear(forecastPeriod.start)] to [formatMonthYear(forecastPeriod.end)]
+Generated: [formatMonthYear(exportTimestamp)]
 Source: DOH PIDSR Surveillance Data
 
-[Horizontal rule]
 
-Regions in this export:
-[Numbered list of all selected region names]
+**Pages 2 to N — One chart per page section**
+For each chart in the `charts` array:
+- Section heading: the chart's `label` value (`fontSize: 14, fontWeight: 'bold'`, margin bottom 8pt)
+- Chart image: `<Image src={chart.imageDataUrl} style={{ width: '100%', maxHeight: 380 }} />`
+- If charts are small enough, two charts may share a page — but only if both fit without scaling below legible size. When in doubt, give each chart its own `<View break>`.
+
+**Last Page — Footer note**
+Generated by HealthWatch | Regional Time-Series Analysis System
+Source: DOH PIDSR Surveillance Data | For public health decision support only
 
 
-### Step 8 — Add a summary page at the end
-Insert a new `<Page>` as the very last page of the `<Document>`. The summary page must contain:
+### Step 3 — Chart-to-image capture
+To pass charts as images to the PDF, use the following approach in the Seasonality page component:
 
-- Title: "Summary — All Regions" (`fontSize: 16, fontWeight: 'bold'`)
-- A table with columns: Rank | Region | Risk Tier | Predicted Cases (Next Season) | Outbreak Flag
-- Rows sorted by predicted cases descending (highest predicted case count first)
-- Risk Tier cell background colors:
-  - High: `#EF4444` background, white text
-  - Moderate: `#F59E0B` background, white text
-  - Low: `#22C55E` background, white text
-- Outbreak Flag: show "⚠ Yes" if Rule A or Rule B fired, "—" if neither fired
-- Column widths must sum to ~515pt
+For each Recharts chart currently rendered on the Seasonality page, add a `ref` to its wrapping `<div>`. On export button click, use `html2canvas` (check if already a dependency — if not, `bun add html2canvas`) to capture each chart ref as a PNG data URL.
 
-### Step 9 — Apply formatMonthYear to all date labels in the PDF
-All date values rendered as visible text in the PDF must use the `formatMonthYear` utility from Plan 1. Import it and apply it to all month/date cells and labels in the PDF templates.
+```ts
+const captureChart = async (ref: React.RefObject<HTMLDivElement>): Promise<string> => {
+  const canvas = await html2canvas(ref.current!, { backgroundColor: '#ffffff' });
+  return canvas.toDataURL('image/png');
+};
+```
+
+Capture all charts sequentially, collect the data URLs into the `charts` array, then trigger the PDF download using `@react-pdf/renderer`'s `pdf(...).toBlob()` and a programmatic download link.
+
+Do not add refs to any element other than the chart wrapper divs. Do not change the chart components themselves.
+
+### Step 4 — Add the export button to the Seasonality page
+In the Seasonality page component, in the page header area (same row as or directly below the page title), add the export button using the same component as the Compare page. Wire its `onClick` to the chart capture and PDF generation logic from Step 3.
+
+The button must be disabled (and show a loading state if the component supports it) while chart capture or PDF generation is in progress.
+
+### Step 5 — PDF must not include filter controls
+The PDF output must contain only data and charts — not the FilterPanel, not any dropdown, not any slider. The filter values are represented as text metadata on the cover page only (region name, illness, forecast period).
 
 ### What NOT to touch
-- Any non-PDF component
-- The CSV export
-- The map export (Plan 8)
-- The forecast data pipeline
-- The Seasonality PDF template (Plan 7 adds this — do not create it here)
+- The Compare page's PDF export or template
+- The Compare PDF document component from Plan 6
+- Any chart component's internal implementation
+- Any other page
 
 ### Verification
 After this plan is complete:
-- Export the Compare page PDF with all 18 regions selected
-- Confirm: no content overlap anywhere in the document
-- Confirm: each region starts on a new page
-- Confirm: cover page is the first page with all required fields
-- Confirm: summary page is the last page with all regions ranked
-- Confirm: all dates in the PDF show "Mon YYYY" format
-- Confirm: all table columns are aligned and none overflow their bounds
+- The Seasonality page shows an export button visually matching the Compare page's export button
+- Clicking it produces a downloadable PDF
+- The PDF cover page shows the correct region, illness, forecast period, and timestamp in "Mon YYYY" format
+- All charts rendered on the Seasonality page appear in the PDF as images
+- No filter controls appear in the PDF
+- The Compare page PDF export is still working and unaffected

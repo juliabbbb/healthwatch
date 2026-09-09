@@ -1,12 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, type RefObject } from "react";
+import { pdf } from "@react-pdf/renderer";
 import {
   ArrowLeft,
   Bot,
   Copy,
   Download,
+  FileDown,
   History,
   Info,
+  Loader2,
   Maximize2,
   MoreHorizontal,
   SlidersHorizontal,
@@ -14,6 +17,11 @@ import {
   TrendingUp,
   Waves,
 } from "lucide-react";
+import {
+  SeasonalityPdfDocument,
+  type SeasonalityPdfChart,
+} from "@/components/pdf/SeasonalityPdfDocument";
+import { captureChartAsImage } from "@/utils/pdfChartExporter";
 import { SeasonalityChartCard } from "@/components/hw/SeasonalityChartCard";
 import { ChartExpandModal } from "@/components/hw/ChartExpandModal";
 import { AIExplanationModal } from "@/components/hw/AIExplanationModal";
@@ -93,6 +101,16 @@ export function SeasonalityPage() {
   const [explainComponent, setExplainComponent] = useState<SeasonalityComponent | null>(null);
   const [expandComponent, setExpandComponent] = useState<SeasonalityComponent | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Refs to the five chart wrapper divs, used for PDF export capture.
+  const chartRefs = {
+    observed: useRef<HTMLDivElement>(null),
+    trend: useRef<HTMLDivElement>(null),
+    seasonal: useRef<HTMLDivElement>(null),
+    residual: useRef<HTMLDivElement>(null),
+    acf: useRef<HTMLDivElement>(null),
+  };
+  const [exporting, setExporting] = useState(false);
 
   const openMenu = (e: React.MouseEvent, section: string, title?: string) => {
     e.preventDefault();
@@ -209,6 +227,54 @@ export function SeasonalityPage() {
     await navigator.clipboard.writeText(text);
   };
 
+  const exportPdf = async () => {
+    setExporting(true);
+    try {
+      const chartDefs: { label: string; ref: RefObject<HTMLDivElement | null> }[] = [
+        { label: "Observed series", ref: chartRefs.observed },
+        { label: "Trend component", ref: chartRefs.trend },
+        { label: "Seasonality component", ref: chartRefs.seasonal },
+        { label: "Noise (residual)", ref: chartRefs.residual },
+        { label: "Autocorrelation Function (ACF)", ref: chartRefs.acf },
+      ];
+
+      const charts: SeasonalityPdfChart[] = [];
+      for (const def of chartDefs) {
+        if (def.ref.current) {
+          const imageDataUrl = await captureChartAsImage(def.ref.current);
+          charts.push({ label: def.label, imageDataUrl });
+        }
+      }
+
+      const now = new Date();
+      const exportTimestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const illnessLabel = illness === "all" ? "all illnesses" : illness;
+
+      const blob = await pdf(
+        <SeasonalityPdfDocument
+          regionName={region.name}
+          illnessLabel={illnessLabel}
+          forecastPeriod={{ start: monthMeta(0).label, end: currentMonth.label }}
+          charts={charts}
+          exportTimestamp={exportTimestamp}
+        />,
+      ).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute("download", `healthwatch_seasonality_${region.short}_report.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Seasonality PDF export failed:", err);
+    } finally {
+      setExporting(false);
+    }
+  };
+
   // Build tailored menu actions based on the active anchor section / component
   const menuActions = useMemo((): ContextMenuAction[] => {
     if (!menu) return [];
@@ -312,10 +378,29 @@ export function SeasonalityPage() {
             the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
-          <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months ·{" "}
-          {region.island}
-        </span>
+        <div className="flex flex-col items-end gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
+            <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months ·{" "}
+            {region.island}
+          </span>
+          <button
+            type="button"
+            onClick={() => void exportPdf()}
+            disabled={exporting}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors shadow-xs disabled:opacity-50 disabled:hover:bg-primary/10"
+            title="Export a seasonal pattern analysis PDF"
+          >
+            {exporting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <FileDown className="size-4" />
+            )}
+            <span className="hidden sm:inline">
+              {exporting ? "Exporting…" : "Export Seasonal Report"}
+            </span>
+            <span className="sm:hidden">{exporting ? "Exporting…" : "Export"}</span>
+          </button>
+        </div>
       </div>
 
       {/* Unified Filter Panel */}
@@ -519,6 +604,7 @@ export function SeasonalityPage() {
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Observed series")}
             onExportCsv={exportCsv}
+            chartRef={chartRefs.observed}
           />
 
           {/* 2. Trend Component */}
@@ -538,6 +624,7 @@ export function SeasonalityPage() {
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Trend component")}
             onExportCsv={exportCsv}
+            chartRef={chartRefs.trend}
           />
 
           {/* 3. Seasonality Component */}
@@ -554,6 +641,7 @@ export function SeasonalityPage() {
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Seasonality component")}
             onExportCsv={exportCsv}
+            chartRef={chartRefs.seasonal}
           />
 
           {/* 4. Noise (Residual) */}
@@ -570,6 +658,7 @@ export function SeasonalityPage() {
             onExpand={setExpandComponent}
             onOpenMenu={(e, c) => openMenu(e, c, "Noise (residual)")}
             onExportCsv={exportCsv}
+            chartRef={chartRefs.residual}
           />
         </div>
       </section>
@@ -601,6 +690,7 @@ export function SeasonalityPage() {
           onExpand={setExpandComponent}
           onOpenMenu={(e, c) => openMenu(e, c, "12-month cycle indicators")}
           onExportCsv={exportCsv}
+          chartRef={chartRefs.acf}
         />
 
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
