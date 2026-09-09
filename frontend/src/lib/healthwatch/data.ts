@@ -827,11 +827,33 @@ export const RISK_META: Record<
   },
 };
 
-export const CURRENT_MONTH_INDEX = HIST_MONTHS - 1; // last reported month (2026-08)
+export const getCurrentMonthPHT = (): string => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+  });
+  return formatter.format(new Date()); // Outputs "YYYY-MM" (e.g., "2026-09")
+};
 
-/** The single deterministic "now" the dashboard reasons from: the last reported month. */
+export function getMonthIndexFromLabel(label: string): number {
+  const [yStr, mStr] = label.split("-");
+  const y = parseInt(yStr, 10);
+  const m = parseInt(mStr, 10);
+  if (isNaN(y) || isNaN(m)) return HIST_MONTHS - 1;
+  return (y - 2022) * 12 + (m - 1);
+}
+
+/** Active surveillance baseline date locked to Asia/Manila (PHT, UTC+8). */
+export const CURRENT_BASELINE_DATE = getCurrentMonthPHT();
+export const CURRENT_MONTH_INDEX = Math.max(
+  0,
+  Math.min(TOTAL_MONTHS - 1, getMonthIndexFromLabel(CURRENT_BASELINE_DATE)),
+);
+
+/** The single dynamic "now" the dashboard reasons from: Asia/Manila current month (e.g. 2026-09). */
 export const REPORT_MONTH_INDEX = CURRENT_MONTH_INDEX;
-export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-08-01"
+export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-09-01"
 /**
  * Real-time-derived default for the outbreak outlook: the season that starts
  * after the report date, computed from the fixed calendar boundary — never

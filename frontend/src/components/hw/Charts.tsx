@@ -165,7 +165,8 @@ export function ForecastChart({
           dataKey="reported"
           stroke="var(--chart-1)"
           strokeWidth={1.6}
-          dot={false}
+          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-1)" }}
+          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: "var(--chart-1)" }}
           connectNulls
           name="Reported"
           isAnimationActive={false}
@@ -175,7 +176,8 @@ export function ForecastChart({
           stroke="var(--chart-3)"
           strokeWidth={2}
           strokeDasharray="4 3"
-          dot={false}
+          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-3)" }}
+          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: "var(--chart-3)" }}
           connectNulls
           name="Predicted"
           isAnimationActive={false}
@@ -241,7 +243,8 @@ export function DecompositionChart({
           dataKey={component}
           stroke={color}
           strokeWidth={component === "observed" ? 1 : 1.8}
-          dot={false}
+          dot={{ r: 2, strokeWidth: 1, fill: "var(--background)", stroke: color }}
+          activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: color }}
           isAnimationActive={false}
         />
       </ComposedChart>

@@ -29,16 +29,22 @@ import {
   TOTAL_MONTHS,
   assessRegion,
   formatMetric,
+  getCurrentMonthPHT,
   metricValue,
   modelMetrics,
   monthMeta,
   recommendations,
   seriesFor,
   type MetricMode,
+  type RegionAssessment,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/compare")({
+  validateSearch: (search: Record<string, unknown>): { baseline?: string; horizon?: number } => ({
+    baseline: (search.baseline as string) || getCurrentMonthPHT(),
+    horizon: typeof search.horizon === "number" ? search.horizon : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Compare Regions — HEALTHWATCH" },
@@ -65,13 +71,14 @@ export const Route = createFileRoute("/compare")({
 });
 
 export default function ComparePage() {
+  const search = Route.useSearch();
   // Spec #1: Top region selection row is the single source of truth (starts empty per #2)
   const [selected, setSelected] = useState<string[]>([]);
   const [illness, setIllness] = useState("all");
 
   // Spec #2: Month slider extended to include past & forecast months (-12m to +12m)
-  // Default to +6m (standard 6-month operational baseline)
-  const [horizon, setHorizon] = useState(6);
+  // Default to 0m (Current baseline Now: 2026-09)
+  const [horizon, setHorizon] = useState<number>(() => search.horizon ?? 0);
   const [season, setSeason] = useState<"all" | "wet" | "dry">("all");
   const [mode, setMode] = useState<MetricMode>("percapita");
 
@@ -87,6 +94,7 @@ export default function ComparePage() {
   // Computed month index within bounds [0, TOTAL_MONTHS - 1]
   const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
   const currentMonth = monthMeta(monthIndex);
+  const baselineMonth = monthMeta(CURRENT_MONTH_INDEX);
   const isHistorical = horizon < 0;
   const isCurrent = horizon === 0;
   const isForecast = horizon > 0;
@@ -322,7 +330,14 @@ export default function ComparePage() {
                   <History className="size-3" />
                   <span>Past (-12m)</span>
                 </span>
-                <span className={cn(horizon === 0 && "text-primary font-bold")}>Now (0)</span>
+                <span
+                  className={cn(
+                    "transition-colors",
+                    horizon === 0 ? "text-primary font-bold" : "text-muted-foreground",
+                  )}
+                >
+                  Now (0) · {baselineMonth.label}
+                </span>
                 <span>Forecast (+12m)</span>
               </div>
 
@@ -455,138 +470,18 @@ export default function ComparePage() {
             {/* Spec #1 & #5: Responsive Card Grid (stacks on mobile, multi-column on tablet/desktop) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {rows.map((a) => (
-                <div
+                <RegionalOverviewCard
                   key={a.region.code}
-                  onClick={() => handleOpenDetailedCard(a.region.code)}
-                  className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 cursor-pointer select-none hover:border-primary/50 hover:bg-card hover:shadow-md"
-                >
-                  <div>
-                    {/* Card Header: Region short code, density & action buttons */}
-                    <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-2.5">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="label-caps font-semibold text-foreground">
-                            {a.region.short}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">·</span>
-                          <span className="text-[10px] text-muted-foreground truncate">
-                            {a.region.classification}
-                          </span>
-                        </div>
-                        <h2 className="text-sm font-semibold text-foreground truncate mt-0.5">
-                          {a.region.name}
-                        </h2>
-                        <p className="text-[10px] text-muted-foreground">
-                          {a.region.density.toLocaleString()} persons/km²
-                        </p>
-                      </div>
-
-                      <div className="flex items-center gap-1 shrink-0">
-                        <RiskBadge risk={a.risk} />
-                        {/* Expand Icon indicator for Detailed Card View */}
-                        <div
-                          title="Click card for detailed view"
-                          className="rounded-md p-1 text-muted-foreground/50 group-hover:text-primary transition-colors"
-                        >
-                          <Maximize2 className="size-3.5" />
-                        </div>
-                        {/* Quick-remove button with stopPropagation */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggle(a.region.code);
-                          }}
-                          aria-label={`Remove ${a.region.short} from comparison`}
-                          className="rounded-md p-1 text-muted-foreground/60 hover:bg-secondary hover:text-foreground transition-colors"
-                        >
-                          <X className="size-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Primary Key Metric & Stats */}
-                    <div className="mt-3 flex items-baseline justify-between gap-2">
-                      <div>
-                        <p className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground">
-                          {currentMonth.forecast ? "Predicted" : "Reported"} · {meta.unit}
-                        </p>
-                        <p className="font-mono text-2xl font-bold tabular-nums text-foreground leading-tight">
-                          {formatMetric(a.value, mode)}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground">
-                          3-Mo Trend
-                        </p>
-                        <span
-                          className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
-                          style={{
-                            color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)",
-                          }}
-                        >
-                          {a.changePct >= 0 ? (
-                            <TrendingUp className="size-3 shrink-0" />
-                          ) : (
-                            <TrendingDown className="size-3 shrink-0" />
-                          )}
-                          {a.changePct >= 0 ? "+" : ""}
-                          {a.changePct}%
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Stat badges */}
-                    <div className="mt-2.5 grid grid-cols-2 gap-1.5">
-                      <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-                        <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
-                          Nat'l Percentile
-                        </span>
-                        <span className="font-mono text-xs font-semibold text-foreground block">
-                          {a.percentileRank}th %ile
-                        </span>
-                      </div>
-                      <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-                        <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
-                          Dominant Illness
-                        </span>
-                        <span className="text-xs font-semibold text-foreground truncate block">
-                          {a.dominantIllness.shortName}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Mini-Chart showing actual cases and predicted cases */}
-                    <div className="mt-3.5">
-                      <RegionSparkline
-                        regionCode={a.region.code}
-                        illness={illness}
-                        monthIndex={monthIndex}
-                        mode={mode}
-                        globalMax={globalMax}
-                        riskColor={RISK_META[a.risk].color}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Card Footer: Open Full Regional Analysis button & 95% CI */}
-                  <div className="mt-4 pt-2.5 border-t border-border/50 flex items-center justify-between gap-2 text-xs">
-                    <Link
-                      to="/region/$code"
-                      params={{ code: a.region.code }}
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary hover:bg-primary/20 transition-colors min-h-[30px]"
-                    >
-                      <span>Open full {a.region.short} analysis</span>
-                      <ArrowUpRight className="size-3" />
-                    </Link>
-
-                    <span className="text-[10px] text-muted-foreground/80 font-mono">
-                      95% CI: {formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–
-                      {formatMetric(metricValue(a.point.upper, a.region, mode), mode)}
-                    </span>
-                  </div>
-                </div>
+                  assessment={a}
+                  currentMonth={currentMonth}
+                  meta={meta}
+                  mode={mode}
+                  illness={illness}
+                  monthIndex={monthIndex}
+                  globalMax={globalMax}
+                  onOpenModal={handleOpenDetailedCard}
+                  onToggle={toggle}
+                />
               ))}
             </div>
           </div>
@@ -874,24 +769,24 @@ export default function ComparePage() {
 
             {/* Body */}
             <div className="overflow-y-auto p-4 sm:p-5 hw-scroll space-y-5">
-              {/* Primary Metric & Key Stats Strip */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
-                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+              {/* Primary Metric & Key Stats Strip with High Visual Contrast */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
                     {currentMonth.forecast ? "Predicted Volume" : "Reported Cases"}
                   </p>
-                  <p className="font-mono text-xl sm:text-2xl font-bold text-foreground mt-0.5">
+                  <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
                     {formatMetric(detailedAssessment.value, mode)}
                   </p>
-                  <p className="text-[10px] text-muted-foreground">{meta.unit}</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">{meta.unit}</p>
                 </div>
 
-                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
-                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
                     3-Mo Trajectory
                   </p>
                   <p
-                    className="font-mono text-xl sm:text-2xl font-bold mt-0.5"
+                    className="font-mono text-xl sm:text-2xl font-extrabold mt-1 tabular-nums"
                     style={{
                       color:
                         detailedAssessment.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)",
@@ -900,27 +795,27 @@ export default function ComparePage() {
                     {detailedAssessment.changePct >= 0 ? "+" : ""}
                     {detailedAssessment.changePct}%
                   </p>
-                  <p className="text-[10px] text-muted-foreground">vs preceding quarter</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">vs preceding quarter</p>
                 </div>
 
-                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
-                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
                     National Percentile
                   </p>
-                  <p className="font-mono text-xl sm:text-2xl font-bold text-foreground mt-0.5">
+                  <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
                     {detailedAssessment.percentileRank}th
                   </p>
-                  <p className="text-[10px] text-muted-foreground">seasonal distribution</p>
+                  <p className="text-[10px] font-medium text-muted-foreground mt-0.5">seasonal distribution</p>
                 </div>
 
-                <div className="rounded-xl border border-border/60 bg-secondary/20 p-3">
-                  <p className="text-[10px] uppercase font-semibold text-muted-foreground">
+                <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
                     Dominant Pathology
                   </p>
-                  <p className="text-sm font-bold text-foreground truncate mt-1">
+                  <p className="text-sm sm:text-base font-bold text-foreground truncate mt-1">
                     {detailedAssessment.dominantIllness.shortName}
                   </p>
-                  <p className="text-[10px] text-muted-foreground truncate">
+                  <p className="text-[10px] font-medium text-muted-foreground truncate mt-0.5">
                     {detailedAssessment.dominantIllness.season} season driver
                   </p>
                 </div>
@@ -932,7 +827,7 @@ export default function ComparePage() {
                   <p className="text-xs font-semibold text-foreground">
                     Detailed Surveillance & Forecast Trajectory
                   </p>
-                  <span className="text-[10px] font-mono text-muted-foreground">
+                  <span className="text-[10px] font-mono font-medium text-foreground/80">
                     Target: {currentMonth.label}
                   </span>
                 </div>
@@ -993,15 +888,33 @@ export default function ComparePage() {
               )}
             </div>
 
-            {/* Footer with Links */}
-            <div className="flex items-center justify-end p-4 border-t border-border/70 bg-secondary/20">
+            {/* Modal Footer: Full-Width Balanced Action Bar */}
+            <div className="p-4 sm:p-5 border-t border-border/70 bg-secondary/25 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-foreground/80 px-0.5">
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-foreground">
+                    {detailedAssessment.region.name}
+                  </span>
+                  <span className="text-muted-foreground">·</span>
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    {detailedAssessment.region.short} ({detailedAssessment.region.island})
+                  </span>
+                </div>
+                <div className="font-mono text-[11px] text-muted-foreground">
+                  <span className="font-medium text-foreground/85">95% CI Range:</span>{" "}
+                  {formatMetric(metricValue(detailedAssessment.point.lower, detailedAssessment.region, mode), mode)}–
+                  {formatMetric(metricValue(detailedAssessment.point.upper, detailedAssessment.region, mode), mode)}{" "}
+                  {meta.unit}
+                </div>
+              </div>
+
               <Link
                 to="/region/$code"
                 params={{ code: detailedAssessment.region.code }}
-                className="inline-flex w-full sm:w-auto items-center justify-center gap-1.5 rounded-lg border border-primary/40 bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-95 transition-all shadow-xs"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 hover:shadow-md transition-all active:scale-[0.99] min-h-[44px]"
               >
-                <span>Open Full {detailedAssessment.region.short} Analysis</span>
-                <ArrowUpRight className="size-3.5" />
+                <span>Open Full {detailedAssessment.region.name} Analysis</span>
+                <ArrowUpRight className="size-4" />
               </Link>
             </div>
           </div>
@@ -1036,6 +949,162 @@ function Chip({
   );
 }
 
+interface RegionalOverviewCardProps {
+  assessment: RegionAssessment;
+  currentMonth: ReturnType<typeof monthMeta>;
+  meta: (typeof METRIC_META)[MetricMode];
+  mode: MetricMode;
+  illness: string;
+  monthIndex: number;
+  globalMax: number;
+  onOpenModal: (code: string) => void;
+  onToggle: (code: string) => void;
+}
+
+function RegionalOverviewCard({
+  assessment: a,
+  currentMonth,
+  meta,
+  mode,
+  illness,
+  monthIndex,
+  globalMax,
+  onOpenModal,
+  onToggle,
+}: RegionalOverviewCardProps) {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      onOpenModal(a.region.code);
+    }
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onOpenModal(a.region.code)}
+      onKeyDown={handleKeyDown}
+      aria-label={`Open detailed analysis for ${a.region.name}`}
+      className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+    >
+      <div>
+        {/* Card Header: Region short code, density & action buttons */}
+        <div className="flex items-start justify-between gap-2 border-b border-border/50 pb-2.5">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5">
+              <span className="label-caps font-semibold text-foreground">
+                {a.region.short}
+              </span>
+              <span className="text-[10px] text-muted-foreground">·</span>
+              <span className="text-[10px] text-muted-foreground truncate">
+                {a.region.classification}
+              </span>
+            </div>
+            <h2 className="text-sm font-semibold text-foreground truncate mt-0.5">
+              {a.region.name}
+            </h2>
+            <p className="text-[10px] text-muted-foreground">
+              {a.region.density.toLocaleString()} persons/km²
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <RiskBadge risk={a.risk} />
+            {/* Expand Icon indicator for Detailed Card View */}
+            <div
+              title="Click card for detailed view"
+              className="rounded-md p-1 text-muted-foreground/50 group-hover:text-teal-500 transition-colors"
+            >
+              <Maximize2 className="size-3.5" />
+            </div>
+            {/* Quick-remove button with stopPropagation */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle(a.region.code);
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.stopPropagation();
+                }
+              }}
+              aria-label={`Remove ${a.region.short} from comparison`}
+              className="rounded-md p-1 text-muted-foreground/60 hover:bg-secondary hover:text-foreground transition-colors"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Primary Key Metric & Stats */}
+        <div className="mt-3 flex items-baseline justify-between gap-2">
+          <div>
+            <p className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground">
+              {currentMonth.forecast ? "Predicted" : "Reported"} · {meta.unit}
+            </p>
+            <p className="font-mono text-2xl font-bold tabular-nums text-foreground leading-tight">
+              {formatMetric(a.value, mode)}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground">
+              3-Mo Trend
+            </p>
+            <span
+              className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
+              style={{
+                color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)",
+              }}
+            >
+              {a.changePct >= 0 ? (
+                <TrendingUp className="size-3 shrink-0" />
+              ) : (
+                <TrendingDown className="size-3 shrink-0" />
+              )}
+              {a.changePct >= 0 ? "+" : ""}
+              {a.changePct}%
+            </span>
+          </div>
+        </div>
+
+        {/* Stat badges */}
+        <div className="mt-2.5 grid grid-cols-2 gap-1.5">
+          <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
+            <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Nat'l Percentile
+            </span>
+            <span className="font-mono text-xs font-semibold text-foreground block">
+              {a.percentileRank}th %ile
+            </span>
+          </div>
+          <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
+            <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
+              Dominant Illness
+            </span>
+            <span className="text-xs font-semibold text-foreground truncate block">
+              {a.dominantIllness.shortName}
+            </span>
+          </div>
+        </div>
+
+        {/* Mini-Chart showing actual cases and predicted cases */}
+        <div className="mt-3.5">
+          <RegionSparkline
+            regionCode={a.region.code}
+            illness={illness}
+            monthIndex={monthIndex}
+            mode={mode}
+            globalMax={globalMax}
+            riskColor={RISK_META[a.risk].color}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface SparklineProps {
   regionCode: string;
   illness: string;
@@ -1054,6 +1123,7 @@ function RegionSparkline({
   globalMax,
   riskColor,
 }: SparklineProps) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const series = seriesFor(regionCode, illness);
   const region = useMemo(() => REGIONS.find((r) => r.code === regionCode)!, [regionCode]);
 
@@ -1063,9 +1133,9 @@ function RegionSparkline({
   }, [series, monthIndex]);
 
   const width = 280;
-  const height = 58;
-  const padTop = 8;
-  const padBottom = 10;
+  const height = 62;
+  const padTop = 10;
+  const padBottom = 12;
   const drawHeight = height - padTop - padBottom;
   const effectiveMax = Math.max(0.01, globalMax);
 
@@ -1101,15 +1171,16 @@ function RegionSparkline({
 
   const lastPoint = points[points.length - 1]!;
   const firstPoint = points[0]!;
+  const activePoint = hoveredIdx !== null ? points[hoveredIdx] : null;
 
   return (
-    <div className="w-full">
-      {/* Visual mini-chart legend showing Actual vs Predicted */}
+    <div className="w-full" onMouseLeave={() => setHoveredIdx(null)}>
+      {/* Visual mini-chart legend showing Actual vs Predicted & active readout */}
       <div className="flex items-center justify-between text-[9px] text-muted-foreground mb-1 font-mono">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block w-2.5 h-0.5 bg-foreground/70 rounded-full" />
-            <span className="text-foreground/80 font-medium">Actual</span>
+            <span className="inline-block w-2.5 h-0.5 bg-foreground/75 rounded-full" />
+            <span className="text-foreground/85 font-medium">Actual</span>
           </span>
           <span className="inline-flex items-center gap-1">
             <span
@@ -1121,10 +1192,16 @@ function RegionSparkline({
             </span>
           </span>
         </div>
-        <span className="tabular-nums">Peak {formatMetric(effectiveMax, mode)}</span>
+        {activePoint ? (
+          <span className="text-foreground font-semibold tabular-nums">
+            {activePoint.label}: {formatMetric(activePoint.v, mode)}
+          </span>
+        ) : (
+          <span className="tabular-nums">Peak {formatMetric(effectiveMax, mode)}</span>
+        )}
       </div>
 
-      <div className="relative h-[58px] w-full rounded-md bg-secondary/30 border border-border/40 overflow-hidden">
+      <div className="relative h-[62px] w-full rounded-md bg-secondary/30 border border-border/40 overflow-hidden">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="h-full w-full overflow-visible"
@@ -1147,7 +1224,7 @@ function RegionSparkline({
               d={actualPath}
               fill="none"
               stroke="var(--foreground)"
-              strokeOpacity="0.6"
+              strokeOpacity="0.75"
               strokeWidth="1.8"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -1167,6 +1244,48 @@ function RegionSparkline({
             />
           )}
 
+          {/* Static Point Dots for all historical & forecast data nodes */}
+          {points.map((p, idx) => {
+            const isForecast = p.forecast;
+            const isHovered = hoveredIdx === idx;
+            return (
+              <g key={p.label}>
+                {/* Hit area for touch/hover */}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="7"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onMouseEnter={() => setHoveredIdx(idx)}
+                />
+                {/* Static Marker Dot (r=2.5) / Active Hover Dot (r=5) */}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={isHovered ? 5 : 2.5}
+                  fill="var(--background)"
+                  stroke={isForecast ? riskColor : "var(--foreground)"}
+                  strokeWidth={isHovered ? 2 : 1.2}
+                  className="transition-all duration-150 pointer-events-none"
+                />
+                {/* Hover High Contrast Ring */}
+                {isHovered && (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="8"
+                    fill="none"
+                    stroke={isForecast ? riskColor : "var(--foreground)"}
+                    strokeWidth="1.5"
+                    strokeOpacity="0.45"
+                    className="pointer-events-none animate-ping"
+                  />
+                )}
+              </g>
+            );
+          })}
+
           {/* Highlight target forecast month endpoint */}
           <circle
             cx={lastPoint.x}
@@ -1175,12 +1294,13 @@ function RegionSparkline({
             fill="var(--background)"
             stroke={riskColor}
             strokeWidth="2.2"
+            className="pointer-events-none"
           />
         </svg>
       </div>
-      <div className="flex items-center justify-between text-[8px] text-muted-foreground/80 mt-0.5 font-mono">
+      <div className="flex items-center justify-between text-[8px] text-muted-foreground/85 mt-0.5 font-mono">
         <span>{firstPoint.label}</span>
-        <span>Target: {lastPoint.label}</span>
+        <span className="font-semibold text-foreground/85">Target: {lastPoint.label}</span>
       </div>
     </div>
   );
@@ -1200,6 +1320,7 @@ function DetailedChart({
   mode: MetricMode;
   riskColor: string;
 }) {
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const series = seriesFor(regionCode, illness);
   const region = useMemo(() => REGIONS.find((r) => r.code === regionCode)!, [regionCode]);
 
@@ -1209,11 +1330,11 @@ function DetailedChart({
   }, [series, monthIndex]);
 
   const width = 560;
-  const height = 180;
-  const padLeft = 40;
+  const height = 195;
+  const padLeft = 44;
   const padRight = 16;
-  const padTop = 16;
-  const padBottom = 28;
+  const padTop = 18;
+  const padBottom = 30;
   const drawWidth = width - padLeft - padRight;
   const drawHeight = height - padTop - padBottom;
 
@@ -1223,7 +1344,7 @@ function DetailedChart({
       const v = metricValue(p.upper || p.cases, region, mode);
       if (v > m) m = v;
     }
-    return m * 1.1;
+    return m * 1.12;
   }, [windowSlice, region, mode]);
 
   const points = useMemo(() => {
@@ -1240,7 +1361,18 @@ function DetailedChart({
       const yLower = padTop + drawHeight - (vLower / maxVal) * drawHeight;
       const yUpper = padTop + drawHeight - (vUpper / maxVal) * drawHeight;
 
-      return { x, y, yLower, yUpper, v, forecast: p.forecast, label: p.label };
+      return {
+        x,
+        y,
+        yLower,
+        yUpper,
+        v,
+        vLower,
+        vUpper,
+        forecast: p.forecast,
+        label: p.label,
+        season: p.season,
+      };
     });
   }, [windowSlice, region, mode, maxVal, drawWidth, drawHeight]);
 
@@ -1269,30 +1401,77 @@ function DetailedChart({
       : "";
 
   const lastPoint = points[points.length - 1]!;
+  const hoveredPoint = hoveredIdx !== null ? points[hoveredIdx] : null;
 
   return (
-    <div className="w-full">
+    <div className="w-full select-none" onMouseLeave={() => setHoveredIdx(null)}>
+      {/* Legend & Peak Header */}
       <div className="flex items-center justify-between text-xs font-mono text-muted-foreground mb-2">
         <div className="flex items-center gap-3">
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2 rounded-full bg-foreground" />
-            <span className="text-foreground">Actual</span>
+            <span className="size-2.5 rounded-full bg-foreground" />
+            <span className="text-foreground font-semibold">Actual</span>
           </span>
           <span className="inline-flex items-center gap-1.5">
-            <span className="size-2 rounded-full" style={{ backgroundColor: riskColor }} />
-            <span style={{ color: riskColor }}>Predicted & 95% CI</span>
+            <span className="size-2.5 rounded-full" style={{ backgroundColor: riskColor }} />
+            <span style={{ color: riskColor }} className="font-semibold">
+              Predicted & 95% CI
+            </span>
           </span>
         </div>
-        <span>Peak {formatMetric(maxVal, mode)}</span>
+        <span className="font-semibold text-foreground/80">Peak {formatMetric(maxVal, mode)}</span>
       </div>
 
-      <div className="h-[180px] w-full rounded-lg bg-secondary/20 border border-border/50 overflow-hidden">
+      {/* Chart SVG with Floating Tooltip */}
+      <div className="relative h-[195px] w-full rounded-xl bg-secondary/20 border border-border/60 overflow-hidden">
+        {/* Floating Tooltip Card with Key-Value labels */}
+        {hoveredPoint && (
+          <div
+            className="pointer-events-none absolute z-20 rounded-lg border border-border/80 bg-popover/95 backdrop-blur-md px-3 py-2 text-xs shadow-xl transition-all duration-100"
+            style={{
+              left: `${Math.min(Math.max(8, (hoveredPoint.x / width) * 100 - 15), 65)}%`,
+              top: `${Math.max(8, (hoveredPoint.y / height) * 100 - 45)}%`,
+            }}
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-1 font-mono text-[10px]">
+              <span className="font-bold text-foreground">{hoveredPoint.label}</span>
+              <span
+                className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px]"
+                style={{
+                  color: hoveredPoint.forecast ? riskColor : "var(--foreground)",
+                  backgroundColor: hoveredPoint.forecast
+                    ? "color-mix(in oklab, currentColor 15%, transparent)"
+                    : "var(--secondary)",
+                }}
+              >
+                {hoveredPoint.forecast ? "Predicted" : "Reported"}
+              </span>
+            </div>
+            <div className="mt-1 space-y-0.5 font-mono text-[11px]">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-muted-foreground">
+                  {hoveredPoint.forecast ? "Predicted Value:" : "Actual Value:"}
+                </span>
+                <span className="font-bold text-foreground">
+                  {formatMetric(hoveredPoint.v, mode)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
+                <span>95% CI Bounds:</span>
+                <span className="font-medium text-foreground/80">
+                  {formatMetric(hoveredPoint.vLower, mode)} – {formatMetric(hoveredPoint.vUpper, mode)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="h-full w-full overflow-visible"
           preserveAspectRatio="none"
         >
-          {/* Horizontal Grid lines */}
+          {/* Horizontal Grid lines & High Contrast Y-Axis Labels */}
           {[0, 0.5, 1].map((ratio) => {
             const y = padTop + drawHeight * (1 - ratio);
             return (
@@ -1307,12 +1486,12 @@ function DetailedChart({
                   strokeWidth="0.8"
                 />
                 <text
-                  x={padLeft - 6}
-                  y={y + 3}
+                  x={padLeft - 8}
+                  y={y + 3.5}
                   textAnchor="end"
-                  fontSize="9"
-                  fill="var(--muted-foreground)"
-                  className="font-mono"
+                  fontSize="10"
+                  fill="currentColor"
+                  className="font-mono text-foreground/80 font-medium"
                 >
                   {formatMetric(maxVal * ratio, mode)}
                 </text>
@@ -1321,7 +1500,7 @@ function DetailedChart({
           })}
 
           {/* Forecast 95% CI Envelope */}
-          {ciAreaPath && <path d={ciAreaPath} fill={riskColor} fillOpacity="0.15" />}
+          {ciAreaPath && <path d={ciAreaPath} fill={riskColor} fillOpacity="0.18" />}
 
           {/* Actual series */}
           {actualPath && (
@@ -1348,30 +1527,76 @@ function DetailedChart({
             />
           )}
 
+          {/* Distinct Point Dots (r=4, strokeWidth=2) & Active Hover Rings (r=6, strokeWidth=2) */}
+          {points.map((p, idx) => {
+            const isForecast = p.forecast;
+            const isHovered = hoveredIdx === idx;
+            const color = isForecast ? riskColor : "var(--foreground)";
+            return (
+              <g key={p.label}>
+                {/* Hit area */}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r="9"
+                  fill="transparent"
+                  className="cursor-pointer"
+                  onMouseEnter={() => setHoveredIdx(idx)}
+                />
+
+                {/* Point dot marker */}
+                <circle
+                  cx={p.x}
+                  cy={p.y}
+                  r={isHovered ? 6 : 4}
+                  fill="var(--background)"
+                  stroke={color}
+                  strokeWidth={2}
+                  className="transition-all duration-150 pointer-events-none"
+                />
+
+                {/* Active High Contrast Hover Ring */}
+                {isHovered && (
+                  <circle
+                    cx={p.x}
+                    cy={p.y}
+                    r="10"
+                    fill="none"
+                    stroke={color}
+                    strokeWidth="2"
+                    strokeOpacity="0.45"
+                    className="pointer-events-none animate-ping"
+                  />
+                )}
+              </g>
+            );
+          })}
+
           {/* Highlight Target Endpoint Node */}
           <circle
             cx={lastPoint.x}
             cy={lastPoint.y}
-            r="4.5"
+            r="5"
             fill="var(--background)"
             stroke={riskColor}
             strokeWidth="2.5"
+            className="pointer-events-none"
           />
 
-          {/* X Axis month labels (spaced every 4th point) */}
+          {/* High Contrast X Axis Month Labels */}
           {points.map((p, idx) => {
-            if (idx % 4 !== 0 && idx !== points.length - 1) return null;
+            if (idx % 3 !== 0 && idx !== points.length - 1) return null;
             return (
               <text
                 key={p.label}
                 x={p.x}
                 y={height - 8}
                 textAnchor="middle"
-                fontSize="9"
-                fill="var(--muted-foreground)"
-                className="font-mono"
+                fontSize="10"
+                fill="currentColor"
+                className="font-mono text-foreground/80 font-medium"
               >
-                {p.label.slice(5)}
+                {p.label.slice(2)}
               </text>
             );
           })}
