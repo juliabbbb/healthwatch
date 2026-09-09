@@ -21,6 +21,7 @@ import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import { ExportCustomizationModal } from "@/components/modals/ExportCustomizationModal";
+import { FilterPanel } from "@/components/FilterPanel";
 import {
   CURRENT_MONTH_INDEX,
   HIST_MONTHS,
@@ -244,212 +245,149 @@ export default function ComparePage() {
         </div>
       </div>
 
-      {/* Top Filter & Selection Toolbar */}
-      <div className="mt-6 space-y-4">
-        {/* Spec #1 & #5: Single source of truth Region Selection row with responsive wrapping & checkmark states */}
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-            <div className="flex items-center gap-2">
-              <span className="label-caps text-[11px] font-semibold text-foreground">
-                Region Selection
-              </span>
-              <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
-                {selected.length} of {REGIONS.length} selected
-              </span>
-            </div>
+      {/* Unified Filter Panel */}
+      <div className="mt-6">
+        <FilterPanel
+          regions={REGIONS}
+          selectedRegions={selected}
+          onRegionToggle={toggle}
+          multiSelectRegion
+          regionActions={[
+            { label: "Key Metros", onClick: selectKeyMetros },
+            { label: "Select All", onClick: selectAll },
+            ...(selected.length > 0 ? [{ label: "Clear All", onClick: clearAll }] : []),
+          ]}
+          selectedCount={selected.length}
+          illnesses={ILLNESSES}
+          selectedIllness={illness}
+          onIllnessChange={setIllness}
+          dateSliderSlot={
+            <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                {/* Temporal Status Headline */}
+                <div className="flex items-center gap-3">
+                  <div className="rounded-lg bg-primary/10 p-2 text-primary shrink-0">
+                    <SlidersHorizontal className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                      Surveillance & Forecast Period
+                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                      <span className="font-mono text-base font-bold text-foreground">
+                        {formatMonthYear(currentMonth.label)}
+                      </span>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
+                          isHistorical && "bg-secondary text-muted-foreground border-border",
+                          isCurrent && "bg-primary/20 text-primary border-primary/40",
+                          isForecast &&
+                            "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+                        )}
+                      >
+                        {isHistorical && `${Math.abs(horizon)}m past reported`}
+                        {isCurrent && "Current baseline (Now)"}
+                        {isForecast && `+${horizon}m forecast`}
+                      </span>
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                        style={{
+                          backgroundColor:
+                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
+                          color: "#ffffff",
+                        }}
+                      >
+                        {currentSeasonLabel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={selectKeyMetros}
-                className="text-xs font-medium text-primary hover:underline transition-colors"
-              >
-                Key Metros
-              </button>
-              <span className="text-muted-foreground/40 text-xs">·</span>
-              <button
-                type="button"
-                onClick={selectAll}
-                className="text-xs font-medium text-primary hover:underline transition-colors"
-              >
-                Select All
-              </button>
-              {selected.length > 0 && (
-                <>
-                  <span className="text-muted-foreground/40 text-xs">·</span>
-                  <button
-                    type="button"
-                    onClick={clearAll}
-                    className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Clear All
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
+                {/* Slider Scrubber & Indicator Track */}
+                <div className="flex flex-col gap-1.5 w-full md:max-w-md">
+                  <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+                    <span className="flex items-center gap-1">
+                      <History className="size-3" />
+                      <span>Past (-12m)</span>
+                    </span>
+                    <span
+                      className={cn(
+                        "transition-colors",
+                        horizon === 0 ? "text-primary font-bold" : "text-muted-foreground",
+                      )}
+                    >
+                      Now (0) · {formatMonthYear(baselineMonth.label)}
+                    </span>
+                    <span>Forecast (+12m)</span>
+                  </div>
 
-          {/* Equal height (h-8), equal spacing, baseline aligned, clear border separation */}
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 items-center">
-            {REGIONS.map((r) => {
-              const isSelected = selected.includes(r.code);
-              return (
-                <button
-                  key={r.code}
-                  type="button"
-                  onClick={() => toggle(r.code)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "h-8 px-2.5 py-1 text-xs rounded-lg font-medium inline-flex items-center gap-1.5 transition-all select-none border min-h-[32px]",
-                    isSelected
-                      ? "bg-primary text-primary-foreground border-primary font-semibold shadow-xs"
-                      : "bg-secondary/20 hover:bg-secondary/50 text-muted-foreground hover:text-foreground border-border/80",
-                  )}
-                >
-                  {isSelected && <Check className="size-3.5 shrink-0 stroke-[2.5]" />}
-                  <span>{r.short}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  {/* Range slider with generous touch target for mobile */}
+                  <input
+                    type="range"
+                    min={-12}
+                    max={12}
+                    step={1}
+                    value={horizon}
+                    onChange={(e) => setHorizon(Number(e.target.value))}
+                    className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
+                    aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
+                  />
 
-        {/* Spec #2 & #5: Extended Month Picker / Slider (-12m past to +12m forecast) */}
-        <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            {/* Temporal Status Headline */}
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-primary/10 p-2 text-primary shrink-0">
-                <SlidersHorizontal className="size-4" />
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
-                  Surveillance & Forecast Period
-                </p>
-                <div className="flex flex-wrap items-center gap-2 mt-0.5">
-                  <span className="font-mono text-base font-bold text-foreground">
-                    {formatMonthYear(currentMonth.label)}
-                  </span>
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
-                      isHistorical && "bg-secondary text-muted-foreground border-border",
-                      isCurrent && "bg-primary/20 text-primary border-primary/40",
-                      isForecast &&
-                        "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
-                    )}
-                  >
-                    {isHistorical && `${Math.abs(horizon)}m past reported`}
-                    {isCurrent && "Current baseline (Now)"}
-                    {isForecast && `+${horizon}m forecast`}
-                  </span>
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                    style={{
-                      backgroundColor: currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
-                      color: "#ffffff",
-                    }}
-                  >
-                    {currentSeasonLabel}
-                  </span>
+                  {/* Quick Jump Buttons covering both Past and Future */}
+                  <div className="flex flex-wrap items-center justify-between gap-1 pt-0.5">
+                    {[
+                      { label: "-12m", val: -12 },
+                      { label: "-6m", val: -6 },
+                      { label: "-3m", val: -3 },
+                      { label: "Now", val: 0 },
+                      { label: "+3m", val: 3 },
+                      { label: "+6m", val: 6 },
+                      { label: "+12m", val: 12 },
+                    ].map((s) => (
+                      <button
+                        key={s.label}
+                        type="button"
+                        onClick={() => setHorizon(s.val)}
+                        className={cn(
+                          "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center",
+                          horizon === s.val
+                            ? "border-primary bg-primary/15 text-primary font-bold shadow-xs"
+                            : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
+                        )}
+                      >
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+          }
+        />
+      </div>
 
-            {/* Slider Scrubber & Indicator Track */}
-            <div className="flex flex-col gap-1.5 w-full md:max-w-md">
-              <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
-                <span className="flex items-center gap-1">
-                  <History className="size-3" />
-                  <span>Past (-12m)</span>
-                </span>
-                <span
-                  className={cn(
-                    "transition-colors",
-                    horizon === 0 ? "text-primary font-bold" : "text-muted-foreground",
-                  )}
-                >
-                  Now (0) · {formatMonthYear(baselineMonth.label)}
-                </span>
-                <span>Forecast (+12m)</span>
-              </div>
-
-              {/* Range slider with generous touch target for mobile */}
-              <input
-                type="range"
-                min={-12}
-                max={12}
-                step={1}
-                value={horizon}
-                onChange={(e) => setHorizon(Number(e.target.value))}
-                className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
-                aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
-              />
-
-              {/* Quick Jump Buttons covering both Past and Future */}
-              <div className="flex flex-wrap items-center justify-between gap-1 pt-0.5">
-                {[
-                  { label: "-12m", val: -12 },
-                  { label: "-6m", val: -6 },
-                  { label: "-3m", val: -3 },
-                  { label: "Now", val: 0 },
-                  { label: "+3m", val: 3 },
-                  { label: "+6m", val: 6 },
-                  { label: "+12m", val: 12 },
-                ].map((s) => (
-                  <button
-                    key={s.label}
-                    type="button"
-                    onClick={() => setHorizon(s.val)}
-                    className={cn(
-                      "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center",
-                      horizon === s.val
-                        ? "border-primary bg-primary/15 text-primary font-bold shadow-xs"
-                        : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
-                    )}
-                  >
-                    {s.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Secondary filters (Illness, Season convention, Metric mode) */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          {/* Illness */}
-          <Chip active={illness === "all"} onClick={() => setIllness("all")}>
-            All illnesses
+      {/* Season & Metric Mode filters */}
+      <div className="flex flex-wrap items-center gap-1.5 mt-4">
+        {/* Season convention */}
+        {(["all", "wet", "dry"] as const).map((s) => (
+          <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
+            {s === "all"
+              ? "All seasons"
+              : s === "wet"
+                ? SEASON_CONFIG.wet.display
+                : SEASON_CONFIG.dry.display}
           </Chip>
-          {ILLNESSES.map((i) => (
-            <Chip key={i.id} active={illness === i.id} onClick={() => setIllness(i.id)}>
-              {i.shortName}
-            </Chip>
-          ))}
+        ))}
 
-          <span className="mx-1.5 h-4 w-px bg-border/80" />
+        <span className="mx-1.5 h-4 w-px bg-border/80" />
 
-          {/* Season convention */}
-          {(["all", "wet", "dry"] as const).map((s) => (
-            <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
-              {s === "all"
-                ? "All seasons"
-                : s === "wet"
-                  ? SEASON_CONFIG.wet.display
-                  : SEASON_CONFIG.dry.display}
-            </Chip>
-          ))}
-
-          <span className="mx-1.5 h-4 w-px bg-border/80" />
-
-          {/* Metric Mode */}
-          {(["percapita", "raw"] as const).map((m) => (
-            <Chip key={m} active={mode === m} onClick={() => setMode(m)}>
-              {METRIC_META[m].short}
-            </Chip>
-          ))}
-        </div>
+        {/* Metric Mode */}
+        {(["percapita", "raw"] as const).map((m) => (
+          <Chip key={m} active={mode === m} onClick={() => setMode(m)}>
+            {METRIC_META[m].short}
+          </Chip>
+        ))}
       </div>
 
       {/* Primary Comparison Section: Spec #1 populated directly from top selection */}

@@ -23,6 +23,7 @@ import {
 import { SeasonTag } from "@/components/hw/RiskBadge";
 import { StatusChipRow } from "@/components/hw/StatusChip";
 import { SettingsModal } from "@/components/hw/SettingsModal";
+import { FilterPanel } from "@/components/FilterPanel";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import {
   ILLNESSES,
@@ -303,25 +304,16 @@ export function SeasonalityPage() {
         </span>
       </div>
 
-      {/* Region & Disease Filters */}
-      <div className="mt-6 space-y-3">
-        <div className="flex flex-wrap gap-1.5">
-          {REGIONS.map((r) => (
-            <Chip key={r.code} active={code === r.code} onClick={() => setCode(r.code)}>
-              {r.short}
-            </Chip>
-          ))}
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          <Chip active={illness === "all"} onClick={() => setIllness("all")}>
-            All illnesses
-          </Chip>
-          {ILLNESSES.map((i) => (
-            <Chip key={i.id} active={illness === i.id} onClick={() => setIllness(i.id)}>
-              {i.name}
-            </Chip>
-          ))}
-        </div>
+      {/* Unified Filter Panel */}
+      <div className="mt-6">
+        <FilterPanel
+          regions={REGIONS}
+          selectedRegions={[code]}
+          onRegionToggle={(c) => setCode(c)}
+          illnesses={ILLNESSES}
+          selectedIllness={illness}
+          onIllnessChange={setIllness}
+        />
       </div>
 
       {/* Summary KPI Metrics */}

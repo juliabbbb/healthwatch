@@ -1,6 +1,7 @@
-# HEALTHWATCH — Implementation Plan 1 of 8
-**Item:** Date Formatting Utility 
-**Execute this plan fully before moving to Plan 2.**
+# HEALTHWATCH — Implementation Plan 2 of 8
+**Item:** Unified FilterPanel Component 
+**Execute this plan fully before moving to Plan 3.**
+
 
 ---
 
@@ -26,51 +27,83 @@ HealthWatch is a regional public health decision-support tool for Philippine LGU
 
 ---
 
-## ITEM 7 — Format All Dates as "Mon YYYY" Throughout the Application
+## ITEM 3 — Unify the Filter Control Panel Across Seasonality and Compare Pages
 
 ### Goal
-All dates displayed to the user must render as "Sep 2026" format instead of raw ISO "2026-09" format. Only the display layer changes. Internal state, API calls, and database values stay as "YYYY-MM".
+Both the Seasonality page and the Compare page must use one identical shared FilterPanel component. Same sizing, same spacing, same label style, same control heights, same layout. Currently they have separate implementations that are visually inconsistent.
 
-### Step 1 — Create the shared date formatter utility
-Create the file `src/utils/formatDate.ts` (or the equivalent utils directory in this project). Do not overwrite any existing file — if a formatDate utility already exists, extend it by adding the new function below without removing anything already there.
+### Step 1 — Audit both pages before touching anything
+Open the Seasonality page component and the Compare page component. Read and understand:
+- What component or JSX block handles region selection on each page
+- What component or JSX block handles illness selection on each page
+- What props/state they use (selected values, onChange handlers, available options lists)
+- Whether any shared filter component already exists — if it does, note its location
+
+Do not change anything yet in this step.
+
+### Step 2 — Create the shared FilterPanel component
+Create `src/components/FilterPanel.tsx` (or the established components directory of this project). If a FilterPanel component already exists, extend it — do not replace it entirely without reading its current implementation first.
+
+The FilterPanel must accept these props:
 
 ```ts
-/**
- * Formats a date string or Date object to "Mon YYYY" display format.
- * Input accepts: "YYYY-MM", "YYYY-MM-DD", or a Date object.
- * Example: "2026-09" → "Sep 2026"
- * Uses en-PH locale — HealthWatch is a Philippine public health system.
- */
-export function formatMonthYear(input: string | Date): string {
-  const date =
-    typeof input === 'string'
-      ? new Date(input.length === 7 ? `${input}-01` : input)
-      : input;
-  return date.toLocaleDateString('en-PH', { month: 'short', year: 'numeric' });
+interface FilterPanelProps {
+  // Region selection
+  regions: string[];                        // list of available region options
+  selectedRegions: string[];                // currently selected regions
+  onRegionsChange: (val: string[]) => void; // handler — keep existing signature
+  multiSelectRegion?: boolean;              // true on Compare, false on Seasonality
+
+  // Illness selection
+  illnesses: string[];                      // list of available illness options
+  selectedIllness: string;                  // currently selected illness
+  onIllnessChange: (val: string) => void;   // handler
+
+  // Date slider (optional — shown only when provided)
+  showDateSlider?: boolean;
+  dateRange?: { min: string; max: string }; // "YYYY-MM" values for slider bounds
+  selectedDate?: string;                    // "YYYY-MM" current slider value
+  onDateChange?: (val: string) => void;     // handler
 }
 ```
 
-### Step 2 — Apply formatMonthYear to every date display location
-Search the entire frontend codebase for any place where a date value is rendered as visible text to the user. Replace all such instances with `formatMonthYear(...)`. Target locations:
+Adapt the prop names to match whatever the existing pages already use — do not force a rename of existing state variables in the parent pages. Use the existing handler signatures.
 
-- Recharts `<XAxis>` and `<YAxis>` tick formatters on all chart components — add or update the `tickFormatter` prop: `tickFormatter={(val) => formatMonthYear(val)}`
-- Date slider tick labels and current value display labels on the Compare page
-- Any table column that renders a month or date value as display text
-- Tooltip content inside Recharts charts that shows a date or month label
-- The National Snapshot section's date range display (e.g., "2026-01 to 2026-12" should become "Jan 2026 to Dec 2026")
-- Any other visible date string in the UI
+### Step 3 — FilterPanel visual layout rules
+The FilterPanel component must implement this layout:
 
-### Step 3 — Do NOT change any of the following
-- Date values passed as query parameters or request bodies to the FastAPI backend — keep as "YYYY-MM"
-- Date values stored in React state, TanStack Query cache, or Zod schemas — keep as "YYYY-MM" internally
-- Any date used in sorting, comparison, or arithmetic logic
-- Any database value
-- Any backend file
+**Desktop (≥ 768px):**
+- Single horizontal row containing all controls
+- Controls are baseline-aligned
+- Each control has a short label above it (`text-sm font-medium` in the project's label color token)
+- Region select and illness select are the same width
+- Date slider (when shown) fills the remaining horizontal space
+- Container: light background using the project's card/surface token, `rounded-lg border border-border px-6 py-4`
+- Gap between controls: `gap-6`
+
+**Mobile (< 768px):**
+- Stacked vertically, each control full width
+- `gap-4` between controls
+
+**Do not introduce any new color tokens.** Use only what is already defined in the project's Tailwind config or CSS custom properties.
+
+### Step 4 — Replace filter sections on both pages
+In the Seasonality page and the Compare page:
+- Remove the existing filter section JSX (region select, illness select, and date slider if present on Compare)
+- Import and render `<FilterPanel>` with the appropriate props, wiring the existing state variables and handlers directly — do not change the state management logic, only the JSX layer
+
+### Step 5 — Spacing between FilterPanel and page content
+After the `<FilterPanel>` closing tag on both pages, ensure there is at least `mt-6` margin before the first content section (charts, tables, etc.).
+
+### What NOT to touch
+- The underlying state variables and their types in either page
+- The TanStack Query hooks or API calls triggered by filter changes
+- Any other page or component not listed here
+- The date slider component itself (only wire it — do not rewrite it)
 
 ### Verification
 After this plan is complete:
-- All chart X-axis labels show months as "Jan 2026", "Feb 2026", etc. — not "2026-01"
-- All slider value displays show "Sep 2026" — not "2026-09"
-- All table date columns show "Sep 2026" — not "2026-09"
-- API network requests (check browser DevTools Network tab) still send "YYYY-MM" format
-- No existing functionality is broken
+- Both the Seasonality and Compare pages show visually identical filter panels
+- All three controls (region, illness, date slider on Compare) are the same height and baseline-aligned on desktop
+- Changing filters on either page still triggers the correct data fetch and chart update
+- No other page is affected
