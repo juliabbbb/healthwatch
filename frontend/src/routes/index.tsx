@@ -26,7 +26,11 @@ import {
 } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
-import { MapExportDocument, type MapExportRegion } from "@/components/pdf/MapExportPDF";
+import {
+  MapExportDocument,
+  type MapExportRegion,
+  type MapExportRegionRow,
+} from "@/components/pdf/MapExportPDF";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -186,6 +190,16 @@ function MapView() {
               counts,
             }}
             region={region}
+            regions={assessments.map((a): MapExportRegionRow => ({
+              name: a.region.name,
+              short: a.region.short,
+              risk: a.risk,
+              value: formatMetric(a.value, mode),
+              unit: METRIC_META[mode].unit,
+              cases: Math.round(a.point.cases).toLocaleString(),
+              percentile: a.percentileRank,
+              changePct: a.changePct,
+            }))}
           />,
         ).toBlob();
 

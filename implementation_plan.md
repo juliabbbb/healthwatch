@@ -1,94 +1,166 @@
 Standing Directive
 
-You are adding a chart-type toggle to every existing chart in the HEALTHWATCH frontend. HEALTHWATCH displays Philippine regional disease surveillance data using Recharts. Every existing chart currently renders as a Line Chart (or Area Chart). You will add a toggle button that lets the user switch the same data to a Bar Chart view, and back. This is a UI enhancement only. Do NOT change any data-fetching logic, API calls, query keys, computations, or route structures. Do NOT redesign anything — match the existing visual style exactly.
+You are fixing two broken PDF export features in HEALTHWATCH and enhancing the PDF layout quality across all pages that have export functionality. The Seasonality page's export PDF button does not include the actual chart/data from the page. The Map page's export button does nothing at all. Both must be fixed. Additionally, all existing PDF exports must receive layout and formatting improvements to produce a professional, readable document. This is primarily a frontend task using React PDF Renderer (@react-pdf/renderer), which is already installed.
 
 System Context
-Frontend: React 19 + Vite 8 + TypeScript 5.8
-Charting library: Recharts (already installed)
-State management for server data: TanStack React Query
-Styling: Tailwind CSS 4 + Radix UI (shadcn/ui pattern)
-Routing: TanStack Router (file-based)
-Charts are distributed across multiple pages: Seasonality, Forecast/Predictions, Compare, possibly Dashboard/Overview
-All chart components likely live in src/components/ or co-located with route files
+Frontend: React 19 + Vite 8 + TypeScript
+PDF library: @react-pdf/renderer (already in package.json)
+The system has multiple pages with "Export PDF" buttons (at minimum: Seasonality, Map, and at least one other page)
+Recharts is used for charts — NOTE: Recharts renders to SVG/Canvas in the DOM, which React PDF cannot directly capture
+For chart capture: use html2canvas or dom-to-image to rasterize the chart to a base64 PNG, then embed it in the PDF
+Leaflet maps also render to Canvas/DOM — same approach: rasterize to PNG before embedding
+The Map page export button appears to have no handler attached at all (dead button)
 Full Task List
-2.1 — Audit All Chart Components
-Search the entire src/ directory for Recharts usage:
-<LineChart, <AreaChart, <ComposedChart, <ResponsiveContainer
-List every file, component name, and the chart type currently used
-Note: some charts may already use ComposedChart — these are the easiest to extend
-Document the full list before making any changes
-2.2 — Create a Reusable ChartTypeToggle Component
-Create file: src/components/ui/ChartTypeToggle.tsx
-This component renders two toggle buttons: "Line" and "Bar"
-Props interface:
+4.1 — Audit All Export PDF Buttons
+Search src/ for all occurrences of:
+"Export PDF", "export pdf", exportPdf, handleExport, downloadPDF
+@react-pdf/renderer imports
+PDFDownloadLink, pdf(), BlobProvider
+For each button found: note the page, the handler function name, and what data it currently passes to the PDF
+For the Seasonality page: identify exactly what data is NOT being included (the chart image, the table, or both)
+For the Map page: confirm the button has no onClick handler or the handler is a no-op
+4.2 — Fix: Map Page Export Button
+The Map page uses Leaflet (renders to a <div> with canvas layers)
+Step 1: Install html2canvas if not present: add to package.json and run bun add html2canvas
+Step 2: Create a function captureMapAsImage():
 typescript
-  interface ChartTypeToggleProps {
-    value: "line" | "bar";
-    onChange: (type: "line" | "bar") => void;
+  import html2canvas from "html2canvas";
+
+  async function captureMapAsImage(): Promise<string> {
+    const mapContainer = document.getElementById("map-container"); // adjust selector
+    if (!mapContainer) throw new Error("Map container not found");
+    const canvas = await html2canvas(mapContainer, {
+      useCORS: true,
+      allowTaint: true,
+      scale: 2, // 2x resolution for crisp PDF output
+    });
+    return canvas.toDataURL("image/png");
   }
-Style using existing Tailwind classes that match the current button style in the app
-Use Radix UI ToggleGroup if it is already imported in the project; otherwise use plain styled <button> elements
-Active state: match the existing active/selected button style already used in the app (e.g., on the region selector buttons)
-Icons: use a simple SVG or text label — "Line" / "Bar" — no external icon library needed unless Lucide is already in the project (check package.json)
-2.3 — Create a useChartType Hook
-Create file: src/hooks/useChartType.ts
-Simple hook that holds chart type state:
+Step 3: Create a MapPDFDocument React PDF component that:
+Has a proper title: "HEALTHWATCH — Philippine Outbreak Hotspot Map"
+Includes the generation date
+Embeds the captured map image at full page width
+Includes a legend section (Low / Moderate / High risk with color swatches)
+Includes the data table of all 18 regions with their risk classification and case counts
+Step 4: Attach the handler to the export button:
 typescript
-  import { useState } from "react";
-
-  export type ChartType = "line" | "bar";
-
-  export function useChartType(defaultType: ChartType = "line") {
-    const [chartType, setChartType] = useState<defaultType>(defaultType);
-    return { chartType, setChartType };
+  async function handleMapExport() {
+    const mapImage = await captureMapAsImage();
+    const doc = <MapPDFDocument mapImage={mapImage} regions={regionData} />;
+    const blob = await pdf(doc).toBlob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `healthwatch-map-${new Date().toISOString().split("T")[0]}.pdf`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
-This is used by every chart parent component to avoid duplicating state logic
-2.4 — Refactor Each Chart Component to Support Both Types
-For each chart found in Step 2.1, apply this pattern:
-Import both LineChart (or AreaChart) and BarChart, plus Bar and Line from Recharts
-Accept chartType: "line" | "bar" as a prop (or manage state internally if simpler)
-Switch the outer chart component conditionally:
+4.3 — Fix: Seasonality Page Export — Include Chart Image
+The Seasonality page has a chart (Recharts) and possibly a data table below it
+The current export is missing the chart — it likely only exports text/table data
+Step 1: Assign a ref or id to the chart container: <div id="seasonality-chart-container">
+Step 2: Create a function captureChartAsImage(elementId: string):
 typescript
-    const ChartComponent = chartType === "bar" ? BarChart : LineChart;
-Switch the series renderer conditionally:
+  async function captureChartAsImage(elementId: string): Promise<string> {
+    const el = document.getElementById(elementId);
+    if (!el) throw new Error(`Element #${elementId} not found`);
+    const canvas = await html2canvas(el, { scale: 2, backgroundColor: "#ffffff" });
+    return canvas.toDataURL("image/png");
+  }
+Step 3: Update the Seasonality PDF document component to accept and embed the chart image:
+Add an <Image> component from @react-pdf/renderer with the captured chart base64 PNG
+Place the chart image AFTER the title/header section, BEFORE the data table
+Step 4: Update the export handler to capture the chart before generating the PDF:
 typescript
-    const SeriesComponent = chartType === "bar" ? Bar : Line;
-Use the same data, XAxis, YAxis, CartesianGrid, Tooltip, Legend props for both — they are identical in Recharts
-For Bar, add radius={[4, 4, 0, 0]} for slightly rounded bar tops (matches modern look)
-For Line, keep existing dot, strokeWidth, and type props as-is
-Wrap the toggle with the chart in the parent component, NOT inside the chart component itself
-2.5 — Multi-Series Charts (Compare Page)
-The Compare page likely renders multiple data series (one per region)
-For Bar charts with multiple series, use BarChart with grouped bars:
-Each region gets its own <Bar dataKey="regionName" /> with its own color
-This is identical to how multiple <Line> components work — one per series
-Do NOT use stacked bars — keep the same grouped approach as the line chart's multi-series display
-2.6 — Placement of the Toggle
-Place the ChartTypeToggle in the top-right corner of each chart's card/container
-It should sit on the same row as the chart title, aligned to the right
-Use flex justify-between items-center on the chart header row
-Example layout:
-  [ Chart Title                          ] [ Line | Bar ]
-  [                                                     ]
-  [              Chart renders here                     ]
-  [                                                     ]
-Do not add extra padding or margin — match existing card spacing exactly
-2.7 — Pages to Update
+  async function handleSeasonalityExport() {
+    const chartImage = await captureChartAsImage("seasonality-chart-container");
+    const doc = <SeasonalityPDFDocument chartImage={chartImage} data={seasonalityData} />;
+    // ... rest of download logic
+  }
+Also include the currently selected region in the PDF title (e.g., "Region III — Central Luzon")
+4.4 — PDF Layout Enhancement — Apply to ALL Export Pages
 
-Apply the toggle to charts on ALL of these pages (based on the audit in 2.1):
+Apply these formatting improvements to every PDF document component in the system:
 
-Seasonality page — regional seasonality trend chart(s)
-Forecast/Predictions page — forecast line charts (Prophet output)
-Compare page — multi-region comparison charts
-Dashboard/Overview page — any summary charts present
-Any other page that renders a Recharts chart component
-2.8 — Do NOT Touch
-Data fetching (React Query hooks, useQuery calls)
-API endpoints
-Any computation or data transformation logic
-The map page (Leaflet — not a Recharts chart)
-PDF export logic
-Routing configuration
+Page Layout:
+
+Page size: A4, orientation: portrait
+Margins: 40pt top/bottom, 48pt left/right
+Add a consistent header to every page (using <View fixed> in React PDF):
+Left: HEALTHWATCH logo text or wordmark in bold
+Right: Page number (<Text render={({ pageNumber, totalPages }) => \${pageNumber} / ${totalPages}`} fixed />`)
+
+Typography:
+
+Title: font size 18pt, bold, color 
+#1e293b (slate-800)
+Subtitle/section heading: 13pt, semi-bold, color 
+#334155 (slate-700)
+Body text: 10pt, color 
+#475569 (slate-600)
+Table cell text: 9pt
+Captions: 8pt, italic, color 
+#64748b (slate-500)
+Use the same font family throughout — Helvetica (built-in to React PDF, no font loading needed)
+
+Header Section (for every PDF):
+
+HEALTHWATCH
+Philippine Regional Disease Surveillance System
+─────────────────────────────────────────────
+[Page Title]                    Generated: [Date]
+Region: [Selected Region]
+
+Chart Section:
+
+Chart image: full width, maintain aspect ratio, add a 2pt border 
+#e2e8f0, border-radius not supported in React PDF — use flat border
+Caption below chart: "Figure 1. [Chart description] — Source: DOH Philippines"
+
+Data Table:
+
+Header row background: 
+#0f172a (slate-900), text white, 9pt bold
+Alternating row colors: white and 
+#f8fafc (slate-50)
+Cell padding: 8pt horizontal, 6pt vertical
+Add a thin bottom border 
+#e2e8f0 on each row
+Column widths: proportional, not equal — wider columns for region names, narrower for numeric values
+Align numeric columns right
+
+Footer Section (fixed, on every page):
+
+"Data sourced from the Department of Health (DOH), Philippines."
+"This report is generated by HEALTHWATCH and is for surveillance purposes only."
+Font size: 7pt, color 
+#94a3b8 (slate-400)
+Thin top border line
+4.5 — Add Export Loading State
+All export buttons must show a loading state while capturing DOM and generating PDF:
+typescript
+  const [isExporting, setIsExporting] = useState(false);
+
+  async function handleExport() {
+    setIsExporting(true);
+    try {
+      // ... capture and generate
+    } finally {
+      setIsExporting(false);
+    }
+  }
+Button text: "Export PDF" (idle) → "Generating…" (loading) → back to "Export PDF"
+Disable the button during export to prevent double-clicks
+4.6 — Pages to Update
+Seasonality page (BROKEN — fix chart capture + enhance layout)
+Map page (BROKEN — implement from scratch + enhance layout)
+Any other page that already has a working export (enhance layout only — do NOT break what works)
+4.7 — Do NOT Touch
+Any data fetching logic
+Any non-PDF UI components
+The Recharts chart rendering itself
+The Leaflet map rendering itself
+Any route or API code
 
 Do NOT change any feature behavior — only what is explicitly stated in each plan
 Do NOT upgrade or downgrade any package versions unless required by the plan

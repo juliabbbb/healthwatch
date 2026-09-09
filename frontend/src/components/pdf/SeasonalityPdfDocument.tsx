@@ -1,5 +1,7 @@
-import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer";
-import { COLORS, PAGE } from "./styles/pdfStyles";
+import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import { pdfStyles } from "./styles/pdfStyles";
+import { PDFHeader, PDFTitleBlock } from "./sections/PDFHeader";
+import { PDFFooter } from "./sections/PDFFooter";
 import { formatMonthYear } from "@/utils/formatDate";
 
 export interface SeasonalityPdfChart {
@@ -15,90 +17,6 @@ export interface SeasonalityPdfDocumentProps {
   exportTimestamp: string;
 }
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: COLORS.navy,
-    color: COLORS.offwhite,
-    fontFamily: "Helvetica",
-    fontSize: 9,
-    padding: PAGE.padding,
-    paddingBottom: 56,
-  },
-  cover: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  coverTitle: {
-    color: COLORS.offwhite,
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-  coverSubtitle: {
-    color: COLORS.tealBright,
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 32,
-  },
-  coverMeta: {
-    width: "100%",
-    maxWidth: 360,
-  },
-  coverField: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 6,
-    borderBottomWidth: 0.5,
-    borderBottomColor: COLORS.border,
-  },
-  coverLabel: {
-    color: COLORS.muted,
-    fontSize: 9,
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  coverValue: {
-    color: COLORS.offwhite,
-    fontSize: 9,
-    fontWeight: "bold",
-    textAlign: "right",
-    maxWidth: "60%",
-  },
-  sectionHeading: {
-    color: COLORS.tealBright,
-    fontSize: 14,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  chartImage: {
-    width: "100%",
-    maxHeight: 380,
-  },
-  footerPage: {
-    position: "absolute",
-    bottom: 20,
-    left: PAGE.padding,
-    right: PAGE.padding,
-    borderTopWidth: 0.5,
-    borderTopColor: COLORS.border,
-    paddingTop: 8,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    fontSize: 7,
-    color: COLORS.muted,
-  },
-});
-
-function CoverField({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.coverField}>
-      <Text style={styles.coverLabel}>{label}</Text>
-      <Text style={styles.coverValue}>{value}</Text>
-    </View>
-  );
-}
-
 export function SeasonalityPdfDocument({
   regionName,
   illnessLabel,
@@ -106,73 +24,50 @@ export function SeasonalityPdfDocument({
   charts,
   exportTimestamp,
 }: SeasonalityPdfDocumentProps) {
+  const generatedAt = formatMonthYear(exportTimestamp);
+
   return (
-    <Document>
-      {/* Cover Page */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.cover}>
-          <Text style={styles.coverTitle}>HEALTHWATCH</Text>
-          <Text style={styles.coverSubtitle}>Seasonal Pattern Analysis Report</Text>
+    <Document title={`HEALTHWATCH Seasonal Pattern Analysis Report — ${regionName}`}>
+      {/* Page 1: title block + first chart */}
+      <Page size="A4" style={pdfStyles.page}>
+        <PDFHeader />
+        <PDFTitleBlock
+          title="Seasonal Pattern Analysis Report"
+          generatedAt={generatedAt}
+          meta={[
+            `Region: ${regionName}`,
+            `Illness: ${illnessLabel}`,
+            `Forecast Period: ${formatMonthYear(forecastPeriod.start)} to ${formatMonthYear(forecastPeriod.end)}`,
+          ]}
+        />
 
-          <View style={styles.coverMeta}>
-            <CoverField label="Region" value={regionName} />
-            <CoverField label="Illness" value={illnessLabel} />
-            <CoverField
-              label="Forecast Period"
-              value={`${formatMonthYear(forecastPeriod.start)} to ${formatMonthYear(forecastPeriod.end)}`}
-            />
-            <CoverField label="Generated" value={formatMonthYear(exportTimestamp)} />
-            <CoverField label="Source" value="DOH PIDSR Surveillance Data" />
-          </View>
-        </View>
+        {charts.length > 0 && (
+          <>
+            <Text style={pdfStyles.sectionTitle}>{charts[0]!.label}</Text>
+            <Image src={charts[0]!.imageDataUrl} style={pdfStyles.chartImage} />
+            <Text style={pdfStyles.caption}>
+              Figure 1. {charts[0]!.label} — Source: DOH Philippines
+            </Text>
+          </>
+        )}
 
-        <View style={styles.footerPage}>
-          <Text>HealthWatch</Text>
-          <Text>Page 1</Text>
-        </View>
+        <PDFFooter />
       </Page>
 
-      {/* Chart Pages */}
-      {charts.map((chart, i) => (
-        <Page key={i} size="A4" style={styles.page}>
+      {/* Remaining charts, one per page */}
+      {charts.slice(1).map((chart, i) => (
+        <Page key={chart.label} size="A4" style={pdfStyles.page}>
+          <PDFHeader />
           <View style={{ marginTop: 8 }}>
-            <Text style={styles.sectionHeading}>{chart.label}</Text>
-            <Image src={chart.imageDataUrl} style={styles.chartImage} />
+            <Text style={pdfStyles.sectionTitle}>{chart.label}</Text>
+            <Image src={chart.imageDataUrl} style={pdfStyles.chartImage} />
+            <Text style={pdfStyles.caption}>
+              Figure {i + 2}. {chart.label} — Source: DOH Philippines
+            </Text>
           </View>
-
-          <View style={styles.footerPage}>
-            <Text>HealthWatch · Seasonal Pattern Analysis</Text>
-            <Text>Page {i + 2}</Text>
-          </View>
+          <PDFFooter />
         </Page>
       ))}
-
-      {/* Footer Page */}
-      <Page size="A4" style={styles.page}>
-        <View style={{ flex: 1, justifyContent: "flex-end", alignItems: "center" }}>
-          <Text
-            style={{
-              color: COLORS.offwhite,
-              fontSize: 11,
-              fontWeight: "bold",
-              marginBottom: 8,
-            }}
-          >
-            Generated by HealthWatch
-          </Text>
-          <Text style={{ color: COLORS.muted, fontSize: 9, marginBottom: 4 }}>
-            Regional Time-Series Analysis System
-          </Text>
-          <Text style={{ color: COLORS.muted, fontSize: 8 }}>
-            Source: DOH PIDSR Surveillance Data | For public health decision support only
-          </Text>
-        </View>
-
-        <View style={styles.footerPage}>
-          <Text>HealthWatch</Text>
-          <Text>Page {charts.length + 2}</Text>
-        </View>
-      </Page>
     </Document>
   );
 }

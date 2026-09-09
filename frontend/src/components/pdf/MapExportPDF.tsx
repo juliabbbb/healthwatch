@@ -1,113 +1,92 @@
-import { Document, Image, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import type { ReactNode } from "react";
+import type { Style } from "@react-pdf/types";
 import type { RiskLevel } from "@/lib/healthwatch/data";
+import { COLORS, pdfStyles, riskAccent } from "./styles/pdfStyles";
+import { PDFHeader, PDFTitleBlock } from "./sections/PDFHeader";
+import { PDFFooter } from "./sections/PDFFooter";
 
-const RISK_HEX: Record<RiskLevel, string> = {
-  low: "#22c55e",
-  moderate: "#f59e0b",
-  high: "#ef4444",
+const RISK_LEGEND: { level: RiskLevel; label: string; note: string }[] = [
+  {
+    level: "high",
+    label: "High risk",
+    note: "— above the P75 of the national seasonal distribution",
+  },
+  {
+    level: "moderate",
+    label: "Moderate risk",
+    note: "— between the P50 and P75 national seasonal thresholds",
+  },
+  {
+    level: "low",
+    label: "Low risk",
+    note: "— below the P50 national seasonal threshold",
+  },
+];
+
+const TABLE_COLS = [
+  { key: "name", label: "Region", flex: 5, align: "left" },
+  { key: "risk", label: "Risk", flex: 3, align: "center" },
+  { key: "value", label: "Value", flex: 3.5, align: "right" },
+  { key: "cases", label: "Cases", flex: 3, align: "right" },
+  { key: "percentile", label: "Percentile", flex: 2.5, align: "right" },
+  { key: "trend", label: "3-Mo", flex: 2.5, align: "right" },
+] as const;
+
+type ColKey = (typeof TABLE_COLS)[number]["key"];
+
+const ALIGN_STYLE: Record<"left" | "right" | "center", Style> = {
+  left: { alignItems: "flex-start" },
+  right: { alignItems: "flex-end" },
+  center: { alignItems: "center" },
 };
 
-const INK = "#0f172a";
-const MUTED = "#475569";
-const BORDER = "#e2e8f0";
-const ACCENT = "#0d9488";
+const COL_ALIGNS = Object.fromEntries(TABLE_COLS.map((c) => [c.key, c.align])) as Record<
+  ColKey,
+  "left" | "right" | "center"
+>;
 
-const styles = StyleSheet.create({
-  page: {
-    backgroundColor: "#ffffff",
-    color: INK,
-    fontFamily: "Helvetica",
-    fontSize: 10,
-    padding: 36,
-    paddingBottom: 56,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    borderBottomWidth: 2,
-    borderBottomColor: INK,
-    paddingBottom: 10,
-    marginBottom: 14,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    letterSpacing: 1.5,
-  },
-  subtitle: {
-    fontSize: 11,
-    color: MUTED,
-    marginTop: 2,
-  },
-  meta: {
-    fontSize: 8,
-    color: MUTED,
-    marginTop: 2,
-  },
-  badge: {
-    backgroundColor: ACCENT,
-    color: "#ffffff",
-    borderRadius: 3,
-    padding: "5 9",
-    fontSize: 8,
-    fontWeight: "bold",
-    letterSpacing: 0.5,
-  },
-  mapImage: {
-    width: "100%",
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 4,
-  },
-  sectionTitle: {
-    fontSize: 11,
-    fontWeight: "bold",
-    textTransform: "uppercase",
-    color: ACCENT,
-    letterSpacing: 0.6,
-    marginBottom: 6,
-    marginTop: 10,
-  },
-  tier: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 6,
-  },
-  statRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 3,
-  },
-  statLabel: {
-    color: MUTED,
-    fontSize: 9,
-  },
-  statValue: {
-    fontWeight: "bold",
-    fontSize: 9,
-  },
-  divider: {
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    marginVertical: 10,
-  },
-  footer: {
-    position: "absolute",
-    bottom: 24,
-    left: 36,
-    right: 36,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingTop: 6,
-    fontSize: 7,
-    color: MUTED,
-  },
-});
+function Cell({
+  fl,
+  align,
+  children,
+}: {
+  fl: number;
+  align: "left" | "right" | "center";
+  children: ReactNode;
+}) {
+  return (
+    <View
+      style={[{ flex: fl, paddingHorizontal: 4, justifyContent: "center" }, ALIGN_STYLE[align]]}
+    >
+      {children}
+    </View>
+  );
+}
+
+function RiskBadge({ risk }: { risk: RiskLevel }) {
+  return (
+    <View
+      style={{
+        backgroundColor: riskAccent(risk),
+        borderRadius: 2,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+      }}
+    >
+      <Text
+        style={{
+          color: COLORS.offwhite,
+          fontSize: 7,
+          fontWeight: "bold",
+          textTransform: "uppercase",
+        }}
+      >
+        {risk}
+      </Text>
+    </View>
+  );
+}
 
 export interface MapExportNational {
   tier: RiskLevel;
@@ -133,12 +112,28 @@ export interface MapExportRegion {
   forecast: boolean;
 }
 
+export interface MapExportRegionRow {
+  name: string;
+  short: string;
+  risk: RiskLevel;
+  value: string;
+  unit: string;
+  cases: string;
+  percentile: number;
+  changePct: number;
+}
+
 export interface MapExportDocumentProps {
   imageDataUrl: string;
   baseline: string;
   generatedAt: string;
   national: MapExportNational;
   region: MapExportRegion | null;
+  regions: MapExportRegionRow[];
+}
+
+function riskLabel(tier: RiskLevel): string {
+  return tier === "high" ? "High" : tier === "moderate" ? "Moderate" : "Low";
 }
 
 export function MapExportDocument({
@@ -147,81 +142,159 @@ export function MapExportDocument({
   generatedAt,
   national,
   region,
+  regions,
 }: MapExportDocumentProps) {
+  const regionScope = region ? `${region.name} (${region.short})` : "National — all 18 regions";
+
   return (
-    <Document title={`HealthWatch PH Outbreak Hotspot Map — ${baseline}`}>
-      <Page size="A4" style={styles.page}>
-        <View style={styles.headerRow}>
-          <View>
-            <Text style={styles.title}>HEALTHWATCH</Text>
-            <Text style={styles.subtitle}>PH Outbreak Hotspot Map</Text>
-            <Text style={styles.meta}>
-              Export {baseline} · Generated {generatedAt}
-            </Text>
-          </View>
-          <Text style={styles.badge}>DOH PIDSR</Text>
-        </View>
+    <Document
+      title={`HEALTHWATCH — Philippine Outbreak Hotspot Map ${baseline}`}
+      author="HEALTHWATCH — DOH Surveillance Module"
+      creator="HEALTHWATCH"
+      producer="HEALTHWATCH"
+    >
+      <Page size="A4" style={pdfStyles.page}>
+        <PDFHeader />
+        <PDFTitleBlock
+          title="Philippine Outbreak Hotspot Map"
+          generatedAt={generatedAt}
+          meta={[
+            `Baseline: ${baseline} (${national.isForecast ? "Predicted" : "Reported"})`,
+            `Region: ${regionScope}`,
+          ]}
+        />
 
-        <Image src={imageDataUrl} style={styles.mapImage} />
-
-        <Text style={styles.sectionTitle}>National Risk Tier</Text>
-        <Text style={[styles.tier, { color: RISK_HEX[national.tier] }]}>
-          {riskLabel(national.tier)}
+        <Image src={imageDataUrl} style={pdfStyles.chartImage} />
+        <Text style={pdfStyles.caption}>
+          Figure 1. Philippine regional risk classification map — Source: DOH Philippines
         </Text>
 
-        <Text style={styles.sectionTitle}>National Snapshot</Text>
-        <StatRow
-          label="Baseline month"
-          value={`${national.monthLabel} (${national.isForecast ? "Predicted" : "Reported"})`}
-        />
-        <StatRow label="National incidence" value={`${national.incidence} ${national.unit}`} />
-        <StatRow
-          label="Risk distribution"
-          value={`High ${national.counts.high} · Moderate ${national.counts.moderate} · Low ${national.counts.low}`}
-        />
-        <StatRow label="Pathology" value={national.illnessLabel} />
-        <StatRow label="Dominant illness" value={national.dominantIllness} />
+        {/* Risk legend */}
+        <Text style={pdfStyles.sectionTitle}>Risk Legend</Text>
+        {RISK_LEGEND.map((item) => (
+          <View key={item.level} style={pdfStyles.legendRow}>
+            <View style={[pdfStyles.legendSwatch, { backgroundColor: riskAccent(item.level) }]} />
+            <Text style={pdfStyles.legendLabel}>
+              <Text style={{ fontWeight: "bold", color: COLORS.slate }}>{item.label}</Text>{" "}
+              {item.note}
+            </Text>
+          </View>
+        ))}
+
+        {/* National summary */}
+        <Text style={pdfStyles.sectionTitle}>National Snapshot</Text>
+        <View style={pdfStyles.metaRow}>
+          <Text style={pdfStyles.metaLabel}>National risk tier</Text>
+          <Text style={[pdfStyles.metaValue, { color: riskAccent(national.tier) }]}>
+            {riskLabel(national.tier)} risk
+          </Text>
+        </View>
+        <View style={pdfStyles.metaRow}>
+          <Text style={pdfStyles.metaLabel}>National incidence</Text>
+          <Text style={pdfStyles.metaValue}>
+            {national.incidence} {national.unit}
+          </Text>
+        </View>
+        <View style={pdfStyles.metaRow}>
+          <Text style={pdfStyles.metaLabel}>Risk distribution</Text>
+          <Text style={pdfStyles.metaValue}>
+            High {national.counts.high} · Moderate {national.counts.moderate} · Low{" "}
+            {national.counts.low}
+          </Text>
+        </View>
+        <View style={pdfStyles.metaRow}>
+          <Text style={pdfStyles.metaLabel}>Pathology</Text>
+          <Text style={pdfStyles.metaValue}>{national.illnessLabel}</Text>
+        </View>
+        <View style={pdfStyles.metaRow}>
+          <Text style={pdfStyles.metaLabel}>Dominant illness</Text>
+          <Text style={pdfStyles.metaValue}>{national.dominantIllness}</Text>
+        </View>
 
         {region && (
           <>
-            <View style={styles.divider} />
-            <Text style={styles.sectionTitle}>
-              Selected Region — {region.name} ({region.short})
-            </Text>
-            <Text style={[styles.tier, { color: RISK_HEX[region.tier] }]}>
-              {riskLabel(region.tier)} risk
-            </Text>
-            <StatRow label="Current value" value={`${region.value} ${region.unit}`} />
-            <StatRow label="Reported cases" value={region.cases} />
-            <StatRow label="National percentile" value={`${region.percentile}th percentile`} />
-            <StatRow
-              label="3-month trend"
-              value={`${region.changePct >= 0 ? "+" : ""}${region.changePct}%`}
-            />
-            <StatRow
-              label="Season"
-              value={`${region.season === "wet" ? "Wet" : "Dry"} · ${region.forecast ? "forecast" : "reported"}`}
-            />
+            <Text style={pdfStyles.sectionTitle}>Selected Region</Text>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>Risk tier</Text>
+              <Text style={[pdfStyles.metaValue, { color: riskAccent(region.tier) }]}>
+                {riskLabel(region.tier)} risk
+              </Text>
+            </View>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>Current value</Text>
+              <Text style={pdfStyles.metaValue}>
+                {region.value} {region.unit}
+              </Text>
+            </View>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>Reported cases</Text>
+              <Text style={pdfStyles.metaValue}>{region.cases}</Text>
+            </View>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>National percentile</Text>
+              <Text style={pdfStyles.metaValue}>{region.percentile}th percentile</Text>
+            </View>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>3-month trend</Text>
+              <Text style={pdfStyles.metaValue}>
+                {region.changePct >= 0 ? "+" : ""}
+                {region.changePct}%
+              </Text>
+            </View>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.metaLabel}>Season</Text>
+              <Text style={pdfStyles.metaValue}>
+                {region.season === "wet" ? "Wet" : "Dry"} ·{" "}
+                {region.forecast ? "forecast" : "reported"}
+              </Text>
+            </View>
           </>
         )}
 
-        <View style={styles.footer}>
-          <Text>Generated by HealthWatch | DOH PIDSR Surveillance Data</Text>
+        {/* Full regional classification table */}
+        <Text style={pdfStyles.sectionTitle}>Regional Risk Classification</Text>
+        <View style={pdfStyles.table} wrap={false}>
+          <View style={pdfStyles.tableHeader}>
+            {TABLE_COLS.map((c) => (
+              <Cell key={c.key} fl={c.flex} align={COL_ALIGNS[c.key]}>
+                <Text style={pdfStyles.th}>{c.label}</Text>
+              </Cell>
+            ))}
+          </View>
+          {regions.map((r, i) => (
+            <View
+              key={r.short}
+              style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.card } : {}]}
+            >
+              <Cell fl={TABLE_COLS[0]!.flex} align={COL_ALIGNS.name}>
+                <Text style={pdfStyles.td}>
+                  {r.name} ({r.short})
+                </Text>
+              </Cell>
+              <Cell fl={TABLE_COLS[1]!.flex} align={COL_ALIGNS.risk}>
+                <RiskBadge risk={r.risk} />
+              </Cell>
+              <Cell fl={TABLE_COLS[2]!.flex} align={COL_ALIGNS.value}>
+                <Text style={pdfStyles.td}>{r.value}</Text>
+              </Cell>
+              <Cell fl={TABLE_COLS[3]!.flex} align={COL_ALIGNS.cases}>
+                <Text style={pdfStyles.td}>{r.cases}</Text>
+              </Cell>
+              <Cell fl={TABLE_COLS[4]!.flex} align={COL_ALIGNS.percentile}>
+                <Text style={pdfStyles.td}>{r.percentile}th</Text>
+              </Cell>
+              <Cell fl={TABLE_COLS[5]!.flex} align={COL_ALIGNS.trend}>
+                <Text style={[pdfStyles.td, { textAlign: "right" }]}>
+                  {r.changePct >= 0 ? "+" : ""}
+                  {r.changePct}%
+                </Text>
+              </Cell>
+            </View>
+          ))}
         </View>
+
+        <PDFFooter />
       </Page>
     </Document>
-  );
-}
-
-function riskLabel(tier: RiskLevel): string {
-  return tier === "high" ? "High" : tier === "moderate" ? "Moderate" : "Low";
-}
-
-function StatRow({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={styles.statRow}>
-      <Text style={styles.statLabel}>{label}</Text>
-      <Text style={styles.statValue}>{value}</Text>
-    </View>
   );
 }

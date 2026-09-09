@@ -1,5 +1,6 @@
 import { Text, View } from "@react-pdf/renderer";
-import type { StyleProp } from "@react-pdf/types";
+import type { ReactNode } from "react";
+import type { Style } from "@react-pdf/types";
 import type { RiskLevel } from "@/lib/healthwatch/data";
 import { pdfStyles, COLORS, riskAccent } from "../styles/pdfStyles";
 
@@ -21,71 +22,86 @@ export interface PDFComparativeTableProps {
   status: "predicted" | "reported";
 }
 
-const COL_WIDTHS = {
-  region: 140,
-  predicted: 90,
-  ci: 95,
-  percentile: 60,
-  trajectory: 60,
-  risk: 70,
-} as const;
+const COLS = [
+  { key: "region", label: "Region", flex: 5, align: "left" },
+  { key: "predicted", label: "Predicted", flex: 3, align: "right" },
+  { key: "ci", label: "95% CI", flex: 3, align: "right" },
+  { key: "percentile", label: "Percentile", flex: 2.5, align: "right" },
+  { key: "trajectory", label: "3-Mo", flex: 2.5, align: "right" },
+  { key: "risk", label: "Risk", flex: 3, align: "center" },
+] as const;
+
+type ColKey = (typeof COLS)[number]["key"];
+
+const ALIGN_STYLE: Record<"left" | "right" | "center", Style> = {
+  left: { alignItems: "flex-start" },
+  right: { alignItems: "flex-end" },
+  center: { alignItems: "center" },
+};
+
+const COL_ALIGNS = Object.fromEntries(COLS.map((c) => [c.key, c.align])) as Record<
+  ColKey,
+  "left" | "right" | "center"
+>;
+
+function Cell({
+  fl,
+  align,
+  children,
+}: {
+  fl: number;
+  align: "left" | "right" | "center";
+  children: ReactNode;
+}) {
+  return (
+    <View
+      style={[{ flex: fl, paddingHorizontal: 4, justifyContent: "center" }, ALIGN_STYLE[align]]}
+    >
+      {children}
+    </View>
+  );
+}
 
 export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) {
   return (
     <View style={pdfStyles.section}>
       <Text style={pdfStyles.sectionTitle}>Comparative Matrix</Text>
-      <View style={pdfStyles.table}>
+      <View style={pdfStyles.table} wrap={false}>
         <View style={pdfStyles.tableHeader}>
-          <Cell width={COL_WIDTHS.region} text="Region" style={pdfStyles.th} />
-          <Cell
-            width={COL_WIDTHS.predicted}
-            text={status === "predicted" ? "Predicted" : "Reported"}
-            style={pdfStyles.th}
-            alignRight
-          />
-          <Cell width={COL_WIDTHS.ci} text="95% CI" style={pdfStyles.th} alignRight />
-          <Cell width={COL_WIDTHS.percentile} text="Percentile" style={pdfStyles.th} alignRight />
-          <Cell width={COL_WIDTHS.trajectory} text="3-Mo" style={pdfStyles.th} alignRight />
-          <Cell width={COL_WIDTHS.risk} text="Risk" style={pdfStyles.th} center />
+          {COLS.map((c) => (
+            <Cell key={c.key} fl={c.flex} align={COL_ALIGNS[c.key]}>
+              <Text style={pdfStyles.th}>{c.label}</Text>
+            </Cell>
+          ))}
         </View>
-
         {rows.map((r, i) => (
           <View
             key={r.short}
-            wrap={false}
-            style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.slate } : {}]}
+            style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.card } : {}]}
           >
-            <Cell
-              width={COL_WIDTHS.region}
-              text={`${r.region} (${r.short})`}
-              style={pdfStyles.td}
-            />
-            <Cell
-              width={COL_WIDTHS.predicted}
-              text={r.predicted.toLocaleString()}
-              style={[pdfStyles.td, { textAlign: "right" }]}
-            />
-            <Cell
-              width={COL_WIDTHS.ci}
-              text={`${Math.round(r.lower).toLocaleString()}–${Math.round(r.upper).toLocaleString()}`}
-              style={[pdfStyles.td, { color: COLORS.muted, textAlign: "right" }]}
-            />
-            <Cell
-              width={COL_WIDTHS.percentile}
-              text={`${r.percentile}th`}
-              style={[pdfStyles.td, { textAlign: "right" }]}
-            />
-            <Cell
-              width={COL_WIDTHS.trajectory}
-              text={`${r.changePct >= 0 ? "+" : ""}${r.changePct}%`}
-              style={[
-                pdfStyles.td,
-                { textAlign: "right", color: r.changePct >= 0 ? COLORS.high : COLORS.low },
-              ]}
-            />
-            <View
-              style={{ width: COL_WIDTHS.risk, alignItems: "center", justifyContent: "center" }}
-            >
+            <Cell fl={COLS[0]!.flex} align={COL_ALIGNS.region}>
+              <Text style={pdfStyles.td}>
+                {r.region} ({r.short})
+              </Text>
+            </Cell>
+            <Cell fl={COLS[1]!.flex} align={COL_ALIGNS.predicted}>
+              <Text style={pdfStyles.td}>{r.predicted.toLocaleString()}</Text>
+            </Cell>
+            <Cell fl={COLS[2]!.flex} align={COL_ALIGNS.ci}>
+              <Text style={[pdfStyles.td, { color: COLORS.mutedLight }]}>
+                {Math.round(r.lower).toLocaleString()}–{Math.round(r.upper).toLocaleString()}
+              </Text>
+            </Cell>
+            <Cell fl={COLS[3]!.flex} align={COL_ALIGNS.percentile}>
+              <Text style={pdfStyles.td}>{r.percentile}th</Text>
+            </Cell>
+            <Cell fl={COLS[4]!.flex} align={COL_ALIGNS.trajectory}>
+              <Text style={[pdfStyles.td, { color: r.changePct >= 0 ? COLORS.high : COLORS.low }]}>
+                {r.changePct >= 0 ? "+" : ""}
+                {r.changePct}%
+              </Text>
+            </Cell>
+            <Cell fl={COLS[5]!.flex} align={COL_ALIGNS.risk}>
               <View
                 style={{
                   backgroundColor: riskAccent(r.risk),
@@ -96,7 +112,7 @@ export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) 
               >
                 <Text
                   style={{
-                    color: "#0f172a",
+                    color: COLORS.offwhite,
                     fontSize: 7,
                     fontWeight: "bold",
                     textTransform: "uppercase",
@@ -105,38 +121,10 @@ export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) 
                   {r.risk}
                 </Text>
               </View>
-            </View>
+            </Cell>
           </View>
         ))}
       </View>
-    </View>
-  );
-}
-
-function Cell({
-  width,
-  text,
-  style,
-  alignRight,
-  center,
-}: {
-  width: number;
-  text: string;
-  style?: StyleProp;
-  alignRight?: boolean;
-  center?: boolean;
-}) {
-  return (
-    <View
-      style={{
-        width,
-        paddingRight: 4,
-        justifyContent: "center",
-        ...(center ? { alignItems: "center" as const } : {}),
-        ...(alignRight ? { alignItems: "flex-end" as const } : {}),
-      }}
-    >
-      <Text {...(style ? { style } : {})}>{text}</Text>
     </View>
   );
 }

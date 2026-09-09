@@ -1,6 +1,8 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer";
-import { pdfStyles, COLORS, PAGE } from "./styles/pdfStyles";
-import { PDFHeader } from "./sections/PDFHeader";
+import type { ReactNode } from "react";
+import type { Style } from "@react-pdf/types";
+import { pdfStyles, COLORS, riskAccent } from "./styles/pdfStyles";
+import { PDFHeader, PDFTitleBlock } from "./sections/PDFHeader";
 import { PDFFooter } from "./sections/PDFFooter";
 import { PDFComparativeTable, type ComparativeRow } from "./sections/PDFComparativeTable";
 import type { MonthPoint, Region, RiskLevel } from "@/lib/healthwatch/data";
@@ -43,27 +45,82 @@ export interface ExportOptions {
   }[];
 }
 
-const FORECAST_COL_WIDTHS = {
-  month: 100,
-  predictedCases: 110,
-  lowerBound: 100,
-  upperBound: 100,
-  riskTier: 105,
-} as const;
+const FORECAST_COLS = [
+  { key: "month", label: "Month", flex: 1.2, align: "left" },
+  { key: "predicted", label: "Predicted Cases", flex: 1.4, align: "right" },
+  { key: "lower", label: "Lower Bound", flex: 1, align: "right" },
+  { key: "upper", label: "Upper Bound", flex: 1, align: "right" },
+  { key: "risk", label: "Risk Tier", flex: 1, align: "center" },
+] as const;
 
-const SUMMARY_COL_WIDTHS = {
-  rank: 30,
-  region: 120,
-  riskTier: 70,
-  predictedCases: 140,
-  outbreakFlag: 155,
-} as const;
+const SUMMARY_COLS = [
+  { key: "rank", label: "Rank", flex: 0.9, align: "right" },
+  { key: "region", label: "Region", flex: 4.2, align: "left" },
+  { key: "risk", label: "Risk Tier", flex: 2.2, align: "center" },
+  { key: "predicted", label: "Predicted (Next Season)", flex: 3.2, align: "right" },
+  { key: "outbreak", label: "Outbreak Flag", flex: 2.8, align: "center" },
+] as const;
 
-const RISK_COLORS: Record<string, string> = {
-  high: COLORS.high,
-  moderate: COLORS.moderate,
-  low: COLORS.low,
+type ForecastCol = (typeof FORECAST_COLS)[number]["key"];
+type SummaryCol = (typeof SUMMARY_COLS)[number]["key"];
+
+const ALIGN_STYLE: Record<"left" | "right" | "center", Style> = {
+  left: { alignItems: "flex-start" },
+  right: { alignItems: "flex-end" },
+  center: { alignItems: "center" },
 };
+
+const FORECAST_ALIGNS = Object.fromEntries(FORECAST_COLS.map((c) => [c.key, c.align])) as Record<
+  ForecastCol,
+  "left" | "right" | "center"
+>;
+
+const SUMMARY_ALIGNS = Object.fromEntries(SUMMARY_COLS.map((c) => [c.key, c.align])) as Record<
+  SummaryCol,
+  "left" | "right" | "center"
+>;
+
+function Cell({
+  fl,
+  align,
+  children,
+}: {
+  fl: number;
+  align: "left" | "right" | "center";
+  children: ReactNode;
+}) {
+  return (
+    <View
+      style={[{ flex: fl, paddingHorizontal: 4, justifyContent: "center" }, ALIGN_STYLE[align]]}
+    >
+      {children}
+    </View>
+  );
+}
+
+function RiskBadge({ risk }: { risk: RiskLevel }) {
+  return (
+    <View
+      style={{
+        backgroundColor: riskAccent(risk),
+        borderRadius: 2,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+      }}
+    >
+      <Text
+        style={{
+          color: COLORS.offwhite,
+          fontSize: 7,
+          fontWeight: "bold",
+          textTransform: "uppercase",
+        }}
+      >
+        {risk}
+      </Text>
+    </View>
+  );
+}
 
 export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
   const { sections } = options;
@@ -85,6 +142,10 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
 
   const forecastStart = options.regions[0]?.forecastWindow[0]?.label;
   const forecastEnd = options.regions[0]?.forecastWindow.at(-1)?.label;
+  const forecastPeriod =
+    forecastStart && forecastEnd
+      ? `${formatMonthYear(forecastStart)} to ${formatMonthYear(forecastEnd)}`
+      : "—";
 
   return (
     <Document
@@ -95,82 +156,34 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
     >
       {/* ── Cover Page ── */}
       <Page size="A4" style={pdfStyles.page}>
-        <View style={{ marginTop: 120 }}>
-          <Text
-            style={{
-              color: COLORS.tealBright,
-              fontSize: 28,
-              fontWeight: "bold",
-              marginBottom: 6,
-            }}
-          >
-            HEALTHWATCH
-          </Text>
-          <Text
-            style={{
-              color: COLORS.offwhite,
-              fontSize: 18,
-              fontWeight: "bold",
-              marginBottom: 24,
-            }}
-          >
-            Regional Outbreak Comparison Report
-          </Text>
+        <PDFHeader />
+        <PDFTitleBlock
+          title="Regional Outbreak Comparison Report"
+          generatedAt={options.generatedAt}
+          meta={[
+            `Illness: ${options.pathology}`,
+            `Forecast Period: ${forecastPeriod}`,
+            `Regions included: ${options.regions.length}`,
+            `Baseline: ${formatMonthYear(options.baseline)} · Source: DOH PIDSR Surveillance Data`,
+          ]}
+        />
 
-          <View style={{ marginBottom: 32 }}>
-            <CoverField label="Illness" value="Dengue" />
-            <CoverField
-              label="Forecast Period"
-              value={
-                forecastStart && forecastEnd
-                  ? `${formatMonthYear(forecastStart)} to ${formatMonthYear(forecastEnd)}`
-                  : "—"
-              }
-            />
-            <CoverField label="Regions Included" value={`${options.regions.length} regions`} />
-            <CoverField label="Generated" value={formatMonthYear(options.baseline)} />
-            <CoverField label="Source" value="DOH PIDSR Surveillance Data" />
-          </View>
-
-          <View
-            style={{
-              borderBottomWidth: 1,
-              borderBottomColor: COLORS.border,
-              marginBottom: 20,
-            }}
-          />
-
-          <Text
-            style={{
-              color: COLORS.offwhite,
-              fontSize: 11,
-              fontWeight: "bold",
-              marginBottom: 10,
-            }}
-          >
-            Regions in this export:
-          </Text>
-          {options.regions.map((r, i) => (
-            <Text
-              key={r.profile.code}
-              style={{ color: COLORS.muted, fontSize: 9, marginBottom: 4, paddingLeft: 8 }}
-            >
+        <Text style={pdfStyles.sectionTitle}>Regions in this export</Text>
+        {options.regions.map((r, i) => (
+          <View key={r.profile.code} style={pdfStyles.metaRow}>
+            <Text style={pdfStyles.metaLabel}>
               {i + 1}. {r.profile.name} ({r.profile.short})
             </Text>
-          ))}
-        </View>
+            <RiskBadge risk={r.risk} />
+          </View>
+        ))}
 
-        <PDFFooter generatedAt={options.generatedAt} />
+        <PDFFooter />
       </Page>
 
       {/* ── Main Content Page ── */}
       <Page size="A4" style={pdfStyles.page}>
-        <PDFHeader
-          title="Epidemiological Surveillance Report"
-          generatedAt={options.generatedAt}
-          baseline={options.baseline}
-          pathology={options.pathology}
-        />
+        <PDFHeader />
 
         {sections.comparative && options.regions.length > 0 && (
           <PDFComparativeTable rows={comparativeRows} status="predicted" />
@@ -181,17 +194,18 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
             <Text style={pdfStyles.sectionTitle}>Recommendations</Text>
             {options.regions.map((r) => (
               <View key={r.profile.code} style={pdfStyles.card}>
-                <Text style={[pdfStyles.value, { fontSize: 9 }]}>
-                  {r.profile.name} ({r.profile.short})
-                </Text>
-                <Text style={[pdfStyles.muted, { marginTop: 3 }]}>
-                  Risk tier: <Text style={{ color: "#f8fafc", fontWeight: "bold" }}>{r.risk}</Text>{" "}
-                  —
+                <View style={pdfStyles.metaRow}>
+                  <Text style={pdfStyles.metaValue}>
+                    {r.profile.name} ({r.profile.short})
+                  </Text>
+                  <RiskBadge risk={r.risk} />
+                </View>
+                <Text style={[pdfStyles.body, { marginTop: 2 }]}>
                   {r.risk === "high"
-                    ? " Convene the regional epidemiology and surveillance unit within 48 hours and pre-position medical supplies."
+                    ? "Convene the regional epidemiology and surveillance unit within 48 hours and pre-position medical supplies."
                     : r.risk === "moderate"
-                      ? " Heighten passive surveillance and move sentinel sites to monthly reporting."
-                      : " Maintain routine PIDSR reporting cadence and continue baseline surveillance."}
+                      ? "Heighten passive surveillance and move sentinel sites to monthly reporting."
+                      : "Maintain routine PIDSR reporting cadence and continue baseline surveillance."}
                 </Text>
               </View>
             ))}
@@ -201,41 +215,20 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
         {/* ── Per-Region Pages ── */}
         {options.regions.map((r, index) => (
           <View key={r.profile.code} break={index > 0}>
-            <View style={[pdfStyles.section, { marginBottom: 10 }]}>
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Text style={{ color: COLORS.offwhite, fontSize: 18, fontWeight: "bold" }}>
-                  {r.profile.name}
-                </Text>
-                <View
-                  style={{
-                    backgroundColor: RISK_COLORS[r.risk] ?? COLORS.low,
-                    borderRadius: 3,
-                    paddingHorizontal: 8,
-                    paddingVertical: 3,
-                    marginLeft: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: "#ffffff",
-                      fontSize: 9,
-                      fontWeight: "bold",
-                      textTransform: "uppercase",
-                    }}
-                  >
-                    {r.risk}
-                  </Text>
-                </View>
+            <View style={[pdfStyles.section, { marginBottom: 10, marginTop: index > 0 ? 10 : 0 }]}>
+              <View style={pdfStyles.metaRow}>
+                <Text style={pdfStyles.title}>{r.profile.name}</Text>
+                <RiskBadge risk={r.risk} />
               </View>
 
               <Text style={pdfStyles.sectionTitle}>12-Month Forecast</Text>
-              <View style={pdfStyles.table}>
+              <View style={pdfStyles.table} wrap={false}>
                 <View style={pdfStyles.tableHeader}>
-                  <ForecastCell width={FORECAST_COL_WIDTHS.month} text="Month" />
-                  <ForecastCell width={FORECAST_COL_WIDTHS.predictedCases} text="Predicted Cases" />
-                  <ForecastCell width={FORECAST_COL_WIDTHS.lowerBound} text="Lower Bound" />
-                  <ForecastCell width={FORECAST_COL_WIDTHS.upperBound} text="Upper Bound" />
-                  <ForecastCell width={FORECAST_COL_WIDTHS.riskTier} text="Risk Tier" />
+                  {FORECAST_COLS.map((c) => (
+                    <Cell key={c.key} fl={c.flex} align={FORECAST_ALIGNS[c.key]}>
+                      <Text style={pdfStyles.th}>{c.label}</Text>
+                    </Cell>
+                  ))}
                 </View>
                 {r.forecastWindow.map((fp, fi) => {
                   const fpValue = r.unit.includes("100k")
@@ -252,55 +245,24 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
                       key={fp.index}
                       style={[
                         pdfStyles.tableRow,
-                        fi % 2 === 1 ? { backgroundColor: COLORS.slate } : {},
+                        fi % 2 === 1 ? { backgroundColor: COLORS.card } : {},
                       ]}
                     >
-                      <ForecastCell
-                        width={FORECAST_COL_WIDTHS.month}
-                        text={formatMonthYear(fp.label)}
-                      />
-                      <ForecastCell
-                        width={FORECAST_COL_WIDTHS.predictedCases}
-                        text={fpValue}
-                        alignRight
-                      />
-                      <ForecastCell
-                        width={FORECAST_COL_WIDTHS.lowerBound}
-                        text={fpLower}
-                        alignRight
-                      />
-                      <ForecastCell
-                        width={FORECAST_COL_WIDTHS.upperBound}
-                        text={fpUpper}
-                        alignRight
-                      />
-                      <View
-                        style={{
-                          width: FORECAST_COL_WIDTHS.riskTier,
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <View
-                          style={{
-                            backgroundColor: RISK_COLORS[r.risk] ?? COLORS.low,
-                            borderRadius: 2,
-                            paddingHorizontal: 6,
-                            paddingVertical: 2,
-                          }}
-                        >
-                          <Text
-                            style={{
-                              color: "#ffffff",
-                              fontSize: 7,
-                              fontWeight: "bold",
-                              textTransform: "uppercase",
-                            }}
-                          >
-                            {r.risk}
-                          </Text>
-                        </View>
-                      </View>
+                      <Cell fl={FORECAST_COLS[0]!.flex} align={FORECAST_ALIGNS.month}>
+                        <Text style={pdfStyles.td}>{formatMonthYear(fp.label)}</Text>
+                      </Cell>
+                      <Cell fl={FORECAST_COLS[1]!.flex} align={FORECAST_ALIGNS.predicted}>
+                        <Text style={pdfStyles.td}>{fpValue}</Text>
+                      </Cell>
+                      <Cell fl={FORECAST_COLS[2]!.flex} align={FORECAST_ALIGNS.lower}>
+                        <Text style={pdfStyles.td}>{fpLower}</Text>
+                      </Cell>
+                      <Cell fl={FORECAST_COLS[3]!.flex} align={FORECAST_ALIGNS.upper}>
+                        <Text style={pdfStyles.td}>{fpUpper}</Text>
+                      </Cell>
+                      <Cell fl={FORECAST_COLS[4]!.flex} align={FORECAST_ALIGNS.risk}>
+                        <RiskBadge risk={r.risk} />
+                      </Cell>
                     </View>
                   );
                 })}
@@ -309,22 +271,22 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
               <View style={{ marginTop: 10 }}>
                 <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>
                 <View style={pdfStyles.card}>
-                  <Text style={[pdfStyles.muted, { fontSize: 9 }]}>
+                  <Text style={[pdfStyles.body, { fontSize: 9 }]}>
                     Rule A (P75 exceedance):{" "}
                     <Text
                       style={{
-                        color: r.risk === "high" ? COLORS.high : COLORS.offwhite,
+                        color: r.risk === "high" ? COLORS.high : COLORS.slate,
                         fontWeight: "bold",
                       }}
                     >
                       {r.percentile >= 75 ? "Fired — outbreak threshold breached" : "Not fired"}
                     </Text>
                   </Text>
-                  <Text style={[pdfStyles.muted, { fontSize: 9, marginTop: 4 }]}>
+                  <Text style={[pdfStyles.body, { fontSize: 9, marginTop: 4 }]}>
                     Rule B (trajectory acceleration):{" "}
                     <Text
                       style={{
-                        color: r.changePct >= 10 ? COLORS.moderate : COLORS.offwhite,
+                        color: r.changePct >= 10 ? COLORS.moderate : COLORS.slate,
                         fontWeight: "bold",
                       }}
                     >
@@ -335,147 +297,61 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
                   </Text>
                 </View>
               </View>
-
-              <View
-                style={{
-                  borderBottomWidth: 1,
-                  borderBottomColor: COLORS.border,
-                  marginTop: 12,
-                }}
-              />
             </View>
           </View>
         ))}
 
-        <PDFFooter generatedAt={options.generatedAt} />
+        <PDFFooter />
       </Page>
 
       {/* ── Summary Page ── */}
       <Page size="A4" style={pdfStyles.page}>
-        <Text
-          style={{ color: COLORS.offwhite, fontSize: 16, fontWeight: "bold", marginBottom: 12 }}
-        >
+        <PDFHeader />
+        <Text style={{ color: COLORS.slate, fontSize: 16, fontWeight: "bold", marginBottom: 12 }}>
           Summary — All Regions
         </Text>
 
-        <View style={pdfStyles.table}>
+        <View style={pdfStyles.table} wrap={false}>
           <View style={pdfStyles.tableHeader}>
-            <SummaryCell width={SUMMARY_COL_WIDTHS.rank} text="Rank" />
-            <SummaryCell width={SUMMARY_COL_WIDTHS.region} text="Region" />
-            <SummaryCell width={SUMMARY_COL_WIDTHS.riskTier} text="Risk Tier" />
-            <SummaryCell width={SUMMARY_COL_WIDTHS.predictedCases} text="Predicted (Next Season)" />
-            <SummaryCell width={SUMMARY_COL_WIDTHS.outbreakFlag} text="Outbreak Flag" />
+            {SUMMARY_COLS.map((c) => (
+              <Cell key={c.key} fl={c.flex} align={SUMMARY_ALIGNS[c.key]}>
+                <Text style={pdfStyles.th}>{c.label}</Text>
+              </Cell>
+            ))}
           </View>
           {sortedForSummary.map((r, i) => {
             const outbreakFired = r.percentile >= 75 || r.changePct >= 10;
             return (
               <View
                 key={r.profile.code}
-                style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.slate } : {}]}
+                style={[pdfStyles.tableRow, i % 2 === 1 ? { backgroundColor: COLORS.card } : {}]}
               >
-                <SummaryCell width={SUMMARY_COL_WIDTHS.rank} text={`${i + 1}`} />
-                <SummaryCell
-                  width={SUMMARY_COL_WIDTHS.region}
-                  text={`${r.profile.name} (${r.profile.short})`}
-                />
-                <View
-                  style={{
-                    width: SUMMARY_COL_WIDTHS.riskTier,
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <View
-                    style={{
-                      backgroundColor: RISK_COLORS[r.risk] ?? COLORS.low,
-                      borderRadius: 2,
-                      paddingHorizontal: 6,
-                      paddingVertical: 2,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        color: "#ffffff",
-                        fontSize: 7,
-                        fontWeight: "bold",
-                        textTransform: "uppercase",
-                      }}
-                    >
-                      {r.risk}
-                    </Text>
-                  </View>
-                </View>
-                <SummaryCell
-                  width={SUMMARY_COL_WIDTHS.predictedCases}
-                  text={r.predicted.toLocaleString()}
-                  alignRight
-                />
-                <SummaryCell
-                  width={SUMMARY_COL_WIDTHS.outbreakFlag}
-                  text={outbreakFired ? "\u26A0 Yes" : "\u2014"}
-                />
+                <Cell fl={SUMMARY_COLS[0]!.flex} align={SUMMARY_ALIGNS.rank}>
+                  <Text style={pdfStyles.td}>{i + 1}</Text>
+                </Cell>
+                <Cell fl={SUMMARY_COLS[1]!.flex} align={SUMMARY_ALIGNS.region}>
+                  <Text style={pdfStyles.td}>
+                    {r.profile.name} ({r.profile.short})
+                  </Text>
+                </Cell>
+                <Cell fl={SUMMARY_COLS[2]!.flex} align={SUMMARY_ALIGNS.risk}>
+                  <RiskBadge risk={r.risk} />
+                </Cell>
+                <Cell fl={SUMMARY_COLS[3]!.flex} align={SUMMARY_ALIGNS.predicted}>
+                  <Text style={pdfStyles.td}>{r.predicted.toLocaleString()}</Text>
+                </Cell>
+                <Cell fl={SUMMARY_COLS[4]!.flex} align={SUMMARY_ALIGNS.outbreak}>
+                  <Text style={[pdfStyles.td, { fontWeight: "bold", color: COLORS.slate }]}>
+                    {outbreakFired ? "\u26A0 Yes" : "\u2014"}
+                  </Text>
+                </Cell>
               </View>
             );
           })}
         </View>
 
-        <PDFFooter generatedAt={options.generatedAt} />
+        <PDFFooter />
       </Page>
     </Document>
-  );
-}
-
-function CoverField({ label, value }: { label: string; value: string }) {
-  return (
-    <View style={{ flexDirection: "row", marginBottom: 6 }}>
-      <Text style={{ color: COLORS.muted, fontSize: 9, width: 120 }}>{label}:</Text>
-      <Text style={{ color: COLORS.offwhite, fontSize: 9, fontWeight: "bold" }}>{value}</Text>
-    </View>
-  );
-}
-
-function ForecastCell({
-  width,
-  text,
-  alignRight,
-}: {
-  width: number;
-  text: string;
-  alignRight?: boolean;
-}) {
-  return (
-    <View
-      style={{
-        width,
-        justifyContent: "center",
-        paddingRight: 4,
-        ...(alignRight ? { alignItems: "flex-end" as const } : {}),
-      }}
-    >
-      <Text style={[pdfStyles.td, { fontSize: 9 }]}>{text}</Text>
-    </View>
-  );
-}
-
-function SummaryCell({
-  width,
-  text,
-  alignRight,
-}: {
-  width: number;
-  text: string;
-  alignRight?: boolean;
-}) {
-  return (
-    <View
-      style={{
-        width,
-        justifyContent: "center",
-        paddingRight: 4,
-        ...(alignRight ? { alignItems: "flex-end" as const } : {}),
-      }}
-    >
-      <Text style={[pdfStyles.td, { fontSize: 9 }]}>{text}</Text>
-    </View>
   );
 }

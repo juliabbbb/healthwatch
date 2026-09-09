@@ -1,31 +1,44 @@
 import { Text, View } from "@react-pdf/renderer";
 import { pdfStyles } from "../styles/pdfStyles";
-import { formatMonthYear } from "@/utils/formatDate";
 
-export interface PDFHeaderProps {
-  title: string;
-  generatedAt: string; // PHT timestamp
-  baseline: string; // e.g. "2026-09"
-  pathology: string;
+/**
+ * Fixed running header repeated on every page:
+ * left — HEALTHWATCH wordmark, right — "Page N of M".
+ */
+export function PDFHeader() {
+  return (
+    <View fixed style={pdfStyles.header}>
+      <Text style={pdfStyles.brand}>HEALTHWATCH</Text>
+      <Text style={pdfStyles.pageNumber}>
+        <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`} />
+      </Text>
+    </View>
+  );
 }
 
-export function PDFHeader({ title, generatedAt, baseline, pathology }: PDFHeaderProps) {
+export interface PDFTitleBlockProps {
+  title: string;
+  generatedAt: string;
+  meta?: string[];
+}
+
+/**
+ * Standard title section used on the first page of every export:
+ * brand wordmark, surveillance-system label, divider, page title,
+ * generation date and optional context lines (region, illness, …).
+ */
+export function PDFTitleBlock({ title, generatedAt, meta }: PDFTitleBlockProps) {
   return (
-    <View style={pdfStyles.header} wrap={false}>
-      <View style={{ flex: 1, paddingRight: 12 }}>
-        <Text style={pdfStyles.headerTitle}>{title}</Text>
-        <Text style={pdfStyles.headerSub}>
-          Philippines Department of Health (DOH) · Epidemiology Bureau Surveillance · Generated{" "}
-          {generatedAt}
+    <View style={pdfStyles.titleBlock}>
+      <Text style={pdfStyles.titleBrand}>HEALTHWATCH</Text>
+      <Text style={pdfStyles.titleSlogan}>Philippine Regional Disease Surveillance System</Text>
+      <Text style={pdfStyles.title}>{title}</Text>
+      <Text style={pdfStyles.titleMeta}>Generated: {generatedAt}</Text>
+      {meta?.map((line) => (
+        <Text key={line} style={pdfStyles.titleMeta}>
+          {line}
         </Text>
-        <Text style={pdfStyles.headerSub}>
-          Active baseline: {formatMonthYear(baseline)} · Pathology: {pathology}
-        </Text>
-      </View>
-      <View style={{ alignItems: "flex-end" }}>
-        <Text style={pdfStyles.badge}>HEALTHWATCH</Text>
-        <Text style={[pdfStyles.muted, { marginTop: 4 }]}>DOH Surveillance Module</Text>
-      </View>
+      ))}
     </View>
   );
 }
