@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Siren, TrendingUp, TriangleAlert } from "lucide-react";
 import type { AlertItem } from "@/lib/healthwatch/alerts";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 /**
  * Bantay-style stacked alert list. Entries are derived client-side from the
@@ -105,7 +106,7 @@ export function AlertsPanel({
                     </span>
                   </span>
                   <span className="shrink-0 pt-0.5 font-mono text-[10px] font-medium tabular-nums text-muted-foreground">
-                    {a.month}
+                    {formatMonthYear(a.month)}
                   </span>
                 </button>
               </li>

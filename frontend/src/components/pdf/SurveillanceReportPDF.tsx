@@ -7,6 +7,7 @@ import { PDFComparativeTable, type ComparativeRow } from "./sections/PDFComparat
 import { PDFPredictionSection, type PredictionRegion } from "./sections/PDFPredictionSection";
 import { PDFSeasonalitySection, type SeasonalityRegion } from "./sections/PDFSeasonalitySection";
 import type { Region, RiskLevel } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export type ReportLayout = "executive" | "comprehensive" | "custom";
 
@@ -88,7 +89,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
 
   return (
     <Document
-      title={`Epidemiological Report ${options.baseline}`}
+      title={`Epidemiological Report ${formatMonthYear(options.baseline)}`}
       author="HEALTHWATCH — DOH Surveillance Module"
       creator="HEALTHWATCH"
       producer="HEALTHWATCH"

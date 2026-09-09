@@ -20,6 +20,7 @@ import {
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
 import { REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 const COMPONENT_METADATA: Record<
   SeasonalityComponent,
@@ -157,7 +158,7 @@ export function ChartExpandModal({
       {
         label: "Months Analyzed",
         value: `${values.length} months`,
-        hint: `${decompData[0]?.label} → ${decompData.at(-1)?.label}`,
+        hint: `${formatMonthYear(decompData[0]?.label ?? "")} → ${formatMonthYear(decompData.at(-1)?.label ?? "")}`,
       },
     ];
   })();
@@ -419,7 +420,7 @@ export function ChartExpandModal({
                     ))
                   : decompData.map((d) => (
                       <tr key={d.index} className="hover:bg-secondary/40">
-                        <td className="p-2.5 text-foreground">{d.label}</td>
+                        <td className="p-2.5 text-foreground">{formatMonthYear(d.label)}</td>
                         <td className="p-2.5 text-right text-primary font-semibold">
                           {(d[component as keyof typeof d] as number).toLocaleString()}
                         </td>

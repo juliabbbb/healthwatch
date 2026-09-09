@@ -19,6 +19,7 @@ import {
   seriesFor,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export const Route = createFileRoute("/region/$code")({
   loader: ({ params }) => {
@@ -124,7 +125,7 @@ function RegionDetail() {
       {/* KPIs */}
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi
-          label={`Predicted (${monthMeta(a.monthIndex).label})`}
+          label={`Predicted (${formatMonthYear(monthMeta(a.monthIndex).label)})`}
           value={a.point.cases.toLocaleString()}
           sub={`CI ${a.point.lower.toLocaleString()}–${a.point.upper.toLocaleString()}`}
         />
@@ -178,7 +179,7 @@ function RegionDetail() {
             <tbody>
               {forecastRows.map((p) => (
                 <tr key={p.index} className="border-t border-border">
-                  <td className="py-1.5">{p.label}</td>
+                  <td className="py-1.5">{formatMonthYear(p.label)}</td>
                   <td className="capitalize text-muted-foreground">{p.season}</td>
                   <td className="text-right font-mono tabular-nums">{p.cases.toLocaleString()}</td>
                   <td className="text-right font-mono tabular-nums text-muted-foreground">

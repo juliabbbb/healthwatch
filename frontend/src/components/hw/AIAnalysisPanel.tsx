@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Bot, ChevronDown, TriangleAlert } from "lucide-react";
 import { REGION_BY_CODE } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 /**
  * Opt-in AI-assisted analysis. Calls /analysis/{region} which narrates
@@ -196,17 +197,17 @@ function GroundingReadout({ data }: { data: GroundingData }) {
   return (
     <dl className="mt-2 grid gap-x-6 gap-y-4 rounded-lg border border-border bg-card/60 p-3 sm:grid-cols-2 lg:grid-cols-3">
       <Group title="Observed">
-        <Row label="Month" value={data.observed_through.month_label} />
+        <Row label="Month" value={formatMonthYear(data.observed_through.month_label)} />
         <Row label="Reported cases" value={data.observed_through.cases.toLocaleString()} />
       </Group>
-      <Group title={`Forecast (${data.forecast.target_date})`}>
+      <Group title={`Forecast (${formatMonthYear(data.forecast.target_date)})`}>
         <Row label="Predicted" value={fmt(data.forecast.yhat)} />
         <Row
           label="95% interval"
           value={`${fmt(data.forecast.yhat_lower)} – ${fmt(data.forecast.yhat_upper)}`}
         />
       </Group>
-      <Group title={`Classification (${data.classification.date})`}>
+      <Group title={`Classification (${formatMonthYear(data.classification.date)})`}>
         <Row label="Risk level" value={data.classification.risk_level} />
         <Row
           label="P50 / P75"

@@ -23,6 +23,7 @@ import {
   seriesFor,
   type MetricMode,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 
 const axis = {
   stroke: "var(--color-muted-foreground)",
@@ -70,7 +71,7 @@ function ForecastTooltip({
   return (
     <div className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2 text-[11px]">
       <p className="text-muted-foreground">
-        {label} · {row.season} season
+        {formatMonthYear(label ?? "")} · {row.season} season
       </p>
       <p className="mt-0.5 font-medium">
         {row.reported !== null ? "Reported" : "Predicted"}{" "}
@@ -146,7 +147,7 @@ export function ForecastChart({
             ifOverflow="extendDomain"
           />
         ))}
-        <XAxis dataKey="label" {...axis} minTickGap={40} />
+        <XAxis dataKey="label" {...axis} minTickGap={40} tickFormatter={formatMonthYear} />
         <YAxis {...axis} width={52} domain={[0, "auto"]} />
         <Tooltip
           content={<ForecastTooltip unit={METRIC_META[mode].unit} />}
@@ -233,7 +234,7 @@ export function DecompositionChart({
     <ResponsiveContainer width="100%" height={height}>
       <ComposedChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -14 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
-        <XAxis dataKey="label" {...axis} minTickGap={60} />
+        <XAxis dataKey="label" {...axis} minTickGap={60} tickFormatter={formatMonthYear} />
         <YAxis {...axis} width={52} />
         <Tooltip {...tooltipStyle} />
         {component === "residual" && (

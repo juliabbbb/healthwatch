@@ -9,6 +9,7 @@ import {
   SkipForward,
 } from "lucide-react";
 import { CURRENT_MONTH_INDEX, HIST_MONTHS, TOTAL_MONTHS, monthMeta } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 import { SeasonTag } from "./RiskBadge";
 import { cn } from "@/lib/utils";
 
@@ -125,7 +126,7 @@ export function TimelineScrubber({
         {/* Readout */}
         <div className="flex shrink-0 items-center gap-1 sm:gap-2 text-xs">
           <span className="font-mono text-[11px] sm:text-xs font-semibold tabular-nums text-foreground">
-            {meta.label}
+            {formatMonthYear(meta.label)}
           </span>
           <span className="hidden sm:inline-flex">
             <SeasonTag season={meta.season} />
@@ -159,7 +160,7 @@ export function TimelineScrubber({
 
       {expanded && (
         <div className="mt-1.5 flex justify-between text-[9px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
-          <span>2022-01</span>
+          <span>{formatMonthYear("2022-01")}</span>
           <span className="hidden xs:inline">Historical surveillance (2022–2026)</span>
           <span>+12-month forecast horizon</span>
         </div>

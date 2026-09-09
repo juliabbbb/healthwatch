@@ -1,5 +1,6 @@
 import { Text, View } from "@react-pdf/renderer";
 import { pdfStyles } from "../styles/pdfStyles";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export interface PDFHeaderProps {
   title: string;
@@ -18,7 +19,7 @@ export function PDFHeader({ title, generatedAt, baseline, pathology }: PDFHeader
           {generatedAt}
         </Text>
         <Text style={pdfStyles.headerSub}>
-          Active baseline: {baseline} · Pathology: {pathology}
+          Active baseline: {formatMonthYear(baseline)} · Pathology: {pathology}
         </Text>
       </View>
       <View style={{ alignItems: "flex-end" }}>

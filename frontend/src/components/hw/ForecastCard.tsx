@@ -21,6 +21,7 @@ import {
   type RiskLevel,
   type Season,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
 import { StatusChip } from "./StatusChip";
 
@@ -205,7 +206,7 @@ export function ForecastCard({
               Period
             </span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
-              {meta.label}
+              {formatMonthYear(meta.label)}
             </span>
           </div>
 
@@ -271,7 +272,7 @@ export function ForecastCard({
           {/* Highlighted Current Month Anchor */}
           <li className="flex items-center gap-2.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs transition-colors">
             <div className="w-20 shrink-0 flex items-center gap-1.5">
-              <span className="font-mono text-[11px] font-bold text-primary">{a.point.label}</span>
+              <span className="font-mono text-[11px] font-bold text-primary">{formatMonthYear(a.point.label)}</span>
               <span className="rounded bg-primary/25 px-1 py-0.2 text-[8px] font-semibold uppercase tracking-wider text-primary">
                 Now
               </span>
@@ -298,7 +299,7 @@ export function ForecastCard({
             return (
               <li key={p.index} className="flex items-center gap-2.5 px-2.5 py-1 text-xs">
                 <div className="w-20 shrink-0 flex items-center gap-1.5">
-                  <span className="font-mono text-[11px] text-muted-foreground">{p.label}</span>
+                  <span className="font-mono text-[11px] text-muted-foreground">{formatMonthYear(p.label)}</span>
                   <span
                     className="size-1.5 rounded-full shrink-0"
                     title={seasonConf.display}
@@ -467,7 +468,7 @@ function SeasonBasis({ isManual }: { isManual: boolean }) {
         isManual ? "text-muted-foreground/70" : "text-muted-foreground",
       )}
     >
-      Based on the current report date ({REPORT_DATE}) — upcoming season derived from a fixed
+      Based on the current report date ({formatMonthYear(REPORT_DATE)}) — upcoming season derived from a fixed
       calendar rule (wet: {SEASON_CONFIG.wet.months}, dry: {SEASON_CONFIG.dry.months}), starting{" "}
       {start}. {isManual && "Showing the other season for comparison."}
     </p>

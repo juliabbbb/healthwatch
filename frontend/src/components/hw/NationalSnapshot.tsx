@@ -9,6 +9,7 @@ import {
   type MetricMode,
   type RiskLevel,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 import { cn } from "@/lib/utils";
 import { LiveClock } from "./LiveClock";
 
@@ -77,7 +78,7 @@ export function NationalSnapshot({
             National Snapshot
           </span>
           <span className="text-muted-foreground text-xs">·</span>
-          <span className="font-mono text-xs font-semibold text-foreground">{monthLabel}</span>
+          <span className="font-mono text-xs font-semibold text-foreground">{formatMonthYear(monthLabel)}</span>
           <span
             className="rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
             style={{

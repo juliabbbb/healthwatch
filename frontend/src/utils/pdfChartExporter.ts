@@ -10,6 +10,7 @@
  */
 // html2canvas is browser-only, so it is dynamic-imported at call time to keep
 // this module safe on the server (SSR / SSG never executes the import).
+import { formatMonthYear } from "./formatDate";
 
 export interface CaptureOptions {
   scale?: number;
@@ -158,7 +159,7 @@ export function renderTrajectorySVG(
   const xLabels = points
     .map((p, i) => {
       if (i % 4 !== 0 && i !== points.length - 1) return "";
-      return `<text x="${xAt(i).toFixed(1)}" y="${height - 8}" text-anchor="middle" font-size="10" fill="${MUTED}">${p.label.slice(2)}</text>`;
+      return `<text x="${xAt(i).toFixed(1)}" y="${height - 8}" text-anchor="middle" font-size="10" fill="${MUTED}">${formatMonthYear(p.label)}</text>`;
     })
     .join("");
 

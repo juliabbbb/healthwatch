@@ -41,6 +41,7 @@ import {
   type RegionAssessment,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export const Route = createFileRoute("/compare")({
   validateSearch: (search: Record<string, unknown>): { baseline?: string; horizon?: number } => {
@@ -219,7 +220,7 @@ export default function ComparePage() {
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-3xl leading-relaxed">
             Side-by-side benchmark of Philippine regions on forecast load, risk tier and public
-            health interventions · {currentMonth.label} ({currentSeasonLabel}) · ranked on{" "}
+            health interventions · {formatMonthYear(currentMonth.label)} ({currentSeasonLabel}) · ranked on{" "}
             {meta.label.toLowerCase()}
           </p>
         </div>
@@ -327,7 +328,7 @@ export default function ComparePage() {
                 </p>
                 <div className="flex flex-wrap items-center gap-2 mt-0.5">
                   <span className="font-mono text-base font-bold text-foreground">
-                    {currentMonth.label}
+                    {formatMonthYear(currentMonth.label)}
                   </span>
                   <span
                     className={cn(
@@ -368,7 +369,7 @@ export default function ComparePage() {
                     horizon === 0 ? "text-primary font-bold" : "text-muted-foreground",
                   )}
                 >
-                  Now (0) · {baselineMonth.label}
+                  Now (0) · {formatMonthYear(baselineMonth.label)}
                 </span>
                 <span>Forecast (+12m)</span>
               </div>
@@ -558,7 +559,7 @@ export default function ComparePage() {
                   </h3>
                   <p className="text-xs text-muted-foreground">
                     Cross-regional risk tiers, predicted volume, confidence bands and dominant
-                    pathology · {currentMonth.label}
+                    pathology · {formatMonthYear(currentMonth.label)}
                   </p>
                 </div>
               </div>
@@ -866,7 +867,7 @@ export default function ComparePage() {
                     Detailed Surveillance & Forecast Trajectory
                   </p>
                   <span className="text-[10px] font-mono font-medium text-foreground/80">
-                    Target: {currentMonth.label}
+                    Target: {formatMonthYear(currentMonth.label)}
                   </span>
                 </div>
 
@@ -1246,7 +1247,7 @@ function RegionSparkline({
         </div>
         {activePoint ? (
           <span className="text-foreground font-semibold tabular-nums">
-            {activePoint.label}: {formatMetric(activePoint.v, mode)}
+            {formatMonthYear(activePoint.label)}: {formatMetric(activePoint.v, mode)}
           </span>
         ) : (
           <span className="tabular-nums">Peak {formatMetric(effectiveMax, mode)}</span>
@@ -1351,8 +1352,8 @@ function RegionSparkline({
         </svg>
       </div>
       <div className="flex items-center justify-between text-[8px] text-muted-foreground/85 mt-0.5 font-mono">
-        <span>{firstPoint.label}</span>
-        <span className="font-semibold text-foreground/85">Target: {lastPoint.label}</span>
+        <span>{formatMonthYear(firstPoint.label)}</span>
+        <span className="font-semibold text-foreground/85">Target: {formatMonthYear(lastPoint.label)}</span>
       </div>
     </div>
   );
@@ -1486,7 +1487,7 @@ function DetailedChart({
             }}
           >
             <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-1 font-mono text-[10px]">
-              <span className="font-bold text-foreground">{hoveredPoint.label}</span>
+              <span className="font-bold text-foreground">{formatMonthYear(hoveredPoint.label)}</span>
               <span
                 className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px]"
                 style={{
@@ -1649,7 +1650,7 @@ function DetailedChart({
                 fill="currentColor"
                 className="font-mono text-foreground/80 font-medium"
               >
-                {p.label.slice(2)}
+                {formatMonthYear(p.label)}
               </text>
             );
           })}

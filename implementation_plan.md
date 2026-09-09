@@ -1,94 +1,76 @@
-# Implementation Plan: Comparative Dashboard UI Refactor & Dynamic PDF Export Engine
-
-Refactor the Comparative Dashboard to fix temporal synchronization, card redundancy, modal layout, and universal chart marker styling, and build a full-featured, customizable PDF Export Engine using `@react-pdf/renderer` and `html2canvas`.
-
----
-
-## User Review Required
-
-> [!IMPORTANT]
-> - **React 19 Compatibility**: `@react-pdf/renderer` (v4.3.0) and `html2canvas` (v1.4.1) have been installed and verified via TypeScript check.
-> - **Off-Screen & Live Chart Rasterization**: The export engine will capture live chart DOM wrappers using `html2canvas` at `scale: 2` (high-DPI) or off-screen SVG renderers to embed crisp graphics in the PDF.
-> - **Timezone**: All baseline calculations and timestamps are locked to `Asia/Manila` (PHT, UTC+8) evaluating dynamically to `2026-09` as the current active baseline month.
+# HEALTHWATCH — Implementation Plan 1 of 8
+**Item:** Date Formatting Utility 
+**Execute this plan fully before moving to Plan 2.**
 
 ---
 
-## Proposed Changes
+## ⚠️ STANDING DIRECTIVE — READ BEFORE EXECUTING ANYTHING
 
-### Dashboard Fixes & UI/UX Refactor
+DO NOT touch, refactor, rename, restructure, or rewrite any file, component, function, variable, route, API endpoint, database schema, model, or configuration that is not explicitly listed in this plan.
 
-#### [MODIFY] [frontend/src/lib/healthwatch/data.ts](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/lib/healthwatch/data.ts)
-- Enforce dynamic date evaluation locked to `Asia/Manila` (PHT, UTC+8) using `Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Manila', year: 'numeric', month: '2-digit' })`.
-- Ensure `CURRENT_BASELINE_DATE` and `CURRENT_MONTH_INDEX` accurately evaluate to `2026-09` (index 56).
-- Export helpers for dynamic baseline manipulation and formatted PHT date strings.
+This system is a live academic research tool (HealthWatch) with a validated forecasting pipeline and a live deployment on Render. Any unrequested change risks breaking the Prophet pipeline, the Supabase connection, the walk-forward evaluation results, the PDF export, or the deployment itself.
 
-#### [MODIFY] [frontend/src/routes/compare.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/routes/compare.tsx)
-- **Task 1.1**: Connect dynamic baseline date synchronization. Ensure the "Now (0)" slider thumb position, top status badge, and target indicators (`Target: 2026-09`) update automatically with slider offsets (`-12m` to `+12m`).
-- **Task 1.2**: Remove any redundant bottom footer element from `RegionalOverviewCard`. Maintain full clickability on the outer container with `hover:border-teal-500/50 transition-all cursor-pointer` and keyboard accessibility (`tabIndex={0}`, `onKeyDown` handling `Enter`/`Space`).
-- **Task 1.3**: Refactor the Detailed Card View Modal so `"Open Full [Region] Analysis ↗"` occupies `w-full` (100% width) across the bottom row. Boost contrast of metric labels (`REPORTED CASES`, `3-MO TRAJECTORY`, `NATIONAL PERCENTILE`, `DOMINANT PATHOLOGY`) and chart X/Y axis ticks. Upgrade chart tooltips with structured key-value pairs (Month/Year, Actual Value, Predicted Value, 95% CI bounds).
-- **Task 1.4**: Ensure `RegionSparkline` and `DetailedChart` render static data point markers (`r={2.5}`) and high-contrast hover dots (`r={5}`, `strokeWidth={2}`).
-- Integrate the `"Export Surveillance Report"` action button in the dashboard header that opens `ExportCustomizationModal`.
+The rule is: if it is not in this plan, do not touch it. If you are unsure whether something is in scope, do not touch it. Stop and flag it instead.
 
-#### [MODIFY] [frontend/src/components/hw/Charts.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/hw/Charts.tsx)
-- Ensure all Recharts lines (`ForecastChart`, `DecompositionChart`) adhere to the universal data point visualization standard (`r={2.5}` static dot, `r={5}` active hover dot).
+All changes must be surgical, minimal, and scoped to the exact files described below.
 
 ---
 
-### Dynamic & Customizable PDF Export Engine
+## SYSTEM CONTEXT
 
-#### [NEW] [frontend/src/utils/pdfChartExporter.ts](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/utils/pdfChartExporter.ts)
-- Implement `captureChartAsImage(elementIdOrElement: string | HTMLElement): Promise<string>` using `html2canvas` with `scale: 2`, `useCORS: true`, and transparent/dark background preservation.
-- Provide batch rasterization utilities for capturing all chart wrappers on demand with step-by-step progress callbacks.
+HealthWatch is a regional public health decision-support tool for Philippine LGUs and the DOH. It forecasts dengue case volumes per region using Facebook Prophet with a wet/dry seasonal regressor, classifies each of the 18 Philippine regions (+ National aggregate) as Low / Moderate / High risk using P50/P75 percentile thresholds, and presents findings through a dashboard, map, seasonality page, compare page, and export module.
 
-#### [NEW] [frontend/src/components/pdf/styles/pdfStyles.ts](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/styles/pdfStyles.ts)
-- Define modern dark executive theme using Navy (`#0f172a`), Slate (`#1e293b`), Card Slate (`#182234`), Teal (`#0d9488`), and Off-white text (`#f8fafc`).
-- Setup A4 page dimensions, margins, typography, flexbox table grids, and risk tier color accents.
+**Tech stack (frontend):** React 19 + Vite + TanStack Router + TanStack Query + Tailwind CSS 4 + Recharts + Leaflet + React PDF Renderer + TypeScript 5.8
 
-#### [NEW] [frontend/src/components/pdf/sections/PDFHeader.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFHeader.tsx)
-- Header displaying report title, generated PHT timestamp (Asia/Manila), active baseline (`2026-09`), selected pathology, and Philippine DOH / HEALTHWATCH metadata badge.
-
-#### [NEW] [frontend/src/components/pdf/sections/PDFRegionalProfile.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFRegionalProfile.tsx)
-- Demographic profiles, island group, population, density, risk classification badge, and key surveillance metrics.
-- Uses `wrap={false}` to avoid clipping across pages.
-
-#### [NEW] [frontend/src/components/pdf/sections/PDFComparativeTable.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFComparativeTable.tsx)
-- Side-by-side flexbox table comparing selected regions on reported/predicted cases, 3-mo trajectory, national percentile rank, and risk tier.
-- Formatted with clean borders and `wrap={false}` per row.
-
-#### [NEW] [frontend/src/components/pdf/sections/PDFPredictionSection.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFPredictionSection.tsx)
-- Embedded rasterized trajectory charts, 95% CI lower/upper ranges, and Prophet backtest metrics ($MAPE$, $MAE$, $RMSE$).
-
-#### [NEW] [frontend/src/components/pdf/sections/PDFSeasonalitySection.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFSeasonalitySection.tsx)
-- Embedded seasonality decomposition graphs and wet/dry drivers per region.
-
-#### [NEW] [frontend/src/components/pdf/sections/PDFFooter.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/sections/PDFFooter.tsx)
-- Page numbering (`Page X of Y`), generation date, and official DOH surveillance confidentiality notice.
-
-#### [NEW] [frontend/src/components/pdf/SurveillanceReportPDF.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/pdf/SurveillanceReportPDF.tsx)
-- Main `@react-pdf/renderer` document assembling sections conditionally based on user-selected preset or modular sections.
-- Supports Executive 1-Page Summary, Comprehensive Technical Report, and Custom Comparison Matrix layouts.
-
-#### [NEW] [frontend/src/components/modals/ExportCustomizationModal.tsx](file:///c:/Users/Gerald%20Villanueva/healthwatch/frontend/src/components/modals/ExportCustomizationModal.tsx)
-- Modal dialog with:
-  1. Preset Layout selection (Executive 1-Page Summary, Comprehensive Technical Report, Custom Comparison Matrix).
-  2. Filter Controls: Date range picker (defaulting to baseline `2026-09` PHT), Pathology selector (`All`, `Dengue`, `Influenza-like Illness`, `Leptospirosis`), Regional multi-select with "Select All" / "Clear All".
-  3. Modular Section checkboxes (Overview, Comparative Matrix, Trajectory, Seasonality, Model Performance, Recommendations).
-  4. Step-by-step progress loader (*"Rasterizing chart visuals..."* -> *"Building PDF document..."* -> *"Downloading..."*).
-  5. Triggers clean PDF download as `Epidemiological_Report_2026-09.pdf`.
+**DO NOT touch:** FastAPI backend, Prophet pipeline, SQLAlchemy models, Supabase/PostgreSQL config, classification algorithm, evaluation logic, CSV export, routing config, render.yaml.
 
 ---
 
-## Verification Plan
+## ITEM 7 — Format All Dates as "Mon YYYY" Throughout the Application
 
-### Automated Verification
-- Run TypeScript compiler: `npx tsc --noEmit` to verify type safety across all components and PDF renderer types.
-- Run build: `npm run build` to confirm production bundle builds without errors or SSR/dynamic evaluation issues.
+### Goal
+All dates displayed to the user must render as "Sep 2026" format instead of raw ISO "2026-09" format. Only the display layer changes. Internal state, API calls, and database values stay as "YYYY-MM".
 
-### Manual & Interactive Verification
-- Verify `2026-09` is displayed as baseline date across the slider, top bar, and target indicators (`Target: 2026-09`).
-- Verify slider offsets update target dates across all cards (e.g., `-12m` to `+12m`).
-- Verify Regional cards have no redundant bottom buttons and clicking any card opens the modal; keyboard accessibility (`Enter`/`Space`) works.
-- Verify modal bottom CTA button spans 100% width and metric labels have high contrast.
-- Verify line charts render visible static data points (`r=2.5`) and hover markers (`r=5`).
-- Click "Export Surveillance Report", test preset switches, customize modular checkboxes, and trigger export.
-- Verify high-resolution chart rasterization and automatic download of `Epidemiological_Report_2026-09.pdf`.
+### Step 1 — Create the shared date formatter utility
+Create the file `src/utils/formatDate.ts` (or the equivalent utils directory in this project). Do not overwrite any existing file — if a formatDate utility already exists, extend it by adding the new function below without removing anything already there.
+
+```ts
+/**
+ * Formats a date string or Date object to "Mon YYYY" display format.
+ * Input accepts: "YYYY-MM", "YYYY-MM-DD", or a Date object.
+ * Example: "2026-09" → "Sep 2026"
+ * Uses en-PH locale — HealthWatch is a Philippine public health system.
+ */
+export function formatMonthYear(input: string | Date): string {
+  const date =
+    typeof input === 'string'
+      ? new Date(input.length === 7 ? `${input}-01` : input)
+      : input;
+  return date.toLocaleDateString('en-PH', { month: 'short', year: 'numeric' });
+}
+```
+
+### Step 2 — Apply formatMonthYear to every date display location
+Search the entire frontend codebase for any place where a date value is rendered as visible text to the user. Replace all such instances with `formatMonthYear(...)`. Target locations:
+
+- Recharts `<XAxis>` and `<YAxis>` tick formatters on all chart components — add or update the `tickFormatter` prop: `tickFormatter={(val) => formatMonthYear(val)}`
+- Date slider tick labels and current value display labels on the Compare page
+- Any table column that renders a month or date value as display text
+- Tooltip content inside Recharts charts that shows a date or month label
+- The National Snapshot section's date range display (e.g., "2026-01 to 2026-12" should become "Jan 2026 to Dec 2026")
+- Any other visible date string in the UI
+
+### Step 3 — Do NOT change any of the following
+- Date values passed as query parameters or request bodies to the FastAPI backend — keep as "YYYY-MM"
+- Date values stored in React state, TanStack Query cache, or Zod schemas — keep as "YYYY-MM" internally
+- Any date used in sorting, comparison, or arithmetic logic
+- Any database value
+- Any backend file
+
+### Verification
+After this plan is complete:
+- All chart X-axis labels show months as "Jan 2026", "Feb 2026", etc. — not "2026-01"
+- All slider value displays show "Sep 2026" — not "2026-09"
+- All table date columns show "Sep 2026" — not "2026-09"
+- API network requests (check browser DevTools Network tab) still send "YYYY-MM" format
+- No existing functionality is broken

@@ -15,6 +15,7 @@ import {
   type MetricMode,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 import {
   SurveillanceReportPDF,
   type ExportOptions,
@@ -264,7 +265,7 @@ export function ExportCustomizationModal({
               <h2 className="text-base font-bold text-foreground">Export Surveillance Report</h2>
               <p className="text-xs text-muted-foreground">
                 Customize the epidemiological PDF · Baseline{" "}
-                <span className="font-mono text-foreground">{baselineLabel}</span>
+                <span className="font-mono text-foreground">{formatMonthYear(baselineLabel)}</span>
               </p>
             </div>
           </div>
@@ -323,7 +324,7 @@ export function ExportCustomizationModal({
                 <input
                   type="text"
                   readOnly
-                  value={baselineLabel}
+                  value={formatMonthYear(baselineLabel)}
                   className="w-full rounded-md border border-border/70 bg-card px-3 py-2 text-xs font-mono text-foreground"
                 />
               </div>
