@@ -836,6 +836,36 @@ export const getCurrentMonthPHT = (): string => {
   return formatter.format(new Date()); // Outputs "YYYY-MM" (e.g., "2026-09")
 };
 
+/**
+ * Shift the active baseline month by `months` (e.g. -12 .. +12 for the compare
+ * slider) and clamp to the valid series range [0, TOTAL_MONTHS - 1]. The
+ * baseline itself is always derived from Asia/Manila (PHT, UTC+8).
+ */
+export function shiftBaselineMonth(months: number): number {
+  return Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + months));
+}
+
+/** Formatted PHT date string for the active baseline (e.g. "2026-09"). */
+export function formatBaseLinePHT(monthIndex: number = CURRENT_MONTH_INDEX): string {
+  return monthMeta(monthIndex).label;
+}
+
+/** Human-readable PHT timestamp, e.g. "2026-09-09 14:32 (PHT)". */
+export function formatPHTDateTime(date: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} (PHT)`;
+}
+
 export type SeasonalityComponent = "observed" | "trend" | "seasonal" | "residual" | "acf";
 
 export function getMonthIndexFromLabel(label: string): number {

@@ -10,6 +10,7 @@ import {
   Info,
   Layers,
   Maximize2,
+  FileDown,
   SlidersHorizontal,
   Table,
   TrendingDown,
@@ -19,6 +20,7 @@ import {
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
+import { ExportCustomizationModal } from "@/components/modals/ExportCustomizationModal";
 import {
   CURRENT_MONTH_INDEX,
   HIST_MONTHS,
@@ -100,6 +102,9 @@ export default function ComparePage() {
 
   // Spec #4: Dedicated Detailed Card View Modal state (distinct from benchmark table)
   const [detailedCardRegionCode, setDetailedCardRegionCode] = useState<string | null>(null);
+
+  // PDF Export Engine modal
+  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Computed month index within bounds [0, TOTAL_MONTHS - 1]
   const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
@@ -218,7 +223,24 @@ export default function ComparePage() {
             {meta.label.toLowerCase()}
           </p>
         </div>
-        <ClassificationInfo mode={mode} thresholds={rows[0]?.thresholds} />
+        <div className="flex items-start gap-3">
+          <ClassificationInfo mode={mode} thresholds={rows[0]?.thresholds} />
+          <button
+            type="button"
+            onClick={() => setIsExportOpen(true)}
+            disabled={selected.length === 0}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors shadow-xs disabled:opacity-50"
+            title={
+              selected.length === 0
+                ? "Select at least one region to export"
+                : "Export a customizable epidemiological report PDF"
+            }
+          >
+            <FileDown className="size-4" />
+            <span className="hidden sm:inline">Export Surveillance Report</span>
+            <span className="sm:hidden">Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Top Filter & Selection Toolbar */}
@@ -782,7 +804,7 @@ export default function ComparePage() {
               {/* Primary Metric & Key Stats Strip with High Visual Contrast */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
                     {currentMonth.forecast ? "Predicted Volume" : "Reported Cases"}
                   </p>
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
@@ -794,7 +816,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
                     3-Mo Trajectory
                   </p>
                   <p
@@ -813,7 +835,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
                     National Percentile
                   </p>
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
@@ -825,7 +847,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground/80">
+                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
                     Dominant Pathology
                   </p>
                   <p className="text-sm sm:text-base font-bold text-foreground truncate mt-1">
@@ -943,6 +965,15 @@ export default function ComparePage() {
           </div>
         </div>
       )}
+      {/* PDF Export Engine modal */}
+      <ExportCustomizationModal
+        open={isExportOpen}
+        onOpenChange={setIsExportOpen}
+        regionCodes={selected}
+        illness={illness}
+        monthIndex={monthIndex}
+        mode={mode}
+      />
     </main>
   );
 }
@@ -1549,7 +1580,7 @@ function DetailedChart({
             />
           )}
 
-          {/* Distinct Point Dots (r=4, strokeWidth=2) & Active Hover Rings (r=6, strokeWidth=2) */}
+          {/* Distinct Point Dots (r=2.5, strokeWidth=1.2) & Active Hover Rings (r=5, strokeWidth=2) */}
           {points.map((p, idx) => {
             const isForecast = p.forecast;
             const isHovered = hoveredIdx === idx;
@@ -1570,10 +1601,10 @@ function DetailedChart({
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={isHovered ? 6 : 4}
+                  r={isHovered ? 5 : 2.5}
                   fill="var(--background)"
                   stroke={color}
-                  strokeWidth={2}
+                  strokeWidth={isHovered ? 2 : 1.2}
                   className="transition-all duration-150 pointer-events-none"
                 />
 

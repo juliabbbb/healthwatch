@@ -243,7 +243,7 @@ export function DecompositionChart({
           dataKey={component}
           stroke={color}
           strokeWidth={component === "observed" ? 1 : 1.8}
-          dot={{ r: 2, strokeWidth: 1, fill: "var(--background)", stroke: color }}
+          dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: color }}
           activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: color }}
           isAnimationActive={false}
         />
