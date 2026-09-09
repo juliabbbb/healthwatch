@@ -67,7 +67,7 @@ export function NationalSnapshot({
   return (
     <div
       className={cn(
-        "glass-panel pointer-events-auto flex flex-col gap-3.5 rounded-xl p-4 sm:p-5 shadow-xl w-full",
+        "glass-panel pointer-events-auto flex flex-col gap-3.5 rounded-xl p-5 shadow-xl w-full",
         className,
       )}
     >
@@ -78,7 +78,9 @@ export function NationalSnapshot({
             National Snapshot
           </span>
           <span className="text-muted-foreground text-xs">·</span>
-          <span className="font-mono text-xs font-semibold text-foreground">{formatMonthYear(monthLabel)}</span>
+          <span className="font-mono text-xs font-semibold text-foreground">
+            {formatMonthYear(monthLabel)}
+          </span>
           <span
             className="rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
             style={{

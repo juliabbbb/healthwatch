@@ -29,13 +29,13 @@ export function FilterPanel({
   dateSliderSlot,
 }: FilterPanelProps) {
   return (
-    <div className="rounded-lg border border-border bg-card/60 px-6 py-4">
+    <div className="rounded-lg border border-border bg-card/60 px-6 py-5">
       <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-6">
         {/* Region */}
         <div className="min-w-0 md:flex-1">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <div className="flex items-center gap-2">
-              <span className="label-caps text-foreground">Region</span>
+              <span className="text-sm font-medium text-foreground">Region</span>
               {multiSelectRegion && selectedCount !== undefined && (
                 <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
                   {selectedCount} of {regions.length} selected
@@ -92,7 +92,7 @@ export function FilterPanel({
 
         {/* Illness */}
         <div className="min-w-0 md:flex-1">
-          <span className="label-caps text-foreground mb-2 block">Illness</span>
+          <span className="text-sm font-medium text-foreground mb-2 block">Illness</span>
           <div className="flex flex-wrap gap-1.5">
             <Chip active={selectedIllness === "all"} onClick={() => onIllnessChange("all")}>
               All illnesses
@@ -112,7 +112,7 @@ export function FilterPanel({
         {/* Date Slider Slot */}
         {dateSliderSlot && (
           <div className="min-w-0 md:flex-[2]">
-            <span className="label-caps text-foreground mb-2 block">Period</span>
+            <span className="text-sm font-medium text-foreground mb-2 block">Period</span>
             {dateSliderSlot}
           </div>
         )}
@@ -135,7 +135,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors min-h-[28px] cursor-pointer touch-manipulation",
+        "rounded-full border px-3 py-1 text-xs capitalize transition-colors min-h-[28px] cursor-pointer touch-manipulation",
         active
           ? "border-primary/50 bg-primary/15 text-primary font-medium"
           : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary/50",

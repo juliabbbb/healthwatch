@@ -27,7 +27,7 @@ import { formatMonthYear } from "@/utils/formatDate";
 
 const axis = {
   stroke: "var(--color-muted-foreground)",
-  fontSize: 10,
+  fontSize: 12,
   tickLine: false,
   axisLine: false,
 };
@@ -37,10 +37,10 @@ const tooltipStyle = {
     background: "var(--popover)",
     border: "1px solid var(--border)",
     borderRadius: "8px",
-    fontSize: "11px",
+    fontSize: "13px",
     color: "var(--foreground)",
   },
-  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "10px" },
+  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "13px" },
 };
 
 interface Row {
@@ -69,7 +69,7 @@ function ForecastTooltip({
   const row = payload[0]!.payload;
   const value = row.reported ?? row.predicted ?? 0;
   return (
-    <div className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2 text-[11px]">
+    <div className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2" style={{ fontSize: "13px" }}>
       <p className="text-muted-foreground">
         {formatMonthYear(label ?? "")} · {row.season} season
       </p>
@@ -199,7 +199,7 @@ export function ForecastChart({
           label={{
             value: "Forecast start",
             fill: "var(--color-muted-foreground)",
-            fontSize: 9,
+            fontSize: 12,
             position: "insideTopRight",
           }}
         />

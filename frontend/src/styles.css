@@ -69,6 +69,17 @@
 }
 
 :root {
+  font-size: 16px;
+
+  --font-size-xs: 0.75rem; /* 12px — badges, fine print only */
+  --font-size-sm: 0.875rem; /* 14px — secondary labels */
+  --font-size-base: 1rem; /* 16px — body default */
+  --font-size-md: 1.0625rem; /* 17px — comfortable reading */
+  --font-size-lg: 1.125rem; /* 18px — section labels */
+  --font-size-xl: 1.25rem; /* 20px — card titles */
+  --font-size-2xl: 1.5rem; /* 24px — page titles */
+  --font-size-3xl: 1.875rem; /* 30px — hero numbers */
+
   --radius: 0.625rem;
 
   --background: oklch(0.98 0.007 81); /* warm cream, not white */
@@ -83,7 +94,7 @@
   --secondary: oklch(0.96 0.019 256); /* pale sky blue */
   --secondary-foreground: oklch(0.34 0.063 249);
   --muted: oklch(0.94 0.013 82);
-  --muted-foreground: oklch(0.51 0.019 79);
+  --muted-foreground: oklch(0.46 0.019 79);
   --accent: oklch(0.91 0.111 90); /* pale sun yellow, sparing use */
   --accent-foreground: oklch(0.31 0.058 92);
   --destructive: oklch(0.59 0.188 32);
@@ -193,6 +204,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: var(--font-size-base);
     -webkit-font-smoothing: antialiased;
   }
 

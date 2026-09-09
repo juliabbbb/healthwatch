@@ -96,10 +96,10 @@ export function ForecastCard({
     >
       {/* 1. Region Header (unchanged) */}
       {showHeader && (
-        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-4 py-3 bg-card/40">
+        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-5 py-3 bg-card/40">
           <div className="min-w-0 flex-1">
             <p className="label-caps">{a.region.short}</p>
-            <h2 className="text-lg font-semibold leading-tight text-foreground truncate">
+            <h2 className="text-xl font-semibold leading-tight text-foreground truncate">
               {a.region.name}
             </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -119,8 +119,8 @@ export function ForecastCard({
       )}
 
       {/* 2. Current Status Card */}
-      <section className="border-b border-border/70 bg-card/30 px-4 py-3.5">
-        <p className="label-caps text-[10px] text-muted-foreground/80 tracking-wider mb-2.5">
+      <section className="border-b border-border/70 bg-card/30 px-5 py-3.5">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
           CURRENT STATUS
         </p>
 
@@ -260,9 +260,9 @@ export function ForecastCard({
       </section>
 
       {/* 3. 6-Month Forecast Horizon (trimmed to 6 upcoming months) */}
-      <section className="border-b border-border/70 bg-card/25 px-4 py-3.5">
+      <section className="border-b border-border/70 bg-card/25 px-5 py-3.5">
         <div className="flex items-center justify-between mb-2.5">
-          <p className="label-caps text-[10px] text-muted-foreground/80 tracking-wider">
+          <p className="label-caps text-[10px] text-muted-foreground tracking-wider">
             6-Month Forecast Horizon
           </p>
           <span className="text-[10px] text-muted-foreground">Range / 95% CI</span>
@@ -272,7 +272,9 @@ export function ForecastCard({
           {/* Highlighted Current Month Anchor */}
           <li className="flex items-center gap-2.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs transition-colors">
             <div className="w-20 shrink-0 flex items-center gap-1.5">
-              <span className="font-mono text-[11px] font-bold text-primary">{formatMonthYear(a.point.label)}</span>
+              <span className="font-mono text-[11px] font-bold text-primary">
+                {formatMonthYear(a.point.label)}
+              </span>
               <span className="rounded bg-primary/25 px-1 py-0.2 text-[8px] font-semibold uppercase tracking-wider text-primary">
                 Now
               </span>
@@ -299,7 +301,9 @@ export function ForecastCard({
             return (
               <li key={p.index} className="flex items-center gap-2.5 px-2.5 py-1 text-xs">
                 <div className="w-20 shrink-0 flex items-center gap-1.5">
-                  <span className="font-mono text-[11px] text-muted-foreground">{formatMonthYear(p.label)}</span>
+                  <span className="font-mono text-[11px] text-muted-foreground">
+                    {formatMonthYear(p.label)}
+                  </span>
                   <span
                     className="size-1.5 rounded-full shrink-0"
                     title={seasonConf.display}
@@ -328,8 +332,8 @@ export function ForecastCard({
       </section>
 
       {/* 4. Forecast & Outlook Card */}
-      <section className="border-b border-border/70 bg-card/20 px-4 py-3.5">
-        <p className="label-caps text-[10px] text-muted-foreground/80 tracking-wider mb-2">
+      <section className="border-b border-border/70 bg-card/20 px-5 py-3.5">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
           FORECAST & OUTLOOK
         </p>
 
@@ -407,9 +411,9 @@ export function ForecastCard({
       </section>
 
       {/* 5. Model Info (permanently visible, no chevron dropdown) */}
-      <section className="border-b border-border/70 bg-card/10 px-4 py-2.5">
+      <section className="border-b border-border/70 bg-card/10 px-5 py-2.5">
         <div className="flex items-center justify-between py-0.5 text-xs">
-          <span className="label-caps text-[10px] text-muted-foreground/80 tracking-wider">
+          <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
             MODEL INFO
           </span>
           <StatusChip className="text-[10px] py-0.5 px-2 text-muted-foreground">
@@ -427,21 +431,21 @@ export function ForecastCard({
                 key={m.k}
                 className="rounded-lg bg-secondary/40 px-2 py-1 border border-border/40"
               >
-                <p className="label-caps text-[9px] text-muted-foreground/70">{m.k}</p>
+                <p className="label-caps text-[9px] text-muted-foreground">{m.k}</p>
                 <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
                   {m.v}
                 </p>
               </div>
             ))}
           </div>
-          <p className="text-[10px] leading-relaxed text-muted-foreground/75">{validation.note}</p>
+          <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
         </div>
       </section>
 
       {/* 6. Pinned Action CTA (Unchanged) */}
       <div
         className={cn(
-          "px-4 py-3",
+          "px-5 py-3",
           isSheet
             ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3 border-t border-border/70"
             : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10 border-t border-border/70",
@@ -465,12 +469,12 @@ function SeasonBasis({ isManual }: { isManual: boolean }) {
     <p
       className={cn(
         "mt-1 text-[10px] leading-relaxed",
-        isManual ? "text-muted-foreground/70" : "text-muted-foreground",
+        isManual ? "text-muted-foreground" : "text-muted-foreground",
       )}
     >
-      Based on the current report date ({formatMonthYear(REPORT_DATE)}) — upcoming season derived from a fixed
-      calendar rule (wet: {SEASON_CONFIG.wet.months}, dry: {SEASON_CONFIG.dry.months}), starting{" "}
-      {start}. {isManual && "Showing the other season for comparison."}
+      Based on the current report date ({formatMonthYear(REPORT_DATE)}) — upcoming season derived
+      from a fixed calendar rule (wet: {SEASON_CONFIG.wet.months}, dry: {SEASON_CONFIG.dry.months}),
+      starting {start}. {isManual && "Showing the other season for comparison."}
     </p>
   );
 }

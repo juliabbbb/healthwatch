@@ -319,7 +319,7 @@ export function SeasonalityPage() {
       </div>
 
       {/* Unified Filter Panel */}
-      <div className="mt-6">
+      <div className="mt-8">
         <FilterPanel
           regions={REGIONS}
           selectedRegions={[code]}
@@ -328,7 +328,7 @@ export function SeasonalityPage() {
           selectedIllness={illness}
           onIllnessChange={setIllness}
           dateSliderSlot={
-            <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
+            <div className="rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5 shadow-xs">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Temporal Status Headline */}
                 <div className="flex items-center gap-3">
@@ -434,7 +434,7 @@ export function SeasonalityPage() {
       </div>
 
       {/* Summary KPI Metrics */}
-      <div className="mt-6">
+      <div className="mt-8">
         <div className="mb-2.5 flex items-center justify-between gap-2">
           <p className="label-caps text-xs">Summary Metrics</p>
           <button
@@ -479,7 +479,7 @@ export function SeasonalityPage() {
       </div>
 
       {/* 2x2 Decomposition Section with Per-Chart AI Analysis and Options */}
-      <section className="mt-6 rounded-2xl border border-border/80 bg-card/30 p-4 sm:p-5 shadow-xs">
+      <section className="mt-8 rounded-2xl border border-border/80 bg-card/30 p-5 shadow-xs">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -575,7 +575,7 @@ export function SeasonalityPage() {
       </section>
 
       {/* 12-Month Cycle Indicators (ACF) with Dedicated AI Analysis */}
-      <section className="mt-6 rounded-2xl border border-border/80 bg-card/30 p-4 sm:p-5 shadow-xs">
+      <section className="mt-8 rounded-2xl border border-border/80 bg-card/30 p-5 shadow-xs">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -614,7 +614,7 @@ export function SeasonalityPage() {
       </section>
 
       {/* Footer Navigation */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Link
           to="/region/$code"
           params={{ code }}
@@ -660,7 +660,7 @@ export function SeasonalityPage() {
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-border/80 bg-card/60 p-4 transition-all hover:border-border hover:bg-card/80">
+    <div className="rounded-xl border border-border/80 bg-card/60 p-5 transition-all hover:border-border hover:bg-card/80">
       <p className="label-caps">{label}</p>
       <p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums text-foreground">
         {value}
@@ -683,7 +683,7 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-all cursor-pointer touch-manipulation",
+        "rounded-full border px-3 py-1 text-xs capitalize transition-all cursor-pointer touch-manipulation",
         active
           ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
           : "border-border text-muted-foreground hover:text-foreground hover:bg-secondary/50",

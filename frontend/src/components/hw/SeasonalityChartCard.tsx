@@ -81,7 +81,7 @@ export function SeasonalityChartCard({
     <div
       onContextMenu={(e) => onOpenMenu(e, component)}
       className={cn(
-        "group relative flex flex-col rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 transition-all duration-200",
+        "group relative flex flex-col rounded-xl border border-border/80 bg-card/40 p-5 transition-all duration-200",
         "hover:border-border hover:bg-card/60 hover:shadow-md",
       )}
     >
@@ -93,7 +93,7 @@ export function SeasonalityChartCard({
               className={cn("size-2.5 rounded-full shrink-0", styling.dot)}
               aria-hidden="true"
             />
-            <h3 className="text-sm font-semibold tracking-tight text-foreground truncate">
+            <h3 className="text-lg font-semibold tracking-tight text-foreground truncate">
               {title}
             </h3>
             {statBadge && (

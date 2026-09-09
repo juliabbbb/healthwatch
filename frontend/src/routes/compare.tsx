@@ -205,7 +205,7 @@ export default function ComparePage() {
   }, [detailedCardRegionCode, illness]);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-3 sm:px-6 py-6 sm:py-8 pb-32">
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-32">
       {/* Navigation & Header */}
       <Link
         to="/"
@@ -221,8 +221,8 @@ export default function ComparePage() {
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground max-w-3xl leading-relaxed">
             Side-by-side benchmark of Philippine regions on forecast load, risk tier and public
-            health interventions · {formatMonthYear(currentMonth.label)} ({currentSeasonLabel}) · ranked on{" "}
-            {meta.label.toLowerCase()}
+            health interventions · {formatMonthYear(currentMonth.label)} ({currentSeasonLabel}) ·
+            ranked on {meta.label.toLowerCase()}
           </p>
         </div>
         <div className="flex items-start gap-3">
@@ -246,7 +246,7 @@ export default function ComparePage() {
       </div>
 
       {/* Unified Filter Panel */}
-      <div className="mt-6">
+      <div className="mt-8">
         <FilterPanel
           regions={REGIONS}
           selectedRegions={selected}
@@ -262,7 +262,7 @@ export default function ComparePage() {
           selectedIllness={illness}
           onIllnessChange={setIllness}
           dateSliderSlot={
-            <div className="rounded-xl border border-border/80 bg-card/40 p-3.5 sm:p-4 shadow-xs">
+            <div className="rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5 shadow-xs">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Temporal Status Headline */}
                 <div className="flex items-center gap-3">
@@ -368,7 +368,7 @@ export default function ComparePage() {
       </div>
 
       {/* Season & Metric Mode filters */}
-      <div className="flex flex-wrap items-center gap-1.5 mt-4">
+      <div className="flex flex-wrap items-center gap-1.5 mt-6">
         {/* Season convention */}
         {(["all", "wet", "dry"] as const).map((s) => (
           <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
@@ -393,7 +393,7 @@ export default function ComparePage() {
       {/* Primary Comparison Section: Spec #1 populated directly from top selection */}
       <section className="mt-8">
         {selected.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/20 py-16 px-6 text-center max-w-xl mx-auto my-6">
+          <div className="rounded-2xl border border-dashed border-border bg-card/20 py-12 px-6 text-center max-w-xl mx-auto my-6">
             <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-secondary/50 text-muted-foreground">
               <Layers className="size-6" />
             </div>
@@ -492,7 +492,7 @@ export default function ComparePage() {
                   <Table className="size-4" />
                 </div>
                 <div>
-                  <h3 id="benchmark-modal-title" className="text-base font-bold text-foreground">
+                  <h3 id="benchmark-modal-title" className="text-lg font-semibold text-foreground">
                     Regional Benchmark Reference Table
                   </h3>
                   <p className="text-xs text-muted-foreground">
@@ -520,18 +520,18 @@ export default function ComparePage() {
             {/* Modal Body: Upgraded Table with clear divisions & On-click Interventions */}
             <div className="overflow-y-auto p-3 sm:p-5 hw-scroll space-y-4 max-h-[calc(90vh-4.5rem)]">
               <div className="overflow-x-auto rounded-xl border border-border/80 shadow-xs">
-                <table className="w-full min-w-[720px] text-left text-xs border-collapse">
+                <table className="w-full min-w-[720px] text-left text-sm border-collapse">
                   <thead className="label-caps">
                     <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
                       <th className="px-4 py-3 border-r border-border/50">Region</th>
-                      <th className="px-3 py-3 border-r border-border/50">Risk</th>
-                      <th className="px-3 py-3 text-right border-r border-border/50">
+                      <th className="px-4 py-3 border-r border-border/50">Risk</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">
                         {currentMonth.forecast ? "Predicted" : "Reported"} ({meta.unit})
                       </th>
-                      <th className="px-3 py-3 text-right border-r border-border/50">95% CI</th>
-                      <th className="px-3 py-3 text-right border-r border-border/50">Percentile</th>
-                      <th className="px-3 py-3 text-right border-r border-border/50">3m Change</th>
-                      <th className="px-3 py-3 border-r border-border/50">Dominant Illness</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">95% CI</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">Percentile</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">3m Change</th>
+                      <th className="px-4 py-3 border-r border-border/50">Dominant Illness</th>
                       <th className="px-4 py-3 text-center">Interventions</th>
                     </tr>
                   </thead>
@@ -558,25 +558,25 @@ export default function ComparePage() {
                             </div>
                           </td>
 
-                          <td className="px-3 py-3 border-r border-border/40">
+                          <td className="px-4 py-3 border-r border-border/40">
                             <RiskBadge risk={a.risk} />
                           </td>
 
-                          <td className="px-3 py-3 text-right font-mono font-bold tabular-nums text-foreground border-r border-border/40">
+                          <td className="px-4 py-3 text-right font-mono font-bold tabular-nums text-foreground border-r border-border/40">
                             {formatMetric(a.value, mode)}
                           </td>
 
-                          <td className="px-3 py-3 text-right font-mono tabular-nums text-muted-foreground border-r border-border/40">
+                          <td className="px-4 py-3 text-right font-mono tabular-nums text-muted-foreground border-r border-border/40">
                             {formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–
                             {formatMetric(metricValue(a.point.upper, a.region, mode), mode)}
                           </td>
 
-                          <td className="px-3 py-3 text-right font-mono tabular-nums border-r border-border/40">
+                          <td className="px-4 py-3 text-right font-mono tabular-nums border-r border-border/40">
                             {a.percentileRank}th
                           </td>
 
                           <td
-                            className="px-3 py-3 text-right font-mono tabular-nums font-semibold border-r border-border/40"
+                            className="px-4 py-3 text-right font-mono tabular-nums font-semibold border-r border-border/40"
                             style={{
                               color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)",
                             }}
@@ -585,7 +585,7 @@ export default function ComparePage() {
                             {a.changePct}%
                           </td>
 
-                          <td className="px-3 py-3 border-r border-border/40 font-medium">
+                          <td className="px-4 py-3 border-r border-border/40 font-medium">
                             {a.dominantIllness.shortName}
                           </td>
 
@@ -629,7 +629,7 @@ export default function ComparePage() {
                       return (
                         <div
                           key={`expanded-${a.region.code}`}
-                          className="rounded-xl border border-border/80 bg-secondary/20 p-4 shadow-xs space-y-3 animate-in fade-in slide-in-from-top-1 duration-200"
+                          className="rounded-xl border border-border/80 bg-secondary/20 p-5 shadow-xs space-y-3 animate-in fade-in slide-in-from-top-1 duration-200"
                         >
                           {/* Region Header (clean, without repeating columns already visible in table) */}
                           <div className="flex items-center justify-between gap-2 border-b border-border/60 pb-2.5">
@@ -799,7 +799,7 @@ export default function ComparePage() {
               </div>
 
               {/* Expanded Detailed Trajectory Chart */}
-              <div className="rounded-xl border border-border/80 bg-card p-4 shadow-xs">
+              <div className="rounded-xl border border-border/80 bg-card p-5 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-foreground">
                     Detailed Surveillance & Forecast Trajectory
@@ -820,7 +820,7 @@ export default function ComparePage() {
 
               {/* Model Validation & Epidemiological Notes */}
               {detailedMetrics && (
-                <div className="rounded-xl border border-border/60 bg-secondary/15 p-4 space-y-2">
+                <div className="rounded-xl border border-border/60 bg-secondary/15 p-5 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="label-caps text-[10px] font-semibold text-muted-foreground">
                       Prophet Model Backtest & Reliability
@@ -931,7 +931,7 @@ function Chip({
       type="button"
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors min-h-[28px]",
+        "rounded-full border px-3 py-1 text-xs capitalize transition-colors min-h-[28px]",
         active
           ? "border-primary/50 bg-primary/15 text-primary font-medium"
           : "border-border text-muted-foreground hover:text-foreground",
@@ -979,7 +979,7 @@ function RegionalOverviewCard({
       onClick={() => onOpenModal(a.region.code)}
       onKeyDown={handleKeyDown}
       aria-label={`Open detailed analysis for ${a.region.name}`}
-      className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+      className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-5 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
     >
       <div>
         {/* Card Header: Region short code, density & action buttons */}
@@ -992,7 +992,7 @@ function RegionalOverviewCard({
                 {a.region.classification}
               </span>
             </div>
-            <h2 className="text-sm font-semibold text-foreground truncate mt-0.5">
+            <h2 className="text-lg font-semibold text-foreground truncate mt-0.5">
               {a.region.name}
             </h2>
             <p className="text-[10px] text-muted-foreground">
@@ -1005,7 +1005,7 @@ function RegionalOverviewCard({
             {/* Expand Icon indicator for Detailed Card View */}
             <div
               title="Click card for detailed view"
-              className="rounded-md p-1 text-muted-foreground/50 group-hover:text-teal-500 transition-colors"
+              className="rounded-md p-1 text-muted-foreground group-hover:text-teal-500 transition-colors"
             >
               <Maximize2 className="size-3.5" />
             </div>
@@ -1022,7 +1022,7 @@ function RegionalOverviewCard({
                 }
               }}
               aria-label={`Remove ${a.region.short} from comparison`}
-              className="rounded-md p-1 text-muted-foreground/60 hover:bg-secondary hover:text-foreground transition-colors"
+              className="rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors"
             >
               <X className="size-3.5" />
             </button>
@@ -1289,9 +1289,11 @@ function RegionSparkline({
           />
         </svg>
       </div>
-      <div className="flex items-center justify-between text-[8px] text-muted-foreground/85 mt-0.5 font-mono">
+      <div className="flex items-center justify-between text-[8px] text-muted-foreground mt-0.5 font-mono">
         <span>{formatMonthYear(firstPoint.label)}</span>
-        <span className="font-semibold text-foreground/85">Target: {formatMonthYear(lastPoint.label)}</span>
+        <span className="font-semibold text-foreground/85">
+          Target: {formatMonthYear(lastPoint.label)}
+        </span>
       </div>
     </div>
   );
@@ -1425,7 +1427,9 @@ function DetailedChart({
             }}
           >
             <div className="flex items-center justify-between gap-3 border-b border-border/50 pb-1 font-mono text-[10px]">
-              <span className="font-bold text-foreground">{formatMonthYear(hoveredPoint.label)}</span>
+              <span className="font-bold text-foreground">
+                {formatMonthYear(hoveredPoint.label)}
+              </span>
               <span
                 className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px]"
                 style={{

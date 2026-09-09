@@ -44,7 +44,7 @@ function Methodology() {
       >
         <ArrowLeft className="size-3.5" /> Back to map
       </Link>
-      <h1 className="text-3xl">Data &amp; Methodology</h1>
+      <h1 className="text-3xl font-bold">Data &amp; Methodology</h1>
       <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
         HEALTHWATCH is a regional time-series decision-support prototype for seasonal illness
         outbreak prediction and hotspot classification across the {REGIONS.length} administrative
@@ -65,7 +65,7 @@ function Methodology() {
             for keying every record to a PSGC code.
           </li>
         </ul>
-        <p className="mt-3 rounded-lg border border-border bg-card/60 p-3 text-xs text-muted-foreground">
+        <p className="mt-3 rounded-lg border border-border bg-card/60 p-4 text-xs text-muted-foreground">
           This dashboard runs live: case series, forecasts, risk tiers and validation metrics are
           served by a FastAPI backend reading from a PostgreSQL database on Supabase, built entirely
           by the Python pipeline (<code>src/</code>). No values shown are synthetic.
@@ -207,24 +207,24 @@ function Methodology() {
           weekly equivalents of the same percentile thresholds:
         </p>
         <div className="mt-3 overflow-hidden rounded-lg border border-border">
-          <table className="w-full text-xs">
+          <table className="w-full text-sm">
             <thead className="bg-secondary/60 text-left text-muted-foreground">
               <tr>
-                <th className="px-3 py-2 font-medium">Week ending</th>
-                <th className="px-3 py-2 font-medium">National cases</th>
-                <th className="px-3 py-2 font-medium">P50 / P75</th>
-                <th className="px-3 py-2 font-medium">Tier</th>
+                <th className="px-4 py-2 font-medium">Week ending</th>
+                <th className="px-4 py-2 font-medium">National cases</th>
+                <th className="px-4 py-2 font-medium">P50 / P75</th>
+                <th className="px-4 py-2 font-medium">Tier</th>
               </tr>
             </thead>
             <tbody>
               {EPIDEMIC_ROWS.map((r) => (
                 <tr key={r.date} className="border-t border-border">
-                  <td className="px-3 py-1.5 font-mono">{r.date}</td>
-                  <td className="px-3 py-1.5">{r.cases.toLocaleString()}</td>
-                  <td className="px-3 py-1.5 font-mono">
+                  <td className="px-4 py-3 font-mono">{r.date}</td>
+                  <td className="px-4 py-3">{r.cases.toLocaleString()}</td>
+                  <td className="px-4 py-3 font-mono">
                     {r.p50.toLocaleString()} / {r.p75.toLocaleString()}
                   </td>
-                  <td className="px-3 py-1.5" style={{ color: "var(--risk-high)" }}>
+                  <td className="px-4 py-3" style={{ color: "var(--risk-high)" }}>
                     {r.tier}
                   </td>
                 </tr>
@@ -254,7 +254,7 @@ function Methodology() {
       <Section title="Diseases covered">
         <div className="grid gap-3 sm:grid-cols-2">
           {ILLNESSES.map((i) => (
-            <div key={i.id} className="rounded-lg border border-border bg-card/60 p-3">
+            <div key={i.id} className="rounded-lg border border-border bg-card/60 p-5">
               <p className="text-sm font-medium">{i.name}</p>
               <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
               <p className="mt-2 text-[11px] text-muted-foreground">

@@ -408,31 +408,31 @@ export function ChartExpandModal({
         {/* Tab 3: Data Table */}
         {activeTab === "data" && (
           <div className="mt-4 max-h-80 overflow-y-auto rounded-xl border border-border/70 bg-card/50">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-left text-sm">
               <thead className="sticky top-0 bg-card/90 backdrop-blur-xs border-b border-border text-[10px] uppercase text-muted-foreground">
                 <tr>
-                  <th className="p-2.5">{component === "acf" ? "Lag (Months)" : "Month"}</th>
-                  <th className="p-2.5 text-right">Value</th>
-                  {component !== "acf" && <th className="p-2.5">Season</th>}
+                  <th className="px-4 py-2">{component === "acf" ? "Lag (Months)" : "Month"}</th>
+                  <th className="px-4 py-2 text-right">Value</th>
+                  {component !== "acf" && <th className="px-4 py-2">Season</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/40 font-mono text-[11px]">
                 {component === "acf"
                   ? acfData.map((d) => (
                       <tr key={d.lag} className="hover:bg-secondary/40">
-                        <td className="p-2.5 text-foreground">Lag {d.lag}</td>
-                        <td className="p-2.5 text-right text-primary font-semibold">
+                        <td className="px-4 py-3 text-foreground">Lag {d.lag}</td>
+                        <td className="px-4 py-3 text-right text-primary font-semibold">
                           {d.value.toFixed(3)}
                         </td>
                       </tr>
                     ))
                   : decompData.map((d) => (
                       <tr key={d.index} className="hover:bg-secondary/40">
-                        <td className="p-2.5 text-foreground">{formatMonthYear(d.label)}</td>
-                        <td className="p-2.5 text-right text-primary font-semibold">
+                        <td className="px-4 py-3 text-foreground">{formatMonthYear(d.label)}</td>
+                        <td className="px-4 py-3 text-right text-primary font-semibold">
                           {(d[component as keyof typeof d] as number).toLocaleString()}
                         </td>
-                        <td className="p-2.5 capitalize text-muted-foreground">{d.season}</td>
+                        <td className="px-4 py-3 capitalize text-muted-foreground">{d.season}</td>
                       </tr>
                     ))}
               </tbody>

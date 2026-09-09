@@ -78,7 +78,7 @@ function RegionDetail() {
           >
             <ArrowLeft className="size-3.5" /> Back to map
           </Link>
-          <h1 className="text-3xl">{region.name}</h1>
+          <h1 className="text-3xl font-bold">{region.name}</h1>
           <p className="mt-1 text-xs text-muted-foreground">
             PSGC {region.code} · {region.short} · {region.island} · {region.classification} ·{" "}
             {region.population.toLocaleString()} population · {region.density.toLocaleString()}{" "}
@@ -99,7 +99,7 @@ function RegionDetail() {
       </div>
 
       {/* Filters */}
-      <div className="mt-6 flex flex-wrap items-center gap-2">
+      <div className="mt-8 flex flex-wrap items-center gap-2">
         <Chip active={illness === "all"} onClick={() => setIllness("all")}>
           All illnesses
         </Chip>
@@ -123,7 +123,7 @@ function RegionDetail() {
       </div>
 
       {/* KPIs */}
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi
           label={`Predicted (${formatMonthYear(monthMeta(a.monthIndex).label)})`}
           value={a.point.cases.toLocaleString()}
@@ -166,26 +166,28 @@ function RegionDetail() {
       >
         <ForecastChart regionCode={code} illness={illness} horizon={horizon} />
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[520px] text-left text-xs">
+          <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="label-caps">
               <tr>
-                <th className="py-1.5">Month</th>
-                <th>Season</th>
-                <th className="text-right">Predicted</th>
-                <th className="text-right">Lower</th>
-                <th className="text-right">Upper</th>
+                <th className="py-2 px-4">Month</th>
+                <th className="py-2 px-4">Season</th>
+                <th className="py-2 px-4 text-right">Predicted</th>
+                <th className="py-2 px-4 text-right">Lower</th>
+                <th className="py-2 px-4 text-right">Upper</th>
               </tr>
             </thead>
             <tbody>
               {forecastRows.map((p) => (
                 <tr key={p.index} className="border-t border-border">
-                  <td className="py-1.5">{formatMonthYear(p.label)}</td>
-                  <td className="capitalize text-muted-foreground">{p.season}</td>
-                  <td className="text-right font-mono tabular-nums">{p.cases.toLocaleString()}</td>
-                  <td className="text-right font-mono tabular-nums text-muted-foreground">
+                  <td className="py-3 px-4">{formatMonthYear(p.label)}</td>
+                  <td className="py-3 px-4 capitalize text-muted-foreground">{p.season}</td>
+                  <td className="py-3 px-4 text-right font-mono tabular-nums">
+                    {p.cases.toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
                     {p.lower.toLocaleString()}
                   </td>
-                  <td className="text-right font-mono tabular-nums text-muted-foreground">
+                  <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
                     {p.upper.toLocaleString()}
                   </td>
                 </tr>
@@ -251,7 +253,7 @@ function RegionDetail() {
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card/60 p-4">
+    <div className="rounded-xl border border-border bg-card/60 p-5">
       <p className="label-caps">{label}</p>
       <p className="mt-1 font-mono text-2xl tabular-nums">{value}</p>
       <p className="mt-1 text-[11px] text-muted-foreground">{sub}</p>
@@ -271,7 +273,7 @@ function Panel({
   action?: React.ReactNode;
 }) {
   return (
-    <section className="mt-6 rounded-xl border border-border bg-card/40 p-4">
+    <section className="mt-8 rounded-xl border border-border bg-card/40 p-5">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h2 className="text-lg">{title}</h2>
@@ -297,7 +299,7 @@ function Chip({
     <button
       onClick={onClick}
       className={cn(
-        "rounded-full border px-3 py-1 text-[11px] capitalize transition-colors",
+        "rounded-full border px-3 py-1 text-xs capitalize transition-colors",
         active
           ? "border-primary/50 bg-primary/15 text-primary"
           : "border-border text-muted-foreground hover:text-foreground",
