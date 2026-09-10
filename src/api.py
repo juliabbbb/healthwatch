@@ -1,3 +1,4 @@
+import asyncio
 import json
 import os
 import time
@@ -6,10 +7,11 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, Header, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-from . import db, ingest
+from . import db, email_report, ingest, subscription_store
 
 SUPPORTED_DISEASES = ["Dengue"]
 DISEASE_DEFAULT = "Dengue"
@@ -600,7 +602,82 @@ def _llm_narrate(system_prompt, user_prompt):
 @asynccontextmanager
 async def lifespan(_app):
     _load_all_data()
-    yield
+
+    loop = asyncio.get_running_loop()
+    scheduler_task = loop.create_task(_subscription_loop())
+    try:
+        yield
+    finally:
+        scheduler_task.cancel()
+
+
+async def _subscription_loop() -> None:
+    """Best-effort in-process scheduler for the monthly forecast emails.
+
+    Runs a delivery pass every SUBSCRIPTION_SCHEDULER_INTERVAL_H hours (default
+    6). On Render free tier the web process is the only always-on surface, so
+    this doubles as the cron — uploads fine; for production-grade monthly
+    timing, point an external job at POST /subscriptions/send-due instead.
+    """
+    if os.environ.get("DISABLE_SUBSCRIPTION_SCHEDULER", "").strip() == "1":
+        return
+    interval_h = float(os.environ.get("SUBSCRIPTION_SCHEDULER_INTERVAL_H", "6"))
+    while True:
+        try:
+            if _data_ready:
+                _send_due_subscriptions()
+        except Exception as exc:  # noqa: BLE001
+            print(f"[subscriptions] scheduler pass failed: {exc}", flush=True)
+        await asyncio.sleep(interval_h * 3600)
+
+
+class SubscribeRequest(BaseModel):
+    email: str
+    regions: list[str] = []
+    illness: str = "all"
+
+
+class PrefsRequest(BaseModel):
+    regions: list[str] | None = None
+    illness: str | None = None
+
+
+_VALID_REGION_CODES = {r["code"] for r in db.REGION_META}
+
+
+def _normalize_illness(value: str | None) -> str:
+    illness = (value or "all").strip().lower()
+    if illness not in ("all", "dengue"):
+        raise HTTPException(status_code=422, detail="illness must be 'all' or 'dengue'")
+    return illness
+
+
+def _normalize_regions(codes: list[str]) -> list[str]:
+    out: list[str] = []
+    for code in codes or []:
+        if code in _VALID_REGION_CODES and code not in out:
+            out.append(code)
+    return out
+
+
+def _send_due_subscriptions() -> list[dict]:
+    """Send the current month's report to every due subscription (idempotent
+    per month). Returns one delivery record per recipient."""
+    results: list[dict] = []
+    for sub in subscription_store.list_active_due(email_report.month_key()):
+        try:
+            report = email_report.build_report(sub["regions"], sub["illness"])
+            delivery = email_report.send_report(sub["email"], report, sub["token"])
+            subscription_store.mark_sent(sub["token"], report["month_key"])
+            print(
+                f"[subscriptions] {report['month']} report (provider={delivery['provider']}) "
+                f"→ {sub['email']}",
+                flush=True,
+            )
+            results.append(delivery)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[subscriptions] delivery failed for {sub['email']}: {exc}", flush=True)
+    return results
 
 
 app = FastAPI(
@@ -623,7 +700,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=_origins,
     allow_origin_regex=r"^(http://(localhost|127\.0\.0\.1)(:\d+)?|https://[a-z0-9-]+\.onrender\.com)$",
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
@@ -1067,4 +1144,106 @@ def analysis(
         "narrative": narrative,
         "grounding_data": grounding,
         "model": model,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Email subscription endpoints (anonymous, email-only, no login required)
+# ---------------------------------------------------------------------------
+
+
+@app.post("/subscriptions", tags=["subscriptions"])
+def subscribe(payload: SubscribeRequest):
+    """Subscribe an email to recurring monthly forecast reports.
+
+    Existing matching by email: creates a new subscription on first use,
+    reactivates + refreshes filters if previously unsubscribed, and refreshes
+    filters for an active subscription (idempotent re-subscribe).
+
+    The current month's report is rendered and delivered immediately, and the
+    compiled report is returned for the in-app confirmation preview.
+    """
+    if not _data_ready:
+        raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
+    email = (payload.email or "").strip().lower()
+    if not email_report.is_valid_email(email):
+        raise HTTPException(status_code=422, detail="A valid email address is required")
+    regions = _normalize_regions(payload.regions)
+    illness = _normalize_illness(payload.illness)
+
+    token = subscription_store.create_or_reactivate(email, regions, illness)
+    report = email_report.build_report(regions, illness)
+    delivery = email_report.send_report(email, report, token)
+    # The immediate first report covers this month; the monthly job resumes
+    # with the next month so subscribers don't receive the same report twice.
+    subscription_store.mark_sent(token, report["month_key"])
+
+    return {
+        "status": "subscribed",
+        "token": token,
+        "email": email,
+        "provider": delivery["provider"],
+        "report": report,
+    }
+
+
+@app.get("/subscriptions/manage/{token}", tags=["subscriptions"])
+def subscription_preferences(token: str):
+    """Fetch the preferences behind a manage link (regions + illness + status)."""
+    sub = subscription_store.get_by_token(token)
+    if sub is None:
+        raise HTTPException(status_code=404, detail="Unknown subscription token")
+    return sub
+
+
+@app.patch("/subscriptions/manage/{token}", tags=["subscriptions"])
+def update_subscription_preferences(token: str, payload: PrefsRequest):
+    """Update filters (regions / illness) and re-activate via a manage link."""
+    if payload.regions is None and payload.illness is None:
+        raise HTTPException(status_code=422, detail="Provide regions, illness, or both")
+    existing = subscription_store.get_by_token(token)
+    if existing is None:
+        raise HTTPException(status_code=404, detail="Unknown subscription token")
+    regions = (
+        _normalize_regions(payload.regions)
+        if payload.regions is not None
+        else existing["regions"]
+    )
+    illness = (
+        _normalize_illness(payload.illness)
+        if payload.illness is not None
+        else existing["illness"]
+    )
+    subscription_store.update_preferences(token, regions, illness)
+    return subscription_store.get_by_token(token)
+
+
+@app.delete("/subscriptions/manage/{token}", tags=["subscriptions"])
+def unsubscribe(token: str):
+    """One-click unsubscribe (deactivates the subscription permanently)."""
+    if not subscription_store.deactivate(token):
+        raise HTTPException(status_code=404, detail="Unknown subscription token")
+    return {"status": "unsubscribed"}
+
+
+@app.post("/subscriptions/send-due", tags=["subscriptions"])
+def send_due_subscriptions(
+    x_job_token: str | None = Header(default=None, alias="X-Job-Token"),
+):
+    """Send this month's report to every due subscription. Idempotent per month.
+
+    Guarded by JOB_TOKEN when configured. On Render free tier there is no cron,
+    so this endpoint is the external hook (e.g. cron-job.org hitting it once a
+    month); the in-process scheduler calls the same delivery path internally.
+    """
+    expected = os.environ.get("JOB_TOKEN", "").strip()
+    if expected and x_job_token != expected:
+        raise HTTPException(status_code=403, detail="Bad or missing job token")
+    if not _data_ready:
+        raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
+    results = _send_due_subscriptions()
+    return {
+        "sent": len(results),
+        "due_remaining": len(subscription_store.list_active_due(email_report.month_key())),
+        "records": [{"to": r.get("to"), "provider": r.get("provider")} for r in results],
     }

@@ -421,7 +421,7 @@ export function SeasonalityPage() {
           selectedIllness={illness}
           onIllnessChange={setIllness}
           dateSliderSlot={
-            <div className="rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5 shadow-xs">
+            <div className="glass-panel rounded-xl p-4 sm:p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Temporal Status Headline */}
                 <div className="flex items-center gap-3">
@@ -441,9 +441,9 @@ export function SeasonalityPage() {
                           "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
                           isHistorical && "bg-secondary text-muted-foreground border-border",
                           isCurrent && "bg-primary/20 text-primary border-primary/40",
-                          isForecast &&
-                            "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+                          isForecast && "border-border",
                         )}
+                        style={isForecast ? { color: "var(--dry)", backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)" } : undefined}
                       >
                         {isHistorical && `${Math.abs(horizon)}m past reported`}
                         {isCurrent && "Current baseline (Now)"}
@@ -572,7 +572,7 @@ export function SeasonalityPage() {
       </div>
 
       {/* 2x2 Decomposition Section with Per-Chart AI Analysis and Options */}
-      <section className="mt-8 rounded-2xl border border-border/80 bg-card/30 p-5 shadow-xs">
+      <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -672,7 +672,7 @@ export function SeasonalityPage() {
       </section>
 
       {/* 12-Month Cycle Indicators (ACF) with Dedicated AI Analysis */}
-      <section className="mt-8 rounded-2xl border border-border/80 bg-card/30 p-5 shadow-xs">
+      <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
@@ -758,7 +758,7 @@ export function SeasonalityPage() {
 
 function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-border/80 bg-card/60 p-5 transition-all hover:border-border hover:bg-card/80">
+    <div className="glass-panel rounded-xl p-5 transition-all hover:border-border">
       <p className="label-caps">{label}</p>
       <p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums text-foreground">
         {value}

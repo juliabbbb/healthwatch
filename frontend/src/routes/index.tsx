@@ -294,7 +294,7 @@ function MapView() {
               <p className="text-sm font-bold leading-none tracking-wide text-foreground">
                 HEALTHWATCH
               </p>
-              <p className="mt-1 text-[10px] text-muted-foreground font-medium">
+              <p className="mt-1 label-caps text-[10px]">
                 Regional Outbreak Hotspot Map & Forecasts
               </p>
             </div>

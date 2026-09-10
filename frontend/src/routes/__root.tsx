@@ -93,10 +93,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        // Sora — geometric-contemporary display/body. Wider proportions and
-        // heavier 500 body weight give institutional presence without coldness.
+        // Schibsted Grotesk — digital-first grotesque for UI. Clean, precise,
+        // Notion × Apple polish: humanist warmth without decorative weight.
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;450;500;600;700&display=swap",
       },
       {
         // JetBrains Mono — technical/numeric UI (codes, metrics, timestamps).

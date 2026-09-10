@@ -13,11 +13,19 @@ services:
     envVars:
       - key: ALLOWED_ORIGINS
         value: https://healthwatch-ui.onrender.com
+      - key: APP_URL
+        value: https://healthwatch-ui.onrender.com
       - key: GEMINI_API_KEY
         sync: false
       - key: GROQ_API_KEY
         sync: false
       - key: DATABASE_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        sync: false
+      - key: JOB_TOKEN
         sync: false
 
   - type: web

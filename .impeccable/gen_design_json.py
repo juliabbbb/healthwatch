@@ -9,12 +9,12 @@ tokens = {
     "white-surface": (1.0, 0.0, 0),
     "muted-wash": (0.94, 0.013, 82),
     "faded-ink": (0.46, 0.019, 79),
-    "risk-low": (0.62, 0.129, 162),
-    "risk-moderate": (0.71, 0.152, 80),
-    "risk-high": (0.59, 0.188, 32),
-    "risk-low-solid": (0.508, 0.118, 165),
-    "risk-moderate-solid": (0.555, 0.116, 66),
-    "risk-high-solid": (0.517, 0.176, 27),
+    "risk-low": (0.62, 0.09, 145),
+    "risk-moderate": (0.70, 0.105, 75),
+    "risk-high": (0.58, 0.135, 32),
+    "risk-low-solid": (0.478, 0.08, 145),
+    "risk-moderate-solid": (0.525, 0.09, 70),
+    "risk-high-solid": (0.49, 0.12, 30),
     "wet-blue": (0.64, 0.117, 234),
     "dry-amber": (0.68, 0.129, 72),
 }
@@ -47,7 +47,7 @@ meta = {
 typography_meta = {
     "display": {"displayName": "Display", "purpose": "Page titles and headline figures (24-30px, weight 600, -0.01em)."},
     "title": {"displayName": "Title", "purpose": "Card titles and section labels (20px, weight 600, -0.01em)."},
-    "body": {"displayName": "Body", "purpose": "Default reading in Hanken Grotesk at 16px."},
+    "body": {"displayName": "Body", "purpose": "Default reading in Sora at 16px."},
     "label": {"displayName": "Instrument Label", "purpose": "Mono CAPS metadata: season, risk tier, data-through, units. The signature voice."},
 }
 
@@ -58,14 +58,14 @@ components = [
         "refersTo": "button-primary",
         "description": "The single coral stamp on a screen — the one default action.",
         "html": '<button class="ds-btn-primary">REVIEW RESPONSE PLAN</button>',
-        "css": '.ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;height:36px;padding:0 16px;border-radius:8px;cursor:pointer;background:var(--color-primary);color:var(--color-primary-foreground);border:1px solid transparent;box-shadow:0 1px 2px oklch(0.24 0.008 85/12%);font:500 14px/1 "Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;transition:background-color .15s,box-shadow .15s;}.ds-btn-primary:hover{background:color-mix(in oklab,var(--color-primary) 90%,transparent);}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 1px var(--color-ring);}.ds-btn-primary:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}',
+        "css": '.ds-btn-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;height:36px;padding:0 16px;border-radius:8px;cursor:pointer;background:var(--color-primary);color:var(--color-primary-foreground);border:1px solid transparent;box-shadow:0 1px 2px oklch(0.24 0.008 85/12%);font:500 14px/1 "Sora",ui-sans-serif,system-ui,sans-serif;transition:background-color .15s,box-shadow .15s;}.ds-btn-primary:hover{background:color-mix(in oklab,var(--color-primary) 90%,transparent);}.ds-btn-primary:focus-visible{outline:none;box-shadow:0 0 0 1px var(--color-ring);}.ds-btn-primary:disabled{opacity:.5;cursor:not-allowed;pointer-events:none;}',
     },
     {
         "name": "Ghost Icon Button",
         "kind": "button",
         "refersTo": "button-ghost",
         "description": "The toolbar's quiet workhorse: a transparent square that gains Sun Wash on hover. Carries a 16px icon.",
-        "html": '<button class="ds-btn-ghost" aria-label="Settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>',
+        "html": '<button class="ds-btn-ghost" aria-label="Settings"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></button>',
         "css": ".ds-btn-ghost{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--color-foreground);cursor:pointer;transition:background-color .15s,color .15s;}.ds-btn-ghost:hover{background:var(--color-accent);color:var(--color-accent-foreground);}.ds-btn-ghost:focus-visible{outline:none;box-shadow:0 0 0 1px var(--color-ring);}",
     },
     {
@@ -90,14 +90,14 @@ components = [
         "refersTo": "input-field",
         "description": "Transparent field on glass with a hairline glazed-ink border; focus is a calm 1px coral ring.",
         "html": '<input class="ds-input" type="text" placeholder="Search region or code..."/>',
-        "css": ".ds-input{height:36px;padding:0 12px;border-radius:8px;background:transparent;border:1px solid var(--color-input);color:var(--color-foreground);font:400 14px/1 \"Hanken Grotesk\",ui-sans-serif,system-ui,sans-serif;}.ds-input::placeholder{color:var(--color-muted-foreground);}.ds-input:focus-visible{outline:none;border-color:var(--color-ring);box-shadow:0 0 0 1px var(--color-ring);}",
+        "css": ".ds-input{height:36px;padding:0 12px;border-radius:8px;background:transparent;border:1px solid var(--color-input);color:var(--color-foreground);font:500 14px/1 \"Sora\",ui-sans-serif,system-ui,sans-serif;}.ds-input::placeholder{color:var(--color-muted-foreground);}.ds-input:focus-visible{outline:none;border-color:var(--color-ring);box-shadow:0 0 0 1px var(--color-ring);}",
     },
     {
         "name": "Glass Panel",
         "kind": "card",
         "refersTo": "panel-card",
         "description": "The floating decision surface: 88% translucent panel, backdrop blur, hairline border, ambient-only shadow. Label is the mono instrument voice.",
-        "html": '<div class="ds-panel"><p class="ds-label">NATIONAL SNAPSHOT</p><div style="font:600 30px/1.2 \'Hanken Grotesk\',ui-sans-serif,system-ui,sans-serif;letter-spacing:-.01em">2,847 <span style="font-size:14px;color:var(--color-muted-foreground)">cases \u00b7 Aug 2026</span></div></div>',
+        "html": '<div class="ds-panel"><p class="ds-label">NATIONAL SNAPSHOT</p><div style="font:700 30px/1.2 \'Sora\',ui-sans-serif,system-ui,sans-serif;letter-spacing:-.02em">2,847 <span style="font-size:14px;color:var(--color-muted-foreground)">cases \u00b7 Aug 2026</span></div></div>',
         "css": ".ds-panel{padding:16px;border-radius:14px;background:var(--color-panel);border:1px solid var(--color-panel-border);backdrop-filter:blur(10px) saturate(120%);box-shadow:0 1px 2px oklch(0.24 0.008 85/6%),0 8px 24px -12px oklch(0.24 0.008 85/12%);}.ds-label{margin:0 0 8px;font:500 11px/1 \"JetBrains Mono\",ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--color-muted-foreground);}",
     },
 ]
@@ -127,7 +127,7 @@ design = {
     "components": components,
     "narrative": {
         "northStar": "The Public-Health Wire Room",
-        "overview": "HEALTHWATCH is a calm command center for Philippine dengue surveillance: one glanceable map of eighteen regions, colored by risk tier, with decision glass floating above the data. The aesthetic is calm, precise, and quietly official: warm daylight surfaces, near-ink text, and one coral signal accent used sparingly. Depth comes from translucent glass panels hovering over the basemap; typography is utilitarian — Hanken Grotesk carries the reading while JetBrains Mono uppercase labels read as instrument markings. Warm cream is the light default; the dark theme inverts the same vocabulary into a deep operations-console navy with an aqua signal. Chroma is earned: risk tiers own saturated data color, the coral accent owns interaction, and season tokens own climatological semantics — nothing else is loud.",
+        "overview": "HEALTHWATCH is a calm command center for Philippine dengue surveillance: one glanceable map of eighteen regions, colored by risk tier, with decision glass floating above the data. The aesthetic is calm, precise, and quietly official: warm daylight surfaces, near-ink text, and one coral signal accent used sparingly. Depth comes from translucent glass panels hovering over the basemap; typography is utilitarian — Sora carries the reading with contemporary geometric presence while JetBrains Mono uppercase labels read as instrument markings. Warm cream is the light default; the dark theme inverts the same vocabulary into a deep operations-console navy with an aqua signal. Chroma is earned: risk tiers own a deliberately muted warm ramp (sage → amber → brick), the coral accent owns interaction, and season tokens own climatological semantics — nothing else is loud.",
         "keyCharacteristics": [
             "Warm cream paper background, near-ink (never pure black or white).",
             "One coral/signal accent for interaction; risk ramp green \u2192 amber \u2192 red for data alone.",

@@ -7,3 +7,6 @@ __pycache__/
 
 uvicorn.out.log
 uvicorn.err.log
+
+data/subscriptions.sqlite3
+data/email_outbox/

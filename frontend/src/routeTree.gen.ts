@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as SeasonalityRouteImport } from './routes/seasonality'
+import { Route as SubscribeManageRouteImport } from './routes/subscribe-manage'
 import { Route as RegionCodeRouteImport } from './routes/region.$code'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const SeasonalityRoute = SeasonalityRouteImport.update({
   path: '/seasonality',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubscribeManageRoute = SubscribeManageRouteImport.update({
+  id: '/subscribe-manage',
+  path: '/subscribe-manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegionCodeRoute = RegionCodeRouteImport.update({
   id: '/region/$code',
   path: '/region/$code',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/compare': typeof CompareRoute
   '/methodology': typeof MethodologyRoute
   '/seasonality': typeof SeasonalityRoute
+  '/subscribe-manage': typeof SubscribeManageRoute
   '/region/$code': typeof RegionCodeRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/compare': typeof CompareRoute
   '/methodology': typeof MethodologyRoute
   '/seasonality': typeof SeasonalityRoute
+  '/subscribe-manage': typeof SubscribeManageRoute
   '/region/$code': typeof RegionCodeRoute
 }
 export interface FileRoutesById {
@@ -61,20 +69,33 @@ export interface FileRoutesById {
   '/compare': typeof CompareRoute
   '/methodology': typeof MethodologyRoute
   '/seasonality': typeof SeasonalityRoute
+  '/subscribe-manage': typeof SubscribeManageRoute
   '/region/$code': typeof RegionCodeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/compare' | '/methodology' | '/seasonality' | '/region/$code'
+    | '/'
+    | '/compare'
+    | '/methodology'
+    | '/seasonality'
+    | '/subscribe-manage'
+    | '/region/$code'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/compare' | '/methodology' | '/seasonality' | '/region/$code'
+  to:
+    | '/'
+    | '/compare'
+    | '/methodology'
+    | '/seasonality'
+    | '/subscribe-manage'
+    | '/region/$code'
   id:
     | '__root__'
     | '/'
     | '/compare'
     | '/methodology'
     | '/seasonality'
+    | '/subscribe-manage'
     | '/region/$code'
   fileRoutesById: FileRoutesById
 }
@@ -83,6 +104,7 @@ export interface RootRouteChildren {
   CompareRoute: typeof CompareRoute
   MethodologyRoute: typeof MethodologyRoute
   SeasonalityRoute: typeof SeasonalityRoute
+  SubscribeManageRoute: typeof SubscribeManageRoute
   RegionCodeRoute: typeof RegionCodeRoute
 }
 
@@ -116,6 +138,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SeasonalityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/subscribe-manage': {
+      id: '/subscribe-manage'
+      path: '/subscribe-manage'
+      fullPath: '/subscribe-manage'
+      preLoaderRoute: typeof SubscribeManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/region/$code': {
       id: '/region/$code'
       path: '/region/$code'
@@ -131,6 +160,7 @@ const rootRouteChildren: RootRouteChildren = {
   CompareRoute: CompareRoute,
   MethodologyRoute: MethodologyRoute,
   SeasonalityRoute: SeasonalityRoute,
+  SubscribeManageRoute: SubscribeManageRoute,
   RegionCodeRoute: RegionCodeRoute,
 }
 export const routeTree = rootRouteImport

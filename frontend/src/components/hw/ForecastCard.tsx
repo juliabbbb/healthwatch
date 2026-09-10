@@ -99,7 +99,7 @@ export function ForecastCard({
         <div className="flex items-start justify-between gap-2 border-b border-border/70 px-5 py-3 bg-card/40">
           <div className="min-w-0 flex-1">
             <p className="label-caps">{a.region.short}</p>
-            <h2 className="text-xl font-semibold leading-tight text-foreground truncate">
+            <h2 className="text-xl font-semibold leading-tight tracking-tight text-foreground truncate">
               {a.region.name}
             </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
@@ -119,7 +119,7 @@ export function ForecastCard({
       )}
 
       {/* 2. Current Status Card */}
-      <section className="border-b border-border/70 bg-card/30 px-5 py-3.5">
+      <section className="border-b border-border/70 px-5 py-3.5">
         <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
           CURRENT STATUS
         </p>
@@ -127,7 +127,7 @@ export function ForecastCard({
         {/* Visual Anchor: Large Primary Metric beside Badges with integrated toggle */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+            <p className="label-caps text-[10px]">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
             <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
@@ -202,8 +202,8 @@ export function ForecastCard({
         {/* Labeled Stat Chips Grid */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
-              Period
+            <span className="label-caps text-[9px] block">
+               Period
             </span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {formatMonthYear(meta.label)}
@@ -211,7 +211,7 @@ export function ForecastCard({
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[9px] block">
               Cases
             </span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
@@ -220,7 +220,7 @@ export function ForecastCard({
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[9px] block">
               3-Mo Trend
             </span>
             <span
@@ -238,7 +238,7 @@ export function ForecastCard({
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[9px] block">
               Nat'l Rank
             </span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
@@ -247,7 +247,7 @@ export function ForecastCard({
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[9px] block">
               Data Source
             </span>
             <span className="text-[11px] font-medium text-muted-foreground truncate block">
@@ -260,7 +260,7 @@ export function ForecastCard({
       </section>
 
       {/* 3. 6-Month Forecast Horizon (trimmed to 6 upcoming months) */}
-      <section className="border-b border-border/70 bg-card/25 px-5 py-3.5">
+      <section className="border-b border-border/70 px-5 py-3.5">
         <div className="flex items-center justify-between mb-2.5">
           <p className="label-caps text-[10px] text-muted-foreground tracking-wider">
             6-Month Forecast Horizon
@@ -332,7 +332,7 @@ export function ForecastCard({
       </section>
 
       {/* 4. Forecast & Outlook Card */}
-      <section className="border-b border-border/70 bg-card/20 px-5 py-3.5">
+      <section className="border-b border-border/70 px-5 py-3.5">
         <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
           FORECAST & OUTLOOK
         </p>
@@ -411,7 +411,7 @@ export function ForecastCard({
       </section>
 
       {/* 5. Model Info (permanently visible, no chevron dropdown) */}
-      <section className="border-b border-border/70 bg-card/10 px-5 py-2.5">
+      <section className="border-b border-border/70 px-5 py-2.5">
         <div className="flex items-center justify-between py-0.5 text-xs">
           <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
             MODEL INFO

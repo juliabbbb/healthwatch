@@ -40,16 +40,27 @@ function Methodology() {
     <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10">
       <Link
         to="/"
-        className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
+        className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="size-3.5" /> Back to map
       </Link>
-      <h1 className="text-3xl font-bold">Data &amp; Methodology</h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-        HEALTHWATCH is a regional time-series decision-support prototype for seasonal illness
-        outbreak prediction and hotspot classification across the {REGIONS.length} administrative
-        regions of the Philippines.
-      </p>
+
+      {/* Header */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Data &amp; Methodology
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-sm text-muted-foreground leading-relaxed">
+            HEALTHWATCH is a regional time-series decision-support prototype for seasonal illness
+            outbreak prediction and hotspot classification across the {REGIONS.length} administrative
+            regions of the Philippines.
+          </p>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs shrink-0">
+          <span className="label-caps text-[10px]">18 regions · dengue only</span>
+        </span>
+      </div>
 
       <Section title="Data sources">
         <ul className="space-y-2 text-sm text-foreground/85">
@@ -65,7 +76,7 @@ function Methodology() {
             for keying every record to a PSGC code.
           </li>
         </ul>
-        <p className="mt-3 rounded-lg border border-border bg-card/60 p-4 text-xs text-muted-foreground">
+        <p className="mt-3 glass-panel rounded-xl p-4 text-xs text-muted-foreground leading-relaxed">
           This dashboard runs live: case series, forecasts, risk tiers and validation metrics are
           served by a FastAPI backend reading from a PostgreSQL database on Supabase, built entirely
           by the Python pipeline (<code>src/</code>). No values shown are synthetic.
@@ -206,26 +217,32 @@ function Methodology() {
           standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
           weekly equivalents of the same percentile thresholds:
         </p>
-        <div className="mt-3 overflow-hidden rounded-lg border border-border">
-          <table className="w-full text-sm">
-            <thead className="bg-secondary/60 text-left text-muted-foreground">
-              <tr>
-                <th className="px-4 py-2 font-medium">Week ending</th>
-                <th className="px-4 py-2 font-medium">National cases</th>
-                <th className="px-4 py-2 font-medium">P50 / P75</th>
-                <th className="px-4 py-2 font-medium">Tier</th>
+        <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
+          <table className="w-full text-sm border-collapse">
+            <thead className="label-caps">
+              <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
+                <th className="px-4 py-3 text-left">Week ending</th>
+                <th className="px-4 py-3 text-right">National cases</th>
+                <th className="px-4 py-3 text-right">P50 / P75</th>
+                <th className="px-4 py-3 text-center">Tier</th>
               </tr>
             </thead>
             <tbody>
               {EPIDEMIC_ROWS.map((r) => (
-                <tr key={r.date} className="border-t border-border">
-                  <td className="px-4 py-3 font-mono">{r.date}</td>
-                  <td className="px-4 py-3">{r.cases.toLocaleString()}</td>
-                  <td className="px-4 py-3 font-mono">
+                <tr key={r.date} className="border-b border-border/40 odd:bg-card/40 even:bg-secondary/15 hover:bg-secondary/30 transition-colors">
+                  <td className="px-4 py-3 font-mono text-xs">{r.date}</td>
+                  <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">{r.cases.toLocaleString()}</td>
+                  <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">
                     {r.p50.toLocaleString()} / {r.p75.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3" style={{ color: "var(--risk-high)" }}>
-                    {r.tier}
+                  <td className="px-4 py-3 text-center">
+                    <span
+                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                      style={{ color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }}
+                    >
+                      <span className="size-1.5 rounded-full bg-white/80" />
+                      {r.tier}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -254,8 +271,8 @@ function Methodology() {
       <Section title="Diseases covered">
         <div className="grid gap-3 sm:grid-cols-2">
           {ILLNESSES.map((i) => (
-            <div key={i.id} className="rounded-lg border border-border bg-card/60 p-5">
-              <p className="text-sm font-medium">{i.name}</p>
+            <div key={i.id} className="glass-panel rounded-xl p-5 transition-all hover:border-border">
+              <p className="text-sm font-semibold text-foreground">{i.name}</p>
               <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
               <p className="mt-2 text-[11px] text-muted-foreground">
                 Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
@@ -324,7 +341,7 @@ function Methodology() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-8">
-      <h2 className="mb-3 text-lg">{title}</h2>
+      <h2 className="mb-3 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
       {children}
     </section>
   );
