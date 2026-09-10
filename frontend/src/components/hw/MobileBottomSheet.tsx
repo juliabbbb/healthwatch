@@ -192,7 +192,7 @@ export function MobileBottomSheet({
         className={cn(
           "fixed z-[600] flex flex-col md:hidden",
           isExpanded
-            ? "inset-x-0 bottom-0 h-[85vh] px-0 pb-0"
+            ? "inset-x-0 bottom-0 h-dvh px-0 pb-0"
             : "inset-x-3 bottom-3 h-auto max-w-lg mx-auto",
           isVisible ? "pointer-events-auto" : "pointer-events-none",
         )}
@@ -293,23 +293,29 @@ export function MobileBottomSheet({
             </div>
           </div>
 
-          {/* Expanded Scrollable Deep-Dive Content */}
-          {isExpanded && (
-            <div className="flex-1 overflow-y-auto hw-scroll overscroll-contain">
-              <ForecastCard
-                regionCode={activeCode}
-                illness={illness}
-                monthIndex={monthIndex}
-                mode={mode}
-                {...(onModeChange ? { onModeChange } : {})}
-                {...(onLayerChange ? { onLayerChange } : {})}
-                layer={layer}
-                variant="sheet"
-                showHeader={false}
-                className="rounded-none border-none shadow-none bg-transparent"
-              />
-            </div>
-          )}
+          {/* Deep-Dive Content — always mounted, visibility controlled by height */}
+          <div
+            className="overflow-y-auto hw-scroll overscroll-contain"
+            style={{
+              height: isExpanded ? "calc(100dvh - 3.5rem)" : "0px",
+              transition: isDragging
+                ? "none"
+                : "height 320ms cubic-bezier(0.32, 0.72, 0, 1)",
+            }}
+          >
+            <ForecastCard
+              regionCode={activeCode}
+              illness={illness}
+              monthIndex={monthIndex}
+              mode={mode}
+              {...(onModeChange ? { onModeChange } : {})}
+              {...(onLayerChange ? { onLayerChange } : {})}
+              layer={layer}
+              variant="sheet"
+              showHeader={false}
+              className="rounded-none border-none shadow-none bg-transparent"
+            />
+          </div>
         </div>
       </div>
     </>
