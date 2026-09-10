@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { pdf } from "@react-pdf/renderer";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ChevronDown, Globe, X } from "lucide-react";
 import type { DataLayer } from "@/components/hw/MapCanvas";
@@ -27,11 +26,7 @@ import {
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import {
-  MapExportDocument,
-  type MapExportRegion,
-  type MapExportRegionRow,
-} from "@/components/pdf/MapExportPDF";
+import type { MapExportRegion, MapExportRegionRow } from "@/components/pdf/MapExportPDF";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -175,6 +170,10 @@ function MapView() {
           };
         }
 
+        const [{ pdf }, { MapExportDocument }] = await Promise.all([
+          import("@react-pdf/renderer"),
+          import("@/components/pdf/MapExportPDF"),
+        ]);
         const blob = await pdf(
           <MapExportDocument
             imageDataUrl={imageDataUrl}

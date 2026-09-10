@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useRef, useState, type RefObject } from "react";
-import { pdf } from "@react-pdf/renderer";
 import {
   ArrowLeft,
   Copy,
@@ -14,10 +13,7 @@ import {
   Sparkles,
   Waves,
 } from "lucide-react";
-import {
-  SeasonalityPdfDocument,
-  type SeasonalityPdfChart,
-} from "@/components/pdf/SeasonalityPdfDocument";
+import type { SeasonalityPdfChart } from "@/components/pdf/SeasonalityPdfDocument";
 import { captureChartAsImage } from "@/utils/pdfChartExporter";
 import { SeasonalityChartCard } from "@/components/hw/SeasonalityChartCard";
 import { ChartExpandModal } from "@/components/hw/ChartExpandModal";
@@ -310,6 +306,10 @@ function SeasonalityPage() {
       // Intervention recommendations
       const recs = recommendations(assessment);
 
+      const [{ pdf }, { SeasonalityPdfDocument }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("@/components/pdf/SeasonalityPdfDocument"),
+      ]);
       const blob = await pdf(
         <SeasonalityPdfDocument
           regionName={region.name}

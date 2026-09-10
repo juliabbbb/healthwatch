@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { FileDown, Loader2, X } from "lucide-react";
-import { pdf } from "@react-pdf/renderer";
 import {
   ILLNESSES,
   REGIONS,
@@ -17,10 +16,9 @@ import {
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { formatMonthYear } from "@/utils/formatDate";
-import {
-  SurveillanceReportPDF,
-  type ExportOptions,
-  type ReportLayout,
+import type {
+  ExportOptions,
+  ReportLayout,
 } from "@/components/pdf/SurveillanceReportPDF";
 import {
   renderSeasonalitySVG,
@@ -225,6 +223,10 @@ export function ExportCustomizationModal({
     setPhase(3);
     let blob: Blob;
     try {
+      const [{ pdf }, { SurveillanceReportPDF }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("@/components/pdf/SurveillanceReportPDF"),
+      ]);
       blob = await pdf(<SurveillanceReportPDF options={options} />).toBlob();
     } finally {
       setPhase(0);
