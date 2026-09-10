@@ -45,6 +45,33 @@ GROQ_API_KEY=        # Alternative to Gemini (free at console.groq.com)
 
 When `DATABASE_URL` is unset, backend falls back to `data/processed/healthwatch.db`.
 
+## Design Tooling (Impeccable)
+
+The UI is governed by a documented design system: `PRODUCT.md` (product truth) and
+`DESIGN.md` (rules/tokens) at repo root, with a machine-readable sidecar in
+`.impeccable/design.json` (schema v2). UI work must stay consistent with these docs;
+after editing UI files, run the mechanical checker from the Impeccable CLI (installed
+for all harnesses via `npx impeccable install`, https://impeccable.style):
+
+```powershell
+# Review resolved context (PRODUCT.md + DESIGN.md)
+& "$env:USERPROFILE\.config\opencode\skills\impeccable\scripts\impeccable.cmd" context
+
+# Check changed UI files for detected deviations
+& "$env:USERPROFILE\.config\opencode\skills\impeccable\scripts\impeccable.cmd" detect --json <changed targets>
+```
+
+Repo utilities in `.impeccable/`:
+
+```powershell
+.venv\Scripts\python .impeccable\gen_design_json.py   # regenerate design.json from DESIGN.md tokens
+.venv\Scripts\python .impeccable\contrast_audit.py    # WCAG contrast audit of the oklch token pairs
+```
+
+Key rules enforced: one coral accent (`One Stamp`), green/amber/red reserved for risk data
+(`Risk Reservation`), mono `label-caps` for metadata (`Instrument Label`), and glass panels,
+never body text, carrying shadow (`Glass Floor`).
+
 ## Architecture
 
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)

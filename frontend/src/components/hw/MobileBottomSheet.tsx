@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { METRIC_META, assessRegion, formatMetric, type MetricMode } from "@/lib/healthwatch/data";
 import { RiskBadge } from "./RiskBadge";
 import { ForecastCard } from "./ForecastCard";
@@ -50,6 +51,9 @@ export function MobileBottomSheet({
 
   const activeCode = regionCode || lastRegionCode;
   const isVisible = Boolean(regionCode);
+
+  // Lock background scroll on mobile while the sheet is expanded over the page
+  useBodyScrollLock(isVisible && isExpanded);
 
   // If no region has ever been selected, render nothing
   if (!activeCode) return null;
@@ -247,7 +251,7 @@ export function MobileBottomSheet({
                   <span className="font-mono text-xs font-bold tabular-nums text-foreground">
                     {formatMetric(a.value, mode)}
                   </span>
-                  <span className="hidden xs:inline-block ml-0.5 text-[9px] text-muted-foreground">
+                  <span className="hidden min-[420px]:inline-block ml-0.5 text-[9px] text-muted-foreground">
                     {unit}
                   </span>
                 </div>

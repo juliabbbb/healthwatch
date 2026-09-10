@@ -385,7 +385,7 @@ export function SeasonalityPage() {
             the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-start md:items-end gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
             <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months ·{" "}
             {region.island}
@@ -429,7 +429,7 @@ export function SeasonalityPage() {
                     <SlidersHorizontal className="size-4" />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                    <p className="label-caps text-[10px] font-semibold">
                       Surveillance & Forecast Period
                     </p>
                     <div className="flex flex-wrap items-center gap-2 mt-0.5">

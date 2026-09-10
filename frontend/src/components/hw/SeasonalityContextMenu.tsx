@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Sparkles, Waves } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 export interface ContextMenuAnchor {
   x: number;
@@ -52,6 +53,9 @@ export function SeasonalityContextMenu({
       window.removeEventListener("resize", close);
     };
   }, [anchor, onClose]);
+
+  // Lock background scroll while the menu is open
+  useBodyScrollLock(Boolean(anchor));
 
   if (!anchor) return null;
 

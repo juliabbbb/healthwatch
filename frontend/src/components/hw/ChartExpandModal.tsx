@@ -237,7 +237,7 @@ export function ChartExpandModal({
                 className="size-3 rounded-full shadow-xs"
                 style={{ backgroundColor: meta.color }}
               />
-              <span className="rounded-md border border-border bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="rounded-md border border-border bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider font-mono text-muted-foreground">
                 {meta.badge}
               </span>
               <span className="text-xs text-muted-foreground">
@@ -388,10 +388,10 @@ export function ChartExpandModal({
         {activeTab === "methodology" && (
           <div className="mt-4 space-y-4">
             <div className="rounded-xl border border-border/70 bg-card/50 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-primary">
+              <h3 className="label-caps text-xs font-semibold text-primary">
                 Mathematical Definition
               </h3>
-              <div className="mt-2 rounded-lg bg-black/40 p-3 font-mono text-xs text-emerald-300 overflow-x-auto border border-border/50">
+              <div className="mt-2 rounded-lg bg-secondary/30 p-3 font-mono text-xs text-foreground overflow-x-auto border border-border/50">
                 {meta.formula}
               </div>
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
@@ -400,7 +400,7 @@ export function ChartExpandModal({
             </div>
 
             <div className="rounded-xl border border-border/70 bg-card/50 p-4">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">
+              <h3 className="label-caps text-xs font-semibold text-foreground">
                 Role in HEALTHWATCH Surveillance & Forecasting
               </h3>
               <p className="mt-2 text-xs leading-relaxed text-muted-foreground">

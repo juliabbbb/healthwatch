@@ -54,7 +54,7 @@ export function TimelineScrubber({
 
   const modeBadge = (
     <span
-      className="rounded px-1 py-px text-[9px] font-semibold uppercase tracking-wider shrink-0"
+      className="rounded px-1 py-px text-[9px] font-semibold uppercase tracking-wider shrink-0 font-mono"
       style={{
         color: meta.forecast ? "var(--risk-moderate)" : "var(--muted-foreground)",
         backgroundColor: meta.forecast
@@ -161,7 +161,7 @@ export function TimelineScrubber({
       {expanded && (
         <div className="mt-1.5 flex justify-between text-[9px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
           <span>{formatMonthYear("2022-01")}</span>
-          <span className="hidden xs:inline">Historical surveillance (2022–2026)</span>
+          <span className="hidden sm:inline">Historical surveillance (2022–2026)</span>
           <span>+12-month forecast horizon</span>
         </div>
       )}

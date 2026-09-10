@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { cn } from "@/lib/utils";
 
 /**
@@ -31,17 +32,8 @@ export function SettingsModal({
     return () => document.removeEventListener("keydown", handler);
   }, [open, onOpenChange]);
 
-  // Prevent body scroll when open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [open]);
+  // Lock background scroll (with scrollbar-width compensation) while open
+  useBodyScrollLock(open);
 
   if (!open) return null;
 

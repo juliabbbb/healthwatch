@@ -42,7 +42,7 @@ export function PDFRegionalProfile({
         >
           <Text
             style={{
-              color: "#0f172a",
+              color: "#211f1b",
               fontSize: 8,
               fontWeight: "bold",
               textTransform: "uppercase",

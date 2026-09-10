@@ -8,20 +8,20 @@
 import { StyleSheet } from "@react-pdf/renderer";
 
 export const COLORS = {
-  ink: "#0f172a", // slate-900 — strong dark accents / table header
-  slate: "#1e293b", // slate-800 — titles
-  heading: "#334155", // slate-700 — section headings
-  card: "#f8fafc", // slate-50 — alternating rows / card surfaces
-  teal: "#0d9488",
-  tealBright: "#14b8a6",
-  offwhite: "#ffffff",
-  muted: "#475569", // slate-600 — body text
-  mutedLight: "#64748b", // slate-500 — captions
-  footerGray: "#94a3b8", // slate-400 — footers
-  border: "#e2e8f0", // slate-200 — borders
-  low: "#22c55e",
-  moderate: "#f59e0b",
-  high: "#ef4444",
+  ink: "#211f1b", // near-ink — strong dark accents / table header
+  slate: "#211f1b", // titles
+  heading: "#211f1b", // section headings
+  card: "#ffffff", // alternating rows / card surfaces
+  teal: "#e8542f",
+  tealBright: "#e8542f",
+  offwhite: "#fbf8f3", // warm cream
+  muted: "#5e574c", // body text
+  mutedLight: "#807a6d", // captions
+  footerGray: "#8c8579", // footers
+  border: "#e9dfd1", // borders
+  low: "#007a54",
+  moderate: "#a06315",
+  high: "#b82d2a",
 };
 
 export const PAGE = {

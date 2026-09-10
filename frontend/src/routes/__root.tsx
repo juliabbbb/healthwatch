@@ -92,13 +92,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://api.fontshare.com" },
-      { rel: "preconnect", href: "https://cdn.fontshare.com", crossOrigin: "anonymous" },
       {
-        // General Sans (body/display) — Fontshare's closest open analogue to
-        // Aeonik. One sans family at different weights; no separate display face.
+        // Sora — geometric-contemporary display/body. Wider proportions and
+        // heavier 500 body weight give institutional presence without coldness.
         rel: "stylesheet",
-        href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap",
       },
       {
         // JetBrains Mono — technical/numeric UI (codes, metrics, timestamps).
@@ -141,6 +139,7 @@ function DataGate({ children }: { children: ReactNode }) {
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
   const [progress, setProgress] = useState(0);
   const [fading, setFading] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     const start = performance.now();
@@ -177,7 +176,7 @@ function DataGate({ children }: { children: ReactNode }) {
       done = true;
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [attempt]);
 
   if (state === "loading") {
     return (
@@ -211,8 +210,19 @@ function DataGate({ children }: { children: ReactNode }) {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             HEALTHWATCH could not load case data. Make sure the backend is running (uvicorn
-            src.api:app --port 8000) and reload.
+            src.api:app --port 8000).
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              setState("loading");
+              setProgress(0);
+              setAttempt((a) => a + 1);
+            }}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20"
+          >
+            Retry connection
+          </button>
         </div>
       </div>
     );

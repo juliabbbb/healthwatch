@@ -22,6 +22,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { SettingsModal } from "@/components/hw/SettingsModal";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
 import { REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,10 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
   const [copied, setCopied] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Lock background scroll while either mobile portal overlay is open
+  // (SettingsModal locks itself).
+  useBodyScrollLock(mobileSearchOpen || mobileMenuOpen);
 
   useEffect(() => {
     setMounted(true);
@@ -224,7 +229,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
           className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary active:scale-95"
         >
           <Menu className="size-4" />
-          <span className="hidden xs:inline font-semibold">Menu</span>
+          <span className="hidden min-[420px]:inline font-semibold">Menu</span>
         </button>
       </div>
 
@@ -341,7 +346,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
                 <div>
                   <h2 className="text-base font-bold text-foreground">HEALTHWATCH</h2>
                   <p className="text-[10px] text-muted-foreground font-medium">
-                    Outbreak Decision Support
+                    Regional Outbreak Hotspot Map & Forecasts
                   </p>
                 </div>
                 <button
