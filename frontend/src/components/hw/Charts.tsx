@@ -49,7 +49,10 @@ interface Row {
   label: string;
   reported: number | null;
   predicted: number | null;
-  band: [number, number] | null;
+  bandBase: number | null;
+  bandFill: number | null;
+  yhatUpper: number | null;
+  yhatLower: number | null;
   adjustedPoint: number | null;
   adjustReason?: string;
   season: string;
@@ -79,10 +82,10 @@ function ForecastTooltip({
         {row.reported !== null ? "Reported" : "Predicted"}{" "}
         {value.toLocaleString(undefined, { maximumFractionDigits: 1 })} {unit}
       </p>
-      {row.band && (
+      {row.yhatLower !== null && row.yhatUpper !== null && (
         <p className="text-muted-foreground">
-          95% CI {row.band[0].toLocaleString(undefined, { maximumFractionDigits: 1 })}–
-          {row.band[1].toLocaleString(undefined, { maximumFractionDigits: 1 })}
+          95% CI {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
+          {row.yhatUpper.toLocaleString(undefined, { maximumFractionDigits: 1 })}
         </p>
       )}
       {row.adjustReason && (
@@ -115,19 +118,43 @@ export function ForecastChart({
   const isBar = chartType === "bar";
   const ChartComponent = isBar ? BarChart : ComposedChart;
   const series = seriesFor(regionCode, illness);
+
+  if (!series.length) {
+    return (
+      <div
+        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
+        style={{ height }}
+      >
+        No forecast data available
+      </div>
+    );
+  }
+
   const region = REGION_BY_CODE[regionCode]!;
   const conv = (v: number) => metricValue(v, region, mode);
+  const clip = (v: number) => Math.max(0, v);
   const start = Math.max(0, HIST_MONTHS - monthsBack);
-  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => ({
-    label: p.label,
-    reported: p.forecast ? null : conv(p.cases),
-    predicted: p.forecast ? conv(p.cases) : null,
-    band: p.forecast ? [conv(p.lower), conv(p.upper)] : null,
-    adjustedPoint: p.adjusted ? conv(p.cases) : null,
-    ...(p.adjustReason ? { adjustReason: p.adjustReason } : {}),
-    season: p.season,
-    index: p.index,
-  }));
+  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => {
+    const reported = p.forecast ? null : clip(conv(p.cases));
+    const predicted = p.forecast ? clip(conv(p.cases)) : null;
+    const yhatUpper = p.forecast ? clip(conv(p.upper)) : null;
+    const yhatLower = p.forecast ? clip(conv(p.lower)) : null;
+    const bandBase = yhatLower;
+    const bandFill = yhatUpper !== null && yhatLower !== null ? yhatUpper - yhatLower : null;
+    return {
+      label: p.label,
+      reported,
+      predicted,
+      bandBase,
+      bandFill,
+      yhatUpper,
+      yhatLower,
+      adjustedPoint: p.adjusted ? clip(conv(p.cases)) : null,
+      ...(p.adjustReason ? { adjustReason: p.adjustReason } : {}),
+      season: p.season,
+      index: p.index,
+    };
+  });
 
   const wetBands: { x1: string; x2: string }[] = [];
   let open: string | null = null;
@@ -180,12 +207,23 @@ export function ForecastChart({
         ) : (
           <>
             <Area
-              dataKey="band"
+              type="monotone"
+              dataKey="bandBase"
+              stroke="none"
+              fill="transparent"
+              isAnimationActive={false}
+              name="95% CI"
+              stackId="band"
+            />
+            <Area
+              type="monotone"
+              dataKey="bandFill"
               stroke="none"
               fill="var(--chart-3)"
               fillOpacity={0.22}
               isAnimationActive={false}
               name="95% CI"
+              stackId="band"
             />
             <Line
               dataKey="reported"
