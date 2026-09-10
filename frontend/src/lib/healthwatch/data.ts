@@ -911,20 +911,6 @@ export function monthLabel(index: number) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Pipeline freshness                                                  */
-/* ------------------------------------------------------------------ */
-
-export interface PipelineStatus {
-  generated_at: string;
-  data_through: { date: string; month: string };
-  supported_diseases: string[];
-}
-
-export async function fetchPipelineStatus(): Promise<PipelineStatus> {
-  return fetchJson("/status");
-}
-
-/* ------------------------------------------------------------------ */
 /* Seasonal outbreak outlook (off the backend /outbreak indicator)     */
 /* ------------------------------------------------------------------ */
 
