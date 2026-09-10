@@ -464,27 +464,32 @@ def _llm_narrate(system_prompt, user_prompt):
             detail="AI-assisted analysis unavailable: groq package not installed.",
         )
 
-    GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile")
-    fallback_models = ["openai/gpt-oss-120b"]
+    GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+    fallback_models = ["openai/gpt-oss-20b"]
+    # gpt-oss models do not accept temperature; strip it when using those.
+    _gpt_oss = {"openai/gpt-oss-120b", "openai/gpt-oss-20b"}
     try:
         client = Groq(api_key=groq_key, timeout=30.0, max_retries=0)
         narrative = ""
         used_model = None
         for model in [GROQ_MODEL, *fallback_models]:
             try:
-                message = client.chat.completions.create(
-                    model=model,
-                    max_tokens=1024,
-                    temperature=0.3,
-                    messages=[
+                params: dict = {
+                    "model": model,
+                    "max_tokens": 1024,
+                    "messages": [
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt},
                     ],
-                )
+                }
+                if model not in _gpt_oss:
+                    params["temperature"] = 0.3
+                message = client.chat.completions.create(**params)
                 narrative = (message.choices[0].message.content or "").strip()
                 used_model = model
                 break
-            except Exception:  # timeout, rate limit, auth, bad model id…
+            except Exception as exc:
+                print(f"[llm] {model} failed: {exc!r}", flush=True)
                 continue
     except Exception as exc:  # client construction or network errors
         raise HTTPException(

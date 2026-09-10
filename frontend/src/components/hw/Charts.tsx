@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import {
   Area,
   Bar,
@@ -120,9 +119,6 @@ export function ForecastChart({
   const ChartComponent = isBar ? BarChart : ComposedChart;
   const series = seriesFor(regionCode, illness);
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   if (!series.length) {
     return (
       <div
@@ -170,15 +166,6 @@ export function ForecastChart({
     }
   });
 
-  if (!mounted) {
-    return (
-      <div
-        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
-        style={{ height }}
-      />
-    );
-  }
-
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ChartComponent data={slice} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
@@ -200,100 +187,105 @@ export function ForecastChart({
           {...(isBar ? {} : { cursor: { stroke: "var(--border)" } })}
         />
 
-        {isBar ? (
-          <>
-            <Bar
-              dataKey="reported"
-              fill="var(--chart-1)"
-              radius={[4, 4, 0, 0]}
-              name="Reported"
-              isAnimationActive={false}
-            />
-            <Bar
-              dataKey="predicted"
-              fill="var(--chart-3)"
-              radius={[4, 4, 0, 0]}
-              name="Predicted"
-              isAnimationActive={false}
-            />
-          </>
-        ) : (
-          <>
-            <Area
-              type="monotone"
-              dataKey="bandBase"
-              stroke="none"
-              fill="transparent"
-              isAnimationActive={false}
-              name="95% CI"
-              stackId="band"
-            />
-            <Area
-              type="monotone"
-              dataKey="bandFill"
-              stroke="none"
-              fill="var(--chart-3)"
-              fillOpacity={0.22}
-              isAnimationActive={false}
-              name="95% CI"
-              stackId="band"
-            />
-            <Line
-              dataKey="reported"
-              stroke="var(--chart-1)"
-              strokeWidth={1.6}
-              dot={{
-                r: 2.5,
-                strokeWidth: 1.2,
-                fill: "var(--background)",
-                stroke: "var(--chart-1)",
-              }}
-              activeDot={{
-                r: 5,
-                strokeWidth: 2,
-                fill: "var(--background)",
-                stroke: "var(--chart-1)",
-              }}
-              connectNulls
-              name="Reported"
-              isAnimationActive={false}
-            />
-            <Line
-              dataKey="predicted"
-              stroke="var(--chart-3)"
-              strokeWidth={2}
-              strokeDasharray="4 3"
-              dot={{
-                r: 2.5,
-                strokeWidth: 1.2,
-                fill: "var(--background)",
-                stroke: "var(--chart-3)",
-              }}
-              activeDot={{
-                r: 5,
-                strokeWidth: 2,
-                fill: "var(--background)",
-                stroke: "var(--chart-3)",
-              }}
-              connectNulls
-              name="Predicted"
-              isAnimationActive={false}
-            />
-            {/* Rule-adjusted points: hollow markers, reason shown in the tooltip. */}
-            <Line
-              dataKey="adjustedPoint"
-              stroke="none"
-              name="Rule-adjusted"
-              isAnimationActive={false}
-              dot={{
-                r: 3.4,
-                fill: "var(--background)",
-                stroke: "var(--risk-high)",
-                strokeWidth: 1.4,
-              }}
-            />
-          </>
-        )}
+        {isBar
+          ? [
+              <Bar
+                key="reported"
+                dataKey="reported"
+                fill="var(--chart-1)"
+                radius={[4, 4, 0, 0]}
+                name="Reported"
+                isAnimationActive={false}
+              />,
+              <Bar
+                key="predicted"
+                dataKey="predicted"
+                fill="var(--chart-3)"
+                radius={[4, 4, 0, 0]}
+                name="Predicted"
+                isAnimationActive={false}
+              />,
+            ]
+          : [
+              <Area
+                key="bandBase"
+                type="monotone"
+                dataKey="bandBase"
+                stroke="none"
+                fill="transparent"
+                isAnimationActive={false}
+                name="95% CI"
+                stackId="band"
+              />,
+              <Area
+                key="bandFill"
+                type="monotone"
+                dataKey="bandFill"
+                stroke="none"
+                fill="var(--chart-3)"
+                fillOpacity={0.22}
+                isAnimationActive={false}
+                name="95% CI"
+                stackId="band"
+              />,
+              <Line
+                key="reported"
+                dataKey="reported"
+                stroke="var(--chart-1)"
+                strokeWidth={1.6}
+                dot={{
+                  r: 2.5,
+                  strokeWidth: 1.2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-1)",
+                }}
+                activeDot={{
+                  r: 5,
+                  strokeWidth: 2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-1)",
+                }}
+                connectNulls
+                name="Reported"
+                isAnimationActive={false}
+              />,
+              <Line
+                key="predicted"
+                dataKey="predicted"
+                stroke="var(--chart-3)"
+                strokeWidth={2}
+                strokeDasharray="4 3"
+                dot={{
+                  r: 2.5,
+                  strokeWidth: 1.2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-3)",
+                }}
+                activeDot={{
+                  r: 5,
+                  strokeWidth: 2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-3)",
+                }}
+                connectNulls
+                name="Predicted"
+                isAnimationActive={false}
+              />,
+              // Rule-adjusted points: hollow markers, reason shown in the tooltip.
+              <Line
+                key="adjustedPoint"
+                dataKey="adjustedPoint"
+                stroke="none"
+                name="Rule-adjusted"
+                isAnimationActive={false}
+                dot={{
+                  r: 3.4,
+                  fill: "var(--background)",
+                  stroke: "var(--risk-high)",
+                  strokeWidth: 1.4,
+                }}
+              />,
+            ]}
 
         <ReferenceLine
           x={monthMeta(HIST_MONTHS - 1).label}
