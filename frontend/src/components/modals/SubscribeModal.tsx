@@ -156,6 +156,13 @@ export function SubscribeModal({
                 </div>
               </div>
 
+              <p className="rounded-xl border border-border/70 bg-background/60 p-3.5 text-xs leading-relaxed text-muted-foreground">
+                <span className="font-semibold text-foreground">Heads up:</span> monthly email
+                delivery isn't live yet — we're rolling it out soon. Your subscription is saved,
+                and reports will start arriving by email once delivery is switched on. Thanks for
+                trying it out!
+              </p>
+
               {/* Scope + national summary */}
               <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 p-4">
                 <div>
