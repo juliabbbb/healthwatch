@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import {
-  Download,
   Mail,
   Menu,
   Minus,
@@ -444,16 +443,6 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                   >
                     <Mail className="size-4 text-primary" />
                     <span>Subscribe</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      window.print();
-                    }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
-                  >
-                    <Download className="size-4 text-primary" />
-                    <span>Print snapshot</span>
                   </button>
                 </div>
               </div>
