@@ -139,23 +139,65 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function DataGate({ children }: { children: ReactNode }) {
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [progress, setProgress] = useState(0);
+  const [fading, setFading] = useState(false);
 
   useEffect(() => {
+    const start = performance.now();
+    let raf: number;
+    let done = false;
+
+    const tick = (now: number) => {
+      if (done) return;
+      const elapsed = now - start;
+      // ease-out: fast start, slows toward 92%
+      const raw = 1 - Math.exp(-elapsed / 2000);
+      const pct = Math.min(Math.round(raw * 92), 92);
+      setProgress(pct);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
     dataReady
-      .then(() => setState("ready"))
+      .then(() => {
+        done = true;
+        cancelAnimationFrame(raf);
+        setProgress(100);
+        setFading(true);
+        setTimeout(() => setState("ready"), 350);
+      })
       .catch((err: unknown) => {
+        done = true;
+        cancelAnimationFrame(raf);
         console.error("Failed to load HEALTHWATCH data from API", err);
         setState("error");
       });
+
+    return () => {
+      done = true;
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   if (state === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Loading surveillance data…
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background">
+        <div className="w-64">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+              Loading surveillance data
+            </span>
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              {progress}%
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
+              style={{ width: `${progress}%`, opacity: fading ? 0 : 1 }}
+            />
+          </div>
+        </div>
       </div>
     );
   }

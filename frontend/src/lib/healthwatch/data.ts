@@ -350,74 +350,74 @@ const DISEASE = "dengue";
 const seriesCache = new Map<string, MonthPoint[]>();
 const metricsCache = new Map<string, ModelMetrics>();
 
-async function fetchJson<T>(path: string, attempts = 10): Promise<T> {
+async function fetchJson<T>(path: string, attempts = 3): Promise<T> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
-      const res = await fetch(`${API_BASE}${path}`);
+      const res = await fetch(`${API_BASE}${path}`, {
+        signal: AbortSignal.timeout(15000),
+      });
       if (!res.ok) throw new Error(`API ${path} failed: HTTP ${res.status}`);
       return (await res.json()) as T;
     } catch (err) {
       lastErr = err;
-      // Back off and retry: tolerates the backend still booting when the
-      // dev page first loads, and free-tier hosts that sleep between demos
-      // (Render cold starts can take ~60s).
-      await new Promise((r) => setTimeout(r, 1200 * Math.min(i + 1, 6)));
+      await new Promise((r) => setTimeout(r, 800 * Math.min(i + 1, 3)));
     }
   }
   throw lastErr;
 }
 
-interface ApiMetrics {
-  region: string;
-  mae: number;
-  rmse: number;
-  mape: number;
-  months: number;
-  confidence: { label: string; tone: "low" | "moderate" | "high" };
-  skill_vs_naive: { pre_covid_52w: number; pre_2025_52w: number } | null;
-}
-
 /**
- * Fetches every region's series and validation metrics from the API once.
- * Resolves before the router renders any route (gated in __root.tsx) so all
- * downstream components can keep reading caches synchronously.
+ * Fetches all regions' series, validation metrics and outbreak data from
+ * a single /dashboard endpoint. Resolves before the router renders any
+ * route (gated in __root.tsx) so all downstream components can keep
+ * reading caches synchronously.
  */
 export async function loadHealthwatchData(): Promise<void> {
-  const jobs: Promise<void>[] = [];
-  for (const region of REGIONS) {
-    jobs.push(
-      fetchJson<{ points: MonthPoint[] }>(`/series/${region.short}`).then((res) => {
-        seriesCache.set(`${region.code}:${DISEASE}`, res.points);
-        seriesCache.set(`${region.code}:__all`, res.points);
-      }),
-    );
-    jobs.push(
-      fetchJson<ApiMetrics>(`/metrics/${region.short}`).then((m) => {
-        metricsCache.set(region.code, {
-          folds: m.months,
-          label: m.confidence.label,
-          tone: m.confidence.tone,
-          note:
-            m.confidence.tone === "low"
-              ? "Model error is small relative to monthly case counts."
-              : m.confidence.tone === "moderate"
-                ? "Reasonable accuracy on holdout months."
-                : "Volatile series inflates error metrics.",
-          mae: m.mae,
-          rmse: m.rmse,
-          mape: m.mape,
-        });
-      }),
-    );
+  interface DashboardResponse {
+    disease: string;
+    series: Record<string, MonthPoint[]>;
+    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
+    outbreak: OutbreakIndicator[];
   }
-  await Promise.all(jobs);
-  try {
-    await loadOutbreakData();
-  } catch (err) {
-    // Outbreak layer is additive; a backend without /outbreak (older deploy or
-    // a not-yet-restarted uvicorn) must not take the whole dashboard down.
-    console.warn("Seasonal outbreak indicator unavailable:", err);
+  const res = await fetchJson<DashboardResponse>("/dashboard");
+
+  // Build a short→code lookup from the static REGIONS list
+  const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
+
+  for (const [short, points] of Object.entries(res.series)) {
+    const code = codeByShort[short];
+    if (!code) continue;
+    seriesCache.set(`${code}:${DISEASE}`, points);
+    seriesCache.set(`${code}:__all`, points);
+  }
+
+  for (const [short, m] of Object.entries(res.metrics)) {
+    const code = codeByShort[short];
+    if (!code) continue;
+    metricsCache.set(code, {
+      folds: m.months,
+      label: m.confidence.label,
+      tone: m.confidence.tone,
+      note:
+        m.confidence.tone === "low"
+          ? "Model error is small relative to monthly case counts."
+          : m.confidence.tone === "moderate"
+            ? "Reasonable accuracy on holdout months."
+            : "Volatile series inflates error metrics.",
+      mae: m.mae,
+      rmse: m.rmse,
+      mape: m.mape,
+    });
+  }
+
+  // Populate outbreak cache from the batched response
+  for (const item of res.outbreak) {
+    const code = regionCodeForApiLabel(item.region);
+    if (!code) continue;
+    const entry = outbreakCache.get(code) ?? {};
+    entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
+    outbreakCache.set(code, entry);
   }
 }
 
@@ -921,7 +921,7 @@ export interface PipelineStatus {
 }
 
 export async function fetchPipelineStatus(): Promise<PipelineStatus> {
-  return fetchJson(`${API_BASE}/status`);
+  return fetchJson("/status");
 }
 
 /* ------------------------------------------------------------------ */
@@ -952,17 +952,6 @@ function regionCodeForApiLabel(label: string): string | null {
     (r) => r.short.toLowerCase() === prefix || r.name.toLowerCase() === prefix,
   );
   return byPrefix ? byPrefix.code : null;
-}
-
-async function loadOutbreakData(): Promise<void> {
-  const res = await fetchJson<{ items: OutbreakIndicator[] }>("/outbreak");
-  for (const item of res.items) {
-    const code = regionCodeForApiLabel(item.region);
-    if (!code) continue; // "National" and any non-map rows
-    const entry = outbreakCache.get(code) ?? {};
-    entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
-    outbreakCache.set(code, entry);
-  }
 }
 
 /** Per-season outbreak outlook for a region code (dengue pilot). */

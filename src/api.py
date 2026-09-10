@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from contextlib import asynccontextmanager
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -23,29 +24,46 @@ NAME_BY_CODE = {
 } | {db.NATIONAL_CODE: db.NATIONAL_NAME}
 SHORT_BY_CODE = {r["code"]: r["short"] for r in REGION_META}
 
-_NATIONAL = db.read_table("monthly_observations")
-_NATIONAL = _NATIONAL[_NATIONAL["region_code"] == db.NATIONAL_CODE]
-_REGIONAL = db.read_table("monthly_observations")
-_REGIONAL = _REGIONAL[_REGIONAL["region_code"] != db.NATIONAL_CODE]
-_FORECASTS = db.read_table("forecasts")
-_CLASSIFICATION = db.read_table("risk_classifications")
-_THRESHOLDS = db.read_table("risk_thresholds")
-_METRICS = db.read_table("validation_metrics")
-_OUTBREAKS = db.read_table("outbreak_signals")
-_OUTBREAK_VALIDATION_CSV = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
-_OUTBREAK_VALIDATION = (
-    pd.read_csv(_OUTBREAK_VALIDATION_CSV) if _OUTBREAK_VALIDATION_CSV.exists() else pd.DataFrame()
-)
+_NATIONAL: pd.DataFrame = pd.DataFrame()
+_REGIONAL: pd.DataFrame = pd.DataFrame()
+_FORECASTS: pd.DataFrame = pd.DataFrame()
+_CLASSIFICATION: pd.DataFrame = pd.DataFrame()
+_THRESHOLDS: pd.DataFrame = pd.DataFrame()
+_METRICS: pd.DataFrame = pd.DataFrame()
+_OUTBREAKS: pd.DataFrame = pd.DataFrame()
+_OUTBREAK_VALIDATION: pd.DataFrame = pd.DataFrame()
+_data_ready = False
 
-for _df in (_NATIONAL, _REGIONAL):
-    _df["date"] = pd.to_datetime(
-        _df["year"].astype(str) + "-" + _df["month"].astype(str).str.zfill(2) + "-01"
-    )
-for _df, _col in (
-    (_FORECASTS, "target_date"),
-    (_CLASSIFICATION, "date"),
-):
-    _df[_col] = pd.to_datetime(_df[_col])
+
+def _load_all_data() -> None:
+    global _NATIONAL, _REGIONAL, _FORECASTS, _CLASSIFICATION  # noqa: PLW0603
+    global _THRESHOLDS, _METRICS, _OUTBREAKS, _OUTBREAK_VALIDATION  # noqa: PLW0603
+    global _data_ready  # noqa: PLW0603
+
+    t0 = time.monotonic()
+    obs = db.read_table("monthly_observations")
+    _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
+    _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
+    _FORECASTS = db.read_table("forecasts")
+    _CLASSIFICATION = db.read_table("risk_classifications")
+    _THRESHOLDS = db.read_table("risk_thresholds")
+    _METRICS = db.read_table("validation_metrics")
+    _OUTBREAKS = db.read_table("outbreak_signals")
+    csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
+    _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
+
+    for _df in (_NATIONAL, _REGIONAL):
+        _df["date"] = pd.to_datetime(
+            _df["year"].astype(str) + "-" + _df["month"].astype(str).str.zfill(2) + "-01"
+        )
+    for _df, _col in (
+        (_FORECASTS, "target_date"),
+        (_CLASSIFICATION, "date"),
+    ):
+        _df[_col] = pd.to_datetime(_df[_col])
+
+    _data_ready = True
+    print(f"Backend data loaded in {time.monotonic() - t0:.1f}s")
 
 
 def _region_code_or_none(label):
@@ -579,6 +597,12 @@ def _llm_narrate(system_prompt, user_prompt):
     )
 
 
+@asynccontextmanager
+async def lifespan(_app):
+    _load_all_data()
+    yield
+
+
 app = FastAPI(
     title="HEALTHWATCH API",
     description=(
@@ -587,6 +611,7 @@ app = FastAPI(
         "study objective they serve."
     ),
     version="0.2.0",
+    lifespan=lifespan,
 )
 
 _origins = os.environ.get(
@@ -626,6 +651,88 @@ def root():
     }
 
 
+@app.get("/health", tags=["info"])
+def health():
+    """Lightweight health check — always 200 once the process is up, even
+    while data is still loading. Render uses this to confirm the instance
+    is alive during cold start."""
+    return {"status": "ok", "data_ready": _data_ready}
+
+
+@app.get("/dashboard", tags=["objective_4_dashboard"])
+def dashboard(disease: str = Query(default=DISEASE_DEFAULT)):
+    """Single batched endpoint returning all regions' series + metrics +
+    outbreak data in one response. Replaces the 37 individual calls the
+    frontend previously made on every page load."""
+    if not _data_ready:
+        raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
+    _check_disease(disease)
+
+    series_out = {}
+    metrics_out = {}
+    for region in REGION_META:
+        code = region["code"]
+        label = region["short"]
+        # --- series ---
+        hist = _REGIONAL[_REGIONAL["region_code"] == code].sort_values("date")
+        points = [
+            _month_point(i, dt, cases, False)
+            for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
+        ]
+        fcst = _FORECASTS[
+            (_FORECASTS["region_code"] == code) & (_FORECASTS["disease"] == disease)
+        ].sort_values("target_date")
+        for k, row in enumerate(fcst.itertuples(index=False)):
+            points.append(
+                _month_point(
+                    len(points),
+                    row.target_date,
+                    row.yhat,
+                    True,
+                    lower=row.yhat_lower,
+                    upper=row.yhat_upper,
+                )
+            )
+        series_out[label] = points
+        # --- metrics ---
+        rows = _METRICS[
+            (_METRICS["region_code"] == code) & (_METRICS["disease"] == disease)
+        ]
+        primary = rows[rows["window"] == PRIMARY_WINDOW]
+        if not primary.empty:
+            row = primary.iloc[0]
+            metrics_out[label] = {
+                "region": region["name"],
+                "mae": float(row["MAE"]),
+                "rmse": float(row["RMSE"]),
+                "mape": float(row["MAPE"]),
+                "months": int(row["months"]),
+                "skill_vs_naive_pct": (
+                    None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"])
+                ),
+                "confidence": _confidence(
+                    float(row["MAPE"]), float(row["skill_vs_naive_pct"]), int(row["months"])
+                ),
+                "windows": rows.assign(
+                    region=rows["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
+                ).drop(columns=["region_code"]).to_dict(orient="records"),
+            }
+
+    # --- outbreak ---
+    outbreak_df = _OUTBREAKS.copy()
+    outbreak_df = outbreak_df.assign(
+        region=outbreak_df["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
+    ).drop(columns=["region_code"])
+    outbreak_items = outbreak_df.sort_values(["region", "season"]).to_dict(orient="records")
+
+    return {
+        "disease": disease,
+        "series": series_out,
+        "metrics": metrics_out,
+        "outbreak": outbreak_items,
+    }
+
+
 @app.get("/regions", tags=["objective_4_dashboard"])
 def regions():
     return REGION_META
@@ -634,6 +741,8 @@ def regions():
 @app.get("/status", tags=["objective_4_dashboard"])
 def status():
     """Pipeline freshness: when outputs were generated and how far data reaches."""
+    if not _data_ready:
+        raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
     output_csvs = (
         ingest.PROCESSED_DIR / "forecasts.csv",
         ingest.PROCESSED_DIR / "risk_classification.csv",
