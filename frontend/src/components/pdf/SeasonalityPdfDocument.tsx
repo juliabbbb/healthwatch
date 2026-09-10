@@ -47,6 +47,21 @@ export interface SeasonalityPdfDocumentProps {
     seasonAvg: number;
     seasonP75: number;
   } | null;
+  /** Forecast summary for the PDF. */
+  forecast?: {
+    horizon: number;
+    predictedCases: number;
+    predictedLower: number;
+    predictedUpper: number;
+    percentileRank: number;
+    changePct: number;
+    dominantIllness: string;
+  };
+  /** Intervention summary for the PDF. */
+  intervention?: {
+    riskLevel: RiskLevel;
+    recommendations: string[];
+  };
 }
 
 function RiskBadgeInline({ level }: { level: RiskLevel }) {
@@ -108,6 +123,8 @@ export function SeasonalityPdfDocument({
   decomposition,
   risk,
   outbreak,
+  forecast,
+  intervention,
 }: SeasonalityPdfDocumentProps) {
   return (
     <Document title={`HEALTHWATCH Seasonal Pattern Analysis Report — ${regionName}`}>
@@ -298,6 +315,57 @@ export function SeasonalityPdfDocument({
                 </Text>
               </Text>
             </View>
+          </>
+        )}
+
+        {/* ---- Case Volume Forecast ---- */}
+        {forecast && (
+          <>
+            <Text style={pdfStyles.sectionTitle}>Case Volume Forecast</Text>
+            <MetaRow label="Forecast horizon" value={`${forecast.horizon} months`} />
+            <MetaRow
+              label="Predicted cases"
+              value={`${forecast.predictedCases.toLocaleString()} (CI ${forecast.predictedLower.toLocaleString()}–${forecast.predictedUpper.toLocaleString()})`}
+            />
+            <MetaRow label="Historical percentile" value={`${forecast.percentileRank}th`} />
+            <MetaRow
+              label="3-month change"
+              value={`${forecast.changePct >= 0 ? "+" : ""}${forecast.changePct}%`}
+            />
+            <MetaRow label="Dominant illness" value={forecast.dominantIllness} />
+          </>
+        )}
+
+        {/* ---- Intervention Recommendations ---- */}
+        {intervention && intervention.recommendations.length > 0 && (
+          <>
+            <Text style={pdfStyles.sectionTitle}>Intervention Recommendations</Text>
+            <View
+              style={[
+                pdfStyles.card,
+                {
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 8,
+                  marginBottom: 8,
+                },
+              ]}
+            >
+              <RiskBadgeInline level={intervention.riskLevel} />
+              <Text style={[pdfStyles.value, { fontSize: 11 }]}>
+                {intervention.riskLevel === "high"
+                  ? "High"
+                  : intervention.riskLevel === "moderate"
+                    ? "Moderate"
+                    : "Low"}{" "}
+                Risk — recommended response measures
+              </Text>
+            </View>
+            {intervention.recommendations.map((rec, i) => (
+              <View key={i} style={[pdfStyles.metaRow, { alignItems: "flex-start" }]}>
+                <Text style={[pdfStyles.metaValue, { flex: 1 }]}>{`${i + 1}. ${rec}`}</Text>
+              </View>
+            ))}
           </>
         )}
 

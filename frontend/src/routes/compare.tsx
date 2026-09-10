@@ -290,7 +290,14 @@ export default function ComparePage() {
                           isCurrent && "bg-primary/20 text-primary border-primary/40",
                           isForecast && "border-border",
                         )}
-                        style={isForecast ? { color: "var(--dry)", backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)" } : undefined}
+                        style={
+                          isForecast
+                            ? {
+                                color: "var(--dry)",
+                                backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)",
+                              }
+                            : undefined
+                        }
                       >
                         {isHistorical && `${Math.abs(horizon)}m past reported`}
                         {isCurrent && "Current baseline (Now)"}
@@ -490,7 +497,10 @@ export default function ComparePage() {
             }
           }}
         >
-          <div className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" style={{ zIndex: 9999 }}>
+          <div
+            className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+            style={{ zIndex: 9999 }}
+          >
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-border/70 px-4 sm:px-5 py-3.5 sm:py-4 bg-secondary/20">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -672,8 +682,8 @@ export default function ComparePage() {
                           {/* Button to open full region analysis page */}
                           <div className="pt-2 flex justify-end">
                             <Link
-                              to="/region/$code"
-                              params={{ code: a.region.code }}
+                              to="/seasonality"
+                              search={{ region: a.region.code }}
                               className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
                             >
                               <span>Open full {a.region.short} analysis</span>
@@ -703,7 +713,10 @@ export default function ComparePage() {
             }
           }}
         >
-          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" style={{ zIndex: 9999 }}>
+          <div
+            className="relative w-full max-w-3xl max-h-[92vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+            style={{ zIndex: 9999 }}
+          >
             {/* Header */}
             <div className="flex items-start justify-between border-b border-border/70 p-4 sm:p-5 bg-card/50">
               <div className="min-w-0 flex-1">
@@ -844,17 +857,23 @@ export default function ComparePage() {
 
                   <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-xs">
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">MAPE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                        MAPE
+                      </span>
                       <span className="font-bold text-foreground">{detailedMetrics.mape}%</span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">MAE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                        MAE
+                      </span>
                       <span className="font-bold text-foreground">
                         {detailedMetrics.mae.toFixed(1)}
                       </span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">RMSE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                        RMSE
+                      </span>
                       <span className="font-bold text-foreground">
                         {detailedMetrics.rmse.toFixed(1)}
                       </span>
@@ -899,8 +918,8 @@ export default function ComparePage() {
               </div>
 
               <Link
-                to="/region/$code"
-                params={{ code: detailedAssessment.region.code }}
+                to="/seasonality"
+                search={{ region: detailedAssessment.region.code }}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 hover:shadow-md transition-all active:scale-[0.99] min-h-[44px]"
               >
                 <span>Open Full {detailedAssessment.region.name} Analysis</span>
@@ -1046,9 +1065,7 @@ function RegionalOverviewCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="label-caps text-[9px] font-medium">
-              3-Mo Trend
-            </p>
+            <p className="label-caps text-[9px] font-medium">3-Mo Trend</p>
             <span
               className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
               style={{
@@ -1069,17 +1086,13 @@ function RegionalOverviewCard({
         {/* Stat badges */}
         <div className="mt-2.5 grid grid-cols-2 gap-1.5">
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="label-caps text-[8px] font-medium block">
-              Nat'l Percentile
-            </span>
+            <span className="label-caps text-[8px] font-medium block">Nat'l Percentile</span>
             <span className="font-mono text-xs font-semibold text-foreground block">
               {a.percentileRank}th %ile
             </span>
           </div>
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="label-caps text-[8px] font-medium block">
-              Dominant Illness
-            </span>
+            <span className="label-caps text-[8px] font-medium block">Dominant Illness</span>
             <span className="text-xs font-semibold text-foreground truncate block">
               {a.dominantIllness.shortName}
             </span>

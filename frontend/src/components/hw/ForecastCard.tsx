@@ -202,27 +202,21 @@ export function ForecastCard({
         {/* Labeled Stat Chips Grid */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">
-               Period
-            </span>
+            <span className="label-caps text-[9px] block">Period</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {formatMonthYear(meta.label)}
             </span>
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">
-              Cases
-            </span>
+            <span className="label-caps text-[9px] block">Cases</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.point.cases.toLocaleString()}
             </span>
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">
-              3-Mo Trend
-            </span>
+            <span className="label-caps text-[9px] block">3-Mo Trend</span>
             <span
               className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
               style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
@@ -238,18 +232,14 @@ export function ForecastCard({
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">
-              Nat'l Rank
-            </span>
+            <span className="label-caps text-[9px] block">Nat'l Rank</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.percentileRank}th %ile
             </span>
           </div>
 
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="label-caps text-[9px] block">
-              Data Source
-            </span>
+            <span className="label-caps text-[9px] block">Data Source</span>
             <span className="text-[11px] font-medium text-muted-foreground truncate block">
               {meta.forecast
                 ? `Prophet Forecast · 95% CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
@@ -452,8 +442,8 @@ export function ForecastCard({
         )}
       >
         <Link
-          to="/region/$code"
-          params={{ code: regionCode }}
+          to="/seasonality"
+          search={{ region: regionCode }}
           className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-95 hover:shadow active:scale-[0.99]"
         >
           Open region analysis <ArrowUpRight className="size-3.5" />

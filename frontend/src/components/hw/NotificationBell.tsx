@@ -198,8 +198,8 @@ function NotificationContent({ items, onClose }: { items: AlertItem[]; onClose: 
         {items.map((a) => (
           <li key={a.id}>
             <Link
-              to="/region/$code"
-              params={{ code: a.regionCode }}
+              to="/seasonality"
+              search={{ region: a.regionCode }}
               onClick={onClose}
               className="flex items-start gap-3 px-4 py-4 transition-colors hover:bg-secondary/60"
             >

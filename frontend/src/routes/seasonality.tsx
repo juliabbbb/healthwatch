@@ -3,18 +3,15 @@ import { useMemo, useRef, useState, type RefObject } from "react";
 import { pdf } from "@react-pdf/renderer";
 import {
   ArrowLeft,
-  Bot,
   Copy,
   Download,
   FileDown,
   History,
-  Info,
   Loader2,
   Maximize2,
   MoreHorizontal,
   SlidersHorizontal,
   Sparkles,
-  TrendingUp,
   Waves,
 } from "lucide-react";
 import {
@@ -30,41 +27,45 @@ import {
   type ContextMenuAction,
   type ContextMenuAnchor,
 } from "@/components/hw/SeasonalityContextMenu";
-import { SeasonTag } from "@/components/hw/RiskBadge";
+import { RiskBadge, SeasonTag } from "@/components/hw/RiskBadge";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { FilterPanel } from "@/components/FilterPanel";
+import { ForecastChart } from "@/components/hw/Charts";
+import { InterventionPanel } from "@/components/hw/InterventionPanel";
+import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
+import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { useChartType } from "@/hooks/useChartType";
 import {
   CURRENT_MONTH_INDEX,
+  HIST_MONTHS,
   ILLNESSES,
   REGIONS,
   REGION_BY_CODE,
   TOTAL_MONTHS,
   acf,
-  classify,
   decompose,
   getThresholds,
   getOutbreak,
   monthMeta,
   OUTBREAK_TRIGGER_LABEL,
   REPORT_UPCOMING_SEASON,
+  recommendations,
+  seriesFor,
   assessRegion,
   type SeasonalityComponent,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export const Route = createFileRoute("/seasonality")({
+  validateSearch: (search: Record<string, unknown>): { region?: string } => ({
+    region: typeof search.region === "string" ? search.region : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Seasonal Pattern Identification — HEALTHWATCH" },
@@ -92,10 +93,18 @@ function variance(values: number[]) {
   return values.reduce((a, v) => a + (v - mean) ** 2, 0) / values.length;
 }
 
-export function SeasonalityPage() {
-  const [code, setCode] = useState("130000000");
+const HORIZONS = [4, 8, 12];
+
+function SeasonalityPage() {
+  const { region: initialRegion } = Route.useSearch();
+  const [code, setCode] = useState(
+    initialRegion && REGION_BY_CODE[initialRegion] ? initialRegion : "130000000",
+  );
   const [illness, setIllness] = useState("all");
   const [horizon, setHorizon] = useState<number>(0);
+  const [forecastHorizon, setForecastHorizon] = useState(12);
+  const [seasonFilter, setSeasonFilter] = useState<"all" | "wet" | "dry">("all");
+  const { chartType: forecastChartType, setChartType: setForecastChartType } = useChartType();
   const region = REGION_BY_CODE[code]!;
 
   const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
@@ -198,6 +207,20 @@ export function SeasonalityPage() {
     };
   }, [decompData, acfData]);
 
+  // Regional analysis computed values
+  const assessment = useMemo(
+    () => assessRegion(code, illness, CURRENT_MONTH_INDEX + forecastHorizon),
+    [code, illness, forecastHorizon],
+  );
+  const forecastSeries = useMemo(() => seriesFor(code, illness), [code, illness]);
+  const forecastRows = useMemo(
+    () =>
+      forecastSeries
+        .slice(HIST_MONTHS, HIST_MONTHS + forecastHorizon)
+        .filter((p) => seasonFilter === "all" || p.season === seasonFilter),
+    [forecastSeries, forecastHorizon, seasonFilter],
+  );
+
   const exportCsv = (comp: SeasonalityComponent) => {
     let csvContent = "";
     if (comp === "acf") {
@@ -277,13 +300,15 @@ export function SeasonalityPage() {
       const illnessLabel = illness === "all" ? "all illnesses" : illness;
 
       // Risk tier classification
-      const assessment = assessRegion(code, illness, monthIndex, "percapita");
       const riskThresholds = getThresholds(illness, assessment.point.month, "percapita");
 
       // Outbreak indicator
       const outbreakData = getOutbreak(code);
       const outbreakSeason = REPORT_UPCOMING_SEASON;
       const outbreakEntry = outbreakData[outbreakSeason] ?? null;
+
+      // Intervention recommendations
+      const recs = recommendations(assessment);
 
       const blob = await pdf(
         <SeasonalityPdfDocument
@@ -329,6 +354,19 @@ export function SeasonalityPage() {
                 }
               : null
           }
+          forecast={{
+            horizon: forecastHorizon,
+            predictedCases: Math.round(assessment.point.cases),
+            predictedLower: Math.round(assessment.point.lower),
+            predictedUpper: Math.round(assessment.point.upper),
+            percentileRank: assessment.percentileRank,
+            changePct: assessment.changePct,
+            dominantIllness: assessment.dominantIllness.shortName,
+          }}
+          intervention={{
+            riskLevel: assessment.risk,
+            recommendations: recs.map((r) => `${r.title}. ${r.detail}`),
+          }}
         />,
       ).toBlob();
 
@@ -601,7 +639,22 @@ export function SeasonalityPage() {
         />
       </div>
 
-      {/* Summary KPI Metrics */}
+      {/* Forecast & Season Filters */}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="label-caps text-[10px] text-muted-foreground">Forecast horizon:</span>
+        {HORIZONS.map((h) => (
+          <Chip key={h} active={forecastHorizon === h} onClick={() => setForecastHorizon(h)}>
+            {h}-month
+          </Chip>
+        ))}
+        <span className="mx-2 h-5 w-px bg-border" />
+        <span className="label-caps text-[10px] text-muted-foreground">Season:</span>
+        {(["all", "wet", "dry"] as const).map((s) => (
+          <Chip key={s} active={seasonFilter === s} onClick={() => setSeasonFilter(s)}>
+            {s === "all" ? "All seasons" : `${s} season`}
+          </Chip>
+        ))}
+      </div>
       <div className="mt-8">
         <div className="mb-2.5 flex items-center justify-between gap-2">
           <p className="label-caps text-xs">Summary Metrics</p>
@@ -786,16 +839,149 @@ export function SeasonalityPage() {
         </div>
       </section>
 
-      {/* Footer Navigation */}
+      {/* Regional Analysis KPIs */}
       <div className="mt-8">
-        <Link
-          to="/region/$code"
-          params={{ code }}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card/50 px-3.5 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary"
-        >
-          Open {region.short} forecast detail
-        </Link>
+        <div className="mb-2.5 flex items-center justify-between gap-2">
+          <p className="label-caps text-xs">Forecast & Risk Metrics</p>
+          <div className="flex items-center gap-2">
+            <RiskBadge risk={assessment.risk} />
+            <SeasonTag season={monthMeta(assessment.monthIndex).season} />
+            <ClassificationInfo
+              mode={assessment.mode}
+              thresholds={assessment.thresholds}
+              label="Risk method"
+            />
+          </div>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <Kpi
+            label={`Predicted (${formatMonthYear(monthMeta(assessment.monthIndex).label)})`}
+            value={assessment.point.cases.toLocaleString()}
+            sub={`CI ${assessment.point.lower.toLocaleString()}–${assessment.point.upper.toLocaleString()}`}
+          />
+          <Kpi
+            label="Historical percentile"
+            value={`${assessment.percentileRank}th`}
+            sub={`P50 ${Math.round(assessment.thresholds.p50).toLocaleString()} · P75 ${Math.round(assessment.thresholds.p75).toLocaleString()}`}
+          />
+          <Kpi
+            label="3-month change"
+            value={`${assessment.changePct >= 0 ? "+" : ""}${assessment.changePct}%`}
+            sub="vs. same series 3 months prior"
+          />
+          <Kpi
+            label="Dominant illness"
+            value={assessment.dominantIllness.shortName}
+            sub={assessment.dominantIllness.driver}
+          />
+        </div>
       </div>
+
+      {/* Case Volume Forecast */}
+      <section className="mt-8 glass-panel rounded-2xl p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Case volume forecast
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Reported 2022–2026 with {forecastHorizon}-month predicted horizon and 95% interval,
+              wet-season shading.
+            </p>
+          </div>
+          <ChartTypeToggle value={forecastChartType} onChange={setForecastChartType} />
+        </div>
+        <ForecastChart
+          regionCode={code}
+          illness={illness}
+          horizon={forecastHorizon}
+          chartType={forecastChartType}
+        />
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full min-w-[520px] text-left text-sm">
+            <thead className="label-caps">
+              <tr>
+                <th className="py-2 px-4">Month</th>
+                <th className="py-2 px-4">Season</th>
+                <th className="py-2 px-4 text-right">Predicted</th>
+                <th className="py-2 px-4 text-right">Lower</th>
+                <th className="py-2 px-4 text-right">Upper</th>
+              </tr>
+            </thead>
+            <tbody>
+              {forecastRows.map((p) => (
+                <tr key={p.index} className="border-t border-border">
+                  <td className="py-3 px-4">{formatMonthYear(p.label)}</td>
+                  <td className="py-3 px-4 capitalize text-muted-foreground">{p.season}</td>
+                  <td className="py-3 px-4 text-right font-mono tabular-nums">
+                    {p.cases.toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
+                    {p.lower.toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
+                    {p.upper.toLocaleString()}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Outbreak Outlook */}
+      <section className="mt-8 glass-panel rounded-2xl p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Outbreak outlook — dry vs wet
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Season-average forecast for the coming dry (Dec–May) and wet (Jun–Nov) windows vs. the
+              region's long-run seasonal P75 baseline.
+            </p>
+          </div>
+        </div>
+        <SeasonalOutbreakView code={code} />
+        <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+          Prospective validation against real 2025 data: dry-season detection F1 0.90 (precision
+          0.93 / recall 0.88 across regions); the wet season by design favours recall and over-warns
+          rather than missing a surge.
+        </p>
+      </section>
+
+      {/* Intervention Recommendations */}
+      <section className="mt-8 glass-panel rounded-2xl p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Intervention recommendations
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Evidence-based response measures triggered by the current hotspot classification and
+              forecast trajectory.
+            </p>
+          </div>
+        </div>
+        <InterventionPanel assessment={assessment} />
+      </section>
+
+      {/* AI-Assisted Analysis */}
+      {aiEnabled && (
+        <section className="mt-8 glass-panel rounded-2xl p-5">
+          <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-foreground">
+                AI-assisted analysis
+              </h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Plain-language summary generated by AI from this region's pipeline outputs.
+              </p>
+            </div>
+          </div>
+          <AIAnalysisPanel regionCode={code} />
+        </section>
+      )}
 
       {/* Context / Options Menu */}
       <SeasonalityContextMenu anchor={menu} actions={menuActions} onClose={() => setMenu(null)} />
@@ -864,5 +1050,66 @@ function Chip({
     >
       {children}
     </button>
+  );
+}
+
+function SeasonalOutbreakView({ code }: { code: string }) {
+  const outlook = getOutbreak(code);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      {(["dry", "wet"] as const).map((season) => {
+        const ind = outlook[season];
+        if (!ind) return null;
+        const flagged = ind.outbreak;
+        const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
+        const width = Math.min(100, Math.round((ratio / 1.5) * 100));
+        return (
+          <div key={season} className="rounded-lg border border-border bg-card/60 p-3">
+            <div className="flex items-center justify-between">
+              <p className="label-caps capitalize">{season} season outlook</p>
+              <span
+                className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
+                style={
+                  flagged
+                    ? {
+                        color: "oklch(0.99 0.003 95)",
+                        backgroundColor: "var(--risk-high-solid)",
+                      }
+                    : { color: "var(--risk-low-solid)", backgroundColor: "var(--risk-moderate)" }
+                }
+              >
+                {flagged ? "Outbreak" : "No alert"}
+              </span>
+            </div>
+            <p className="mt-2 text-xs text-muted-foreground">
+              Forecast season average{" "}
+              <span className="font-mono text-sm tabular-nums text-foreground">
+                {Math.round(ind.season_avg).toLocaleString()}
+              </span>{" "}
+              cases/month vs seasonal P75{" "}
+              <span className="font-mono tabular-nums">
+                {Math.round(ind.season_p75).toLocaleString()}
+              </span>
+            </p>
+            <div className="relative mt-2 h-1.5 overflow-hidden rounded-full bg-secondary">
+              <div
+                className="absolute inset-y-0 left-0 rounded-full"
+                style={{
+                  width: `${width}%`,
+                  backgroundColor: "var(--risk-high)",
+                }}
+              />
+            </div>
+            <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
+              {OUTBREAK_TRIGGER_LABEL[ind.trigger] ?? ind.trigger}
+              {ind.trigger === "consecutive_high" || ind.trigger === "both"
+                ? ` — ${ind.consecutive_high_n} consecutive monthly High forecasts`
+                : ""}{" "}
+              over {ind.n_forecast_months} probe months.
+            </p>
+          </div>
+        );
+      })}
+    </div>
   );
 }
