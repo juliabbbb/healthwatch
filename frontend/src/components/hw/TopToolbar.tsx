@@ -22,6 +22,7 @@ import {
   GitCompare,
   BookOpen,
 } from "lucide-react";
+import { toast } from "sonner";
 import { SubscribeModal } from "@/components/modals/SubscribeModal";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -55,7 +56,6 @@ export function TopToolbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [subscribeOpen, setSubscribeOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -78,43 +78,74 @@ export function TopToolbar({
     ).slice(0, 6);
   }, [q]);
 
-  const copyFallback = (text: string) => {
+  const copyFallback = (text: string): boolean => {
     const input = document.createElement("textarea");
     input.value = text;
+    input.setAttribute("readonly", "");
     input.style.position = "fixed";
+    input.style.inset = "0 auto auto 0";
     input.style.opacity = "0";
     document.body.appendChild(input);
     input.select();
-    document.execCommand("copy");
+    input.setSelectionRange(0, text.length);
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch {
+      ok = false;
+    }
     document.body.removeChild(input);
+    return ok;
+  };
+
+  const handleCopy = async (text: string): Promise<boolean> => {
+    if (document.hasFocus() && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // secure-context/permission failure — fall through to legacy path
+      }
+    } else {
+      try {
+        await navigator.clipboard?.writeText?.(text);
+        return true;
+      } catch {
+        // fall through to legacy path
+      }
+    }
+    return copyFallback(text);
+  };
+
+  const shareUrl = () => {
+    try {
+      const host = window.location.hostname;
+      const isDevHost =
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        host.endsWith(".local") ||
+        host.endsWith(".localhost") ||
+        host.endsWith(".test") ||
+        /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+      if (isDevHost) return "https://healthwatch-ui.onrender.com/";
+    } catch {
+      // fall back to the current URL below
+    }
+    return window.location.href;
   };
 
   const handleShare = async () => {
-    if (typeof navigator === "undefined") return;
-    const url =
-      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-        ? "https://healthwatch-ui.onrender.com/"
-        : window.location.href;
-    if (typeof navigator.share === "function") {
-      try {
-        await navigator.share({ title: "HealthWatch", url });
-        return;
-      } catch {
-        // user cancelled or share failed — fall through to clipboard copy
-      }
-    }
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(url);
-      } else {
-        copyFallback(url);
-      }
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      copyFallback(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+    const url = shareUrl();
+    const ok = await handleCopy(url);
+    if (ok) {
+      toast.success("Link copied!", {
+        description: url,
+      });
+    } else {
+      toast.error("Copying the link failed", {
+        description:
+          "Your browser blocked clipboard access — paste permission or allow it in site settings.",
+      });
     }
   };
 
@@ -185,69 +216,51 @@ export function TopToolbar({
           <IconButton label="Settings" onClick={() => setSettingsOpen(true)}>
             <Settings className="size-4" />
           </IconButton>
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <IconButton
-                label={copied ? "Link copied!" : "Share view"}
-                className={copied ? "text-primary" : ""}
-              >
-                <Share2 className="size-4" />
-              </IconButton>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content
-                align="end"
-                sideOffset={8}
-                className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
-              >
-                <DropdownMenu.Item
-                  onSelect={handleShare}
-                  className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+          <IconButton label="Share this view" onClick={() => void handleShare()}>
+            <Share2 className="size-4" />
+          </IconButton>
+          {onExport && (
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <IconButton label="Export view">
+                  <Download className="size-4" />
+                </IconButton>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={8}
+                  className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
                 >
-                  <Share2 className="size-4 shrink-0 text-primary" />
-                  <span>{copied ? "Link copied!" : "Copy share link"}</span>
-                </DropdownMenu.Item>
-                <DropdownMenu.Separator className="my-1 h-px bg-border/60" />
-                {onExport ? (
-                  <>
-                    <DropdownMenu.Item
-                      onSelect={() => onExport("png")}
-                      {...(exporting ? { disabled: exporting } : {})}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                    >
-                      <ImageIcon className="size-4 shrink-0 text-primary" />
-                      <span>Export as PNG</span>
-                    </DropdownMenu.Item>
-                    <DropdownMenu.Item
-                      onSelect={() => onExport("pdf")}
-                      {...(exporting ? { disabled: exporting } : {})}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                    >
-                      <FileText className="size-4 shrink-0 text-primary" />
-                      <span>Export as PDF</span>
-                    </DropdownMenu.Item>
-                    {onExportCsv && (
-                      <DropdownMenu.Item
-                        onSelect={onExportCsv}
-                        className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
-                      >
-                        <Download className="size-4 shrink-0 text-primary" />
-                        <span>Export as CSV</span>
-                      </DropdownMenu.Item>
-                    )}
-                  </>
-                ) : (
                   <DropdownMenu.Item
-                    onSelect={() => window.print()}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+                    onSelect={() => onExport("png")}
+                    {...(exporting ? { disabled: exporting } : {})}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                   >
-                    <Download className="size-4 shrink-0 text-primary" />
-                    <span>Print snapshot</span>
+                    <ImageIcon className="size-4 shrink-0 text-primary" />
+                    <span>Export as PNG</span>
                   </DropdownMenu.Item>
-                )}
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+                  <DropdownMenu.Item
+                    onSelect={() => onExport("pdf")}
+                    {...(exporting ? { disabled: exporting } : {})}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                  >
+                    <FileText className="size-4 shrink-0 text-primary" />
+                    <span>Export as PDF</span>
+                  </DropdownMenu.Item>
+                  {onExportCsv && (
+                    <DropdownMenu.Item
+                      onSelect={onExportCsv}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+                    >
+                      <Download className="size-4 shrink-0 text-primary" />
+                      <span>Export as CSV</span>
+                    </DropdownMenu.Item>
+                  )}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          )}
           <IconButton
             label="Subscribe to monthly forecast reports"
             onClick={() => setSubscribeOpen(true)}
@@ -478,7 +491,7 @@ export function TopToolbar({
                     className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
                     <Share2 className="size-4 text-primary" />
-                    <span>{copied ? "Link Copied!" : "Share Link"}</span>
+                    <span>Share Link</span>
                   </button>
                   <button
                     onClick={() => {

@@ -12,6 +12,8 @@ import { useEffect, useState, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { dataReady } from "@/lib/healthwatch/data";
+import { Toaster } from "@/components/ui/sonner";
+import { useTheme } from "@/hooks/use-theme";
 
 function NotFoundComponent() {
   return (
@@ -233,6 +235,7 @@ function DataGate({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [theme] = useTheme();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -240,6 +243,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </DataGate>
+      <Toaster theme={theme} position="top-center" toastOptions={{ duration: 3000 }} />
     </QueryClientProvider>
   );
 }
