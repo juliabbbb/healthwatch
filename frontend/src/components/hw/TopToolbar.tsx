@@ -78,9 +78,41 @@ export function TopToolbar({
     ).slice(0, 6);
   }, [q]);
 
-  const handleShare = () => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      void navigator.clipboard.writeText(window.location.href);
+  const copyFallback = (text: string) => {
+    const input = document.createElement("textarea");
+    input.value = text;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    document.body.removeChild(input);
+  };
+
+  const handleShare = async () => {
+    if (typeof navigator === "undefined") return;
+    const url =
+      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "https://healthwatch-ui.onrender.com/"
+        : window.location.href;
+    if (typeof navigator.share === "function") {
+      try {
+        await navigator.share({ title: "HealthWatch", url });
+        return;
+      } catch {
+        // user cancelled or share failed — fall through to clipboard copy
+      }
+    }
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        copyFallback(url);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      copyFallback(url);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
