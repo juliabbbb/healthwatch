@@ -276,7 +276,7 @@ export function ChartExpandModal({
                 className="flex items-center gap-1.5 rounded-lg border border-border bg-card/70 px-2.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer"
               >
                 {copied ? (
-                  <Check className="size-3.5 text-emerald-400" />
+                  <Check className="size-3.5 text-primary" />
                 ) : (
                   <Copy className="size-3.5" />
                 )}

@@ -268,7 +268,7 @@ export default function ComparePage() {
           selectedIllness={illness}
           onIllnessChange={setIllness}
           dateSliderSlot={
-            <div className="rounded-xl border border-border/80 bg-card/40 p-4 sm:p-5 shadow-xs">
+            <div className="glass-panel rounded-xl p-4 sm:p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 {/* Temporal Status Headline */}
                 <div className="flex items-center gap-3">
@@ -288,9 +288,9 @@ export default function ComparePage() {
                           "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
                           isHistorical && "bg-secondary text-muted-foreground border-border",
                           isCurrent && "bg-primary/20 text-primary border-primary/40",
-                          isForecast &&
-                            "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30",
+                          isForecast && "border-border",
                         )}
+                        style={isForecast ? { color: "var(--dry)", backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)" } : undefined}
                       >
                         {isHistorical && `${Math.abs(horizon)}m past reported`}
                         {isCurrent && "Current baseline (Now)"}
@@ -399,7 +399,7 @@ export default function ComparePage() {
       {/* Primary Comparison Section: Spec #1 populated directly from top selection */}
       <section className="mt-8">
         {selected.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border bg-card/20 py-12 px-6 text-center max-w-xl mx-auto my-6">
+          <div className="glass-panel rounded-2xl py-12 px-6 text-center max-w-xl mx-auto my-6">
             <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-2xl bg-secondary/50 text-muted-foreground">
               <Layers className="size-6" />
             </div>
@@ -483,14 +483,14 @@ export default function ComparePage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="benchmark-modal-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70 backdrop-blur-md p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setIsBenchmarkModalOpen(false);
             }
           }}
         >
-          <div className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-5xl max-h-[90vh] sm:max-h-[88vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" style={{ zIndex: 9999 }}>
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-border/70 px-4 sm:px-5 py-3.5 sm:py-4 bg-secondary/20">
               <div className="flex items-center gap-2.5 min-w-0">
@@ -696,14 +696,14 @@ export default function ComparePage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="detailed-card-title"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
+          className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70 backdrop-blur-md p-3 sm:p-6 overflow-y-auto animate-in fade-in duration-200"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               setDetailedCardRegionCode(null);
             }
           }}
         >
-          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="relative w-full max-w-3xl max-h-[92vh] rounded-2xl border border-border/80 bg-card shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" style={{ zIndex: 9999 }}>
             {/* Header */}
             <div className="flex items-start justify-between border-b border-border/70 p-4 sm:p-5 bg-card/50">
               <div className="min-w-0 flex-1">
@@ -985,7 +985,7 @@ function RegionalOverviewCard({
       onClick={() => onOpenModal(a.region.code)}
       onKeyDown={handleKeyDown}
       aria-label={`Open detailed analysis for ${a.region.name}`}
-      className="group relative flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-5 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+      className="group relative flex flex-col justify-between rounded-xl glass-panel p-5 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
     >
       <div>
         {/* Card Header: Region short code, density & action buttons */}

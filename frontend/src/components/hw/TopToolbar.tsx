@@ -7,6 +7,7 @@ import {
   FileText,
   Image as ImageIcon,
   Loader2,
+  Mail,
   Menu,
   Minus,
   Moon,
@@ -21,6 +22,7 @@ import {
   GitCompare,
   BookOpen,
 } from "lucide-react";
+import { SubscribeModal } from "@/components/modals/SubscribeModal";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
@@ -43,6 +45,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -122,7 +125,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
         </div>
 
         {/* Primary Desktop Nav Links */}
-        <nav className="glass-panel flex items-center gap-1 rounded-xl p-1">
+        <nav className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <NavLink to="/">Map</NavLink>
           <NavLink to="/seasonality">Seasonality</NavLink>
           <NavLink to="/compare">Compare</NavLink>
@@ -130,7 +133,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
         </nav>
 
         {/* Action icons */}
-        <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
+        <div className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           {trailing}
           <IconButton
             label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -141,58 +144,66 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
           <IconButton label="Settings" onClick={() => setSettingsOpen(true)}>
             <Settings className="size-4" />
           </IconButton>
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <IconButton
+                label={copied ? "Link copied!" : "Share view"}
+                className={copied ? "text-primary" : ""}
+              >
+                <Share2 className="size-4" />
+              </IconButton>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                align="end"
+                sideOffset={8}
+                className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
+              >
+                <DropdownMenu.Item
+                  onSelect={handleShare}
+                  className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+                >
+                  <Share2 className="size-4 shrink-0 text-primary" />
+                  <span>{copied ? "Link copied!" : "Copy share link"}</span>
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator className="my-1 h-px bg-border/60" />
+                {onExport ? (
+                  <>
+                    <DropdownMenu.Item
+                      onSelect={() => onExport("png")}
+                      {...(exporting ? { disabled: exporting } : {})}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <ImageIcon className="size-4 shrink-0 text-primary" />
+                      <span>Export as PNG</span>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Item
+                      onSelect={() => onExport("pdf")}
+                      {...(exporting ? { disabled: exporting } : {})}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    >
+                      <FileText className="size-4 shrink-0 text-primary" />
+                      <span>Export as PDF</span>
+                    </DropdownMenu.Item>
+                  </>
+                ) : (
+                  <DropdownMenu.Item
+                    onSelect={() => window.print()}
+                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+                  >
+                    <Download className="size-4 shrink-0 text-primary" />
+                    <span>Print snapshot</span>
+                  </DropdownMenu.Item>
+                )}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
           <IconButton
-            label={copied ? "Link copied!" : "Share view"}
-            onClick={handleShare}
-            className={copied ? "text-primary" : ""}
+            label="Subscribe to monthly forecast reports"
+            onClick={() => setSubscribeOpen(true)}
           >
-            <Share2 className="size-4" />
+            <Mail className="size-4" />
           </IconButton>
-          {onExport ? (
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <IconButton
-                  label="Export snapshot"
-                  {...(exporting ? { disabled: exporting } : {})}
-                  className={exporting ? "text-primary" : ""}
-                >
-                  {exporting ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    <Download className="size-4" />
-                  )}
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  align="end"
-                  sideOffset={8}
-                  className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
-                >
-                  <DropdownMenu.Item
-                    onSelect={() => onExport("png")}
-                    {...(exporting ? { disabled: exporting } : {})}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                  >
-                    <ImageIcon className="size-4 shrink-0 text-primary" />
-                    <span>Export as PNG</span>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    onSelect={() => onExport("pdf")}
-                    {...(exporting ? { disabled: exporting } : {})}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                  >
-                    <FileText className="size-4 shrink-0 text-primary" />
-                    <span>Export as PDF</span>
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          ) : (
-            <IconButton label="Export snapshot" onClick={() => window.print()}>
-              <Download className="size-4" />
-            </IconButton>
-          )}
           {onZoom && (
             <>
               <span className="mx-0.5 h-5 w-px bg-border" />
@@ -354,7 +365,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
                   className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
                   aria-label="Close navigation menu"
                 >
-                  <X className="size-5" />
+                  <X className="size-4" />
                 </button>
               </div>
 
@@ -420,6 +431,16 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
                     <span>{copied ? "Link Copied!" : "Share Link"}</span>
                   </button>
                   <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setSubscribeOpen(true);
+                    }}
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                  >
+                    <Mail className="size-4 text-primary" />
+                    <span>Subscribe</span>
+                  </button>
+                  <button
                     disabled={exporting}
                     onClick={() => {
                       setMobileMenuOpen(false);
@@ -443,6 +464,7 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
         )}
 
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <SubscribeModal open={subscribeOpen} onOpenChange={setSubscribeOpen} />
     </>
   );
 }
@@ -453,7 +475,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
       to={to}
       activeOptions={{ exact: to === "/" }}
       className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-      activeProps={{ className: "bg-secondary text-primary font-semibold" }}
+      activeProps={{ className: "bg-secondary/80 text-foreground font-medium" }}
     >
       {children}
     </Link>

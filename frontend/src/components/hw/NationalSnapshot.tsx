@@ -99,8 +99,8 @@ export function NationalSnapshot({
       {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
       <div className="grid grid-cols-3 gap-3">
         {/* Card A: National Incidence */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+        <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+          <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
             National Incidence
           </p>
           <div className="mt-2">
@@ -114,9 +114,9 @@ export function NationalSnapshot({
         </div>
 
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
-        <div className="relative rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+        <div className="relative rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <div className="flex items-start justify-between gap-1 min-w-0">
-            <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+            <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
               Risk Distribution
             </p>
             <div
@@ -187,8 +187,8 @@ export function NationalSnapshot({
         </div>
 
         {/* Card C: Dominant Illness */}
-        <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">
+        <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+          <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
             Dominant Illness
           </p>
           <div className="mt-2">

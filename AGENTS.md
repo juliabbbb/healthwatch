@@ -41,9 +41,22 @@ Create `.env` at repo root (git-ignored):
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
 GEMINI_API_KEY=      # Optional: free tier at aistudio.google.com
 GROQ_API_KEY=        # Alternative to Gemini (free at console.groq.com)
+RESEND_API_KEY=      # Optional: monthly forecast emails (100/day free at resend.com)
+RESEND_FROM=         # Optional, default: HealthWatch <onboarding@resend.dev>
+JOB_TOKEN=           # Optional: secret for POST /subscriptions/send-due external cron
+APP_URL=https://healthwatch-ui.onrender.com  # Base URL used in email CTAs/footer
+SUBSCRIPTIONS_DB=    # Optional: override SQLite subscription store path
+DISABLE_SUBSCRIPTION_SCHEDULER=  # Set 1 to disable the in-process monthly sender
 ```
 
 When `DATABASE_URL` is unset, backend falls back to `data/processed/healthwatch.db`.
+Subscriptions (`src/subscription_store.py`) prefer Postgres when `DATABASE_URL` is set
+(auto-creates a `subscriptions` table in Supabase, so they survive Render redeploys);
+otherwise they fall back to SQLite via `SUBSCRIPTIONS_DB` (default
+`data/subscriptions.sqlite3`) for local/dev. `JOB_TOKEN` is required on deployed
+environments: it guards `POST /subscriptions/send-due` (external monthly cron, e.g.
+cron-job.org — the in-process 6-hourly scheduler won't fire while a free Render
+instance is asleep).
 
 ## Design Tooling (Impeccable)
 
