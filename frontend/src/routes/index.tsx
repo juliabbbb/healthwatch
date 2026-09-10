@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Activity, ChevronDown, Globe, X } from "lucide-react";
 import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
@@ -9,16 +9,10 @@ import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
 import {
-  ILLNESSES,
-  METRIC_META,
   CURRENT_MONTH_INDEX,
   REPORT_UPCOMING_SEASON,
   assessAll,
-  assessRegion,
-  classify,
   formatMetric,
-  formatPHTDateTime,
-  getThresholds,
   monthMeta,
   type MetricMode,
   type Season,
@@ -26,7 +20,6 @@ import {
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import type { MapExportRegion, MapExportRegionRow } from "@/components/pdf/MapExportPDF";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -67,8 +60,6 @@ function MapView() {
 
   // Lock background scroll while the mobile national drawer is open
   useBodyScrollLock(mobileNationalOpen);
-  const [exporting, setExporting] = useState<false | "png" | "pdf">(false);
-  const mapExportRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -99,257 +90,74 @@ function MapView() {
     setMobileNationalOpen(false);
   }, []);
 
-  /**
-   * Scoped map export: captures ONLY the export region (logo, choropleth map,
-   * right-side details panel, national snapshot) — never the date slider,
-   * alerts, nav bar, or search controls. The active export region is the
-   * `data-map-export-region` wrapper subtree; excluded siblings are not
-   * rendered since modern-screenshot only walks the wrapper's subtree.
-   * Known constraint: Leaflet/CARTO raster tiles may not rasterize under
-   * CORS/canvas taint rules, in which case the choropleth overlay captures
-   * and tiles may appear blank — tile config is intentionally untouched.
-   */
-  const handleMapExport = useCallback(
-    async (format: "png" | "pdf") => {
-      if (!mapExportRef.current) return;
-      setExporting(format);
-      try {
-        const { domToPng } = await import("modern-screenshot");
-        const style: Partial<CSSStyleDeclaration> = {
-          display: "block",
-          position: "absolute",
-          top: "0",
-          left: "0",
-          width: "100%",
-          height: "100%",
-        };
-
-        const imageDataUrl = await domToPng(mapExportRef.current, {
-          backgroundColor: "#fbf8f3",
-          scale: 2,
-          style,
-          filter: (node) => {
-            if (node instanceof Element) {
-              return !node.hasAttribute("data-export-exclude");
-            }
-            return true;
-          },
-        });
-        const stamp = new Date().toISOString().slice(0, 7);
-
-        if (format === "png") {
-          const link = document.createElement("a");
-          link.download = `healthwatch-map-${stamp}.png`;
-          link.href = imageDataUrl;
-          link.click();
-          return;
-        }
-
-        const meta = monthMeta(monthIndex);
-        const nationalValue = mode === "raw" ? totalCases : nationalPer100k;
-        const nationalTier = classify(nationalValue, getThresholds(illness, meta.month, mode));
-
-        let region: MapExportRegion | null = null;
-        if (selected) {
-          const a = assessRegion(selected, illness, monthIndex, mode);
-          region = {
-            name: a.region.name,
-            short: a.region.short,
-            tier: a.risk,
-            value: formatMetric(a.value, mode),
-            unit: METRIC_META[mode].unit,
-            cases: Math.round(a.point.cases).toLocaleString(),
-            percentile: a.percentileRank,
-            changePct: a.changePct,
-            season: a.point.season,
-            forecast: a.point.forecast,
-          };
-        }
-
-        const [{ pdf }, { MapExportDocument }] = await Promise.all([
-          import("@react-pdf/renderer"),
-          import("@/components/pdf/MapExportPDF"),
-        ]);
-        const blob = await pdf(
-          <MapExportDocument
-            imageDataUrl={imageDataUrl}
-            baseline={formatMonthYear(meta.label)}
-            generatedAt={formatPHTDateTime()}
-            national={{
-              tier: nationalTier,
-              monthLabel: meta.label,
-              isForecast: meta.forecast,
-              incidence: formatMetric(nationalValue, mode),
-              unit: METRIC_META[mode].unit,
-              illnessLabel:
-                illness === "all"
-                  ? "All pathologies"
-                  : (ILLNESSES.find((i) => i.id === illness)?.name ?? illness),
-              dominantIllness: assessments[0]?.dominantIllness.name ?? "—",
-              counts,
-            }}
-            region={region}
-            regions={assessments.map((a): MapExportRegionRow => ({
-              name: a.region.name,
-              short: a.region.short,
-              risk: a.risk,
-              value: formatMetric(a.value, mode),
-              unit: METRIC_META[mode].unit,
-              cases: Math.round(a.point.cases).toLocaleString(),
-              percentile: a.percentileRank,
-              changePct: a.changePct,
-            }))}
-          />,
-        ).toBlob();
-
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `healthwatch-map-${stamp}.pdf`;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error("Map export failed:", err);
-      } finally {
-        setExporting(false);
-      }
-    },
-    [mode, illness, monthIndex, selected, totalCases, nationalPer100k, assessments, counts],
-  );
-
-  const handleMapExportCsv = useCallback(() => {
-    const meta = monthMeta(monthIndex);
-    const seasonLabel = meta.season === "wet" ? "Wet" : "Dry";
-    const illnessLabel = illness === "all" ? "all" : illness;
-    const now = new Date();
-    const parts = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Manila",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    }).formatToParts(now);
-    const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-    const dateSlug = `${get("year")}${get("month")}${get("day")}`;
-
-    const header = [
-      "Region",
-      "Risk Tier",
-      `Predicted Cases (${meta.label})`,
-      `Value (${METRIC_META[mode].unit})`,
-      "P50 Threshold",
-      "P75 Threshold",
-      "3-Month Change (%)",
-      "National Percentile",
-      "Season",
-      "Illness",
-      "Export Date",
-    ].join(",");
-
-    const rows = assessments.map((a) => {
-      const t = a.thresholds;
-      return [
-        `"${a.region.name}"`,
-        a.risk,
-        Math.round(a.point.cases),
-        formatMetric(a.value, mode),
-        t.p50.toFixed(1),
-        t.p75.toFixed(1),
-        a.changePct,
-        a.percentileRank,
-        seasonLabel,
-        illnessLabel,
-        `${get("year")}-${get("month")}-${get("day")}`,
-      ].join(",");
-    });
-
-    const csv = [header, ...rows].join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `HealthWatch_MapExport_${seasonLabel}_${dateSlug}.csv`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  }, [illness, monthIndex, mode, assessments]);
-
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
-      {/* Scoped export region: logo, Leaflet map, right panel, national snapshot.
-          Excluded UI (date slider, alerts, nav, search) stays outside this subtree. */}
-      <div ref={mapExportRef} data-map-export-region style={{ display: "contents" }}>
-        {/* 1. Interactive Map Layer */}
-        <div className="absolute inset-0 z-0">
-          {mounted && (
-            <Suspense fallback={null}>
-              <MapCanvas
-                illness={illness}
-                monthIndex={monthIndex}
-                mode={mode}
-                selectedCode={selected}
-                onSelect={handleSelect}
-                flyToCode={flyTo}
-                outbreakSeason={outbreakSeason}
-                showOutbreakMarkers={showOutbreakMarkers}
-              />
-            </Suspense>
-          )}
-        </div>
-
-        {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
-        <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
-          <NationalSnapshot
-            monthLabel={meta.label}
-            isForecast={meta.forecast}
-            value={mode === "raw" ? totalCases : nationalPer100k}
-            mode={mode}
-            onModeChange={setMode}
-            illness={illness}
-            onIllnessChange={setIllness}
-            counts={counts}
-            dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
-            showOutbreakMarkers={showOutbreakMarkers}
-            onOutbreakMarkersChange={setShowOutbreakMarkers}
-            className="shrink-0"
-          />
-
-          {/* Active Alerts — visible in the UI but excluded from the export. */}
-          <div className="flex w-full min-w-0 flex-1 flex-col" data-export-exclude>
-            <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
-          </div>
-        </div>
-
-        {/* 5. DESKTOP ONLY: Floating Forecast Card on Right */}
-        {selected && (
-          <div className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
-            <ForecastCard
-              regionCode={selected}
+      {/* 1. Interactive Map Layer */}
+      <div className="absolute inset-0 z-0">
+        {mounted && (
+          <Suspense fallback={null}>
+            <MapCanvas
               illness={illness}
               monthIndex={monthIndex}
               mode={mode}
-              onModeChange={setMode}
-              onClose={() => setSelected(null)}
+              selectedCode={selected}
+              onSelect={handleSelect}
+              flyToCode={flyTo}
               outbreakSeason={outbreakSeason}
-              onOutbreakSeasonChange={setOutbreakSeason}
+              showOutbreakMarkers={showOutbreakMarkers}
             />
-          </div>
+          </Suspense>
         )}
+      </div>
 
-        {/* 7. DESKTOP ONLY: Repositioned Logo (Bottom-Left) */}
-        <div className="pointer-events-none absolute left-4 bottom-20 z-30 hidden md:block">
-          <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 shadow-md">
-            <Activity className="size-5 text-primary" />
-            <div>
-              <p className="text-sm font-bold leading-none tracking-wide text-foreground">
-                HEALTHWATCH
-              </p>
-              <p className="mt-1 label-caps text-[10px]">
-                Regional Outbreak Hotspot Map & Forecasts
-              </p>
-            </div>
+      {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
+      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
+        <NationalSnapshot
+          monthLabel={meta.label}
+          isForecast={meta.forecast}
+          value={mode === "raw" ? totalCases : nationalPer100k}
+          mode={mode}
+          onModeChange={setMode}
+          illness={illness}
+          onIllnessChange={setIllness}
+          counts={counts}
+          dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
+          showOutbreakMarkers={showOutbreakMarkers}
+          onOutbreakMarkersChange={setShowOutbreakMarkers}
+          className="shrink-0"
+        />
+
+        {/* Active Alerts */}
+        <div className="flex w-full min-w-0 flex-1 flex-col">
+          <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
+        </div>
+      </div>
+
+      {/* 5. DESKTOP ONLY: Floating Forecast Card on Right */}
+      {selected && (
+        <div className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
+          <ForecastCard
+            regionCode={selected}
+            illness={illness}
+            monthIndex={monthIndex}
+            mode={mode}
+            onModeChange={setMode}
+            onClose={() => setSelected(null)}
+            outbreakSeason={outbreakSeason}
+            onOutbreakSeasonChange={setOutbreakSeason}
+          />
+        </div>
+      )}
+
+      {/* 7. DESKTOP ONLY: Repositioned Logo (Bottom-Left) */}
+      <div className="pointer-events-none absolute left-4 bottom-20 z-30 hidden md:block">
+        <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 shadow-md">
+          <Activity className="size-5 text-primary" />
+          <div>
+            <p className="text-sm font-bold leading-none tracking-wide text-foreground">
+              HEALTHWATCH
+            </p>
+            <p className="mt-1 label-caps text-[10px]">Regional Outbreak Hotspot Map & Forecasts</p>
           </div>
         </div>
       </div>
@@ -370,12 +178,7 @@ function MapView() {
 
       {/* 4. Top Navigation Bar (Desktop Toolbar / Mobile Hamburger Bar) */}
       <div className="absolute right-3 top-3 md:right-4 md:top-4 z-30">
-        <TopToolbar
-          onPick={handleFocusRegion}
-          onExport={handleMapExport}
-          onExportCsv={handleMapExportCsv}
-          exporting={exporting !== false}
-        />
+        <TopToolbar onPick={handleFocusRegion} />
       </div>
 
       {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}

@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Download,
-  FileText,
-  Image as ImageIcon,
-  Loader2,
   Mail,
   Menu,
   Minus,
@@ -35,21 +31,9 @@ export interface TopToolbarProps {
   onZoom?: (dir: 1 | -1) => void;
   /** Extra icon affordances (e.g. the notification bell) shown first in the actions cluster. */
   trailing?: React.ReactNode;
-  /** Replaces the default print export with a scoped PNG/PDF export dropdown. */
-  onExport?: (format: "png" | "pdf") => void;
-  /** CSV export handler for map data. */
-  onExportCsv?: () => void;
-  exporting?: boolean;
 }
 
-export function TopToolbar({
-  onPick,
-  onZoom,
-  trailing,
-  onExport,
-  onExportCsv,
-  exporting,
-}: TopToolbarProps) {
+export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -219,48 +203,6 @@ export function TopToolbar({
           <IconButton label="Share this view" onClick={() => void handleShare()}>
             <Share2 className="size-4" />
           </IconButton>
-          {onExport && (
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <IconButton label="Export view">
-                  <Download className="size-4" />
-                </IconButton>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  align="end"
-                  sideOffset={8}
-                  className="glass-panel z-[8000] min-w-44 overflow-hidden rounded-xl border border-border/80 p-1 shadow-xl"
-                >
-                  <DropdownMenu.Item
-                    onSelect={() => onExport("png")}
-                    {...(exporting ? { disabled: exporting } : {})}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                  >
-                    <ImageIcon className="size-4 shrink-0 text-primary" />
-                    <span>Export as PNG</span>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    onSelect={() => onExport("pdf")}
-                    {...(exporting ? { disabled: exporting } : {})}
-                    className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
-                  >
-                    <FileText className="size-4 shrink-0 text-primary" />
-                    <span>Export as PDF</span>
-                  </DropdownMenu.Item>
-                  {onExportCsv && (
-                    <DropdownMenu.Item
-                      onSelect={onExportCsv}
-                      className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
-                    >
-                      <Download className="size-4 shrink-0 text-primary" />
-                      <span>Export as CSV</span>
-                    </DropdownMenu.Item>
-                  )}
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
-          )}
           <IconButton
             label="Subscribe to monthly forecast reports"
             onClick={() => setSubscribeOpen(true)}
@@ -504,33 +446,15 @@ export function TopToolbar({
                     <span>Subscribe</span>
                   </button>
                   <button
-                    disabled={exporting}
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      if (onExport) void onExport("pdf");
-                      else window.print();
+                      window.print();
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98 disabled:opacity-50"
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
-                    {exporting ? (
-                      <Loader2 className="size-4 text-primary animate-spin" />
-                    ) : (
-                      <Download className="size-4 text-primary" />
-                    )}
-                    <span>{exporting ? "Exporting…" : "Export PDF"}</span>
+                    <Download className="size-4 text-primary" />
+                    <span>Print snapshot</span>
                   </button>
-                  {onExportCsv && (
-                    <button
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        onExportCsv();
-                      }}
-                      className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
-                    >
-                      <Download className="size-4 text-primary" />
-                      <span>Export CSV</span>
-                    </button>
-                  )}
                 </div>
               </div>
             </div>
