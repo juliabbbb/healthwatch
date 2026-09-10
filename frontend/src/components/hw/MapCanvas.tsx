@@ -112,6 +112,7 @@ export default function MapCanvas({
       tileRef.current = L.tileLayer(darkRef.current ? TILE_URLS.dark : TILE_URLS.light, {
         attribution: CARTO_ATTRIBUTION,
         maxZoom: 12,
+        crossOrigin: "anonymous",
       }).addTo(map);
 
       const res = await fetch("/geo/ph-regions.geojson");

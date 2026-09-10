@@ -1,4 +1,4 @@
-import { Document, Page, Text, View } from "@react-pdf/renderer";
+import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
 import type { Style } from "@react-pdf/types";
 import { pdfStyles, COLORS, riskAccent } from "./styles/pdfStyles";
@@ -267,6 +267,26 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
                   );
                 })}
               </View>
+
+              {sections.trajectory && r.trajectoryImage && (
+                <View style={{ marginTop: 10 }}>
+                  <Text style={pdfStyles.sectionTitle}>Trajectory — Reported vs Forecast</Text>
+                  <Image
+                    src={r.trajectoryImage}
+                    style={{ width: "100%", height: 170, borderRadius: 4 }}
+                  />
+                </View>
+              )}
+
+              {sections.seasonality && r.seasonalityImage && (
+                <View style={{ marginTop: 10 }}>
+                  <Text style={pdfStyles.sectionTitle}>Seasonality — Wet vs Dry Drivers</Text>
+                  <Image
+                    src={r.seasonalityImage}
+                    style={{ width: "100%", height: 140, borderRadius: 4 }}
+                  />
+                </View>
+              )}
 
               <View style={{ marginTop: 10 }}>
                 <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>

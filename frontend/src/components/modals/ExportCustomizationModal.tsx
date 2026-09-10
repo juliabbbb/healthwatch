@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { FileDown, Loader2, X } from "lucide-react";
+import { FileDown, Loader2, TriangleAlert, X } from "lucide-react";
 import {
   ILLNESSES,
   REGIONS,
@@ -84,6 +84,7 @@ export function ExportCustomizationModal({
   });
   const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0); // 0 idle, 1 rasterizing, 2 building, 3 downloading
   const [progress, setProgress] = useState(0);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // Sync the multi-select and pathology with the dashboard each time the modal opens.
   useEffect(() => {
@@ -142,6 +143,7 @@ export function ExportCustomizationModal({
   const buildExport = useCallback(async () => {
     setPhase(1);
     setProgress(0);
+    setExportError(null);
 
     const codes = selectedRegions;
 
@@ -221,25 +223,27 @@ export function ExportCustomizationModal({
     };
 
     setPhase(3);
-    let blob: Blob;
     try {
       const [{ pdf }, { SurveillanceReportPDF }] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/pdf/SurveillanceReportPDF"),
       ]);
-      blob = await pdf(<SurveillanceReportPDF options={options} />).toBlob();
+      const blob = await pdf(<SurveillanceReportPDF options={options} />).toBlob();
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Epidemiological_Report_${baselineLabel}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+      setExportError(err instanceof Error ? err.message : "Export failed. Please try again.");
     } finally {
       setPhase(0);
     }
-
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `Epidemiological_Report_${baselineLabel}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
   }, [layout, pathology, selectedRegions, monthIndex, mode, unit, sections, baselineLabel]);
 
   if (!open) return null;
@@ -473,6 +477,16 @@ export function ExportCustomizationModal({
                 <FileDown className="size-4" />
                 <span>Export Report</span>
               </button>
+            </div>
+          )}
+
+          {exportError && (
+            <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+              <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
+              <p>
+                Export failed: {exportError}. Please try again — the report includes live data, not
+                cached snapshots.
+              </p>
             </div>
           )}
         </div>

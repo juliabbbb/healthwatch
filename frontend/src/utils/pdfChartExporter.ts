@@ -3,12 +3,12 @@
  *
  * Two capture strategies are provided:
  *  1. `captureChartAsImage` — rasterize a live chart DOM wrapper with
- *     html2canvas at scale 2 (high-DPI), preserving the dark background.
+ *     modern-screenshot at scale 2 (high-DPI), preserving the dark background.
  *  2. Off-screen SVG generators — produce crisp data-URI PNGs directly from the
  *     data layer, so the PDF can embed trajectory / seasonality visuals without
  *     requiring the dashboard charts to be mounted or on screen.
  */
-// html2canvas is browser-only, so it is dynamic-imported at call time to keep
+// modern-screenshot is browser-only, so it is dynamic-imported at call time to keep
 // this module safe on the server (SSR / SSG never executes the import).
 import { formatMonthYear } from "./formatDate";
 
@@ -24,7 +24,7 @@ export async function captureChartAsImage(
   elementIdOrElement: string | HTMLElement,
   options: CaptureOptions = {},
 ): Promise<string> {
-  const { default: html2canvas } = await import("html2canvas");
+  const { domToPng } = await import("modern-screenshot");
 
   const el =
     typeof elementIdOrElement === "string"
@@ -33,17 +33,12 @@ export async function captureChartAsImage(
 
   if (!el) throw new Error(`Chart element not found: ${elementIdOrElement}`);
 
-  const canvas = await html2canvas(el, {
+  return domToPng(el, {
     scale: options.scale ?? 2,
-    useCORS: true,
-    allowTaint: true,
-    logging: false,
     backgroundColor: options.backgroundColor ?? "#0f172a",
     ...(options.width !== undefined ? { width: options.width } : {}),
     ...(options.height !== undefined ? { height: options.height } : {}),
   });
-
-  return canvas.toDataURL("image/png");
 }
 
 /** Rasterize many chart wrappers, reporting progress (0..1) between steps. */

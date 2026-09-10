@@ -104,9 +104,7 @@ function MapView() {
    * right-side details panel, national snapshot) — never the date slider,
    * alerts, nav bar, or search controls. The active export region is the
    * `data-map-export-region` wrapper subtree; excluded siblings are not
-   * rendered since html2canvas only walks the wrapper's subtree. Because the
-   * wrapper is `display: contents` in the live DOM (zero layout impact), it is
-   * re-sized to the viewport on the cloned document before rasterization.
+   * rendered since modern-screenshot only walks the wrapper's subtree.
    * Known constraint: Leaflet/CARTO raster tiles may not rasterize under
    * CORS/canvas taint rules, in which case the choropleth overlay captures
    * and tiles may appear blank — tile config is intentionally untouched.
@@ -116,29 +114,27 @@ function MapView() {
       if (!mapExportRef.current) return;
       setExporting(format);
       try {
-        const { default: html2canvas } = await import("html2canvas");
-        const canvas = await html2canvas(mapExportRef.current, {
+        const { domToPng } = await import("modern-screenshot");
+        const style: Partial<CSSStyleDeclaration> = {
+          display: "block",
+          position: "absolute",
+          top: "0",
+          left: "0",
+          width: "100%",
+          height: "100%",
+        };
+
+        const imageDataUrl = await domToPng(mapExportRef.current, {
           backgroundColor: "#fbf8f3",
-          useCORS: true,
-          allowTaint: false,
           scale: 2,
-          logging: false,
-          onclone: (doc, el) => {
-            const root = el as HTMLElement;
-            root.style.display = "block";
-            root.style.position = "absolute";
-            root.style.top = "0";
-            root.style.left = "0";
-            root.style.width = "100%";
-            root.style.height = "100%";
-            doc.querySelectorAll("[data-export-exclude]").forEach((n) => {
-              (n as HTMLElement).style.display = "none";
-            });
-            doc.documentElement.classList.remove("dark");
+          style,
+          filter: (node) => {
+            if (node instanceof Element) {
+              return !node.hasAttribute("data-export-exclude");
+            }
+            return true;
           },
         });
-
-        const imageDataUrl = canvas.toDataURL("image/png");
         const stamp = new Date().toISOString().slice(0, 7);
 
         if (format === "png") {

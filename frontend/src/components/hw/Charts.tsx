@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Area,
   Bar,
@@ -119,6 +120,9 @@ export function ForecastChart({
   const ChartComponent = isBar ? BarChart : ComposedChart;
   const series = seriesFor(regionCode, illness);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   if (!series.length) {
     return (
       <div
@@ -165,6 +169,15 @@ export function ForecastChart({
       open = null;
     }
   });
+
+  if (!mounted) {
+    return (
+      <div
+        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
+        style={{ height }}
+      />
+    );
+  }
 
   return (
     <ResponsiveContainer width="100%" height={height}>
