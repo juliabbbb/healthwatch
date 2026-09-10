@@ -441,96 +441,21 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
-def _narrate_with_gemini(api_key, system_prompt, user_prompt):
-    """Google AI Studio (Gemini) via plain stdlib HTTP — no extra dependency.
+def _llm_narrate(system_prompt, user_prompt):
+    """Shared constrained LLM call for interpretability endpoints.
 
-    Tries the primary model, then GEMINI_FALLBACK_MODELS in order. Free-tier
-    quotas are per model, so when the primary is rate-limited (429) a lighter
-    fallback usually still has headroom."""
-    from urllib.error import HTTPError, URLError
-    from urllib.request import Request, urlopen
-
-    primary = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
-    models = [primary]
-    for candidate in os.environ.get(
-        "GEMINI_FALLBACK_MODELS", "gemini-3.5-flash-lite,gemini-3.1-flash-lite"
-    ).split(","):
-        candidate = candidate.strip()
-        if candidate and candidate != primary and candidate not in models:
-            models.append(candidate)
-
-    payload = {
-        "systemInstruction": {"parts": [{"text": system_prompt}]},
-        "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
-        # thinkingBudget 0 is rejected by gemini-3.x; -1 lets the model use
-        # as much hidden reasoning as it needs, so maxOutputTokens must be
-        # generous enough that prose never gets starved (finish=MAX_TOKENS).
-        "generationConfig": {
-            "temperature": 0.4,
-            "maxOutputTokens": 4096,
-            "thinkingConfig": {"thinkingBudget": -1},
-        },
-    }
-
-    narrative = ""
-    used_model = None
-    last_code = None
-    try:
-        # Free tier occasionally returns transient 429/503 bursts; one quiet
-        # retry after a short pause keeps single clicks from failing before
-        # we move on to the next model in the chain.
-        for candidate in models:
-            request = Request(
-                "https://generativelanguage.googleapis.com/v1beta/models/"
-                f"{candidate}:generateContent",
-                data=json.dumps(payload).encode("utf-8"),
-                headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
-                method="POST",
-            )
-            for attempt in range(2):
-                try:
-                    with urlopen(request, timeout=60) as response:
-                        body = json.loads(response.read().decode("utf-8"))
-                    parts = body["candidates"][0]["content"]["parts"]
-                    narrative = "".join(part.get("text", "") for part in parts).strip()
-                    used_model = candidate
-                    break
-                except HTTPError as exc:
-                    last_code = exc.code
-                    if exc.code in (429, 500, 503) and attempt == 0:
-                        time.sleep(6)
-                        continue
-                    break
-            if used_model:
-                break
-        if not used_model:
-            if last_code == 429:
-                detail = (
-                    "AI-assisted analysis failed: free-tier quota reached on "
-                    "all configured Gemini models — try again later"
-                )
-            else:
-                detail = f"AI-assisted analysis failed: HTTPError {last_code}"
-            raise HTTPException(status_code=503, detail=detail)
-        narrative = (
-            narrative.replace("**", "")
-            .replace("`", "")
-            .lstrip("-• ")
-            .strip()
-        )
-    except (HTTPError, URLError, TimeoutError, KeyError, IndexError, ValueError) as exc:
-        suffix = f" {exc.code}" if isinstance(exc, HTTPError) else ""
+    Uses Groq's Llama 4 (llama-4-scout-17b-16e-instruct, with a
+    llama-3.3-70b-versatile fallback). Requires GROQ_API_KEY (free at
+    console.groq.com). Fails soft (503) on missing key or API errors so no
+    dashboard view ever breaks because of the AI layer."""
+    groq_key = os.environ.get("GROQ_API_KEY")
+    if not groq_key:
         raise HTTPException(
             status_code=503,
-            detail=f"AI-assisted analysis failed: {type(exc).__name__}{suffix} — "
-            "try again in a moment",
+            detail="AI-assisted analysis unavailable: set GROQ_API_KEY (free at "
+            "console.groq.com) on the server.",
         )
-    if not narrative:
-        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
-    return narrative, used_model
 
-
-def _narrate_with_groq(api_key, system_prompt, user_prompt):
     try:
         from groq import Groq
     except ImportError:
@@ -539,17 +464,20 @@ def _narrate_with_groq(api_key, system_prompt, user_prompt):
             detail="AI-assisted analysis unavailable: groq package not installed.",
         )
 
-    primary_model = "llama-4-scout-17b-16e-instruct"
-    fallback_model = "llama-3.3-70b-versatile"
+    # Primary model. If Groq adds Llama 4 Maverick to the public API, prefer
+    # "meta-llama/llama-4-maverick-17b-128e-instruct" as the upgrade path.
+    primary_model = "meta-llama/llama-4-scout-17b-16e-instruct"
+    fallback_model = "meta-llama/llama-4-maverick-17b-128e-instruct"
+    fallback_model_2nd = "llama-3.3-70b-versatile"
     try:
-        client = Groq(api_key=api_key, timeout=30.0, max_retries=0)
+        client = Groq(api_key=groq_key, timeout=30.0, max_retries=0)
         narrative = ""
         used_model = None
-        for model in [primary_model, fallback_model]:
+        for model in [primary_model, fallback_model, fallback_model_2nd]:
             try:
                 message = client.chat.completions.create(
                     model=model,
-                    max_tokens=400,
+                    max_tokens=1024,
                     temperature=0.3,
                     messages=[
                         {"role": "system", "content": system_prompt},
@@ -559,44 +487,20 @@ def _narrate_with_groq(api_key, system_prompt, user_prompt):
                 narrative = (message.choices[0].message.content or "").strip()
                 used_model = model
                 break
-            except Exception as exc:  # timeout, rate limit, auth, bad model id…
-                if model == fallback_model:
-                    raise HTTPException(
-                        status_code=503,
-                        detail=f"AI-assisted analysis failed: {type(exc).__name__}",
-                    )
-    except HTTPException:
-        raise
+            except Exception:  # timeout, rate limit, auth, bad model id…
+                continue
     except Exception as exc:  # client construction or network errors
         raise HTTPException(
             status_code=503,
             detail=f"AI-assisted analysis failed: {type(exc).__name__}",
         )
     if not narrative:
-        raise HTTPException(status_code=503, detail="AI-assisted analysis returned no text.")
+        # Never let LLM failure crash the API response.
+        raise HTTPException(
+            status_code=503,
+            detail="AI summary unavailable. Please refer to the forecast data directly.",
+        )
     return narrative, used_model
-
-
-def _llm_narrate(system_prompt, user_prompt):
-    """Shared constrained LLM call for interpretability endpoints.
-
-    Provider is picked by which key the server has: GEMINI_API_KEY (free tier
-    at aistudio.google.com) wins over GROQ_API_KEY (free at console.groq.com).
-    Fails soft (503) on missing key or API errors so no dashboard view ever
-    breaks because of the AI layer."""
-    gemini_key = os.environ.get("GEMINI_API_KEY")
-    if gemini_key:
-        return _narrate_with_gemini(gemini_key, system_prompt, user_prompt)
-
-    groq_key = os.environ.get("GROQ_API_KEY")
-    if groq_key:
-        return _narrate_with_groq(groq_key, system_prompt, user_prompt)
-
-    raise HTTPException(
-        status_code=503,
-        detail="AI-assisted analysis unavailable: set GEMINI_API_KEY (free tier) "
-        "or GROQ_API_KEY (free at console.groq.com) on the server.",
-    )
 
 
 @asynccontextmanager

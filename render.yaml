@@ -15,8 +15,6 @@ services:
         value: https://healthwatch-ui.onrender.com
       - key: APP_URL
         value: https://healthwatch-ui.onrender.com
-      - key: GEMINI_API_KEY
-        sync: false
       - key: GROQ_API_KEY
         sync: false
       - key: DATABASE_URL

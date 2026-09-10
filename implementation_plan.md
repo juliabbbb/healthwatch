@@ -1,40 +1,61 @@
 ---
-## PLAN 3 — FIX COMPARE DASHBOARD REGION BUTTONS LAYOUT
+## PLAN 2 — REMOVE GEMINI, USE ONLY GROQ LLAMA 4
 
 ### Standing Directive
-You are working on HealthWatch — a Philippine regional dengue forecasting system. Frontend is React 19 + Tailwind CSS 4 + Radix UI (shadcn/ui pattern) + TanStack Router. Do not change business logic, data fetching, or routing. Only fix the visual layout of the Compare Dashboard region selector buttons. Read the component first, then fix.
+You are working on HealthWatch — a Philippine regional dengue outbreak forecasting and hotspot classification system. Backend is FastAPI + Anthropic SDK + SQLAlchemy. The existing codebase has Gemini Flash integrated for LLM features. Your job is to surgically remove all Gemini references and replace with Groq's Llama 4 model. Do not touch forecasting (Prophet) logic, database logic, or frontend unless a frontend prompt/response display needs updating. Read files before editing. Be precise.
 
 ### System Context
-The Compare Dashboard page allows users to select multiple Philippine regions to compare their outbreak risk and forecast data side by side. The region selection buttons are currently broken in layout — they are squished into equal-width squares so the region name text is invisible or truncated. The user wants the buttons to be equal in SIZE (same height, same padding, same appearance) but properly sized to accommodate text — not forced into literal square shapes that hide the label.
+HealthWatch uses an LLM for AI-assisted interpretation — likely for generating natural-language outbreak summaries, intervention recommendations, or risk narrative text displayed on the dashboard. This was previously wired to Google Gemini Flash. The codebase uses Anthropic SDK (`anthropic`) in the stack listing but Gemini was also integrated, suggesting both may coexist or Gemini was a later addition. We are removing Gemini entirely and standardizing on **Groq's Llama 4** model.
 
-### Item 4 — Fix Compare Dashboard Region Selector Buttons
+### Item 3 — Remove Gemini, Wire Groq Llama 4
 
-**Step 1 — Locate the component.**
-Find the Compare Dashboard page and its region selector (likely `src/pages/compare.tsx` or `src/components/compare/RegionSelector.tsx`). Read the full JSX and Tailwind class list for the buttons.
+**Step 1 — Full audit of Gemini references.**
+Search the entire codebase for:
+- `gemini` (case-insensitive)
+- `google-generativeai` or `google.generativeai`
+- `GenerativeModel`, `genai`, `GEMINI_API_KEY`, `GOOGLE_API_KEY`
+- Any `.env` or `render.yaml` references to Gemini keys
+List every file found. Do not modify yet.
 
-**Step 2 — Identify the layout bug.**
-Common causes in Tailwind CSS 4 for this issue:
-- `aspect-square` class applied to buttons, making width = height and crushing text.
-- A grid container with `grid-cols-N` where N is too high and `auto-fit` or fixed column widths are squeezing buttons.
-- `w-full` on buttons inside a flex container with `flex-wrap` and fixed `gap` that produces equal-width but tiny columns.
-- Button text has `overflow-hidden` or `truncate` without enough width budget.
-- `whitespace-nowrap` clashing with narrow button width.
+**Step 2 — Audit Groq availability.**
+- Check `requirements.txt` or `pyproject.toml` for `groq` package. If missing, add `groq>=0.9.0`.
+- Check if `GROQ_API_KEY` is already present in `.env.example`, `render.yaml`, or any config file.
+- Note: Groq API is OpenAI-compatible. The client is: `from groq import Groq; client = Groq(api_key=os.environ["GROQ_API_KEY"])`
 
-**Step 3 — Apply the fix.**
-The correct layout for these region buttons:
-- Container: `flex flex-wrap gap-2` — let buttons wrap naturally.
-- Each button: `px-3 py-2 text-sm font-medium rounded-md border transition-colors` — same padding/height for visual consistency, width determined by content.
-- Remove any `aspect-square`, `w-full` (on individual buttons inside flex-wrap), or fixed `w-[Xpx]` that's too narrow.
-- Selected state: `bg-primary text-primary-foreground border-primary`
-- Unselected state: `bg-background text-foreground border-border hover:bg-accent`
-- The 18 Philippine regions should all be readable. Test with the longest region name: "Autonomous Region in Muslim Mindanao" (BARMM) — if this fits, all others will.
-- If a region abbreviation/code is used instead of full name, ensure the tooltip or aria-label shows the full name.
+**Step 3 — Replace the LLM client.**
+For every location where Gemini was called:
+- Remove the `google.generativeai` import and client initialization.
+- Replace with Groq client initialization:
+```python
+  from groq import Groq
+  _groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
+```
+- Replace the Gemini `generate_content(prompt)` call pattern with:
+```python
+  completion = _groq_client.chat.completions.create(
+      model="meta-llama/llama-4-scout-17b-16e-instruct",
+      messages=[{"role": "user", "content": prompt}],
+      max_tokens=1024,
+      temperature=0.3,
+  )
+  result_text = completion.choices[0].message.content
+```
+- Use `llama-4-scout-17b-16e-instruct` as the primary model. If Groq adds Llama 4 Maverick to their API (check their model list), use `meta-llama/llama-4-maverick-17b-128e-instruct` as a fallback option with a comment noting the upgrade path.
+- Wrap the Groq call in a try/except. On exception, return a safe fallback string: `"AI summary unavailable. Please refer to the forecast data directly."` — never let LLM failure crash the API response.
 
-**Step 4 — Verify interactive behavior.**
-- Clicking a region button should toggle its selected state.
-- At least 2 regions must be selectable for comparison.
-- The Compare Dashboard's chart/table below should update when button selection changes.
-- Do not break the existing selection logic — only fix the visual classes.
+**Step 4 — Clean up.**
+- Remove `google-generativeai` from `requirements.txt` / `pyproject.toml`.
+- Remove any `GEMINI_API_KEY` or `GOOGLE_API_KEY` from `.env.example` (replace with a comment: `# Removed: GEMINI_API_KEY — replaced by GROQ_API_KEY`).
+- Remove Gemini from `render.yaml` environment variable definitions.
+- Search for any frontend `.env` references to Gemini and remove.
 
-**Step 5 — Responsive check.**
-On mobile (< 640px), the buttons should still wrap cleanly. If the current layout breaks on mobile, add `text-xs px-2 py-1` via a responsive prefix: `sm:text-sm sm:px-3 sm:py-2`.
+**Step 5 — Render environment variable instructions (READ THIS CAREFULLY).**
+You (the dev running this) must do the following manually on Render dashboard:
+1. Go to your HealthWatch API service on Render → Environment → Environment Variables.
+2. ADD: `GROQ_API_KEY` = your Groq API key from https://console.groq.com/keys
+3. DELETE: `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) from the environment variables list.
+4. Trigger a manual deploy after saving the env vars.
+The code change alone will not work until the env var is set on Render. Big pickle cannot do this for you — this is a manual step on the Render dashboard.
+
+**Step 6 — Verify.**
+After replacement, search the entire codebase one more time for any remaining `gemini` or `google.generativeai` strings. If any remain, remove them. Leave zero Gemini references.

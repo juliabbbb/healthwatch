@@ -39,8 +39,8 @@ Create `.env` at repo root (git-ignored):
 
 ```
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
-GEMINI_API_KEY=      # Optional: free tier at aistudio.google.com
-GROQ_API_KEY=        # Alternative to Gemini (free at console.groq.com)
+GEMINI_API_KEY=      # Removed — replaced by GROQ_API_KEY
+GROQ_API_KEY=        # AI-assisted analysis (free at console.groq.com)
 RESEND_API_KEY=      # Optional: monthly forecast emails (100/day free at resend.com)
 RESEND_FROM=         # Optional, default: HealthWatch <onboarding@resend.dev>
 JOB_TOKEN=           # Optional: secret for POST /subscriptions/send-due external cron
@@ -116,7 +116,7 @@ Commits pushed to the connected branch sync back to Lovable and show up in the e
 
 - Backend loads all data at startup into memory (pandas DataFrames). Slow cold start, fast after.
 - CORS allows localhost and `*.onrender.com` by default. Set `ALLOWED_ORIGINS` in `.env` for custom origins.
-- `run-dev.ps1` surfaces user-scope env vars (e.g., `GEMINI_API_KEY`) even if shell was opened before `setx`.
+- `run-dev.ps1` surfaces user-scope env vars (e.g., `GROQ_API_KEY`) even if shell was opened before `setx`.
 - Port 8000 conflicts: close old uvicorn window before restarting.
 - Node 20.19+ or 22.12+ required (Vite 8).
 - Render deploy: API uses `requirements.txt`, frontend uses `npm ci && npm run build`.

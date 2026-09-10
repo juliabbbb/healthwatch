@@ -191,8 +191,7 @@
 
 | Service | Key Required | Source | Free Tier |
 |---|---|---|---|
-| **Gemini** (primary LLM) | `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) | Yes (generous) |
-| **Groq** (fallback LLM) | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) | Yes (no card) |
+| **Groq** (LLM, Llama 4) | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) | Yes (no card) |
 | **Supabase** (PostgreSQL) | `DATABASE_URL` | [supabase.com](https://supabase.com) | Yes (500 MB) |
 | **Resend** (email delivery) | `RESEND_API_KEY` | [resend.com](https://resend.com) | Yes (100/day) |
 | **CARTO** (basemap tiles) | `VITE_CARTO_API_KEY` | [carto.com](https://carto.com) | Yes (watermark removal) |
@@ -225,10 +224,7 @@
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `DATABASE_URL` | Yes (prod) | SQLite fallback | PostgreSQL connection string |
-| `GEMINI_API_KEY` | No | None | Google Gemini API key |
-| `GEMINI_MODEL` | No | `gemini-3.6-flash` | Primary Gemini model |
-| `GEMINI_FALLBACK_MODELS` | No | `gemini-3.5-flash-lite,...` | Comma-separated fallback chain |
-| `GROQ_API_KEY` | No | None | Groq API key (used if no Gemini) |
+| `GROQ_API_KEY` | No | None | Groq API key for AI-assisted analysis (Llama 4) |
 | `RESEND_API_KEY` | No | None | Resend email API key |
 | `RESEND_FROM` | No | `HealthWatch <onboarding@resend.dev>` | Sender address |
 | `APP_URL` | No | `https://healthwatch-ui.onrender.com` | Base URL for email CTAs |
@@ -353,7 +349,7 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 
 ```
 [  ] Supabase PostgreSQL provisioned, DATABASE_URL set in Render env
-[  ] GROQ_API_KEY or GEMINI_API_KEY set in Render env
+[  ] GROQ_API_KEY set in Render env
 [  ] render.yaml blueprint deployed (API + Frontend services)
 [  ] CORS: ALLOWED_ORIGINS includes frontend URL
 [  ] External cron job configured for /subscriptions/send-due (optional)

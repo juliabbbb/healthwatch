@@ -2,9 +2,9 @@
 # Close either window to stop that service.
 $root = $PSScriptRoot
 
-# Fallback: surface user-scope secrets (e.g. GEMINI_API_KEY) even when this
+# Fallback: surface user-scope secrets (e.g. GROQ_API_KEY) even when this
 # shell was opened before `setx` ran. api.py also reads a repo-root .env file.
-foreach ($name in @('GEMINI_API_KEY', 'GROQ_API_KEY', 'GEMINI_MODEL')) {
+foreach ($name in @('GROQ_API_KEY')) {
     if (-not [Environment]::GetEnvironmentVariable($name, 'Process')) {
         $userVal = [Environment]::GetEnvironmentVariable($name, 'User')
         if ($userVal) { Set-Item -Path "Env:$name" -Value $userVal }
