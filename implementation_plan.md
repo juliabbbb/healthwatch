@@ -1,56 +1,40 @@
 ---
-## PLAN 4 — FIX CASE VOLUME FORECAST CHART IN FULL REGIONAL ANALYSIS
+## PLAN 3 — FIX COMPARE DASHBOARD REGION BUTTONS LAYOUT
 
 ### Standing Directive
-You are working on HealthWatch — a Philippine regional dengue forecasting system. Frontend is React 19 + Recharts + TanStack React Query + Tailwind CSS 4. Backend is FastAPI + Prophet. Do not change database schema, Prophet model logic, or routing. Fix only the broken chart rendering in the Full Regional Analysis page's Case Volume Forecast section.
+You are working on HealthWatch — a Philippine regional dengue forecasting system. Frontend is React 19 + Tailwind CSS 4 + Radix UI (shadcn/ui pattern) + TanStack Router. Do not change business logic, data fetching, or routing. Only fix the visual layout of the Compare Dashboard region selector buttons. Read the component first, then fix.
 
 ### System Context
-The Full Regional Analysis page has a "Case Volume Forecast" section with a Recharts chart. The chart currently renders blank/empty — no data lines, no bars, nothing — despite the page loading and other sections appearing to work. The forecasting engine (Prophet) is functional. The issue is in the data pipeline between the API response and the Recharts component.
+The Compare Dashboard page allows users to select multiple Philippine regions to compare their outbreak risk and forecast data side by side. The region selection buttons are currently broken in layout — they are squished into equal-width squares so the region name text is invisible or truncated. The user wants the buttons to be equal in SIZE (same height, same padding, same appearance) but properly sized to accommodate text — not forced into literal square shapes that hide the label.
 
-### Item 5 — Fix Case Volume Forecast Chart
+### Item 4 — Fix Compare Dashboard Region Selector Buttons
 
-**Step 1 — Audit the chart component.**
-Locate the Full Regional Analysis page (likely `src/pages/regional-analysis.tsx` or similar). Find the Recharts component responsible for "Case Volume Forecast". Read:
-- The React Query hook that fetches forecast data for this chart.
-- The API endpoint being called (e.g. `/api/forecast/{region}` or `/api/regions/{region}/forecast`).
-- The data transformation between API response shape and the `data` prop passed to Recharts.
-- The Recharts component type (LineChart? BarChart? ComposedChart?) and its `<Line>` or `<Bar>` children and their `dataKey` values.
+**Step 1 — Locate the component.**
+Find the Compare Dashboard page and its region selector (likely `src/pages/compare.tsx` or `src/components/compare/RegionSelector.tsx`). Read the full JSX and Tailwind class list for the buttons.
 
-**Step 2 — Test the API endpoint directly.**
-Using browser devtools (Network tab) or curl, call the forecast endpoint for any region (e.g. NCR). Check:
-- Does the endpoint return data at all?
-- What is the exact shape of the JSON response? (array of objects? nested object with a `forecasts` key? snake_case or camelCase keys?)
-- Are the keys returned by the API matching the `dataKey` values in the Recharts `<Line>` components?
+**Step 2 — Identify the layout bug.**
+Common causes in Tailwind CSS 4 for this issue:
+- `aspect-square` class applied to buttons, making width = height and crushing text.
+- A grid container with `grid-cols-N` where N is too high and `auto-fit` or fixed column widths are squeezing buttons.
+- `w-full` on buttons inside a flex container with `flex-wrap` and fixed `gap` that produces equal-width but tiny columns.
+- Button text has `overflow-hidden` or `truncate` without enough width budget.
+- `whitespace-nowrap` clashing with narrow button width.
 
-**Step 3 — Identify and fix the data mismatch (most likely root cause).**
-Common mismatches:
-- API returns `{ ds: "2025-01-01", yhat: 120, yhat_lower: 80, yhat_upper: 160 }` (Prophet's native output) but Recharts dataKey is set to `"predicted"` or `"cases"`.
-  - Fix: either rename in the API serializer, or transform in the frontend: `data.map(d => ({ date: d.ds, predicted: d.yhat, lower: d.yhat_lower, upper: d.yhat_upper }))`.
-- React Query response is being accessed at the wrong key: `data.data` vs `data.results` vs `data.forecasts`.
-- The Recharts `data` prop receives `undefined` or `null` when the query hasn't resolved yet — no `isLoading` guard means Recharts renders with no data and doesn't re-render when data arrives.
-  - Fix: add `if (isLoading) return <Skeleton />` before the chart render.
-- The chart container has `width: 0` or `height: 0` due to a missing `ResponsiveContainer` height prop.
-  - Fix: ensure `<ResponsiveContainer width="100%" height={320}>` wraps the chart.
+**Step 3 — Apply the fix.**
+The correct layout for these region buttons:
+- Container: `flex flex-wrap gap-2` — let buttons wrap naturally.
+- Each button: `px-3 py-2 text-sm font-medium rounded-md border transition-colors` — same padding/height for visual consistency, width determined by content.
+- Remove any `aspect-square`, `w-full` (on individual buttons inside flex-wrap), or fixed `w-[Xpx]` that's too narrow.
+- Selected state: `bg-primary text-primary-foreground border-primary`
+- Unselected state: `bg-background text-foreground border-border hover:bg-accent`
+- The 18 Philippine regions should all be readable. Test with the longest region name: "Autonomous Region in Muslim Mindanao" (BARMM) — if this fits, all others will.
+- If a region abbreviation/code is used instead of full name, ensure the tooltip or aria-label shows the full name.
 
-**Step 4 — Apply the fix.**
-Once root cause is identified, fix the data pipeline end-to-end. The chart must display:
-- A line for predicted case volume (`yhat`) across the forecast horizon (12 months ahead).
-- Shaded area or dashed lines for prediction interval (`yhat_lower`, `yhat_upper`).
-- X-axis: month labels in `MMM YYYY` format (e.g. "Jan 2025").
-- Y-axis: case count (integer, non-negative — apply `Math.max(0, value)` to lower bound).
-- Tooltip: show Month, Predicted Cases, Lower Bound, Upper Bound.
-- A reference line or shaded region marking the wet season months (June–November) per the Philippine climate calendar.
+**Step 4 — Verify interactive behavior.**
+- Clicking a region button should toggle its selected state.
+- At least 2 regions must be selectable for comparison.
+- The Compare Dashboard's chart/table below should update when button selection changes.
+- Do not break the existing selection logic — only fix the visual classes.
 
-**Step 5 — Non-negativity guard.**
-On the frontend data transform, enforce non-negativity clipping:
-```typescript
-const chartData = rawForecast.map(d => ({
-  date: d.ds,
-  predicted: Math.max(0, d.yhat),
-  lower: Math.max(0, d.yhat_lower),
-  upper: d.yhat_upper, // upper bound is not clipped per system spec
-}));
-```
-
-**Step 6 — Empty state.**
-If the query returns an empty array or the endpoint errors, show a clear empty state message inside the chart container: "Forecast data unavailable for this region. Please check back later." — not a blank white box.
+**Step 5 — Responsive check.**
+On mobile (< 640px), the buttons should still wrap cleanly. If the current layout breaks on mobile, add `text-xs px-2 py-1` via a responsive prefix: `sm:text-sm sm:px-3 sm:py-2`.

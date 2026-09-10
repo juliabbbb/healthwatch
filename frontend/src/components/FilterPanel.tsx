@@ -88,7 +88,7 @@ export function FilterPanel({
             </Select>
           </div>
         ) : multiSelectRegion ? (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+          <div className="flex flex-wrap gap-2">
             {regions.map((r) => {
               const isSelected = selectedRegions.includes(r.code);
               return (
