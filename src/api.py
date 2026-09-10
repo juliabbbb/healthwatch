@@ -444,8 +444,8 @@ _load_dotenv()
 def _llm_narrate(system_prompt, user_prompt):
     """Shared constrained LLM call for interpretability endpoints.
 
-    Uses Groq's Llama 4 (llama-4-scout-17b-16e-instruct, with a
-    llama-3.3-70b-versatile fallback). Requires GROQ_API_KEY (free at
+    Uses Groq's Llama 3 70B (llama3-70b-8192 by default). Model is
+    configurable via GROQ_MODEL env var. Requires GROQ_API_KEY (free at
     console.groq.com). Fails soft (503) on missing key or API errors so no
     dashboard view ever breaks because of the AI layer."""
     groq_key = os.environ.get("GROQ_API_KEY")
@@ -464,16 +464,12 @@ def _llm_narrate(system_prompt, user_prompt):
             detail="AI-assisted analysis unavailable: groq package not installed.",
         )
 
-    # Primary model. If Groq adds Llama 4 Maverick to the public API, prefer
-    # "meta-llama/llama-4-maverick-17b-128e-instruct" as the upgrade path.
-    primary_model = "meta-llama/llama-4-scout-17b-16e-instruct"
-    fallback_model = "meta-llama/llama-4-maverick-17b-128e-instruct"
-    fallback_model_2nd = "llama-3.3-70b-versatile"
+    GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama3-70b-8192")
     try:
         client = Groq(api_key=groq_key, timeout=30.0, max_retries=0)
         narrative = ""
         used_model = None
-        for model in [primary_model, fallback_model, fallback_model_2nd]:
+        for model in [GROQ_MODEL]:
             try:
                 message = client.chat.completions.create(
                     model=model,
