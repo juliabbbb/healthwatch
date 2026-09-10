@@ -61,7 +61,7 @@ export function AlertsPanel({
 
       {open && (
         <>
-          <ul className="hw-scroll max-h-[36vh] sm:max-h-72 divide-y divide-border/60 overflow-y-auto border-t border-border/70">
+          <ul className="hw-scroll max-h-[36vh] sm:max-h-60 divide-y divide-border/60 overflow-y-auto border-t border-border/70">
             {alerts.length === 0 && (
               <li className="px-4 py-6 text-center text-xs text-muted-foreground">
                 No active alerts — every region is within its seasonal range.

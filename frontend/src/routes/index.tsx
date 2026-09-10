@@ -244,7 +244,7 @@ function MapView() {
         </div>
 
         {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
-        <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-8.5rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3">
+        <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
           <NationalSnapshot
             monthLabel={meta.label}
             isForecast={meta.forecast}
@@ -257,10 +257,11 @@ function MapView() {
             dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
             showOutbreakMarkers={showOutbreakMarkers}
             onOutbreakMarkersChange={setShowOutbreakMarkers}
+            className="shrink-0"
           />
 
           {/* Active Alerts — visible in the UI but excluded from the export. */}
-          <div className="w-full min-w-0" data-export-exclude>
+          <div className="flex w-full min-w-0 flex-1 flex-col" data-export-exclude>
             <AlertsPanel alerts={alerts} onFocusRegion={handleFocusRegion} />
           </div>
         </div>
@@ -290,7 +291,7 @@ function MapView() {
                 HEALTHWATCH
               </p>
               <p className="mt-1 text-[10px] text-muted-foreground font-medium">
-                DOH · LGU outbreak decision support
+                Regional Outbreak Hotspot Map & Forecasts
               </p>
             </div>
           </div>
