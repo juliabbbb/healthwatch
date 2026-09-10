@@ -170,19 +170,20 @@ light, navy/aqua dark. Pure white appears only as *glass*, never as painted ligh
 
 ## Typography
 
-**Display/Body Font:** Hanken Grotesk (with `ui-sans-serif, system-ui, sans-serif`)
+**Display/Body Font:** Sora (with `ui-sans-serif, system-ui, sans-serif`)
 **Label/Mono Font:** JetBrains Mono (with `ui-monospace, monospace`)
 
-**Character:** A precise, neutral neo-grotesque doing all the reading, paired with a technical
-monospace reserved for instrument markings. Hanken Grotesk' even, open counters give the dashboard
-the clarity of an Apple system surface â€” the pairing says "public-health professional",
-not "startup brochure". All headings share a tight `-0.01em` tracking at weight 600.
+**Character:** A geometric-contemporary sans doing all the reading, paired with a technical
+monospace reserved for instrument markings. Sora's slightly wider proportions and heavier
+`500` body weight carry institutional presence without coldness â€” the pairing says
+"public-health professional", not "startup brochure". All headings share tight
+`-0.02em` tracking at weight 700.
 
 ### Hierarchy
 - **Display** (600, 1.5rem/24px `--text-2xl`): page titles. Headline numbers reach
   `--text-3xl` (1.875rem/30px).
 - **Title** (600, 1.25rem/20px `--text-xl`): card titles and section labels.
-- **Body** (400, 1rem/16px `--text-base`): default reading; comfortable line measure kept
+- **Body** (500, 1rem/16px `--text-base`): default reading; comfortable line measure kept
   inside floating panels.
 - **Label / Instrument** (`label-caps`: mono, 0.6875rem/11px, 500, `0.14em` tracking,
   uppercase, muted): the signature. Every meta line â€” `SEASON`, `RISK TIER`, `DATA THROUGH`,
