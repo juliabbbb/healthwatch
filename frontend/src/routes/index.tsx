@@ -37,7 +37,7 @@ const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "HEALTHWATCH — PH Outbreak Hotspot Map & Forecasts" },
+      { title: "HealthWatch" },
       {
         name: "description",
         content:
