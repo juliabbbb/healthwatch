@@ -97,7 +97,7 @@ export function NationalSnapshot({
       </div>
 
       {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
-      <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-3 gap-3">
         {/* Card A: National Incidence */}
         <div className="rounded-xl border border-border/70 bg-secondary/30 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <p className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-muted-foreground leading-tight">

@@ -42,6 +42,7 @@ import {
   type RegionAssessment,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { formatMonthYear } from "@/utils/formatDate";
 
 export const Route = createFileRoute("/compare")({
@@ -107,6 +108,11 @@ export default function ComparePage() {
 
   // PDF Export Engine modal
   const [isExportOpen, setIsExportOpen] = useState(false);
+
+  // Lock background scroll while either custom portal overlay is open
+  // (Radix dialogs and ExportCustomizationModal lock themselves).
+  useBodyScrollLock(isBenchmarkModalOpen);
+  useBodyScrollLock(Boolean(detailedCardRegionCode));
 
   // Computed month index within bounds [0, TOTAL_MONTHS - 1]
   const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
@@ -270,7 +276,7 @@ export default function ComparePage() {
                     <SlidersHorizontal className="size-4" />
                   </div>
                   <div>
-                    <p className="text-[10px] uppercase font-semibold tracking-wider text-muted-foreground">
+                    <p className="label-caps text-[10px] font-semibold">
                       Surveillance & Forecast Period
                     </p>
                     <div className="flex flex-wrap items-center gap-2 mt-0.5">
@@ -743,7 +749,7 @@ export default function ComparePage() {
               {/* Primary Metric & Key Stats Strip with High Visual Contrast */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
+                  <p className="label-caps text-[10px] font-bold text-foreground">
                     {currentMonth.forecast ? "Predicted Volume" : "Reported Cases"}
                   </p>
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
@@ -755,7 +761,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
+                  <p className="label-caps text-[10px] font-bold text-foreground">
                     3-Mo Trajectory
                   </p>
                   <p
@@ -774,7 +780,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
+                  <p className="label-caps text-[10px] font-bold text-foreground">
                     National Percentile
                   </p>
                   <p className="font-mono text-xl sm:text-2xl font-extrabold text-foreground mt-1 tabular-nums">
@@ -786,7 +792,7 @@ export default function ComparePage() {
                 </div>
 
                 <div className="rounded-xl border border-border/80 bg-secondary/35 p-3.5 shadow-xs">
-                  <p className="text-[10px] uppercase font-bold tracking-wider text-foreground">
+                  <p className="label-caps text-[10px] font-bold text-foreground">
                     Dominant Pathology
                   </p>
                   <p className="text-sm sm:text-base font-bold text-foreground truncate mt-1">
@@ -826,7 +832,7 @@ export default function ComparePage() {
                       Prophet Model Backtest & Reliability
                     </p>
                     <span
-                      className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase"
+                      className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase font-mono"
                       style={{
                         backgroundColor: RISK_META[detailedMetrics.tone].color,
                         color: "#ffffff",
@@ -838,17 +844,17 @@ export default function ComparePage() {
 
                   <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-xs">
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase text-muted-foreground block">MAPE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">MAPE</span>
                       <span className="font-bold text-foreground">{detailedMetrics.mape}%</span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase text-muted-foreground block">MAE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">MAE</span>
                       <span className="font-bold text-foreground">
                         {detailedMetrics.mae.toFixed(1)}
                       </span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase text-muted-foreground block">RMSE</span>
+                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">RMSE</span>
                       <span className="font-bold text-foreground">
                         {detailedMetrics.rmse.toFixed(1)}
                       </span>
@@ -1032,7 +1038,7 @@ function RegionalOverviewCard({
         {/* Primary Key Metric & Stats */}
         <div className="mt-3 flex items-baseline justify-between gap-2">
           <div>
-            <p className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground">
+            <p className="label-caps text-[9px] font-semibold">
               {currentMonth.forecast ? "Predicted" : "Reported"} · {meta.unit}
             </p>
             <p className="font-mono text-2xl font-bold tabular-nums text-foreground leading-tight">
@@ -1040,7 +1046,7 @@ function RegionalOverviewCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="text-[9px] uppercase font-medium tracking-wider text-muted-foreground">
+            <p className="label-caps text-[9px] font-medium">
               3-Mo Trend
             </p>
             <span
@@ -1063,7 +1069,7 @@ function RegionalOverviewCard({
         {/* Stat badges */}
         <div className="mt-2.5 grid grid-cols-2 gap-1.5">
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[8px] font-medium block">
               Nat'l Percentile
             </span>
             <span className="font-mono text-xs font-semibold text-foreground block">
@@ -1071,7 +1077,7 @@ function RegionalOverviewCard({
             </span>
           </div>
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="text-[8px] uppercase font-medium tracking-wider text-muted-foreground block">
+            <span className="label-caps text-[8px] font-medium block">
               Dominant Illness
             </span>
             <span className="text-xs font-semibold text-foreground truncate block">
@@ -1431,7 +1437,7 @@ function DetailedChart({
                 {formatMonthYear(hoveredPoint.label)}
               </span>
               <span
-                className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px]"
+                className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px] font-mono"
                 style={{
                   color: hoveredPoint.forecast ? riskColor : "var(--foreground)",
                   backgroundColor: hoveredPoint.forecast

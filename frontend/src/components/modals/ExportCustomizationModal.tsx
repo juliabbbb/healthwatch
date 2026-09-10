@@ -15,6 +15,7 @@ import {
   type MetricMode,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { formatMonthYear } from "@/utils/formatDate";
 import {
   SurveillanceReportPDF,
@@ -70,6 +71,8 @@ export function ExportCustomizationModal({
   monthIndex,
   mode,
 }: ExportCustomizationModalProps) {
+  useBodyScrollLock(open);
+
   const [layout, setLayout] = useState<ReportLayout>("executive");
   const [pathology, setPathology] = useState<string>(illness);
   const [selectedRegions, setSelectedRegions] = useState<string[]>(regionCodes);
@@ -181,7 +184,7 @@ export function ExportCustomizationModal({
       });
 
       const riskColor =
-        a.risk === "high" ? "#ef4444" : a.risk === "moderate" ? "#f59e0b" : "#22c55e";
+        a.risk === "high" ? "#b82d2a" : a.risk === "moderate" ? "#a06315" : "#007a54";
 
       trajectoryImage = await svgToPngDataUri(renderTrajectorySVG(trajPoints, riskColor));
       seasonalityImage = await svgToPngDataUri(renderSeasonalitySVG(seasonality));

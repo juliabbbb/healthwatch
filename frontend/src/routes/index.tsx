@@ -26,6 +26,7 @@ import {
 } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import {
   MapExportDocument,
   type MapExportRegion,
@@ -68,6 +69,9 @@ function MapView() {
   const [outbreakSeason, setOutbreakSeason] = useState<Season>(REPORT_UPCOMING_SEASON);
   const [showOutbreakMarkers, setShowOutbreakMarkers] = useState(false);
   const [mobileNationalOpen, setMobileNationalOpen] = useState(false);
+
+  // Lock background scroll while the mobile national drawer is open
+  useBodyScrollLock(mobileNationalOpen);
   const [exporting, setExporting] = useState<false | "png" | "pdf">(false);
   const mapExportRef = useRef<HTMLDivElement | null>(null);
 
@@ -119,7 +123,7 @@ function MapView() {
       try {
         const { default: html2canvas } = await import("html2canvas");
         const canvas = await html2canvas(mapExportRef.current, {
-          backgroundColor: "#ffffff",
+          backgroundColor: "#fbf8f3",
           useCORS: true,
           allowTaint: false,
           scale: 2,
