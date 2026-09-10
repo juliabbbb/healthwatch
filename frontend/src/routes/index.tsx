@@ -224,6 +224,63 @@ function MapView() {
     [mode, illness, monthIndex, selected, totalCases, nationalPer100k, assessments, counts],
   );
 
+  const handleMapExportCsv = useCallback(() => {
+    const meta = monthMeta(monthIndex);
+    const seasonLabel = meta.season === "wet" ? "Wet" : "Dry";
+    const illnessLabel = illness === "all" ? "all" : illness;
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Manila",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).formatToParts(now);
+    const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+    const dateSlug = `${get("year")}${get("month")}${get("day")}`;
+
+    const header = [
+      "Region",
+      "Risk Tier",
+      `Predicted Cases (${meta.label})`,
+      `Value (${METRIC_META[mode].unit})`,
+      "P50 Threshold",
+      "P75 Threshold",
+      "3-Month Change (%)",
+      "National Percentile",
+      "Season",
+      "Illness",
+      "Export Date",
+    ].join(",");
+
+    const rows = assessments.map((a) => {
+      const t = a.thresholds;
+      return [
+        `"${a.region.name}"`,
+        a.risk,
+        Math.round(a.point.cases),
+        formatMetric(a.value, mode),
+        t.p50.toFixed(1),
+        t.p75.toFixed(1),
+        a.changePct,
+        a.percentileRank,
+        seasonLabel,
+        illnessLabel,
+        `${get("year")}-${get("month")}-${get("day")}`,
+      ].join(",");
+    });
+
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `HealthWatch_MapExport_${seasonLabel}_${dateSlug}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [illness, monthIndex, mode, assessments]);
+
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
       {/* Scoped export region: logo, Leaflet map, right panel, national snapshot.
@@ -321,6 +378,7 @@ function MapView() {
         <TopToolbar
           onPick={handleFocusRegion}
           onExport={handleMapExport}
+          onExportCsv={handleMapExportCsv}
           exporting={exporting !== false}
         />
       </div>

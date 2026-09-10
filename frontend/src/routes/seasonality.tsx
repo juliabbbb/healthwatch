@@ -42,8 +42,14 @@ import {
   REGION_BY_CODE,
   TOTAL_MONTHS,
   acf,
+  classify,
   decompose,
+  getThresholds,
+  getOutbreak,
   monthMeta,
+  OUTBREAK_TRIGGER_LABEL,
+  REPORT_UPCOMING_SEASON,
+  assessRegion,
   type SeasonalityComponent,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
@@ -254,8 +260,30 @@ export function SeasonalityPage() {
       }
 
       const now = new Date();
-      const exportTimestamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const parts = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Manila",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }).formatToParts(now);
+      const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+      const generatedAt = `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} (PHT)`;
+      const exportDateSlug = `${get("year")}${get("month")}${get("day")}`;
+
       const illnessLabel = illness === "all" ? "all illnesses" : illness;
+
+      // Risk tier classification
+      const assessment = assessRegion(code, illness, monthIndex, "percapita");
+      const riskThresholds = getThresholds(illness, assessment.point.month, "percapita");
+
+      // Outbreak indicator
+      const outbreakData = getOutbreak(code);
+      const outbreakSeason = REPORT_UPCOMING_SEASON;
+      const outbreakEntry = outbreakData[outbreakSeason] ?? null;
 
       const blob = await pdf(
         <SeasonalityPdfDocument
@@ -263,14 +291,54 @@ export function SeasonalityPage() {
           illnessLabel={illnessLabel}
           forecastPeriod={{ start: monthMeta(0).label, end: currentMonth.label }}
           charts={charts}
-          exportTimestamp={exportTimestamp}
+          generatedAt={generatedAt}
+          decomposition={{
+            trendDirection: stats.trendChange >= 0 ? "Upward" : "Downward",
+            trendChangePct: stats.trendChange,
+            seasonalAmplitude:
+              Math.max(...decompData.map((d) => d.seasonal)) -
+              Math.min(...decompData.map((d) => d.seasonal)),
+            residualRange: stats.residualStd,
+            seasonalityStrength: stats.strength,
+            peakMonth: stats.peakMonth,
+            lag12Acf: stats.lag12,
+            lag6Acf: stats.lag6,
+            dominantCycle: `${stats.peak.lag}-month cycle`,
+          }}
+          risk={{
+            level: assessment.risk,
+            value: assessment.value,
+            unit: "per 100k",
+            p50: riskThresholds.p50,
+            p75: riskThresholds.p75,
+            cases: Math.round(assessment.point.cases),
+          }}
+          outbreak={
+            outbreakEntry
+              ? {
+                  ruleA:
+                    outbreakEntry.trigger === "both" ||
+                    outbreakEntry.trigger === "consecutive_high",
+                  ruleB: outbreakEntry.trigger === "both" || outbreakEntry.trigger === "season_p75",
+                  combined: outbreakEntry.outbreak,
+                  season: outbreakSeason,
+                  trigger: OUTBREAK_TRIGGER_LABEL[outbreakEntry.trigger] ?? outbreakEntry.trigger,
+                  consecutiveHighN: outbreakEntry.consecutive_high_n,
+                  seasonAvg: outbreakEntry.season_avg,
+                  seasonP75: outbreakEntry.season_p75,
+                }
+              : null
+          }
         />,
       ).toBlob();
 
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `healthwatch_seasonality_${region.short}_report.pdf`);
+      link.setAttribute(
+        "download",
+        `HealthWatch_Seasonality_${region.short}_${exportDateSlug}.pdf`,
+      );
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -443,7 +511,14 @@ export function SeasonalityPage() {
                           isCurrent && "bg-primary/20 text-primary border-primary/40",
                           isForecast && "border-border",
                         )}
-                        style={isForecast ? { color: "var(--dry)", backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)" } : undefined}
+                        style={
+                          isForecast
+                            ? {
+                                color: "var(--dry)",
+                                backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)",
+                              }
+                            : undefined
+                        }
                       >
                         {isHistorical && `${Math.abs(horizon)}m past reported`}
                         {isCurrent && "Current baseline (Now)"}

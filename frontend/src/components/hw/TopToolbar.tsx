@@ -36,10 +36,19 @@ export interface TopToolbarProps {
   trailing?: React.ReactNode;
   /** Replaces the default print export with a scoped PNG/PDF export dropdown. */
   onExport?: (format: "png" | "pdf") => void;
+  /** CSV export handler for map data. */
+  onExportCsv?: () => void;
   exporting?: boolean;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: TopToolbarProps) {
+export function TopToolbar({
+  onPick,
+  onZoom,
+  trailing,
+  onExport,
+  onExportCsv,
+  exporting,
+}: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -185,6 +194,15 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
                       <FileText className="size-4 shrink-0 text-primary" />
                       <span>Export as PDF</span>
                     </DropdownMenu.Item>
+                    {onExportCsv && (
+                      <DropdownMenu.Item
+                        onSelect={onExportCsv}
+                        className="flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-foreground outline-none transition-colors hover:bg-secondary focus:bg-secondary data-[highlighted]:bg-secondary"
+                      >
+                        <Download className="size-4 shrink-0 text-primary" />
+                        <span>Export as CSV</span>
+                      </DropdownMenu.Item>
+                    )}
                   </>
                 ) : (
                   <DropdownMenu.Item
@@ -454,8 +472,20 @@ export function TopToolbar({ onPick, onZoom, trailing, onExport, exporting }: To
                     ) : (
                       <Download className="size-4 text-primary" />
                     )}
-                    <span>{exporting ? "Exporting…" : "Export View"}</span>
+                    <span>{exporting ? "Exporting…" : "Export PDF"}</span>
                   </button>
+                  {onExportCsv && (
+                    <button
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        onExportCsv();
+                      }}
+                      className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    >
+                      <Download className="size-4 text-primary" />
+                      <span>Export CSV</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

@@ -1,61 +1,63 @@
 ---
-## PLAN 2 — REMOVE GEMINI, USE ONLY GROQ LLAMA 4
+## PLAN 1 — EXPORT PDF FIX: SEASONALITY PAGE + MAP PAGE
 
 ### Standing Directive
-You are working on HealthWatch — a Philippine regional dengue outbreak forecasting and hotspot classification system. Backend is FastAPI + Anthropic SDK + SQLAlchemy. The existing codebase has Gemini Flash integrated for LLM features. Your job is to surgically remove all Gemini references and replace with Groq's Llama 4 model. Do not touch forecasting (Prophet) logic, database logic, or frontend unless a frontend prompt/response display needs updating. Read files before editing. Be precise.
+You are working on HealthWatch — a Philippine regional dengue outbreak forecasting and hotspot classification system. The frontend is React 19 + Vite + TanStack Router + TanStack React Query + Tailwind CSS 4 + Recharts + Leaflet + React PDF Renderer. The backend is FastAPI + SQLAlchemy + Prophet + PostgreSQL (Supabase in prod, SQLite fallback). Deployment is on Render. Package manager is Bun. Do not introduce new dependencies unless strictly necessary and explicitly justified. Do not touch unrelated files. Think before you act — read existing code first, then fix.
 
 ### System Context
-HealthWatch uses an LLM for AI-assisted interpretation — likely for generating natural-language outbreak summaries, intervention recommendations, or risk narrative text displayed on the dashboard. This was previously wired to Google Gemini Flash. The codebase uses Anthropic SDK (`anthropic`) in the stack listing but Gemini was also integrated, suggesting both may coexist or Gemini was a later addition. We are removing Gemini entirely and standardizing on **Groq's Llama 4** model.
+HealthWatch has two pages with broken export functionality:
+1. The **Seasonality page** has an export-to-PDF button that triggers but the exported PDF is empty or missing the actual page data (charts, tables, risk classifications, seasonal patterns).
+2. The **Map page** has an export button that does absolutely nothing — no download, no PDF, no CSV, no response.
 
-### Item 3 — Remove Gemini, Wire Groq Llama 4
+### Item 1 — Fix Seasonality Page PDF Export
 
-**Step 1 — Full audit of Gemini references.**
-Search the entire codebase for:
-- `gemini` (case-insensitive)
-- `google-generativeai` or `google.generativeai`
-- `GenerativeModel`, `genai`, `GEMINI_API_KEY`, `GOOGLE_API_KEY`
-- Any `.env` or `render.yaml` references to Gemini keys
-List every file found. Do not modify yet.
+**Step 1 — Audit the existing export code.**
+- Locate the Seasonality page component (likely `src/pages/seasonality.tsx` or similar). Find the PDF export handler. Read it fully.
+- Locate the React PDF Renderer usage (look for `@react-pdf/renderer` imports, `Document`, `Page`, `View`, `Text`, `Image` components).
+- Identify what data the PDF is currently trying to render and compare it to what is visually on the screen. Find the gap.
 
-**Step 2 — Audit Groq availability.**
-- Check `requirements.txt` or `pyproject.toml` for `groq` package. If missing, add `groq>=0.9.0`.
-- Check if `GROQ_API_KEY` is already present in `.env.example`, `render.yaml`, or any config file.
-- Note: Groq API is OpenAI-compatible. The client is: `from groq import Groq; client = Groq(api_key=os.environ["GROQ_API_KEY"])`
+**Step 2 — Identify root causes (check all of these):**
+- Is the PDF Document component receiving the actual queried data (forecasts, risk tier, seasonal decomposition, chart images) or is it rendering with undefined/empty state?
+- Are Recharts chart elements being captured as images for PDF inclusion? If not, implement `html2canvas` capture of chart refs (or use SVG export from Recharts directly — `recharts` exposes SVG natively, prefer this over html2canvas to avoid adding deps).
+- Is the PDF triggered before React Query has resolved the data? Ensure the export button is disabled or the handler awaits data readiness.
+- Is the PDF renderer running server-side (SSR via Nitro) where DOM APIs are unavailable? Guard all canvas/SVG capture logic with `typeof window !== 'undefined'`.
 
-**Step 3 — Replace the LLM client.**
-For every location where Gemini was called:
-- Remove the `google.generativeai` import and client initialization.
-- Replace with Groq client initialization:
-```python
-  from groq import Groq
-  _groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY", ""))
-```
-- Replace the Gemini `generate_content(prompt)` call pattern with:
-```python
-  completion = _groq_client.chat.completions.create(
-      model="meta-llama/llama-4-scout-17b-16e-instruct",
-      messages=[{"role": "user", "content": prompt}],
-      max_tokens=1024,
-      temperature=0.3,
-  )
-  result_text = completion.choices[0].message.content
-```
-- Use `llama-4-scout-17b-16e-instruct` as the primary model. If Groq adds Llama 4 Maverick to their API (check their model list), use `meta-llama/llama-4-maverick-17b-128e-instruct` as a fallback option with a comment noting the upgrade path.
-- Wrap the Groq call in a try/except. On exception, return a safe fallback string: `"AI summary unavailable. Please refer to the forecast data directly."` — never let LLM failure crash the API response.
+**Step 3 — Fix the PDF content.**
+The Seasonality page PDF export must include, in this order:
+1. Header: HealthWatch logo text, report title "Seasonal Pattern Analysis Report", generation timestamp (Philippine Standard Time, UTC+8), selected region and illness.
+2. Seasonal decomposition summary table: trend direction, seasonal amplitude, residual range — one row per metric.
+3. Risk tier classification result: Low / Moderate / High, with the P50 and P75 thresholds used.
+4. Seasonal outbreak indicator result: Rule A status, Rule B status, combined outbreak signal.
+5. Case volume chart: export as SVG string from Recharts ref or render a simplified table of forecast values if SVG capture fails.
+6. Footer: "Data sourced from DOH PIDSR. For official use only."
 
-**Step 4 — Clean up.**
-- Remove `google-generativeai` from `requirements.txt` / `pyproject.toml`.
-- Remove any `GEMINI_API_KEY` or `GOOGLE_API_KEY` from `.env.example` (replace with a comment: `# Removed: GEMINI_API_KEY — replaced by GROQ_API_KEY`).
-- Remove Gemini from `render.yaml` environment variable definitions.
-- Search for any frontend `.env` references to Gemini and remove.
+**Step 4 — Wire up the fixed export.**
+- Replace the broken handler with the corrected one.
+- The export button should show a loading spinner while generating, then trigger `window.URL.createObjectURL` + `<a>` click download pattern.
+- Filename format: `HealthWatch_Seasonality_{RegionSlug}_{YYYYMMDD}.pdf`
 
-**Step 5 — Render environment variable instructions (READ THIS CAREFULLY).**
-You (the dev running this) must do the following manually on Render dashboard:
-1. Go to your HealthWatch API service on Render → Environment → Environment Variables.
-2. ADD: `GROQ_API_KEY` = your Groq API key from https://console.groq.com/keys
-3. DELETE: `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) from the environment variables list.
-4. Trigger a manual deploy after saving the env vars.
-The code change alone will not work until the env var is set on Render. Big pickle cannot do this for you — this is a manual step on the Render dashboard.
+---
 
-**Step 6 — Verify.**
-After replacement, search the entire codebase one more time for any remaining `gemini` or `google.generativeai` strings. If any remain, remove them. Leave zero Gemini references.
+### Item 2 — Fix Map Page Export Button
+
+**Step 1 — Audit the Map page export button.**
+- Locate the Map page component (likely `src/pages/map.tsx` or `src/pages/index.tsx` since map is the landing). Find the export button element and its `onClick` handler.
+- If the handler is empty, a no-op, or commented out — that is the bug. Document what you find.
+
+**Step 2 — Implement Map page export as CSV.**
+The map page shows regional hotspot classifications (Low/Moderate/High per region). Export this as a CSV with the following columns:
+`Region, Risk Tier, Predicted Cases (Next Season), P50 Threshold, P75 Threshold, Outbreak Signal (Rule A), Outbreak Signal (Rule B), Season, Illness, Export Date`
+
+- Pull data from the existing React Query cache that is already powering the map choropleth — do not make a new API call.
+- Use a pure in-memory CSV string builder (no new deps): `encodeURIComponent`, `data:text/csv` URI, or `Blob` + `URL.createObjectURL`.
+- Trigger download via a temporary `<a>` tag with `download` attribute.
+- Filename format: `HealthWatch_MapExport_{Season}_{YYYYMMDD}.csv`
+
+**Step 3 — Also add a PDF summary option to the map export (secondary, only if time allows).**
+- A one-page PDF showing the regional risk tier table (all 18 regions + National), sorted High → Moderate → Low.
+- Use the same React PDF Renderer pattern from Item 1.
+- If not done now, leave a clearly marked `// TODO: Map PDF export` comment with the spec above.
+
+**Step 4 — UX.**
+- The export button on the map page must provide visual feedback: show "Exporting…" text or a spinner, then revert to normal after the download is triggered.
+- Disable the button during export to prevent double-clicks.
