@@ -1,4 +1,4 @@
-import { useState, type Ref } from "react";
+import { Suspense, useState, type Ref } from "react";
 import {
   Bot,
   Check,
@@ -9,7 +9,7 @@ import {
   Sparkles,
   Info,
 } from "lucide-react";
-import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
+import { DecompositionChart, AcfChart } from "@/components/hw/Charts.lazy";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 import { useChartType } from "@/hooks/useChartType";
 import { type SeasonalityComponent } from "@/lib/healthwatch/data";
@@ -162,24 +162,35 @@ export function SeasonalityChartCard({
 
       {/* Chart Canvas */}
       <div ref={chartRef} className="mt-1 w-full flex-1">
-        {component === "acf" ? (
-          <AcfChart
-            regionCode={regionCode}
-            illness={illness}
-            height={height}
-            endIndex={endIndex}
-            chartType={chartType}
-          />
-        ) : (
-          <DecompositionChart
-            regionCode={regionCode}
-            illness={illness}
-            component={component as "observed" | "trend" | "seasonal" | "residual"}
-            height={height}
-            endIndex={endIndex}
-            chartType={chartType}
-          />
-        )}
+        <Suspense
+          fallback={
+            <div
+              style={{ minHeight: height }}
+              className="flex items-center justify-center rounded-lg border border-border/60 bg-secondary/30"
+            >
+              <span className="text-[11px] text-muted-foreground">Loading chart…</span>
+            </div>
+          }
+        >
+          {component === "acf" ? (
+            <AcfChart
+              regionCode={regionCode}
+              illness={illness}
+              height={height}
+              endIndex={endIndex}
+              chartType={chartType}
+            />
+          ) : (
+            <DecompositionChart
+              regionCode={regionCode}
+              illness={illness}
+              component={component as "observed" | "trend" | "seasonal" | "residual"}
+              height={height}
+              endIndex={endIndex}
+              chartType={chartType}
+            />
+          )}
+        </Suspense>
       </div>
     </div>
   );

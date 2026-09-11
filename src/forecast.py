@@ -133,8 +133,8 @@ def build_forecast(series, horizon=FORECAST_MONTHS):
     last = series["ds"].max()
     future_dates = pd.date_range(last, periods=horizon + 1, freq=FREQ)[1:]
     fcst = predict(model, future_dates)
-    fcst["yhat"] = fcst["yhat"].clip(lower=0)
-    fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=0)
+    fcst["yhat"] = fcst["yhat"].clip(lower=1)
+    fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=1)
     return fcst
 
 

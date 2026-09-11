@@ -40,9 +40,9 @@ Dengue,Cagayan Valley,2026-10-01,1286.6529979253737,1743.0,1880.5,Low
 Dengue,Cagayan Valley,2026-11-01,757.2704047061193,1424.0,1477.0,Low
 Dengue,Cagayan Valley,2026-12-01,267.2094095152288,829.0,904.0,Low
 Dengue,Cagayan Valley,2027-01-01,34.0837405056277,579.0,590.5,Low
-Dengue,Cagayan Valley,2027-02-01,0.0,354.0,364.5,Low
-Dengue,Cagayan Valley,2027-03-01,0.0,286.0,344.5,Low
-Dengue,Cagayan Valley,2027-04-01,0.0,282.0,470.0,Low
+Dengue,Cagayan Valley,2027-02-01,1.0,354.0,364.5,Low
+Dengue,Cagayan Valley,2027-03-01,1.0,286.0,344.5,Low
+Dengue,Cagayan Valley,2027-04-01,1.0,282.0,470.0,Low
 Dengue,Cagayan Valley,2027-05-01,257.17119084703154,400.0,871.0,Low
 Dengue,Cagayan Valley,2027-06-01,946.8407773421754,778.0,1895.5,Moderate
 Dengue,Cagayan Valley,2027-07-01,1248.4921904240105,2249.0,3201.5,Low
@@ -87,9 +87,9 @@ Dengue,Cordillera Administrative Region,2026-09-01,2269.7475250204297,2216.0,356
 Dengue,Cordillera Administrative Region,2026-10-01,1587.0824151269044,1530.0,1774.0,Moderate
 Dengue,Cordillera Administrative Region,2026-11-01,851.1776360607982,962.0,1028.5,Low
 Dengue,Cordillera Administrative Region,2026-12-01,324.0238188471558,705.0,711.5,Low
-Dengue,Cordillera Administrative Region,2027-01-01,0.0,393.0,440.0,Low
-Dengue,Cordillera Administrative Region,2027-02-01,0.0,289.0,292.5,Low
-Dengue,Cordillera Administrative Region,2027-03-01,0.0,222.0,246.0,Low
+Dengue,Cordillera Administrative Region,2027-01-01,1.0,393.0,440.0,Low
+Dengue,Cordillera Administrative Region,2027-02-01,1.0,289.0,292.5,Low
+Dengue,Cordillera Administrative Region,2027-03-01,1.0,222.0,246.0,Low
 Dengue,Cordillera Administrative Region,2027-04-01,139.9886118818613,292.0,367.0,Low
 Dengue,Cordillera Administrative Region,2027-05-01,925.6127277295928,882.0,1071.0,Moderate
 Dengue,Cordillera Administrative Region,2027-06-01,1802.8213192246403,2972.0,3065.5,Low
@@ -112,13 +112,13 @@ Dengue,Eastern Visayas,2026-10-01,268.5704402296442,566.0,583.5,Low
 Dengue,Eastern Visayas,2026-11-01,264.8766542047051,650.0,687.5,Low
 Dengue,Eastern Visayas,2026-12-01,124.04149186454106,413.0,511.5,Low
 Dengue,Eastern Visayas,2027-01-01,50.03484319990184,338.0,453.5,Low
-Dengue,Eastern Visayas,2027-02-01,0.0,291.0,329.0,Low
-Dengue,Eastern Visayas,2027-03-01,0.0,348.0,368.5,Low
+Dengue,Eastern Visayas,2027-02-01,1.0,291.0,329.0,Low
+Dengue,Eastern Visayas,2027-03-01,1.0,348.0,368.5,Low
 Dengue,Eastern Visayas,2027-04-01,10.000209383595577,255.0,391.0,Low
 Dengue,Eastern Visayas,2027-05-01,122.41629902677596,424.0,615.0,Low
 Dengue,Eastern Visayas,2027-06-01,266.94986145914027,573.0,753.0,Low
 Dengue,Eastern Visayas,2027-07-01,364.5771806864841,969.0,1030.5,Low
-Dengue,Eastern Visayas,2027-08-01,0.0,791.0,1374.0,Low
+Dengue,Eastern Visayas,2027-08-01,1.0,791.0,1374.0,Low
 Dengue,Ilocos Region,2026-09-01,1924.489340383612,1355.0,1913.0,High
 Dengue,Ilocos Region,2026-10-01,1542.8416882720812,1140.0,1397.0,High
 Dengue,Ilocos Region,2026-11-01,1178.2815396387832,926.0,1082.5,High
@@ -134,11 +134,11 @@ Dengue,Ilocos Region,2027-08-01,1812.344900616652,1529.0,2599.5,Moderate
 Dengue,MIMAROPA,2026-09-01,563.3729104833965,1322.0,1520.0,Low
 Dengue,MIMAROPA,2026-10-01,466.7343714428007,1327.0,1358.5,Low
 Dengue,MIMAROPA,2026-11-01,265.0208935809096,986.0,1137.0,Low
-Dengue,MIMAROPA,2026-12-01,0.0,709.0,880.5,Low
-Dengue,MIMAROPA,2027-01-01,0.0,702.0,720.5,Low
-Dengue,MIMAROPA,2027-02-01,0.0,603.0,706.0,Low
-Dengue,MIMAROPA,2027-03-01,0.0,631.0,648.0,Low
-Dengue,MIMAROPA,2027-04-01,0.0,570.0,678.0,Low
+Dengue,MIMAROPA,2026-12-01,1.0,709.0,880.5,Low
+Dengue,MIMAROPA,2027-01-01,1.0,702.0,720.5,Low
+Dengue,MIMAROPA,2027-02-01,1.0,603.0,706.0,Low
+Dengue,MIMAROPA,2027-03-01,1.0,631.0,648.0,Low
+Dengue,MIMAROPA,2027-04-01,1.0,570.0,678.0,Low
 Dengue,MIMAROPA,2027-05-01,133.86523332390243,630.0,851.0,Low
 Dengue,MIMAROPA,2027-06-01,785.7913667856883,1573.0,1766.0,Low
 Dengue,MIMAROPA,2027-07-01,1091.990491099792,2622.0,3346.0,Low
@@ -182,15 +182,15 @@ Dengue,Negros Island Region,2027-08-01,786.6087564978088,1616.0,2980.0,Low
 Dengue,Northern Mindanao,2026-09-01,663.1852316801323,1879.0,2213.5,Low
 Dengue,Northern Mindanao,2026-10-01,455.6918986462424,1557.0,1736.0,Low
 Dengue,Northern Mindanao,2026-11-01,133.66211820338322,1318.0,1507.5,Low
-Dengue,Northern Mindanao,2026-12-01,0.0,1084.0,1400.0,Low
+Dengue,Northern Mindanao,2026-12-01,1.0,1084.0,1400.0,Low
 Dengue,Northern Mindanao,2027-01-01,84.18895966263699,1201.0,1574.5,Low
-Dengue,Northern Mindanao,2027-02-01,0.0,971.0,1312.5,Low
-Dengue,Northern Mindanao,2027-03-01,0.0,906.0,1173.0,Low
-Dengue,Northern Mindanao,2027-04-01,0.0,888.0,1062.5,Low
-Dengue,Northern Mindanao,2027-05-01,0.0,1254.0,1328.5,Low
+Dengue,Northern Mindanao,2027-02-01,1.0,971.0,1312.5,Low
+Dengue,Northern Mindanao,2027-03-01,1.0,906.0,1173.0,Low
+Dengue,Northern Mindanao,2027-04-01,1.0,888.0,1062.5,Low
+Dengue,Northern Mindanao,2027-05-01,1.0,1254.0,1328.5,Low
 Dengue,Northern Mindanao,2027-06-01,233.02845328242256,1507.0,1700.5,Low
 Dengue,Northern Mindanao,2027-07-01,252.96068239439228,1866.0,2726.5,Low
-Dengue,Northern Mindanao,2027-08-01,0.0,2014.0,3243.5,Low
+Dengue,Northern Mindanao,2027-08-01,1.0,2014.0,3243.5,Low
 Dengue,SOCCSKSARGEN,2026-09-01,1417.944632107594,1474.0,1929.5,Low
 Dengue,SOCCSKSARGEN,2026-10-01,1246.7292701869374,1384.0,1566.5,Low
 Dengue,SOCCSKSARGEN,2026-11-01,919.9665165221596,1092.0,1176.5,Low

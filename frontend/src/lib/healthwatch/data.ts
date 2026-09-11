@@ -470,9 +470,9 @@ export function metricValue(cases: number, region: Region, mode: MetricMode): nu
 }
 
 export function formatMetric(value: number, mode: MetricMode): string {
-  return mode === "raw"
-    ? Math.round(value).toLocaleString()
-    : value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+  if (mode === "raw") return Math.round(value).toLocaleString();
+  if (value > 0 && value < 0.1) return "<0.1";
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 
 /** Circular month distance; within ±1 month counts as the same seasonal window. */

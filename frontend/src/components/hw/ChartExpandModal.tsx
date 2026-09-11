@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Copy,
   Check,
@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { DecompositionChart, AcfChart } from "@/components/hw/Charts";
+import { DecompositionChart, AcfChart } from "@/components/hw/Charts.lazy";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 import { useChartType } from "@/hooks/useChartType";
 import { REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
@@ -340,24 +340,32 @@ export function ChartExpandModal({
         {activeTab === "chart" && (
           <div className="mt-4 space-y-4">
             <div className="rounded-xl border border-border/70 bg-card/60 p-4 shadow-inner">
-              {component === "acf" ? (
-                <AcfChart
-                  regionCode={regionCode}
-                  illness={illness}
-                  height={280}
-                  endIndex={endIndex}
-                  chartType={chartType}
-                />
-              ) : (
-                <DecompositionChart
-                  regionCode={regionCode}
-                  illness={illness}
-                  component={component as "observed" | "trend" | "seasonal" | "residual"}
-                  height={280}
-                  endIndex={endIndex}
-                  chartType={chartType}
-                />
-              )}
+              <Suspense
+                fallback={
+                  <div className="flex h-72 items-center justify-center rounded-lg border border-border/60 bg-secondary/30">
+                    <span className="text-xs text-muted-foreground">Loading chart…</span>
+                  </div>
+                }
+              >
+                {component === "acf" ? (
+                  <AcfChart
+                    regionCode={regionCode}
+                    illness={illness}
+                    height={280}
+                    endIndex={endIndex}
+                    chartType={chartType}
+                  />
+                ) : (
+                  <DecompositionChart
+                    regionCode={regionCode}
+                    illness={illness}
+                    component={component as "observed" | "trend" | "seasonal" | "residual"}
+                    height={280}
+                    endIndex={endIndex}
+                    chartType={chartType}
+                  />
+                )}
+              </Suspense>
             </div>
 
             {/* Key Metrics Grid */}

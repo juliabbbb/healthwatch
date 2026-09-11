@@ -1,0 +1,18 @@
+Backend data loaded in 0.1s
+Connected to Supabase PostgreSQL
+Database connection verified.
+INFO:     127.0.0.1:50875 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50875 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50941 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50960 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50975 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51015 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51069 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51080 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51070 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51241 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51242 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51242 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51242 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51303 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51312 - "GET /dashboard HTTP/1.1" 200 OK

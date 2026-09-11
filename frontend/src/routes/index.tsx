@@ -48,9 +48,9 @@ export const Route = createFileRoute("/")({
 function MapView() {
   const [mounted, setMounted] = useState(false);
   const [illness, setIllness] = useState("all");
-  const [monthIndex, setMonthIndex] = useState(CURRENT_MONTH_INDEX + 4);
+  const [monthIndex, setMonthIndex] = useState(CURRENT_MONTH_INDEX);
   const [playing, setPlaying] = useState(false);
-  const [selected, setSelected] = useState<string | null>("130000000");
+  const [selected, setSelected] = useState<string | null>(null);
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
   const [layer, setLayer] = useState<DataLayer>("hotspot");

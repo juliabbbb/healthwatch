@@ -37,32 +37,121 @@ _OUTBREAK_VALIDATION: pd.DataFrame = pd.DataFrame()
 _data_ready = False
 
 
+def _csv_region_code(series):
+    """Map a processed-CSV `region` label ('National' or a REGION_META name)
+    to its PSGC code, mirroring what the relational DB stores in
+    `region_code`. Fails loudly on unknown labels instead of dropping rows."""
+    mapping = dict(db.REGION_CODE_BY_NAME)
+    mapping[db.NATIONAL_NAME] = db.NATIONAL_CODE
+    codes = series.map(mapping)
+    missing = set(series[codes.isna()].unique())
+    if missing:
+        raise ValueError(f"Unmapped region labels in processed CSV: {sorted(missing)}")
+    return codes
+
+
+def _load_processed(name):
+    """Read a shipped pipeline CSV (data/processed/<name>) or None if absent."""
+    path = ingest.PROCESSED_DIR / name
+    if not path.exists():
+        return None
+    return pd.read_csv(path)
+
+
+def _normalize_dates(df, col):
+    """Ensure df has a real datetime `col`: consume it when present (CSV
+    source), else derive it from year/month (the relational-DB shape)."""
+    if col in df.columns:
+        df[col] = pd.to_datetime(df[col])
+    else:
+        df[col] = pd.to_datetime(
+            df["year"].astype(str) + "-" + df["month"].astype(str).str.zfill(2) + "-01"
+        )
+    return df
+
+
+def _load_repo_tables():
+    """Read the six pipeline tables straight from the CSVs that ship in the
+    repo (data/processed/*.csv). The relational DB holds the same rows, but
+    reading local disk avoids ~6 remote Postgres round-trips on every cold
+    start. Falls back to `db.read_table` when a CSV is missing."""
+    regional_csv = _load_processed("regional_dengue_monthly.csv")
+    national_csv = _load_processed("national_monthly.csv")
+    if regional_csv is not None and national_csv is not None:
+        obs = pd.concat([regional_csv, national_csv], ignore_index=True)
+        obs["region_code"] = _csv_region_code(obs["region"])
+        obs["year"] = pd.to_datetime(obs["date"]).dt.year
+        obs["month"] = pd.to_datetime(obs["date"]).dt.month
+    else:
+        obs = db.read_table("monthly_observations")
+    _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
+    _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
+    _normalize_dates(_NATIONAL, "date")
+    _normalize_dates(_REGIONAL, "date")
+
+    _FORECASTS = _load_processed("forecasts.csv")
+    if _FORECASTS is None:
+        _FORECASTS = db.read_table("forecasts")
+    else:
+        _FORECASTS["region_code"] = _csv_region_code(_FORECASTS["region"])
+    _normalize_dates(_FORECASTS, "target_date")
+
+    _CLASSIFICATION = _load_processed("risk_classification.csv")
+    if _CLASSIFICATION is None:
+        _CLASSIFICATION = db.read_table("risk_classifications")
+    else:
+        _CLASSIFICATION["region_code"] = _csv_region_code(_CLASSIFICATION["region"])
+    _normalize_dates(_CLASSIFICATION, "date")
+
+    _THRESHOLDS = _load_processed("risk_thresholds.csv")
+    if _THRESHOLDS is None:
+        _THRESHOLDS = db.read_table("risk_thresholds")
+    else:
+        _THRESHOLDS["region_code"] = _csv_region_code(_THRESHOLDS["region"])
+
+    _METRICS = _load_processed("validation_metrics.csv")
+    if _METRICS is None:
+        _METRICS = db.read_table("validation_metrics")
+    else:
+        _METRICS["region_code"] = _csv_region_code(_METRICS["region"])
+
+    _OUTBREAKS = _load_processed("outbreak_indicators.csv")
+    if _OUTBREAKS is None:
+        _OUTBREAKS = db.read_table("outbreak_signals")
+    else:
+        _OUTBREAKS["region_code"] = _csv_region_code(_OUTBREAKS["region"])
+
+    csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
+    _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
+
+    return (
+        _NATIONAL,
+        _REGIONAL,
+        _FORECASTS,
+        _CLASSIFICATION,
+        _THRESHOLDS,
+        _METRICS,
+        _OUTBREAKS,
+        _OUTBREAK_VALIDATION,
+    )
+
+
 def _load_all_data() -> None:
     global _NATIONAL, _REGIONAL, _FORECASTS, _CLASSIFICATION  # noqa: PLW0603
     global _THRESHOLDS, _METRICS, _OUTBREAKS, _OUTBREAK_VALIDATION  # noqa: PLW0603
     global _data_ready  # noqa: PLW0603
 
     t0 = time.monotonic()
-    obs = db.read_table("monthly_observations")
-    _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
-    _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
-    _FORECASTS = db.read_table("forecasts")
-    _CLASSIFICATION = db.read_table("risk_classifications")
-    _THRESHOLDS = db.read_table("risk_thresholds")
-    _METRICS = db.read_table("validation_metrics")
-    _OUTBREAKS = db.read_table("outbreak_signals")
-    csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
-    _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
-
-    for _df in (_NATIONAL, _REGIONAL):
-        _df["date"] = pd.to_datetime(
-            _df["year"].astype(str) + "-" + _df["month"].astype(str).str.zfill(2) + "-01"
-        )
-    for _df, _col in (
-        (_FORECASTS, "target_date"),
-        (_CLASSIFICATION, "date"),
-    ):
-        _df[_col] = pd.to_datetime(_df[_col])
+    (
+        _NATIONAL,
+        _REGIONAL,
+        _FORECASTS,
+        _CLASSIFICATION,
+        _THRESHOLDS,
+        _METRICS,
+        _OUTBREAKS,
+        _OUTBREAK_VALIDATION,
+    ) = _load_repo_tables()
 
     _data_ready = True
     print(f"Backend data loaded in {time.monotonic() - t0:.1f}s")
@@ -531,7 +620,9 @@ async def _subscription_loop() -> None:
     while True:
         try:
             if _data_ready:
-                _send_due_subscriptions()
+                # Sync DB reads/writes (and possible report builds) run in a
+                # worker thread so /health keeps responding during the pass.
+                await asyncio.to_thread(_send_due_subscriptions)
         except Exception as exc:  # noqa: BLE001
             print(f"[subscriptions] scheduler pass failed: {exc}", flush=True)
         await asyncio.sleep(interval_h * 3600)

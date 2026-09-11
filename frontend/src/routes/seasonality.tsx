@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useRef, useState, type RefObject } from "react";
+import { Suspense, useMemo, useRef, useState, type RefObject } from "react";
 import {
   ArrowLeft,
   Copy,
@@ -26,7 +26,7 @@ import {
 import { RiskBadge, SeasonTag } from "@/components/hw/RiskBadge";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { FilterPanel } from "@/components/FilterPanel";
-import { ForecastChart } from "@/components/hw/Charts";
+import { ForecastChart } from "@/components/hw/Charts.lazy";
 import { InterventionPanel } from "@/components/hw/InterventionPanel";
 import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
@@ -891,12 +891,20 @@ function SeasonalityPage() {
           </div>
           <ChartTypeToggle value={forecastChartType} onChange={setForecastChartType} />
         </div>
-        <ForecastChart
-          regionCode={code}
-          illness={illness}
-          horizon={forecastHorizon}
-          chartType={forecastChartType}
-        />
+        <Suspense
+          fallback={
+            <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-border/60 bg-secondary/30">
+              <span className="text-xs text-muted-foreground">Loading forecast chart…</span>
+            </div>
+          }
+        >
+          <ForecastChart
+            regionCode={code}
+            illness={illness}
+            horizon={forecastHorizon}
+            chartType={forecastChartType}
+          />
+        </Suspense>
         <div className="mt-3 overflow-x-auto">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="label-caps">
