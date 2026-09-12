@@ -16,3 +16,21 @@ INFO:     127.0.0.1:51242 - "GET /analysis/NCR?disease=Dengue&window=last_12m HT
 INFO:     127.0.0.1:51242 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
 INFO:     127.0.0.1:51303 - "GET /dashboard HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51312 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51491 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51722 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53305 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54292 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51406 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51429 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51456 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51456 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51456 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:51802 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51872 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51959 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51994 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52006 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52007 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52039 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52088 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52097 - "GET /dashboard HTTP/1.1" 200 OK

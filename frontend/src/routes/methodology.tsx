@@ -173,9 +173,9 @@ function Methodology() {
 
       <Section title="Seasonal outbreak indicator">
         <p className="text-sm text-foreground/85">
-          On top of the monthly tier, the pipeline publishes a season-level outbreak flag for the
-          coming <strong>dry window (Jan–Mar)</strong> and{" "}
-          <strong>wet window (Jul–Sep, the climatological peak)</strong>. Each purpose-built Prophet
+          On top of the monthly tier, the pipeline publishes a season-level outbreak flag for each
+          validated benchmark window: <strong>dry (Jan–Mar 2025)</strong> and{" "}
+          <strong>wet (Jul–Sep 2025, the climatological peak)</strong>. Each purpose-built Prophet
           probe forecasts the 3 months of that window; a region is flagged when either rule fires on
           the probe:
         </p>
@@ -190,12 +190,14 @@ function Methodology() {
           </li>
         </ul>
         <p className="mt-3 text-sm text-foreground/85">
-          The upcoming season used for outbreak detection is determined automatically from the
-          current date using a fixed calendar boundary (wet: Jun–Nov, dry: Dec–May, per PAGASA's
-          climatological definition) — it is not pulled from PAGASA or any live weather source. This
-          keeps the indicator reproducible and directly implements Objective 2's goal of predicting
-          cases "during an upcoming season (dry or wet)" as the basis for outbreak detection
-          (Objective 2 → feeds Objective 3's classification).
+          The panel labels this indicator as a fixed benchmark —{" "}
+          <strong>Validated Outbreak Signal (Jul–Sep 2025 benchmark)</strong> — sourced from the
+          same frozen <code>outbreak_indicators.csv</code> / <code>outbreak_signals</code> table. It
+          is not recomputed from the current date: the displayed dry/wet flags always describe the
+          2025 probe windows, so the signal stays reproducible rather than drifting into a rolling
+          "upcoming season" label. Season attribution still follows the fixed calendar boundary
+          (wet: Jun–Nov, dry: Dec–May, per PAGASA's climatological definition), and the dashboard
+          still lets you toggle between the dry and wet benchmark windows for comparison.
         </p>
         <p className="mt-3 text-sm text-foreground/85">
           Crucially, these flags were <strong>locked without retuning</strong> after a prospective
