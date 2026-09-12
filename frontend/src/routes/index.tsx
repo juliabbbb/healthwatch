@@ -10,7 +10,7 @@ import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
 import {
   CURRENT_MONTH_INDEX,
-  REPORT_UPCOMING_SEASON,
+  OUTBREAK_BENCHMARK_SEASON,
   assessAll,
   formatMetric,
   monthMeta,
@@ -54,7 +54,7 @@ function MapView() {
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
   const [layer, setLayer] = useState<DataLayer>("hotspot");
-  const [outbreakSeason, setOutbreakSeason] = useState<Season>(REPORT_UPCOMING_SEASON);
+  const [outbreakSeason, setOutbreakSeason] = useState<Season>(OUTBREAK_BENCHMARK_SEASON);
   const [showOutbreakMarkers, setShowOutbreakMarkers] = useState(false);
   const [mobileNationalOpen, setMobileNationalOpen] = useState(false);
 

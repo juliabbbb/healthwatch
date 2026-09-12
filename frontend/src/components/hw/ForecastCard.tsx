@@ -12,10 +12,10 @@ import {
   getOutbreak,
   metricValue,
   modelMetrics,
-  REPORT_DATE,
-  REPORT_UPCOMING_SEASON,
-  SEASON_START_MONTH,
   monthMeta,
+  OUTBREAK_BENCHMARK_SEASON,
+  OUTBREAK_BENCHMARK_LABEL,
+  OUTBREAK_BENCHMARK_WINDOW,
   type MetricMode,
   type OutbreakIndicator,
   type RiskLevel,
@@ -63,7 +63,7 @@ export function ForecastCard({
   variant = "panel",
   className,
   showHeader = true,
-  outbreakSeason = REPORT_UPCOMING_SEASON,
+  outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
   onOutbreakSeasonChange,
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
@@ -331,7 +331,7 @@ export function ForecastCard({
         {outlookData[selectedSeason] && (
           <div className="space-y-1">
             <OutbreakHeadline season={selectedSeason} ind={outlookData[selectedSeason]} />
-            <SeasonBasis isManual={selectedSeason !== REPORT_UPCOMING_SEASON} />
+            <SeasonBasis isManual={selectedSeason !== OUTBREAK_BENCHMARK_SEASON} />
           </div>
         )}
 
@@ -454,7 +454,6 @@ export function ForecastCard({
 }
 
 function SeasonBasis({ isManual }: { isManual: boolean }) {
-  const start = SEASON_START_MONTH[REPORT_UPCOMING_SEASON];
   return (
     <p
       className={cn(
@@ -462,9 +461,9 @@ function SeasonBasis({ isManual }: { isManual: boolean }) {
         isManual ? "text-muted-foreground" : "text-muted-foreground",
       )}
     >
-      Based on the current report date ({formatMonthYear(REPORT_DATE)}) — upcoming season derived
-      from a fixed calendar rule (wet: {SEASON_CONFIG.wet.months}, dry: {SEASON_CONFIG.dry.months}),
-      starting {start}. {isManual && "Showing the other season for comparison."}
+      {OUTBREAK_BENCHMARK_LABEL}: frozen 2025-dated probe forecasts, fit through 2024-12-31 and
+      checked prospectively against observed 2025 — a fixed benchmark, not a clock-derived upcoming
+      season. {isManual && "Showing the alternate benchmark window for comparison."}
     </p>
   );
 }
@@ -472,20 +471,20 @@ function SeasonBasis({ isManual }: { isManual: boolean }) {
 function OutbreakHeadline({ season, ind }: { season: Season; ind?: OutbreakIndicator }) {
   if (!ind) return null;
   const cap = season === "dry" ? "Dry" : "Wet";
-  const display = SEASON_CONFIG[season].display;
+  const window = OUTBREAK_BENCHMARK_WINDOW[season];
   const avg = Math.round(ind.season_avg).toLocaleString();
   const p75 = Math.round(ind.season_p75).toLocaleString();
   return ind.outbreak ? (
     <p className="text-xs leading-relaxed text-foreground/90">
       <span className="font-semibold text-foreground">
-        Next season ({display}): outbreak alert.
+        {window} benchmark: outbreak alert.
       </span>{" "}
       Expected cases ({avg}) exceed this region's historical {cap}-season P75 threshold ({p75}).
     </p>
   ) : (
     <p className="text-xs leading-relaxed text-foreground/90">
       <span className="font-semibold text-foreground">
-        Next season ({display}): no outbreak alert.
+        {window} benchmark: no outbreak alert.
       </span>{" "}
       Expected cases within this region's normal seasonal range.
     </p>
