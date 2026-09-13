@@ -63,6 +63,7 @@ def fit_prophet(train):
         yearly_seasonality=True,
         weekly_seasonality=False,
         daily_seasonality=False,
+        seasonality_mode="multiplicative",
     )
     model.add_regressor("is_wet_season")
     flagged = features.add_season_flags(train, date_col="ds")

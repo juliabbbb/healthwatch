@@ -159,8 +159,9 @@ export function NationalSnapshot({
                     <span className="text-risk-high font-semibold">High</span>).
                   </p>
                   <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-                    The alert marker shows a seasonal outbreak flag for the upcoming dry or wet
-                    season.
+                    The alert marker shows a seasonal outbreak flag from the validated 2025
+                    benchmark (Jul–Sep wet window) — a fixed signal, not a live upcoming-season
+                    feed.
                   </p>
                 </div>
               )}

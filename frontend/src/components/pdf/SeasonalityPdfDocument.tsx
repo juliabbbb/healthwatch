@@ -2,7 +2,7 @@ import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import { pdfStyles, COLORS } from "./styles/pdfStyles";
 import { PDFHeader, PDFTitleBlock } from "./sections/PDFHeader";
 import { PDFFooter } from "./sections/PDFFooter";
-import type { RiskLevel } from "@/lib/healthwatch/data";
+import { OUTBREAK_BENCHMARK_WINDOW, type RiskLevel, type Season } from "@/lib/healthwatch/data";
 
 export interface SeasonalityPdfChart {
   label: string;
@@ -260,7 +260,10 @@ export function SeasonalityPdfDocument({
         {outbreak && (
           <>
             <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>
-            <MetaRow label="Assessment season" value={outbreak.season} />
+            <MetaRow
+              label="Benchmark window (2025 validation)"
+              value={OUTBREAK_BENCHMARK_WINDOW[outbreak.season as Season] ?? outbreak.season}
+            />
             <View style={[pdfStyles.metaRow, { alignItems: "center" }]}>
               <Text style={pdfStyles.metaLabel}>Rule A — Consecutive High months</Text>
               <View style={{ flexDirection: "row", alignItems: "center" }}>

@@ -896,15 +896,18 @@ export const CURRENT_MONTH_INDEX = Math.max(
 export const REPORT_MONTH_INDEX = CURRENT_MONTH_INDEX;
 export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-09-01"
 /**
- * Real-time-derived default for the outbreak outlook: the season that starts
- * after the report date, computed from the fixed calendar boundary — never
- * hardcoded, never a weather feed.
+ * Fixed validation benchmark for the seasonal outbreak indicator. The panel is
+ * NOT derived from the current clock: it always shows the frozen 2025-dated
+ * probes from outbreak_indicators.csv (fit through 2024-12-31, checked
+ * prospectively against observed 2025).
  */
-export const REPORT_UPCOMING_SEASON: Season = upcomingSeasonForMonth(
-  monthMeta(CURRENT_MONTH_INDEX).month,
-);
-/** Display label for the month an upcoming season starts (for "starts [date]"). */
-export const SEASON_START_MONTH: Record<Season, string> = { dry: "Dec", wet: "Jun" };
+export const OUTBREAK_BENCHMARK_SEASON: Season = "wet";
+export const OUTBREAK_BENCHMARK_LABEL = "Validated Outbreak Signal (Jul–Sep 2025 benchmark)";
+/** Calendar window each season's benchmark probe describes (2025 validation). */
+export const OUTBREAK_BENCHMARK_WINDOW: Record<Season, string> = {
+  dry: "Jan–Mar 2025",
+  wet: "Jul–Sep 2025",
+};
 
 export function monthLabel(index: number) {
   return monthMeta(index).label;

@@ -46,7 +46,7 @@ import {
   getOutbreak,
   monthMeta,
   OUTBREAK_TRIGGER_LABEL,
-  REPORT_UPCOMING_SEASON,
+  OUTBREAK_BENCHMARK_SEASON,
   recommendations,
   seriesFor,
   assessRegion,
@@ -300,7 +300,7 @@ function SeasonalityPage() {
 
       // Outbreak indicator
       const outbreakData = getOutbreak(code);
-      const outbreakSeason = REPORT_UPCOMING_SEASON;
+      const outbreakSeason = OUTBREAK_BENCHMARK_SEASON;
       const outbreakEntry = outbreakData[outbreakSeason] ?? null;
 
       // Intervention recommendations

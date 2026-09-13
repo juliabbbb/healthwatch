@@ -9,10 +9,10 @@ import type {
 import {
   REGION_BY_GEONAME,
   REGIONS,
-  REPORT_UPCOMING_SEASON,
   assessRegion,
   dataReady,
   getOutbreak,
+  OUTBREAK_BENCHMARK_SEASON,
   RISK_META,
   type MetricMode,
   type Region,
@@ -67,7 +67,7 @@ export default function MapCanvas({
   selectedCode,
   onSelect,
   flyToCode,
-  outbreakSeason = REPORT_UPCOMING_SEASON,
+  outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
   showOutbreakMarkers = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);

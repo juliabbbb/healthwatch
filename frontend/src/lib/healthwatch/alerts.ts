@@ -40,8 +40,8 @@ const SEASON_WINDOW: Record<Season, string> = {
  *  - "high-now": regions classified High at the currently scrubbed month.
  *  - "crossing": regions whose 12-month forecast first crosses into High.
  *  - "outbreak": regions with a Rule A/B seasonal outbreak flag on the active
- *    (upcoming) probe window. Monthly risk and seasonal outbreak phrasing stay
- *    deliberately separate — never combined in one sentence.
+ *    validated 2025 benchmark window. Monthly risk and seasonal outbreak
+ *    phrasing stay deliberately separate — never combined in one sentence.
  */
 export function deriveAlerts(
   assessments: RegionAssessment[],
@@ -72,7 +72,7 @@ export function deriveAlerts(
         kind: "outbreak",
         regionCode: a.region.code,
         title: `${a.region.short} — Seasonal outbreak alert`,
-        detail: `${SEASON_WINDOW[activeSeason]} window: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
+        detail: `${SEASON_WINDOW[activeSeason]} 2025 benchmark: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
         month: SEASON_WINDOW[activeSeason],
         // busiest seasons (highest avg/P75 ratio) rank first within this kind
         order: (flag.season_avg / Math.max(0.01, flag.season_p75)) * 100,
