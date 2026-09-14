@@ -311,7 +311,29 @@ svg.lucide {
 .hw-outbreak-marker {
   background: transparent;
   border: none;
-  pointer-events: none;
+  pointer-events: auto;
+}
+
+.hw-outbreak-tooltip {
+  background: var(--panel) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--color-foreground) !important;
+  backdrop-filter: blur(10px);
+  font-family: var(--font-mono);
+  font-size: 13px !important;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px !important;
+  padding: 3px 7px;
+  box-shadow: 0 4px 12px oklch(0.15 0.005 260 / 10%) !important;
+}
+
+.dark .hw-outbreak-tooltip {
+  box-shadow: 0 4px 12px oklch(0 0 0 / 40%) !important;
+}
+
+.hw-outbreak-tooltip::before {
+  display: none !important;
 }
 
 /* Range slider thumb styling — consistent across browsers */

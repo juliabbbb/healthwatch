@@ -7,16 +7,16 @@ import type {
   TileLayer,
 } from "leaflet";
 import {
+  CURRENT_MONTH_INDEX,
   REGION_BY_GEONAME,
   REGIONS,
+  TOTAL_MONTHS,
   assessRegion,
   dataReady,
-  getOutbreak,
-  OUTBREAK_BENCHMARK_SEASON,
+  formatMetric,
   RISK_META,
   type MetricMode,
   type Region,
-  type Season,
 } from "@/lib/healthwatch/data";
 
 export type DataLayer = "hotspot" | "density";
@@ -28,7 +28,6 @@ interface Props {
   selectedCode: string | null;
   onSelect: (code: string | null) => void;
   flyToCode?: string | null;
-  outbreakSeason?: Season;
   showOutbreakMarkers?: boolean;
 }
 
@@ -67,7 +66,6 @@ export default function MapCanvas({
   selectedCode,
   onSelect,
   flyToCode,
-  outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
   showOutbreakMarkers = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -163,7 +161,8 @@ export default function MapCanvas({
 
       // Outbreak markers: small ring glyphs at region centroids, above the
       // risk-tier fill. Opt-in (showOutbreakMarkers) — the basemap loads with
-      // fill only; markers are rebuilt when the toggle or season changes.
+      // fill only; markers are rebuilt when the toggle, illness, baseline month,
+      // or metric changes.
       leafletRef.current = L;
       alertIconRef.current = L.divIcon({
         className: "hw-outbreak-marker",
@@ -211,8 +210,12 @@ export default function MapCanvas({
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
   }, [illness, monthIndex, mode, selectedCode]);
 
-  // Seasonal outbreak markers, opt-in. Rebuilt when the toggle or active
-  // season changes; the off state leaves the risk-tier fill as the only layer.
+  // Outbreak-likelihood markers, opt-in. Rebuilt whenever the toggle, illness,
+  // baseline month, or metric changes; the off state leaves the risk-tier fill
+  // as the only layer. Markers pin to the next projected month after the
+  // currently displayed baseline (never earlier than the forecast horizon) so
+  // they always reflect forecast data, and appear only when that projected
+  // load classifies as high risk (above the seasonal P75 threshold).
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -223,16 +226,24 @@ export default function MapCanvas({
       if (cancelled || !Lf || !group || !icon) return;
       group.clearLayers();
       if (!showOutbreakMarkers) return;
+      const nextIdx = Math.min(Math.max(CURRENT_MONTH_INDEX, monthIndex) + 1, TOTAL_MONTHS - 1);
       for (const r of REGIONS) {
-        if (getOutbreak(r.code)[outbreakSeason]?.outbreak) {
-          Lf.marker([r.lat, r.lng], { icon, interactive: false }).addTo(group);
-        }
+        const next = assessRegion(r.code, illness, nextIdx, mode);
+        if (next.risk !== "high") continue;
+        Lf.marker([r.lat, r.lng], { icon, interactive: true })
+          .addTo(group)
+          .bindTooltip(formatMetric(next.point.cases, "raw"), {
+            direction: "top",
+            offset: [0, -8],
+            className: "hw-outbreak-tooltip",
+            opacity: 1,
+          });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [outbreakSeason, showOutbreakMarkers, mapReady, dataReady]);
+  }, [illness, monthIndex, mode, showOutbreakMarkers, mapReady, dataReady]);
 
   // Fly to a searched/selected region
   useEffect(() => {
