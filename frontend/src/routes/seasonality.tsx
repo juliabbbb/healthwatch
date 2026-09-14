@@ -102,7 +102,7 @@ function SeasonalityPage() {
   const [horizon, setHorizon] = useState<number>(0);
   const [forecastHorizon, setForecastHorizon] = useState(12);
   const [seasonFilter, setSeasonFilter] = useState<"all" | "wet" | "dry">("all");
-  const { chartType: forecastChartType, setChartType: setForecastChartType } = useChartType();
+  const { chartType: forecastChartType, setChartType: setForecastChartType } = useChartType("bar");
   const region = REGION_BY_CODE[code]!;
 
   const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));

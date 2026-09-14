@@ -1394,27 +1394,8 @@ function DetailedChart({
 
   if (points.length === 0) return null;
 
-  const actualPoints = points.filter((p) => !p.forecast);
-  const predictedPoints = points.filter((p) => p.forecast);
-
-  const forecastBridgePoints =
-    actualPoints.length > 0 && predictedPoints.length > 0
-      ? [actualPoints[actualPoints.length - 1]!, ...predictedPoints]
-      : predictedPoints;
-
-  const actualPath = actualPoints.reduce((acc, pt, idx) => {
-    return `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
-  }, "");
-
-  const forecastPath = forecastBridgePoints.reduce((acc, pt, idx) => {
-    return `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.y.toFixed(1)}`;
-  }, "");
-
-  // Area polygon for forecast CI envelope
-  const ciAreaPath =
-    predictedPoints.length > 1
-      ? `${predictedPoints.reduce((acc, pt, idx) => `${acc} ${idx === 0 ? "M" : "L"} ${pt.x.toFixed(1)} ${pt.yUpper.toFixed(1)}`, "")} ${[...predictedPoints].reverse().reduce((acc, pt) => `${acc} L ${pt.x.toFixed(1)} ${pt.yLower.toFixed(1)}`, "")} Z`
-      : "";
+  const barWidth = Math.min(22, Math.max(4, (drawWidth / Math.max(1, windowSlice.length)) * 0.6));
+  const barBottom = padTop + drawHeight;
 
   const lastPoint = points[points.length - 1]!;
   const hoveredPoint = hoveredIdx !== null ? points[hoveredIdx] : null;
@@ -1518,73 +1499,83 @@ function DetailedChart({
             );
           })}
 
-          {/* Forecast 95% CI Envelope */}
-          {ciAreaPath && <path d={ciAreaPath} fill={riskColor} fillOpacity="0.18" />}
-
-          {/* Actual series */}
-          {actualPath && (
-            <path
-              d={actualPath}
-              fill="none"
-              stroke="var(--foreground)"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          )}
-
-          {/* Forecast series */}
-          {forecastPath && (
-            <path
-              d={forecastPath}
-              fill="none"
-              stroke={riskColor}
-              strokeWidth="2.2"
-              strokeDasharray="4 3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          )}
-
-          {/* Distinct Point Dots (r=2.5, strokeWidth=1.2) & Active Hover Rings (r=5, strokeWidth=2) */}
+          {/* Bars: Actual (foreground) & Forecast (riskColor) */}
           {points.map((p, idx) => {
             const isForecast = p.forecast;
-            const isHovered = hoveredIdx === idx;
             const color = isForecast ? riskColor : "var(--foreground)";
+            const isHovered = hoveredIdx === idx;
             return (
               <g key={p.label}>
                 {/* Hit area */}
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r="9"
+                <rect
+                  x={p.x - barWidth / 2 - 3}
+                  y={p.y}
+                  width={barWidth + 6}
+                  height={Math.max(1, barBottom - p.y)}
                   fill="transparent"
+                  rx={4}
                   className="cursor-pointer"
                   onMouseEnter={() => setHoveredIdx(idx)}
                 />
 
-                {/* Point dot marker */}
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={isHovered ? 5 : 2.5}
-                  fill="var(--background)"
-                  stroke={color}
-                  strokeWidth={isHovered ? 2 : 1.2}
+                {/* Bar */}
+                <rect
+                  x={p.x - barWidth / 2}
+                  y={p.y}
+                  width={barWidth}
+                  height={Math.max(1, barBottom - p.y)}
+                  rx={2.5}
+                  fill={color}
+                  fillOpacity={isForecast ? 0.85 : 0.92}
                   className="transition-all duration-150 pointer-events-none"
                 />
 
+                {/* Forecast 95% CI whisker */}
+                {isForecast && (
+                  <g className="pointer-events-none">
+                    <line
+                      x1={p.x}
+                      y1={p.yUpper}
+                      x2={p.x}
+                      y2={p.yLower}
+                      stroke={riskColor}
+                      strokeWidth="1.2"
+                      strokeOpacity="0.9"
+                    />
+                    <line
+                      x1={p.x - barWidth / 3.5}
+                      y1={p.yUpper}
+                      x2={p.x + barWidth / 3.5}
+                      y2={p.yUpper}
+                      stroke={riskColor}
+                      strokeWidth="1.2"
+                      strokeOpacity="0.9"
+                    />
+                    <line
+                      x1={p.x - barWidth / 3.5}
+                      y1={p.yLower}
+                      x2={p.x + barWidth / 3.5}
+                      y2={p.yLower}
+                      stroke={riskColor}
+                      strokeWidth="1.2"
+                      strokeOpacity="0.9"
+                    />
+                  </g>
+                )}
+
                 {/* Active High Contrast Hover Ring */}
                 {isHovered && (
-                  <circle
-                    cx={p.x}
-                    cy={p.y}
-                    r="10"
+                  <rect
+                    x={p.x - barWidth / 2 - 2}
+                    y={p.y - 2}
+                    width={barWidth + 4}
+                    height={Math.max(1, barBottom - p.y) + 4}
+                    rx={4}
                     fill="none"
                     stroke={color}
                     strokeWidth="2"
                     strokeOpacity="0.45"
-                    className="pointer-events-none animate-ping"
+                    className="pointer-events-none"
                   />
                 )}
               </g>
