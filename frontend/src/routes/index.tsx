@@ -103,7 +103,6 @@ function MapView() {
               selectedCode={selected}
               onSelect={handleSelect}
               flyToCode={flyTo}
-              outbreakSeason={outbreakSeason}
               showOutbreakMarkers={showOutbreakMarkers}
             />
           </Suspense>
