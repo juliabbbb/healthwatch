@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check, Copy } from "lucide-react";
+import { useState } from "react";
 import { ILLNESSES, REGIONS } from "@/lib/healthwatch/data";
+import { ValidationMetricsPanel } from "@/components/hw/ValidationMetricsPanel";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
@@ -336,6 +338,76 @@ function Methodology() {
           </li>
         </ul>
       </Section>
+    <Section title="Validation — live metrics">
+        <p className="text-sm text-foreground/85">
+          Forecast accuracy (MAE/RMSE/MAPE + skill vs. seasonal-naive per region) and outbreak
+          classification performance (national 2025 prospective holdout) are pulled live from the
+          data API — the same numbers the Seasonal pattern page surfaces per region.
+        </p>
+        <div className="mt-3">
+          <ValidationMetricsPanel />
+        </div>
+      </Section>
+
+      <Section title="Developer API">
+        <p className="text-sm text-foreground/85">
+          HEALTHWATCH exposes read-only JSON endpoints for integration with other Philippine health
+          information systems. Base URL (dev): <code>http://localhost:8000</code> · Base URL
+          (deployed): <code>https://healthwatch-api-xepv.onrender.com</code>. Machine-readable specs:
+          <code> GET /openapi.json</code> and Swagger UI at <code>/docs</code>. All endpoints return
+          JSON; read the pinned contract in <code>docs/api_contract.md</code> before integrating.
+        </p>
+        <div className="mt-4 space-y-3">
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/forecast/{disease}?region={region}"
+            description="12-month Prophet forecast per region."
+            example={`{"disease":"Dengue","count":18,"items":[{"target_date":"2026-09-01","yhat":142,"yhat_lower":89,"yhat_upper":203}]}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/risk-classification/{disease}?region={region}"
+            description="Monthly Low/Moderate/High risk tier over the forecast horizon."
+            example={`{"items":[{"date":"2026-09-01","yhat":142,"p50":64,"p75":118,"risk_level":"High"}]}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/outbreak?region={region}"
+            description="Season-level outbreak flag, triggering rule and seasonal average."
+            example={`{"count":2,"items":[{"season":"wet","outbreak":true,"trigger":"both","season_avg":1646.4,"season_p75":1016.5}]}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/escalation?disease=Dengue&top=5"
+            description="Objective-4 risk-tier escalation ranking across regions."
+            example={`{"count":5,"items":[{"rank":1,"tier_climbs":4,"first_high_month":"2026-07","final_tier":"High"}]}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/metrics/{region}?disease=Dengue&window=last_12m"
+            description="Walk-forward validation metrics (MAE/RMSE/MAPE, skill vs. naive)."
+            example={`{"region":"National Capital Region","mape":71.2,"skill_vs_naive_pct":null,"confidence":{"label":"Low confidence"}}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/series/{region}?disease=Dengue&include_forecast=true"
+            description="Historical monthly series (+ forecast) per region."
+            example={`{"points":[{"index":50,"date":"2026-03-01","cases":120,"forecast":true}]}`}
+          />
+          <ApiEndpoint
+            method="GET"
+            url="https://healthwatch-api-xepv.onrender.com/status"
+            description="Pipeline freshness snapshot and supported diseases."
+            example={`{"generated_at":"2026-08-01T00:00:00Z","supported_diseases":["Dengue"]}`}
+          />
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Rate limits: <code>300/min</code> for forecast/classification/escalation surfaces,{" "}
+          <code>20/min</code> for the LLM narration endpoints (<code>/analysis/*</code>). Error
+          contract: <code>404</code> unknown region/disease, <code>429</code> rate limited,{" "}
+          <code>503</code> data still loading at cold start or AI unavailable.
+        </p>
+      </Section>
     </main>
   );
 }
@@ -346,5 +418,47 @@ function Section({ title, children }: { title: string; children: React.ReactNode
       <h2 className="mb-3 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
       {children}
     </section>
+  );
+}
+
+function ApiEndpoint({
+  method,
+  url,
+  description,
+  example,
+}: {
+  method: string;
+  url: string;
+  description: string;
+  example: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="glass-panel rounded-xl p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+          <span className="rounded-md bg-primary/10 px-1.5 py-0.5 font-bold text-primary">{method}</span>
+          <code className="break-all">{url}</code>
+        </div>
+        <button
+          onClick={copy}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          {copied ? <Check className="size-3 text-primary" /> : <Copy className="size-3" />}
+          {copied ? "Copied" : "Copy URL"}
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">{description}</p>
+      <pre className="mt-2 overflow-x-auto rounded-lg border border-border/50 bg-secondary/40 px-3 py-2 text-[11px] leading-relaxed text-foreground/80">
+        {example}
+      </pre>
+    </div>
   );
 }

@@ -3,6 +3,7 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ComposedChart,
   Line,
   LineChart,
@@ -14,12 +15,14 @@ import {
   YAxis,
 } from "recharts";
 import type { ChartType } from "@/hooks/useChartType";
+import { CHART_COLORS } from "@/lib/chartConfig";
 import {
   HIST_MONTHS,
   METRIC_META,
   REGION_BY_CODE,
   acf,
   decompose,
+  getThresholds,
   metricValue,
   monthMeta,
   seriesFor,
@@ -33,6 +36,8 @@ const axis = {
   tickLine: false,
   axisLine: false,
 };
+
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const tooltipStyle = {
   contentStyle: {
@@ -358,7 +363,121 @@ export function DecompositionChart({
   );
 }
 
-/** Autocorrelation bars — the spike near lag 12 is the annual cycle. */
+/** Yearly rhythm: 12 bars of average cases per calendar month, tinted wet/dry,
+ * with the pooled p50/p75 alert baselines as reference lines. */
+export function MonthOfYearChart({
+  regionCode,
+  illness,
+  monthsBack = 36,
+  height = 260,
+  mode = "raw",
+}: {
+  regionCode: string;
+  illness: string;
+  monthsBack?: number;
+  height?: number;
+  mode?: MetricMode;
+}) {
+  const series = seriesFor(regionCode, illness).filter((p) => !p.forecast);
+  const region = REGION_BY_CODE[regionCode];
+  if (!region || !series.length) {
+    return (
+      <div
+        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
+        style={{ height }}
+      >
+        No historical data available
+      </div>
+    );
+  }
+
+  const conv = (v: number) => metricValue(v, region, mode);
+  const start = Math.max(0, HIST_MONTHS - monthsBack);
+  const buckets: number[][] = Array.from({ length: 12 }, () => []);
+  series.slice(start).forEach((p) => buckets[p.month - 1]!.push(conv(p.cases)));
+
+  const rows: { month: string; value: number; wet: boolean }[] = buckets.map((arr, i) => {
+    const avg = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    return {
+      month: MONTH_NAMES[i]!,
+      value: Math.round(avg),
+      wet: i >= 5 && i <= 10, // Jun–Nov
+    };
+  });
+  const yearMean = rows.reduce((a, r) => a + r.value, 0) / 12 || 0;
+  const thresholds = getThresholds(illness, undefined, mode);
+
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
+        <CartesianGrid stroke="var(--border)" vertical={false} />
+        <XAxis dataKey="month" {...axis} />
+        <YAxis {...axis} width={52} />
+        <Tooltip
+          content={({ active, payload }) => {
+            if (!active || !payload?.length) return null;
+            const row = payload[0]!.payload as { month: string; value: number; wet: boolean };
+            return (
+              <div
+                className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2"
+                style={{ fontSize: "13px" }}
+              >
+                <p className="text-muted-foreground">
+                  {row.month} · {row.wet ? "wet" : "dry"} season
+                </p>
+                <p className="mt-0.5 font-medium">
+                  {row.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} avg cases
+                </p>
+              </div>
+            );
+          }}
+        />
+        <ReferenceLine
+          y={yearMean}
+          stroke="var(--color-muted-foreground)"
+          strokeDasharray="3 3"
+          label={{
+            value: "Year avg",
+            fill: "var(--color-muted-foreground)",
+            fontSize: 12,
+            position: "insideTopRight",
+          }}
+        />
+        <ReferenceLine
+          y={thresholds.p50}
+          stroke={CHART_COLORS.moderate}
+          strokeDasharray="4 4"
+          label={{
+            value: "P50",
+            fill: CHART_COLORS.moderateSolid,
+            fontSize: 11,
+            position: "insideBottomRight",
+          }}
+        />
+        <ReferenceLine
+          y={thresholds.p75}
+          stroke={CHART_COLORS.high}
+          strokeDasharray="4 4"
+          label={{
+            value: "P75",
+            fill: CHART_COLORS.highSolid,
+            fontSize: 11,
+            position: "insideTopRight",
+          }}
+        />
+        <Bar dataKey="value" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+          {rows.map((r, i) => (
+            <Cell
+              key={i}
+              fill={r.wet ? CHART_COLORS.wet : CHART_COLORS.dry}
+              fillOpacity={0.85}
+            />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 export function AcfChart({
   regionCode,
   illness,

@@ -295,11 +295,18 @@ _ANALYSIS_SYSTEM_PROMPT = (
     "You write short plain-language explanations of dengue numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
-    + "\nTASK: using the JSON figures, write 3-4 sentences covering: (1) how "
-    "many dengue cases are happening now, in everyday terms; (2) what is "
-    "expected in the coming months, including the honest range if given; (3) "
-    "the current alert level in plain words, with a caution note only if the "
-    "outlook is flagged as uncertain; (4) one practical thing the community "
+    + "\nTASK: using the JSON figures, write the whole explanation as EXACTLY "
+    "three labelled paragraphs, in this order and with exactly these labels "
+    "at the start of each paragraph (each followed by a colon, one paragraph "
+    "on its own):\n"
+    "Current Situation:\n"
+    "Seasonal Outlook:\n"
+    "Recommended Actions:\n"
+    "Cover in Current Situation: how many dengue cases are happening now, in "
+    "everyday terms, and the current alert level in plain words. In Seasonal "
+    "Outlook: what is expected in the coming months, including the honest "
+    "range if one is given, with a caution note only if the outlook is flagged "
+    "as uncertain. In Recommended Actions: one practical thing the community "
     "can focus on now."
 )
 
@@ -1127,6 +1134,125 @@ def metrics(
         "mape": float(row["MAPE"]),
         "skill_vs_naive_pct": None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"]),
         "confidence": confidence,
+    }
+
+
+def _ai_insight_grounding(db_region, disease):
+    """Compact ground-truth payload for the map-panel one-line AI insight.
+
+    Only the handful of figures the small panel line can honestly use:
+    the latest reported month, the next-month forecast (with range), the
+    next-month risk tier, and the upcoming season's outbreak probe. The LLM
+    narrates these — it never derives numbers of its own."""
+    hist = _history(db_region)
+    last_obs = hist.iloc[-1]
+
+    fcst = _FORECASTS[
+        (_FORECASTS["region_code"] == db_region) & (_FORECASTS["disease"] == disease)
+    ].sort_values("target_date")
+    if fcst.empty:
+        raise HTTPException(status_code=404, detail=f"No forecast available for '{db_region}'")
+    frow = fcst.iloc[0]
+
+    cls = _CLASSIFICATION[
+        (_CLASSIFICATION["region_code"] == db_region)
+        & (_CLASSIFICATION["disease"] == disease)
+    ].sort_values("date")
+    risk_row = cls[cls["date"] == frow["target_date"]]
+    if risk_row.empty:
+        risk_row = cls.tail(1)
+    risk_level = "unknown"
+    probe_month = int(frow["target_date"].month)
+    probe_season = _season(frow["target_date"])
+    if not risk_row.empty:
+        risk_level = str(risk_row.iloc[0]["risk_level"])
+
+    probe = _OUTBREAKS[
+        (_OUTBREAKS["region_code"] == db_region)
+        & (_OUTBREAKS["disease"] == disease)
+        & (_OUTBREAKS["season"] == probe_season)
+    ]
+    outbreak_row = probe.iloc[0] if not probe.empty else None
+
+    mrow = _METRICS[
+        (_METRICS["region_code"] == db_region) & (_METRICS["disease"] == disease)
+    ]
+    primary = mrow[mrow["window"] == PRIMARY_WINDOW]
+    mrow_primary = primary.iloc[0] if not primary.empty else None
+
+    return {
+        "region": _label(db_region),
+        "disease": disease,
+        "latest_month": {
+            "month": _month_label(last_obs["date"].month),
+            "cases": int(last_obs["cases"]),
+        },
+        "next_month_forecast": {
+            "month": _month_label(probe_month),
+            "yhat": float(frow["yhat"]),
+            "yhat_lower": float(frow["yhat_lower"]),
+            "yhat_upper": float(frow["yhat_upper"]),
+        },
+        "next_month_risk_level": risk_level,
+        "upcoming_season_probe": {
+            "season": probe_season,
+            "outbreak_signal": bool(outbreak_row["outbreak"]) if outbreak_row is not None else False,
+            "trigger": str(outbreak_row["trigger"]) if outbreak_row is not None else "none",
+            "consecutive_high_months": (
+                int(outbreak_row["consecutive_high_n"]) if outbreak_row is not None else 0
+            ),
+        },
+        "validation": (
+            {
+                "MAPE_pct": float(mrow_primary["MAPE"]),
+                "months": int(mrow_primary["months"]),
+            }
+            if mrow_primary is not None
+            else None
+        ),
+    }
+
+
+_AI_INSIGHT_SYSTEM_PROMPT = (
+    "You write ONE short plain-language sentence for a Philippine regional "
+    "dengue map panel. Base it strictly on the JSON figures.\n"
+    + _PLAIN_LANGUAGE_RULES
+    + "\nTASK: in ONE sentence of at most 20 words, say the single most "
+    "actionable outlook for this region right now: roughly how cases are "
+    "expected to move next month, and only if the season probe is flagged "
+    "whether an outbreak is likely. No hedging list, no markdown, no numbers "
+    "beyond a round case figure if it helps."
+)
+
+
+@app.get("/ai-insight", tags=["objective_5_interpretability"])
+@limiter.limit("30/minute")
+def ai_insight(
+    request: Request,
+    region: str = Query(...),
+    disease: str = Query(default=DISEASE_DEFAULT),
+):
+    """Compact one-line AI insight for the map region panel. Same fail-soft
+    (503) contract as the other interpretability endpoints and strictly a
+    narration of pre-computed outputs ({region}, /outbreak, /metrics)."""
+    _check_disease(disease)
+    db_region = _resolve_region(region)
+    if db_region is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    grounding = _ai_insight_grounding(db_region, disease)
+
+    user_prompt = (
+        "Give the one-line insight for this region's next month. Figures you "
+        "may use:\n" + json.dumps(grounding)
+    )
+    narrative, model = _llm_narrate(_AI_INSIGHT_SYSTEM_PROMPT, user_prompt)
+
+    return {
+        "region": _label(db_region),
+        "disease": disease,
+        "narrative": narrative,
+        "models": model,
+        "grounding_data": grounding,
     }
 
 

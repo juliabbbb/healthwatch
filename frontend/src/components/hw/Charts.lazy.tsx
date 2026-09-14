@@ -12,3 +12,6 @@ export const DecompositionChart = lazy(() =>
   import("./Charts").then((m) => ({ default: m.DecompositionChart })),
 );
 export const AcfChart = lazy(() => import("./Charts").then((m) => ({ default: m.AcfChart })));
+export const MonthOfYearChart = lazy(() =>
+  import("./Charts").then((m) => ({ default: m.MonthOfYearChart })),
+);

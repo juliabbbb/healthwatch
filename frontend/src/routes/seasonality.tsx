@@ -26,7 +26,9 @@ import {
 import { RiskBadge, SeasonTag } from "@/components/hw/RiskBadge";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { FilterPanel } from "@/components/FilterPanel";
-import { ForecastChart } from "@/components/hw/Charts.lazy";
+import { ForecastChart, MonthOfYearChart } from "@/components/hw/Charts.lazy";
+import { HotspotTimeline } from "@/components/hw/HotspotTimeline";
+import { ValidationMetricsPanel } from "@/components/hw/ValidationMetricsPanel";
 import { InterventionPanel } from "@/components/hw/InterventionPanel";
 import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
@@ -89,7 +91,7 @@ function variance(values: number[]) {
   return values.reduce((a, v) => a + (v - mean) ** 2, 0) / values.length;
 }
 
-const HORIZONS = [4, 8, 12];
+const HORIZONS = [3, 6, 12];
 
 function SeasonalityPage() {
   const { region: initialRegion } = Route.useSearch();
@@ -516,6 +518,14 @@ function SeasonalityPage() {
         </div>
       </div>
 
+      {/* 12-Month Risk Strip (first-glance forecast summary) */}
+      <div className="mt-5 glass-panel rounded-2xl p-4">
+        <p className="label-caps mb-2 text-[10px] text-muted-foreground">
+          12-Month Risk Outlook · {region.name}
+        </p>
+        <HotspotTimeline regionCode={code} illness={illness} />
+      </div>
+
       {/* Unified Filter Panel */}
       <div className="mt-8">
         <FilterPanel
@@ -641,7 +651,7 @@ function SeasonalityPage() {
 
       {/* Forecast & Season Filters */}
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="label-caps text-[10px] text-muted-foreground">Forecast horizon:</span>
+        <span className="label-caps text-[10px] text-muted-foreground">Forecast window:</span>
         {HORIZONS.map((h) => (
           <Chip key={h} active={forecastHorizon === h} onClick={() => setForecastHorizon(h)}>
             {h}-month
@@ -799,6 +809,35 @@ function SeasonalityPage() {
         </div>
       </section>
 
+      {/* Yearly rhythm (month-of-year average) with wet/dry seasonality */}
+      <section className="mt-8 glass-panel rounded-2xl p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Yearly rhythm
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Average dengue cases by calendar month (wet Jun–Nov / dry Dec–May) with the pooled
+              P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically
+              declared.
+            </p>
+          </div>
+        </div>
+        <Suspense
+          fallback={
+            <div className="flex min-h-[260px] items-center justify-center rounded-xl border border-border/60 bg-secondary/30">
+              <span className="text-xs text-muted-foreground">Loading yearly rhythm…</span>
+            </div>
+          }
+        >
+          <MonthOfYearChart
+            regionCode={code}
+            illness={illness}
+            mode={assessment.mode}
+          />
+        </Suspense>
+      </section>
+
       {/* 12-Month Cycle Indicators (ACF) with Dedicated AI Analysis */}
       <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
@@ -952,9 +991,8 @@ function SeasonalityPage() {
         </div>
         <SeasonalOutbreakView code={code} />
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          Prospective validation against real 2025 data: dry-season detection F1 0.90 (precision
-          0.93 / recall 0.88 across regions); the wet season by design favours recall and over-warns
-          rather than missing a surge.
+          The detection rules were validated prospectively against real 2025 DOH-EB data; live
+          precision / recall / F1 are in the Validation panel below.
         </p>
       </section>
 
@@ -972,6 +1010,22 @@ function SeasonalityPage() {
           </div>
         </div>
         <InterventionPanel assessment={assessment} />
+      </section>
+
+      {/* Validation Metrics */}
+      <section className="mt-8 glass-panel rounded-2xl p-5">
+        <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">
+              Validation metrics
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Forecast accuracy (this region, walk-forward) and outbreak classification performance
+              (national 2025 prospective holdout) — pulled live from the data API.
+            </p>
+          </div>
+        </div>
+        <ValidationMetricsPanel regionCode={code} />
       </section>
 
       {/* AI-Assisted Analysis */}

@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
 import {
   METRIC_META,
-  RISK_META,
   assessRegion,
   classify,
   formatMetric,
@@ -13,17 +11,34 @@ import {
   metricValue,
   modelMetrics,
   monthMeta,
+  seriesFor,
   OUTBREAK_BENCHMARK_SEASON,
-  OUTBREAK_BENCHMARK_LABEL,
-  OUTBREAK_BENCHMARK_WINDOW,
+  OUTBREAK_TRIGGER_LABEL,
+  upcomingSeasonForMonth,
   type MetricMode,
-  type OutbreakIndicator,
-  type RiskLevel,
   type Season,
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
 import { StatusChip } from "./StatusChip";
+import { OutbreakBanner } from "./OutbreakBanner";
+import { KpiStrip, type KpiStripData } from "./KpiStrip";
+import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
+import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
+import { AiInsightLine } from "./AiInsightLine";
+import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+
+const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export const SEASON_CONFIG: Record<Season, { label: string; months: string; display: string }> = {
+  dry: { label: "Dry", months: "Dec–May", display: "Dry · Dec–May" },
+  wet: { label: "Wet", months: "Jun–Nov", display: "Wet · Jun–Nov" },
+};
+
+export const SEASON_WINDOW: Record<Season, string> = {
+  dry: "Dry · Dec–May",
+  wet: "Wet · Jun–Nov",
+};
 
 export interface ForecastCardProps {
   regionCode: string;
@@ -37,19 +52,10 @@ export interface ForecastCardProps {
   variant?: "panel" | "sheet";
   className?: string;
   showHeader?: boolean;
+  /** Kept for prop-compat; map-season comparison moved to /seasonality */
   outbreakSeason?: Season;
   onOutbreakSeasonChange?: (s: Season) => void;
 }
-
-export const SEASON_CONFIG: Record<Season, { label: string; months: string; display: string }> = {
-  dry: { label: "Dry", months: "Dec–May", display: "Dry · Dec–May" },
-  wet: { label: "Wet", months: "Jun–Nov", display: "Wet · Jun–Nov" },
-};
-
-export const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Dry · Dec–May",
-  wet: "Wet · Jun–Nov",
-};
 
 export function ForecastCard({
   regionCode,
@@ -63,27 +69,75 @@ export function ForecastCard({
   variant = "panel",
   className,
   showHeader = true,
+  // Kept to avoid breaking index.tsx; comparison now lives on /seasonality
   outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
-  onOutbreakSeasonChange,
+  onOutbreakSeasonChange: _onOutbreakSeasonChange,
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
   const meta = monthMeta(monthIndex);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
   const outlookData = getOutbreak(regionCode);
+  const upcoming = upcomingSeasonForMonth(meta.month);
+  const upcomingInd = outlookData[upcoming];
+  const [aiEnabled] = useAiAnalysisSetting();
+  const isSheet = variant === "sheet";
 
-  const [selectedSeason, setSelectedSeason] = useState<Season>(outbreakSeason);
+  /* ---------- Derived KPI data ---------- */
 
-  useEffect(() => {
-    setSelectedSeason(outbreakSeason);
-  }, [outbreakSeason]);
+  const nextPt = a.forecastWindow[0];
+  const nextMonthKpi = nextPt
+    ? {
+        value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
+        sub: `95% CI ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
+          metricValue(nextPt.upper, a.region, mode),
+          mode,
+        )}`,
+      }
+    : { value: "—", sub: "No forecast" };
 
-  const handleSeasonChange = (s: Season) => {
-    setSelectedSeason(s);
-    onOutbreakSeasonChange?.(s);
+  const seasonKpi = upcomingInd
+    ? {
+        label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May",
+        sub: upcomingInd.outbreak
+          ? `Outbreak signal — ${OUTBREAK_TRIGGER_LABEL[upcomingInd.trigger] ?? upcomingInd.trigger}`
+          : "Normal seasonal range expected",
+      }
+    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "No seasonal outlook" };
+
+  const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast);
+  const peakPt = histPts.length
+    ? histPts.reduce((best, p) => (p.cases > best.cases ? p : best))
+    : undefined;
+  const peakKpi = peakPt
+    ? {
+        value: formatMetric(metricValue(peakPt.cases, a.region, mode), mode),
+        sub: `${formatMonthYear(peakPt.label)} — highest on record`,
+      }
+    : { value: "—", sub: "No historical data" };
+
+  const kpi: KpiStripData = {
+    nextMonth: nextMonthKpi,
+    currentRisk: { level: a.risk, sub: `${a.percentileRank}th percentile of national pool` },
+    season: seasonKpi,
+    peak: peakKpi,
   };
 
-  const isSheet = variant === "sheet";
+  const sparkData: SparklinePoint[] = a.forecastWindow.slice(0, 6).map((p) => {
+    const val = metricValue(p.cases, a.region, mode);
+    return {
+      label: MONTH_ABBR[p.month - 1] ?? String(p.month),
+      month: formatMonthYear(p.label),
+      yhat: val,
+      lower: metricValue(p.lower, a.region, mode),
+      upper: metricValue(p.upper, a.region, mode),
+      risk: classify(val, a.thresholds),
+    };
+  });
+
+  const riskCounts = riskCountsFor(
+    a.forecastWindow.slice(0, 6).map((p) => classify(metricValue(p.cases, a.region, mode), a.thresholds)),
+  );
 
   return (
     <div
@@ -94,7 +148,7 @@ export function ForecastCard({
         className,
       )}
     >
-      {/* 1. Region Header (unchanged) */}
+      {/* 1. Region Header */}
       {showHeader && (
         <div className="flex items-start justify-between gap-2 border-b border-border/70 px-5 py-3 bg-card/40">
           <div className="min-w-0 flex-1">
@@ -118,13 +172,20 @@ export function ForecastCard({
         </div>
       )}
 
-      {/* 2. Current Status Card */}
+      {/* Outbreak Alert (conditional) */}
+      <OutbreakBanner
+        regionName={a.region.name}
+        season={upcoming}
+        indicator={upcomingInd}
+        className="mx-5 mt-3 shrink-0"
+      />
+
+      {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
       <section className="border-b border-border/70 px-5 py-3.5">
         <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
           CURRENT STATUS
         </p>
 
-        {/* Visual Anchor: Large Primary Metric beside Badges with integrated toggle */}
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="label-caps text-[10px]">
@@ -134,14 +195,12 @@ export function ForecastCard({
               {formatMetric(a.value, mode)}
             </p>
 
-            {/* Animated iOS-style sliding switch toggle for Per 100k / Raw Cases */}
             {onModeChange && (
               <div
                 role="radiogroup"
                 aria-label="Metric representation"
                 className="relative mt-2.5 inline-flex h-7 w-44 items-center rounded-full border border-border/80 bg-secondary/50 p-0.5 shadow-inner select-none"
               >
-                {/* Sliding indicator pill */}
                 <div
                   className={cn(
                     "absolute top-0.5 bottom-0.5 w-[calc(50%-3px)] rounded-full bg-primary shadow-xs transition-all duration-200 ease-out",
@@ -149,7 +208,6 @@ export function ForecastCard({
                   )}
                   aria-hidden="true"
                 />
-
                 {(["percapita", "raw"] as MetricMode[]).map((m) => {
                   const isActive = mode === m;
                   return (
@@ -199,7 +257,7 @@ export function ForecastCard({
           </div>
         </div>
 
-        {/* Labeled Stat Chips Grid */}
+        {/* Stat Chips */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
             <span className="label-caps text-[9px] block">Period</span>
@@ -207,14 +265,12 @@ export function ForecastCard({
               {formatMonthYear(meta.label)}
             </span>
           </div>
-
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
             <span className="label-caps text-[9px] block">Cases</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.point.cases.toLocaleString()}
             </span>
           </div>
-
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
             <span className="label-caps text-[9px] block">3-Mo Trend</span>
             <span
@@ -230,178 +286,55 @@ export function ForecastCard({
               {a.changePct}%
             </span>
           </div>
-
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
             <span className="label-caps text-[9px] block">Nat'l Rank</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.percentileRank}th %ile
             </span>
           </div>
-
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
             <span className="label-caps text-[9px] block">Data Source</span>
             <span className="text-[11px] font-medium text-muted-foreground truncate block">
               {meta.forecast
-                ? `Prophet Forecast · 95% CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
+                ? `Prophet Forecast · 95% CI ${formatMetric(
+                    metricValue(a.point.lower, a.region, mode),
+                    mode,
+                  )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
                 : "DOH Epidemiology Bureau PIDSR Surveillance"}
             </span>
           </div>
         </div>
       </section>
 
-      {/* 3. 6-Month Forecast Horizon (trimmed to 6 upcoming months) */}
-      <section className="border-b border-border/70 px-5 py-3.5">
-        <div className="flex items-center justify-between mb-2.5">
-          <p className="label-caps text-[10px] text-muted-foreground tracking-wider">
-            6-Month Forecast Horizon
-          </p>
-          <span className="text-[10px] text-muted-foreground">Range / 95% CI</span>
-        </div>
-
-        <ul className="space-y-2.5">
-          {/* Highlighted Current Month Anchor */}
-          <li className="flex items-center gap-2.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1.5 text-xs transition-colors">
-            <div className="w-20 shrink-0 flex items-center gap-1.5">
-              <span className="font-mono text-[11px] font-bold text-primary">
-                {formatMonthYear(a.point.label)}
-              </span>
-              <span className="rounded bg-primary/25 px-1 py-0.2 text-[8px] font-semibold uppercase tracking-wider text-primary">
-                Now
-              </span>
-            </div>
-            <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-              <span
-                className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-                style={{
-                  width: `${Math.min(100, (a.value / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
-                  backgroundColor: RISK_META[a.risk].color,
-                }}
-              />
-            </span>
-            <span className="w-24 shrink-0 text-right font-mono text-[11px] font-semibold tabular-nums text-foreground">
-              {formatMetric(a.value, mode)}
-            </span>
-          </li>
-
-          {/* 6 Forecast Horizon Bars */}
-          {a.forecastWindow.slice(0, 6).map((p) => {
-            const v = metricValue(p.cases, a.region, mode);
-            const risk: RiskLevel = classify(v, a.thresholds);
-            const seasonConf = SEASON_CONFIG[p.season];
-            return (
-              <li key={p.index} className="flex items-center gap-2.5 px-2.5 py-1 text-xs">
-                <div className="w-20 shrink-0 flex items-center gap-1.5">
-                  <span className="font-mono text-[11px] text-muted-foreground">
-                    {formatMonthYear(p.label)}
-                  </span>
-                  <span
-                    className="size-1.5 rounded-full shrink-0"
-                    title={seasonConf.display}
-                    style={{
-                      backgroundColor: p.season === "wet" ? "var(--wet)" : "var(--dry)",
-                    }}
-                  />
-                </div>
-                <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                  <span
-                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (v / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
-                      backgroundColor: RISK_META[risk].color,
-                    }}
-                  />
-                </span>
-                <span className="w-24 shrink-0 text-right font-mono text-[11px] tabular-nums text-muted-foreground">
-                  {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
-                  {formatMetric(metricValue(p.upper, a.region, mode), mode)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+      {/* 3. Epicentra-style KPI Strip */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+        <KpiStrip data={kpi} />
       </section>
 
-      {/* 4. Forecast & Outlook Card */}
-      <section className="border-b border-border/70 px-5 py-3.5">
+      {/* 4. Compact 6-Month Forecast + Risk Pills */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
         <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
-          FORECAST & OUTLOOK
+          NEXT 6 MONTHS
         </p>
-
-        {/* Outbreak Outlook Summary Text */}
-        {outlookData[selectedSeason] && (
-          <div className="space-y-1">
-            <OutbreakHeadline season={selectedSeason} ind={outlookData[selectedSeason]} />
-            <SeasonBasis isManual={selectedSeason !== OUTBREAK_BENCHMARK_SEASON} />
-          </div>
-        )}
-
-        {/* Season Comparison Tool */}
-        <div className="mt-3 rounded-lg bg-secondary/30 border border-border/60 p-2.5">
-          {/* Season Selector Pills */}
-          <div className="grid grid-cols-2 gap-1.5">
-            {(["dry", "wet"] as Season[]).map((s) => {
-              const isSelected = selectedSeason === s;
-              return (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => handleSeasonChange(s)}
-                  aria-pressed={isSelected}
-                  className={cn(
-                    "rounded-md px-2.5 py-1.5 text-[11px] font-medium transition-all text-center",
-                    isSelected
-                      ? "border border-primary/50 bg-primary/20 text-primary font-semibold shadow-xs"
-                      : "border border-border/70 text-muted-foreground hover:text-foreground hover:bg-secondary/60",
-                  )}
-                >
-                  {SEASON_CONFIG[s].display}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Active Season Data Only */}
-          {(() => {
-            const ind = outlookData[selectedSeason];
-            if (!ind) return null;
-            const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
-            const width = Math.min(100, Math.round((ratio / 1.5) * 100));
-            return (
-              <div className="mt-2.5 space-y-1">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-muted-foreground">Current / P75 threshold</span>
-                  {ind.outbreak && (
-                    <span
-                      className="rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider"
-                      style={{
-                        color: "oklch(0.99 0.003 95)",
-                        backgroundColor: "var(--risk-high-solid)",
-                      }}
-                    >
-                      Alert
-                    </span>
-                  )}
-                </div>
-                <p className="font-mono text-sm font-semibold tabular-nums text-foreground">
-                  {Math.round(ind.season_avg).toLocaleString()}{" "}
-                  <span className="font-normal text-xs text-muted-foreground">/</span>{" "}
-                  {Math.round(ind.season_p75).toLocaleString()}{" "}
-                  <span className="font-normal text-[11px] text-muted-foreground">cases</span>
-                </p>
-                <div className="relative mt-1.5 h-2 overflow-hidden rounded-full bg-secondary">
-                  <div
-                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-                    style={{ width: `${width}%`, backgroundColor: "var(--risk-high)" }}
-                  />
-                </div>
-              </div>
-            );
-          })()}
+        <ForecastSparkline data={sparkData} />
+        <div className="mt-2">
+          <RiskDistributionRow counts={riskCounts} />
         </div>
       </section>
 
-      {/* 5. Model Info (permanently visible, no chevron dropdown) */}
-      <section className="border-b border-border/70 px-5 py-2.5">
+      {/* 5. Compact AI Insight (gated) */}
+      {aiEnabled && (
+        <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
+          <AiInsightLine
+            regionShort={a.region.short}
+            regionName={a.region.name}
+            monthLabel={meta.label}
+          />
+        </section>
+      )}
+
+      {/* 6. Model Info (unchanged) */}
+      <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
         <div className="flex items-center justify-between py-0.5 text-xs">
           <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
             MODEL INFO
@@ -432,7 +365,7 @@ export function ForecastCard({
         </div>
       </section>
 
-      {/* 6. Pinned Action CTA (Unchanged) */}
+      {/* 7. Pinned CTA */}
       <div
         className={cn(
           "px-5 py-3",
@@ -450,43 +383,5 @@ export function ForecastCard({
         </Link>
       </div>
     </div>
-  );
-}
-
-function SeasonBasis({ isManual }: { isManual: boolean }) {
-  return (
-    <p
-      className={cn(
-        "mt-1 text-[10px] leading-relaxed",
-        isManual ? "text-muted-foreground" : "text-muted-foreground",
-      )}
-    >
-      {OUTBREAK_BENCHMARK_LABEL}: frozen 2025-dated probe forecasts, fit through 2024-12-31 and
-      checked prospectively against observed 2025 — a fixed benchmark, not a clock-derived upcoming
-      season. {isManual && "Showing the alternate benchmark window for comparison."}
-    </p>
-  );
-}
-
-function OutbreakHeadline({ season, ind }: { season: Season; ind?: OutbreakIndicator }) {
-  if (!ind) return null;
-  const cap = season === "dry" ? "Dry" : "Wet";
-  const window = OUTBREAK_BENCHMARK_WINDOW[season];
-  const avg = Math.round(ind.season_avg).toLocaleString();
-  const p75 = Math.round(ind.season_p75).toLocaleString();
-  return ind.outbreak ? (
-    <p className="text-xs leading-relaxed text-foreground/90">
-      <span className="font-semibold text-foreground">
-        {window} benchmark: outbreak alert.
-      </span>{" "}
-      Expected cases ({avg}) exceed this region's historical {cap}-season P75 threshold ({p75}).
-    </p>
-  ) : (
-    <p className="text-xs leading-relaxed text-foreground/90">
-      <span className="font-semibold text-foreground">
-        {window} benchmark: no outbreak alert.
-      </span>{" "}
-      Expected cases within this region's normal seasonal range.
-    </p>
   );
 }
