@@ -38,6 +38,7 @@ _THRESHOLDS: pd.DataFrame = pd.DataFrame()
 _METRICS: pd.DataFrame = pd.DataFrame()
 _OUTBREAKS: pd.DataFrame = pd.DataFrame()
 _OUTBREAK_VALIDATION: pd.DataFrame = pd.DataFrame()
+_ESCALATION: pd.DataFrame | None = None
 _data_ready = False
 
 
@@ -128,6 +129,8 @@ def _load_repo_tables():
     csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
     _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
 
+    _ESCALATION = _load_processed("risk_escalation_ranking.csv")
+
     return (
         _NATIONAL,
         _REGIONAL,
@@ -137,13 +140,14 @@ def _load_repo_tables():
         _METRICS,
         _OUTBREAKS,
         _OUTBREAK_VALIDATION,
+        _ESCALATION,
     )
 
 
 def _load_all_data() -> None:
     global _NATIONAL, _REGIONAL, _FORECASTS, _CLASSIFICATION  # noqa: PLW0603
     global _THRESHOLDS, _METRICS, _OUTBREAKS, _OUTBREAK_VALIDATION  # noqa: PLW0603
-    global _data_ready  # noqa: PLW0603
+    global _ESCALATION, _data_ready  # noqa: PLW0603
 
     t0 = time.monotonic()
     (
@@ -155,6 +159,7 @@ def _load_all_data() -> None:
         _METRICS,
         _OUTBREAKS,
         _OUTBREAK_VALIDATION,
+        _ESCALATION,
     ) = _load_repo_tables()
 
     _data_ready = True
@@ -729,11 +734,10 @@ def root():
         "system": "HEALTHWATCH",
         "description": "Seasonal illness outbreak forecasting and hotspot classification (Dengue pilot)",
         "objectives_endpoints": {
-            "objective_1_seasonal_patterns": "/series/{region}",
-            "objective_2_forecast": "/series/{region} (forecast points) and /forecast/{disease}",
-            "objective_3_hotspot_classification": "/risk-classification/{disease} and /thresholds/{disease}",
-            "objective_4_dashboard_comparison": "/regions and /metrics/{region}",
-            "objective_5_domain_rules": "non-negativity clipping and wet/dry season regressor applied in pipeline; see /metrics for validation",
+            "objective_1_patterns": "/series/{region} and /analysis/seasonality",
+            "objective_2_forecast": "/series/{region}, /forecast/{disease}, /outbreak and /outbreak/{region}",
+            "objective_3_classification": "/risk-classification/{disease}, /thresholds/{disease}, /thresholds/seasonal, /escalation (risk-tier escalation ranking) and /validation/outbreak",
+            "objective_4_dashboard": "/dashboard, /regions, /status and /metrics/{region} (validation metrics; non-negativity clipping and wet/dry season regressor are enforced in the pipeline, surfaced via /metrics)",
             "objective_5_interpretability": "/analysis/{region} and /analysis/seasonality (opt-in LLM narratives over pipeline outputs)",
         },
         "seasonal_outbreak_indicators": {
@@ -894,8 +898,9 @@ def series(
     return {"region": _label(db_region), "disease": disease, "points": points}
 
 
-@app.get("/forecast/{disease}", tags=["objective_2_forecast"])
-def forecast(disease: str, region: str | None = Query(default=None)):
+@app.get("/forecast/{disease}", tags=["objective_2_forecast", "objective_3_api"])
+@limiter.limit("300/minute")
+def forecast(request: Request, disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
     df = _FORECASTS[_FORECASTS["disease"] == disease]
     if region:
@@ -913,8 +918,9 @@ def forecast(disease: str, region: str | None = Query(default=None)):
     return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
 
 
-@app.get("/risk-classification/{disease}", tags=["objective_3_classification"])
-def risk_classification(disease: str, region: str | None = Query(default=None)):
+@app.get("/risk-classification/{disease}", tags=["objective_3_classification", "objective_3_api"])
+@limiter.limit("300/minute")
+def risk_classification(request: Request, disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
     df = _CLASSIFICATION[_CLASSIFICATION["disease"] == disease]
     if region:
@@ -929,6 +935,37 @@ def risk_classification(disease: str, region: str | None = Query(default=None)):
         region=df["region_code"].map(_label),
         date=df["date"].dt.date.astype(str),
     ).drop(columns=["region_code"])
+    return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
+
+
+@app.get("/escalation", tags=["objective_3_classification", "objective_3_api"])
+@limiter.limit("300/minute")
+def escalation(
+    request: Request,
+    disease: str = Query(default=DISEASE_DEFAULT),
+    region: str | None = Query(default=None),
+    top: int = Query(default=0, ge=0, le=100),
+):
+    """Risk-tier escalation ranking (Objective 4 / hotspot prioritization).
+
+    Ranks each region by how many upward risk-tier transitions its forecast
+    makes across the prediction horizon (`tier_climbs`): steepest risers first,
+    as the priority list for resource allocation. `top=N` returns only the top
+    N regions.
+    """
+    _check_disease(disease)
+    if _ESCALATION is None:
+        raise HTTPException(status_code=404, detail="Escalation ranking not generated yet")
+    df = _ESCALATION[_ESCALATION["disease"] == disease].sort_values("rank")
+    if region:
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region"] == _label(db_region)]
+        if df.empty:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    if top:
+        df = df.head(top)
     return {"disease": disease, "region": region, "count": len(df), "items": df.to_dict(orient="records")}
 
 

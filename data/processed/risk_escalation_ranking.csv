@@ -1,0 +1,20 @@
+rank,disease,region,tier_climbs,net_climb,n_high_months,first_high_month,final_tier
+1,Dengue,SOCCSKSARGEN,3,0,2,2027-05,Low
+2,Dengue,Central Visayas,3,-1,1,2027-06,Low
+3,Dengue,National Capital Region,2,0,6,2027-01,Low
+4,Dengue,National,2,-1,5,2027-01,Low
+5,Dengue,Negros Island Region,2,-1,3,2027-01,Low
+6,Dengue,Davao Region,2,0,2,2027-05,Low
+7,Dengue,Bangsamoro (BARMM),2,0,0,,Low
+8,Dengue,Caraga,2,-1,0,,Low
+9,Dengue,Central Luzon,1,-2,9,2026-09,Low
+10,Dengue,Western Visayas,1,-1,9,2026-10,Low
+11,Dengue,CALABARZON,1,-2,7,2026-09,Low
+12,Dengue,Cagayan Valley,1,0,0,,Low
+13,Dengue,Cordillera Administrative Region,1,-1,0,,Low
+14,Dengue,Ilocos Region,0,-1,11,2026-09,Moderate
+15,Dengue,Bicol Region,0,-2,10,2026-09,Low
+16,Dengue,Eastern Visayas,0,0,0,,Low
+17,Dengue,MIMAROPA,0,0,0,,Low
+18,Dengue,Northern Mindanao,0,0,0,,Low
+19,Dengue,Zamboanga Peninsula,0,0,0,,Low
