@@ -2,9 +2,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { FileDown, Loader2, TriangleAlert, X } from "lucide-react";
 import {
+  CURRENT_MONTH_INDEX,
   ILLNESSES,
   REGIONS,
   REGION_BY_CODE,
+  TOTAL_MONTHS,
   assessRegion,
   formatPHTDateTime,
   metricValue,
@@ -16,10 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { formatMonthYear } from "@/utils/formatDate";
-import type {
-  ExportOptions,
-  ReportLayout,
-} from "@/components/pdf/SurveillanceReportPDF";
+import type { ExportOptions } from "@/components/pdf/SurveillanceReportPDF";
 import {
   renderSeasonalitySVG,
   renderTrajectorySVG,
@@ -37,20 +36,6 @@ export interface ExportCustomizationModalProps {
 
 type SectionKey =
   "overview" | "comparative" | "trajectory" | "seasonality" | "performance" | "recommendations";
-
-const LAYOUTS: { id: ReportLayout; label: string; hint: string }[] = [
-  { id: "executive", label: "Executive 1-Page Summary", hint: "Compact risk + comparison focus." },
-  {
-    id: "comprehensive",
-    label: "Comprehensive Technical Report",
-    hint: "Full profiles, charts & metrics.",
-  },
-  {
-    id: "custom",
-    label: "Custom Comparison Matrix",
-    hint: "Tune sections below to fit your brief.",
-  },
-];
 
 const ALL_SECTIONS: { key: SectionKey; label: string }[] = [
   { key: "overview", label: "Regional Profiles" },
@@ -71,9 +56,7 @@ export function ExportCustomizationModal({
 }: ExportCustomizationModalProps) {
   useBodyScrollLock(open);
 
-  const [layout, setLayout] = useState<ReportLayout>("executive");
-  const [pathology, setPathology] = useState<string>(illness);
-  const [selectedRegions, setSelectedRegions] = useState<string[]>(regionCodes);
+  const [horizon, setHorizon] = useState(0);
   const [sections, setSections] = useState<Record<SectionKey, boolean>>({
     overview: true,
     comparative: true,
@@ -86,58 +69,25 @@ export function ExportCustomizationModal({
   const [progress, setProgress] = useState(0);
   const [exportError, setExportError] = useState<string | null>(null);
 
-  // Sync the multi-select and pathology with the dashboard each time the modal opens.
+  // Sync the date slider with the dashboard each time the modal opens.
   useEffect(() => {
     if (open) {
-      setSelectedRegions(regionCodes);
-      setPathology(illness);
+      setHorizon(Math.max(-12, Math.min(12, monthIndex - CURRENT_MONTH_INDEX)));
     }
-  }, [open, regionCodes, illness]);
+  }, [open, monthIndex]);
 
-  const baselineLabel = monthMeta(monthIndex).label;
+  const exportMonthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
+  const baselineLabel = monthMeta(exportMonthIndex).label;
   const unit = mode === "raw" ? "cases/month" : "per 100k/month";
-
-  const toggleRegion = useCallback((code: string) => {
-    setSelectedRegions((prev) =>
-      prev.includes(code) ? prev.filter((c) => c !== code) : [...prev, code],
-    );
-  }, []);
-
-  const selectAllRegions = () => setSelectedRegions(REGIONS.map((r) => r.code));
-  const clearAllRegions = () => setSelectedRegions([]);
 
   const toggleSection = useCallback((key: SectionKey) => {
     setSections((prev) => ({ ...prev, [key]: !prev[key] }));
   }, []);
 
-  const applyLayout = (id: ReportLayout) => {
-    setLayout(id);
-    if (id === "executive") {
-      setSections({
-        overview: true,
-        comparative: true,
-        trajectory: false,
-        seasonality: false,
-        performance: false,
-        recommendations: true,
-      });
-    } else if (id === "comprehensive") {
-      setSections({
-        overview: true,
-        comparative: true,
-        trajectory: true,
-        seasonality: true,
-        performance: true,
-        recommendations: true,
-      });
-    }
-    // custom leaves sections untouched
-  };
-
-  // Keep selections in sync when the dashboard selection changes.
+  // Regions to export are the ones selected on the dashboard page.
   const effectiveRegions = useMemo(
-    () => REGIONS.filter((r) => selectedRegions.includes(r.code)),
-    [selectedRegions],
+    () => REGIONS.filter((r) => regionCodes.includes(r.code)),
+    [regionCodes],
   );
 
   const buildExport = useCallback(async () => {
@@ -145,26 +95,26 @@ export function ExportCustomizationModal({
     setProgress(0);
     setExportError(null);
 
-    const codes = selectedRegions;
+    const codes = regionCodes;
 
     const generatedAt = formatPHTDateTime();
     const reportPathology =
-      pathology === "all"
+      illness === "all"
         ? "All reported pathologies"
-        : (ILLNESSES.find((i) => i.id === pathology)?.name ?? pathology);
+        : (ILLNESSES.find((i) => i.id === illness)?.name ?? illness);
 
     const regions = [];
     for (let i = 0; i < codes.length; i++) {
       const code = codes[i]!;
-      const a = assessRegion(code, pathology, monthIndex, mode);
-      const metrics = modelMetrics(code, pathology);
+      const a = assessRegion(code, illness, exportMonthIndex, mode);
+      const metrics = modelMetrics(code, illness);
       const region = REGION_BY_CODE[code]!;
 
       let trajectoryImage: string | null = null;
       let seasonalityImage: string | null = null;
 
-      const series = seriesFor(code, pathology);
-      const windowSlice = series.slice(Math.max(0, monthIndex - 17), monthIndex + 1);
+      const series = seriesFor(code, illness);
+      const windowSlice = series.slice(Math.max(0, exportMonthIndex - 17), exportMonthIndex + 1);
       const trajPoints = windowSlice.map((p) => ({
         label: p.label,
         cases: p.cases,
@@ -206,7 +156,7 @@ export function ExportCustomizationModal({
         rmse: metrics.rmse,
         trajectoryImage,
         seasonalityImage,
-        season: monthMeta(monthIndex).season,
+        season: monthMeta(exportMonthIndex).season,
         driver: a.dominantIllness.driver,
         forecastWindow: a.forecastWindow,
       });
@@ -214,7 +164,7 @@ export function ExportCustomizationModal({
 
     setPhase(2);
     const options: ExportOptions = {
-      layout,
+      layout: "comprehensive",
       baseline: baselineLabel,
       generatedAt,
       pathology: reportPathology,
@@ -244,7 +194,7 @@ export function ExportCustomizationModal({
     } finally {
       setPhase(0);
     }
-  }, [layout, pathology, selectedRegions, monthIndex, mode, unit, sections, baselineLabel]);
+  }, [illness, regionCodes, exportMonthIndex, mode, unit, sections, baselineLabel]);
 
   if (!open) return null;
 
@@ -291,120 +241,52 @@ export function ExportCustomizationModal({
 
         {/* Body */}
         <div className="overflow-y-auto p-5 space-y-5 hw-scroll">
-          {/* 1. Preset Layout */}
-          <div>
-            <p className="label-caps text-[11px] font-semibold text-foreground mb-2">
-              Preset Layout
-            </p>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {LAYOUTS.map((l) => (
-                <button
-                  key={l.id}
-                  type="button"
-                  onClick={() => applyLayout(l.id)}
-                  className={cn(
-                    "rounded-lg border p-2.5 text-left transition-colors",
-                    layout === l.id
-                      ? "border-primary bg-primary/10"
-                      : "border-border/70 hover:bg-secondary/40",
-                  )}
-                >
-                  <p
-                    className={cn(
-                      "text-xs font-semibold",
-                      layout === l.id ? "text-primary" : "text-foreground",
-                    )}
-                  >
-                    {l.label}
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-muted-foreground leading-snug">{l.hint}</p>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* 2. Filter Controls */}
+          {/* 1. Report Date */}
           <div className="rounded-xl border border-border/70 bg-secondary/15 p-4 space-y-3">
-            <p className="label-caps text-[11px] font-semibold text-foreground">Report Filters</p>
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <label className="text-[10px] uppercase font-medium text-muted-foreground block mb-1">
-                  Date range (baseline)
-                </label>
-                <input
-                  type="text"
-                  readOnly
-                  value={formatMonthYear(baselineLabel)}
-                  className="w-full rounded-md border border-border/70 bg-card px-3 py-2 text-xs font-mono text-foreground"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase font-medium text-muted-foreground block mb-1">
-                  Pathology
-                </label>
-                <select
-                  value={pathology}
-                  onChange={(e) => setPathology(e.target.value)}
-                  className="w-full rounded-md border border-border/70 bg-card px-3 py-2 text-xs text-foreground"
-                >
-                  <option value="all">All</option>
-                  {ILLNESSES.map((i) => (
-                    <option key={i.id} value={i.id}>
-                      {i.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <p className="label-caps text-[11px] font-semibold text-foreground">Report Date</p>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-mono text-sm font-bold text-foreground">
+                {formatMonthYear(baselineLabel)}
+              </span>
+              <span
+                className={cn(
+                  "rounded-full px-2 py-0.5 text-[10px] font-semibold border",
+                  horizon < 0 && "bg-secondary text-muted-foreground border-border",
+                  horizon === 0 && "bg-primary/20 text-primary border-primary/40",
+                  horizon > 0 && "border-border text-foreground",
+                )}
+                style={
+                  horizon > 0
+                    ? {
+                        color: "var(--dry)",
+                        backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)",
+                      }
+                    : undefined
+                }
+              >
+                {horizon < 0 && `${Math.abs(horizon)}m past reported`}
+                {horizon === 0 && "Current baseline (Now)"}
+                {horizon > 0 && `+${horizon}m forecast`}
+              </span>
             </div>
-
-            {/* Region multi-select */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[10px] uppercase font-medium text-muted-foreground">
-                  Regions ({selectedRegions.length} selected)
-                </label>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={selectAllRegions}
-                    className="text-[11px] font-medium text-primary hover:underline"
-                  >
-                    Select All
-                  </button>
-                  <span className="text-muted-foreground/40 text-[11px]">·</span>
-                  <button
-                    type="button"
-                    onClick={clearAllRegions}
-                    className="text-[11px] font-medium text-muted-foreground hover:text-foreground"
-                  >
-                    Clear All
-                  </button>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {REGIONS.map((r) => {
-                  const active = selectedRegions.includes(r.code);
-                  return (
-                    <button
-                      key={r.code}
-                      type="button"
-                      onClick={() => toggleRegion(r.code)}
-                      className={cn(
-                        "rounded-md border px-2 py-1 text-[10px] font-medium transition-colors",
-                        active
-                          ? "border-primary bg-primary/15 text-primary"
-                          : "border-border/60 text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {r.short}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="flex items-center justify-between text-[10px] font-mono text-muted-foreground px-0.5">
+              <span>Past (-12m)</span>
+              <span>{formatMonthYear(monthMeta(CURRENT_MONTH_INDEX).label)} (Now)</span>
+              <span>Forecast (+12m)</span>
             </div>
+            <input
+              type="range"
+              min={-12}
+              max={12}
+              step={1}
+              value={horizon}
+              onChange={(e) => setHorizon(Number(e.target.value))}
+              className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
+              aria-label="Select the report baseline month from -12 past months to +12 forecast months"
+            />
           </div>
 
-          {/* 3. Modular Sections */}
+          {/* 2. Modular Sections */}
           <div>
             <p className="label-caps text-[11px] font-semibold text-foreground mb-2">
               Report Sections
