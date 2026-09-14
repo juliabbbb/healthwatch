@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { TriangleAlert } from "lucide-react";
+import { REGION_BY_CODE } from "@/lib/healthwatch/data";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const DISEASE = "Dengue";
@@ -104,8 +105,9 @@ export function ValidationMetricsPanel({ regionCode }: { regionCode?: string }) 
     async (signal?: AbortSignal) => {
       setStatus("loading");
       try {
+        const regionName = regionCode ? REGION_BY_CODE[regionCode]?.name : undefined;
         const [m, o] = await Promise.all([
-          regionCode ? fetchMetrics(regionCode, signal) : Promise.resolve(null),
+          regionName ? fetchMetrics(regionName, signal) : Promise.resolve(null),
           fetchOutbreakValidation(signal),
         ]);
         if (signal?.aborted) return;
@@ -132,7 +134,7 @@ export function ValidationMetricsPanel({ regionCode }: { regionCode?: string }) 
 
   if (status === "error" && !metrics && !outbreak) {
     return (
-      <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+      <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
         <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
         <p>Validation metrics unavailable for this region. The rest of this page is unaffected.</p>
       </div>

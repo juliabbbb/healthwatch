@@ -195,6 +195,8 @@ def _region_code_or_none(label):
     if label.strip().lower() == db.NATIONAL_NAME.lower():
         return db.NATIONAL_CODE
     for meta in REGION_META:
+        if label.strip() == meta["code"]:
+            return meta["code"]
         for cand in (meta["name"], meta["short"], meta["geoName"]):
             if cand.strip().lower() == label.strip().lower():
                 return meta["code"]

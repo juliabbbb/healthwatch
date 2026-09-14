@@ -30,7 +30,7 @@ export function RiskDistributionRow({
             key={t.key}
             className="flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium"
             style={{
-              color: t.solid,
+              color: t.color,
               borderColor: `color-mix(in oklab, ${t.color} 35%, transparent)`,
               backgroundColor: `color-mix(in oklab, ${t.color} 12%, transparent)`,
             }}

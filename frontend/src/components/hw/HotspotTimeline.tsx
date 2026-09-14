@@ -58,11 +58,10 @@ export function HotspotTimeline({
               <div
                 className="flex h-8 min-w-5 flex-1 flex-col items-center justify-center rounded-md border text-[9px] font-semibold transition-transform hover:-translate-y-0.5"
                 style={{
-                  backgroundColor: `color-mix(in oklab, ${meta[c.risk].color} ${
-                    i === 0 ? 58 : 36
-                  }%, transparent)`,
-                  borderColor: `color-mix(in oklab, ${meta[c.risk].color} 45%, transparent)`,
-                  color: meta[c.risk].solidColor,
+                  backgroundColor: meta[c.risk].solidColor,
+                  borderColor: `color-mix(in oklab, ${meta[c.risk].color} 60%, transparent)`,
+                  color: "oklch(0.99 0.003 95)",
+                  boxShadow: i === 0 ? "0 0 0 1px color-mix(in oklab, var(--card) 40%, transparent)" : undefined,
                 }}
               >
                 <span className="font-mono tabular-nums">
