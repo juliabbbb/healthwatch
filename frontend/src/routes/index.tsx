@@ -110,7 +110,7 @@ function MapView() {
       </div>
 
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
-      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[30rem] lg:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
+      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[22rem] lg:w-[30rem] xl:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
         <NationalSnapshot
           monthLabel={meta.label}
           isForecast={meta.forecast}
@@ -177,7 +177,7 @@ function MapView() {
 
       {/* 4. Top Navigation Bar (Desktop Toolbar / Mobile Hamburger Bar) */}
       <div className="absolute right-3 top-3 md:right-4 md:top-4 z-30">
-        <TopToolbar onPick={handleFocusRegion} />
+        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} />
       </div>
 
       {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}

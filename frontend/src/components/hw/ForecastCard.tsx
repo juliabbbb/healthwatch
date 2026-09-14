@@ -144,7 +144,7 @@ export function ForecastCard({
       className={cn(
         isSheet
           ? "w-full space-y-3"
-          : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
+          : "glass-panel w-[22rem] xl:w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
         className,
       )}
     >
@@ -274,7 +274,7 @@ export function ForecastCard({
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
             <span className="label-caps text-[9px] block">3-Mo Trend</span>
             <span
-              className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
+              className="inline-flex min-w-0 items-center gap-1 font-mono text-xs font-semibold"
               style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
             >
               {a.changePct >= 0 ? (
@@ -282,8 +282,10 @@ export function ForecastCard({
               ) : (
                 <TrendingDown className="size-3 shrink-0" />
               )}
-              {a.changePct >= 0 ? "+" : ""}
-              {a.changePct}%
+              <span className="truncate">
+                {a.changePct >= 0 ? "+" : ""}
+                {a.changePct}%
+              </span>
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
@@ -370,8 +372,8 @@ export function ForecastCard({
         className={cn(
           "px-5 py-3",
           isSheet
-            ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3 border-t border-border/70"
-            : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10 border-t border-border/70",
+            ? "sticky bottom-0 bg-card pb-6 pt-3 border-t border-border/70"
+            : "sticky bottom-0 bg-card rounded-b-xl z-10 border-t border-border/70",
         )}
       >
         <Link

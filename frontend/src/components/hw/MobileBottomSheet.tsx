@@ -247,8 +247,8 @@ export function MobileBottomSheet({
 
               {/* Right: Key Metric + Risk Badge + Action Controls */}
               <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                <div className="text-right leading-none">
-                  <span className="font-mono text-xs font-bold tabular-nums text-foreground">
+                <div className="text-right leading-none min-w-0">
+                  <span className="inline-block max-w-[7rem] truncate align-bottom font-mono text-xs font-bold tabular-nums text-foreground">
                     {formatMetric(a.value, mode)}
                   </span>
                   <span className="hidden min-[420px]:inline-block ml-0.5 text-[9px] text-muted-foreground">

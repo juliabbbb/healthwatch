@@ -22,7 +22,7 @@ import { SubscribeModal } from "@/components/modals/SubscribeModal";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
-import { REGIONS } from "@/lib/healthwatch/data";
+import { REGION_BY_CODE, REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 export interface TopToolbarProps {
@@ -30,9 +30,11 @@ export interface TopToolbarProps {
   onZoom?: (dir: 1 | -1) => void;
   /** Extra icon affordances (e.g. the notification bell) shown first in the actions cluster. */
   trailing?: React.ReactNode;
+  /** Currently selected region on the map; carried as ?region= into Seasonality links. */
+  selectedRegionCode?: string | null;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
+export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -132,6 +134,11 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
     }
   };
 
+  const seasonalitySearch =
+    selectedRegionCode && REGION_BY_CODE[selectedRegionCode]
+      ? { region: selectedRegionCode }
+      : undefined;
+
   return (
     <>
       {/* ===================== DESKTOP TOP TOOLBAR (>= md) ===================== */}
@@ -182,7 +189,9 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
         {/* Primary Desktop Nav Links */}
         <nav className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <NavLink to="/">Map</NavLink>
-          <NavLink to="/seasonality">Seasonality</NavLink>
+          <NavLink to="/seasonality" search={seasonalitySearch}>
+            Seasonality
+          </NavLink>
           <NavLink to="/compare">Compare</NavLink>
           <NavLink to="/methodology">Methodology</NavLink>
         </nav>
@@ -385,6 +394,7 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                 <MobileNavLink
                   to="/seasonality"
                   icon={Waves}
+                  search={seasonalitySearch}
                   label="Seasonality &amp; Cycles"
                   onClick={() => setMobileMenuOpen(false)}
                 />
@@ -457,10 +467,19 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
   );
 }
 
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+function NavLink({
+  to,
+  search,
+  children,
+}: {
+  to: string;
+  search?: { region: string };
+  children: React.ReactNode;
+}) {
   return (
     <Link
       to={to}
+      search={search}
       activeOptions={{ exact: to === "/" }}
       className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       activeProps={{ className: "bg-secondary/80 text-foreground font-medium" }}
@@ -475,15 +494,18 @@ function MobileNavLink({
   icon: Icon,
   label,
   onClick,
+  search,
 }: {
   to: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   onClick: () => void;
+  search?: { region: string };
 }) {
   return (
     <Link
       to={to}
+      search={search}
       onClick={onClick}
       activeOptions={{ exact: to === "/" }}
       className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"

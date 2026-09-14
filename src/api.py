@@ -75,6 +75,24 @@ def _normalize_dates(df, col):
     return df
 
 
+def _dedupe_latest(df, subset, sort_col=None):
+    """Keep only the newest row per `subset` key.
+
+    Defensive: a deployed relational DB may hold rows accumulated across
+    pipeline runs (duplicate (region, month) observations, repeated forecast
+    snapshots, re-written outbreak flags). Sort by the newest time column when
+    available so `keep="last"` always means "latest". No-op when a subset
+    column is absent from the frame."""
+    missing = [c for c in subset if c not in df.columns]
+    if missing:
+        return df
+    if sort_col is not None and sort_col in df.columns:
+        df = df.sort_values(subset + [sort_col], kind="mergesort")
+    else:
+        df = df.sort_values(subset, kind="mergesort")
+    return df.drop_duplicates(subset=subset, keep="last").reset_index(drop=True)
+
+
 def _load_repo_tables():
     """Read the six pipeline tables straight from the CSVs that ship in the
     repo (data/processed/*.csv). The relational DB holds the same rows, but
@@ -89,6 +107,7 @@ def _load_repo_tables():
         obs["month"] = pd.to_datetime(obs["date"]).dt.month
     else:
         obs = db.read_table("monthly_observations")
+    obs = _dedupe_latest(obs, ["region_code", "year", "month"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
     _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
     _normalize_dates(_NATIONAL, "date")
@@ -100,6 +119,7 @@ def _load_repo_tables():
     else:
         _FORECASTS["region_code"] = _csv_region_code(_FORECASTS["region"])
     _normalize_dates(_FORECASTS, "target_date")
+    _FORECASTS = _dedupe_latest(_FORECASTS, ["region_code", "target_date"])
 
     _CLASSIFICATION = _load_processed("risk_classification.csv")
     if _CLASSIFICATION is None:
@@ -107,27 +127,32 @@ def _load_repo_tables():
     else:
         _CLASSIFICATION["region_code"] = _csv_region_code(_CLASSIFICATION["region"])
     _normalize_dates(_CLASSIFICATION, "date")
+    _CLASSIFICATION = _dedupe_latest(_CLASSIFICATION, ["region_code", "date"])
 
     _THRESHOLDS = _load_processed("risk_thresholds.csv")
     if _THRESHOLDS is None:
         _THRESHOLDS = db.read_table("risk_thresholds")
     else:
         _THRESHOLDS["region_code"] = _csv_region_code(_THRESHOLDS["region"])
+    _THRESHOLDS = _dedupe_latest(_THRESHOLDS, ["region_code", "month"])
 
     _METRICS = _load_processed("validation_metrics.csv")
     if _METRICS is None:
         _METRICS = db.read_table("validation_metrics")
     else:
         _METRICS["region_code"] = _csv_region_code(_METRICS["region"])
+    _METRICS = _dedupe_latest(_METRICS, ["region_code"])
 
     _OUTBREAKS = _load_processed("outbreak_indicators.csv")
     if _OUTBREAKS is None:
         _OUTBREAKS = db.read_table("outbreak_signals")
     else:
         _OUTBREAKS["region_code"] = _csv_region_code(_OUTBREAKS["region"])
+    _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season"])
 
     csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
     _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
+    _OUTBREAK_VALIDATION = _dedupe_latest(_OUTBREAK_VALIDATION, ["region", "season"])
 
     _ESCALATION = _load_processed("risk_escalation_ranking.csv")
 

@@ -573,12 +573,20 @@ function SeasonalityPage() {
                         {isForecast && `+${horizon}m forecast`}
                       </span>
                       <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                        style={{
-                          backgroundColor:
-                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
-                          color: "#ffffff",
-                        }}
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold border"
+                        style={
+                          currentMonth.season === "wet"
+                            ? {
+                                color: "var(--wet)",
+                                borderColor: "color-mix(in oklab, var(--wet) 35%, transparent)",
+                                backgroundColor: "color-mix(in oklab, var(--wet), transparent 85%)",
+                              }
+                            : {
+                                color: "var(--dry)",
+                                borderColor: "color-mix(in oklab, var(--dry) 35%, transparent)",
+                                backgroundColor: "color-mix(in oklab, var(--dry), transparent 85%)",
+                              }
+                        }
                       >
                         {currentSeasonLabel}
                       </span>

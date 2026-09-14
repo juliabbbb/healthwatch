@@ -39,7 +39,7 @@ export function OutbreakBanner({
         className,
       )}
       style={{
-        color: "var(--risk-high-solid)",
+        color: "var(--risk-high)",
         borderColor: "color-mix(in oklab, var(--risk-high) 40%, transparent)",
         backgroundColor: "color-mix(in oklab, var(--risk-high) 12%, transparent)",
       }}

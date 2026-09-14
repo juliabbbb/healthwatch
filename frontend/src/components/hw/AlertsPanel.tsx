@@ -41,17 +41,18 @@ export function AlertsPanel({
           style={{ color: severe ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
         <span className="label-caps flex-1 text-xs font-bold text-foreground">Active alerts</span>
-        {alerts.length > 0 && (
-          <span
-            className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums"
-            style={{
-              color: severe ? "var(--risk-high)" : "var(--risk-moderate)",
-              backgroundColor: `color-mix(in oklab, ${severe ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
-            }}
-          >
-            {alerts.length}
-          </span>
-        )}
+{alerts.length > 0 && (
+              <span
+                className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums"
+                style={{
+                  color: severe ? "var(--risk-high)" : "var(--risk-moderate)",
+                  backgroundColor: `color-mix(in oklab, ${severe ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
+                }}
+                title={`${alerts.length} active alerts`}
+              >
+                {alerts.length > 99 ? "99+" : alerts.length}
+              </span>
+            )}
         {open ? (
           <ChevronUp className="size-4 text-muted-foreground" />
         ) : (

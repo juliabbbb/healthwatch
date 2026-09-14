@@ -304,11 +304,15 @@ export default function ComparePage() {
                         {isForecast && `+${horizon}m forecast`}
                       </span>
                       <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold border"
                         style={{
-                          backgroundColor:
-                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
-                          color: "#ffffff",
+                          color: currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)",
+                          borderColor: `color-mix(in oklab, ${
+                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)"
+                          } 35%, transparent)`,
+                          backgroundColor: `color-mix(in oklab, ${
+                            currentMonth.season === "wet" ? "var(--wet)" : "var(--dry)"
+                          }, transparent 85%)`,
                         }}
                       >
                         {currentSeasonLabel}
@@ -847,8 +851,8 @@ export default function ComparePage() {
                     <span
                       className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase font-mono"
                       style={{
-                        backgroundColor: RISK_META[detailedMetrics.tone].color,
-                        color: "#ffffff",
+                        color: "oklch(0.99 0.003 95)",
+                        backgroundColor: RISK_META[detailedMetrics.tone].solidColor,
                       }}
                     >
                       {detailedMetrics.label} Reliability

@@ -27,17 +27,22 @@ export function KpiCard({
         className,
       )}
     >
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="label-caps text-[9px] leading-tight text-muted-foreground">{label}</p>
-        <p className="mt-1 truncate font-mono text-lg font-bold leading-none tracking-tight tabular-nums text-foreground">
+        <p
+          className="mt-1 truncate font-mono text-lg font-bold leading-none tracking-tight tabular-nums text-foreground"
+          title={value}
+        >
           {value}
         </p>
         {sub && (
-          <p className="mt-0.5 truncate text-[10px] leading-snug text-muted-foreground">{sub}</p>
+          <p className="mt-0.5 truncate text-[10px] leading-snug text-muted-foreground" title={sub}>
+            {sub}
+          </p>
         )}
       </div>
       <span
-        className="mt-0.5 shrink-0 rounded-lg p-1.5"
+        className="ml-auto mt-0.5 shrink-0 self-start rounded-lg p-1.5"
         style={{
           backgroundColor: `color-mix(in oklab, ${accent} 18%, transparent)`,
           color: accent,

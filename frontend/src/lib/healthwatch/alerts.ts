@@ -49,10 +49,17 @@ export function deriveAlerts(
   activeSeason: Season,
 ): AlertItem[] {
   const out: AlertItem[] = [];
+  const seen = new Set<string>();
+
+  const pushAlert = (item: AlertItem) => {
+    if (seen.has(item.id)) return;
+    seen.add(item.id);
+    out.push(item);
+  };
 
   for (const a of assessments) {
     if (a.risk === "high") {
-      out.push({
+      pushAlert({
         id: `high-${a.region.code}`,
         kind: "high-now",
         regionCode: a.region.code,
@@ -67,7 +74,7 @@ export function deriveAlerts(
     if (flag?.outbreak) {
       const avg = Math.round(flag.season_avg);
       const p75 = Math.round(flag.season_p75);
-      out.push({
+      pushAlert({
         id: `outbreak-${a.region.code}`,
         kind: "outbreak",
         regionCode: a.region.code,
@@ -87,7 +94,7 @@ export function deriveAlerts(
       if (!p) break;
       const risk = classify(metricValue(p.cases, a.region, a.mode), a.thresholds);
       if (risk === "high" && prevRisk !== "high") {
-        out.push({
+        pushAlert({
           id: `cross-${a.region.code}`,
           kind: "crossing",
           regionCode: a.region.code,
