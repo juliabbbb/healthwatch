@@ -7,9 +7,13 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 import pandas as pd
-from fastapi import FastAPI, Header, HTTPException, Query
+from fastapi import FastAPI, Header, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi.util import get_remote_address
 
 from . import db, email_report, ingest, subscription_store
 
@@ -701,6 +705,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Application-layer rate limiting. Keyed by client IP (in-memory, no Redis
+# required). Tight limits on the surfaces that make external calls (email
+# sends, LLM narration) so abuse can't run up cost; a generous cap on the
+# batched read endpoint. Returns 429 in JSON so the frontend can handle it.
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+
+
+@app.exception_handler(RateLimitExceeded)
+async def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    detail = getattr(exc, "detail", None)
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Rate limit exceeded. Please slow down and retry."},
+        headers={"Retry-After": str(getattr(exc, "retry_after", 60))},
+    )
+
 
 @app.get("/", tags=["info"])
 def root():
@@ -734,7 +755,8 @@ def health():
 
 
 @app.get("/dashboard", tags=["objective_4_dashboard"])
-def dashboard(disease: str = Query(default=DISEASE_DEFAULT)):
+@limiter.limit("300/minute")
+def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
     """Single batched endpoint returning all regions' series + metrics +
     outbreak data in one response. Replaces the 37 individual calls the
     frontend previously made on every page load."""
@@ -1072,7 +1094,9 @@ def metrics(
 
 
 @app.get("/analysis/seasonality", tags=["objective_1_patterns", "objective_5_interpretability"])
+@limiter.limit("20/minute")
 def analysis_seasonality(
+    request: Request,
     region: str = Query(...),
     disease: str = Query(default=DISEASE_DEFAULT),
     component: str = Query(default="seasonal"),
@@ -1113,7 +1137,9 @@ def analysis_seasonality(
 
 
 @app.get("/analysis/{region}", tags=["objective_5_interpretability"])
+@limiter.limit("20/minute")
 def analysis(
+    request: Request,
     region: str,
     disease: str = Query(default=DISEASE_DEFAULT),
     window: str = Query(default=PRIMARY_WINDOW),
@@ -1150,7 +1176,8 @@ def analysis(
 
 
 @app.post("/subscriptions", tags=["subscriptions"])
-def subscribe(payload: SubscribeRequest):
+@limiter.limit("10/minute")
+def subscribe(request: Request, payload: SubscribeRequest):
     """Subscribe an email to recurring monthly forecast reports.
 
     Existing matching by email: creates a new subscription on first use,
@@ -1216,7 +1243,8 @@ def update_subscription_preferences(token: str, payload: PrefsRequest):
 
 
 @app.delete("/subscriptions/manage/{token}", tags=["subscriptions"])
-def unsubscribe(token: str):
+@limiter.limit("10/minute")
+def unsubscribe(request: Request, token: str):
     """One-click unsubscribe (deactivates the subscription permanently)."""
     if not subscription_store.deactivate(token):
         raise HTTPException(status_code=404, detail="Unknown subscription token")
@@ -1224,7 +1252,9 @@ def unsubscribe(token: str):
 
 
 @app.post("/subscriptions/send-due", tags=["subscriptions"])
+@limiter.limit("2/minute")
 def send_due_subscriptions(
+    request: Request,
     x_job_token: str | None = Header(default=None, alias="X-Job-Token"),
 ):
     """Send this month's report to every due subscription. Idempotent per month.
