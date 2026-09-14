@@ -10,7 +10,10 @@ parses the repo .env itself, both the API and the CLI rebuild pick up
 DATABASE_URL regardless of launch context.
 """
 
+import csv
 import os
+import re
+import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -31,6 +34,7 @@ from sqlalchemy import (
 )
 
 from . import ingest
+from .doh_eb_ingest import REGION_LABELS
 
 
 def _load_env():
@@ -81,6 +85,67 @@ REGION_META = [
 REGION_CODE_BY_NAME = {r["name"]: r["code"] for r in REGION_META}
 NATIONAL_CODE = "000000000"
 NATIONAL_NAME = "National"
+
+# Population data is sourced from the PSA census export in data/raw/
+# (region_population.csv) instead of being hardcoded. The loader locates each
+# region's total row inside the raw multi-block layout and reads the population
+# for the selected census year; REGION_META["population"] is then overridden so
+# every consumer (API, email report, DB seed) picks up the latest figures.
+POPULATION_CSV = Path(__file__).resolve().parent.parent / "data" / "raw" / "region_population.csv"
+POPULATION_CENSUS_YEAR = 2024
+_POPULATION_COL_BY_YEAR = {2010: 2, 2015: 3, 2020: 4, 2024: 5}
+_CENSUS_TITLE_SUFFIX = ": 2010, 2015, 2020, AND 2024 POPULATION CENSUSES"
+
+
+def _load_population_by_code():
+    """Parse the raw PSA census CSV into {region_code: population}.
+
+    Layout: 18 region blocks introduced by a census title row, followed by two
+    header rows and the region-total row (columns: name, blank, 2010, 2015,
+    2020, 2024, ...). Resolution reuses REGION_LABELS (DOH -> canonical)."""
+    if not POPULATION_CSV.exists():
+        print(f"[population] {POPULATION_CSV.name} not found; keeping REGION_META populations.", file=sys.stderr)
+        return {}
+    rows = []
+    with open(POPULATION_CSV, newline="", encoding="utf-8-sig") as fh:
+        for row in csv.reader(fh):
+            if row and row[0].strip().startswith("#"):
+                continue
+            rows.append(row)
+    col = _POPULATION_COL_BY_YEAR[POPULATION_CENSUS_YEAR]
+    population = {}
+    for i, row in enumerate(rows):
+        if not row or not row[0].strip():
+            continue
+        if not row[0].strip().endswith(_CENSUS_TITLE_SUFFIX):
+            continue
+        data_row = rows[i + 5] if i + 5 < len(rows) else []
+        if len(data_row) < 6 or not data_row[0].strip() or data_row[col].strip() == "":
+            print(f"[population] cannot read region total row after {row[0].strip()!r}", file=sys.stderr)
+            continue
+        raw_name = re.sub(r"\s+\d+$", "", data_row[0].strip())
+        canonical = REGION_LABELS.get(raw_name.upper())
+        if canonical is None:
+            print(f"[population] unmapped region label: {raw_name!r}", file=sys.stderr)
+            continue
+        code = REGION_CODE_BY_NAME.get(canonical)
+        if code is None:
+            print(f"[population] no REGION_META entry for {canonical!r}", file=sys.stderr)
+            continue
+        population[code] = int(data_row[col].replace(",", ""))
+    return population
+
+
+_CSV_POPULATION = _load_population_by_code()
+if _CSV_POPULATION:
+    _missing = [r["code"] for r in REGION_META if r["code"] not in _CSV_POPULATION]
+    for _meta in REGION_META:
+        if _meta["code"] in _CSV_POPULATION:
+            _meta["population"] = _CSV_POPULATION[_meta["code"]]
+    if _missing:
+        print(f"[population] regions missing from {POPULATION_CSV.name}: {_missing}", file=sys.stderr)
+    print(f"[population] applied {len(_CSV_POPULATION)} region populations ({POPULATION_CENSUS_YEAR} census).")
+del _CSV_POPULATION
 
 metadata = MetaData()
 

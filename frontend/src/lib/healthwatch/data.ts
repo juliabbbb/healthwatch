@@ -368,6 +368,26 @@ async function fetchJson<T>(path: string, attempts = 3): Promise<T> {
 }
 
 /**
+ * Overrides the static REGIONS population fields with latest figures served
+ * by GET /regions (REGION_META, itself sourced from the PSA census CSV).
+ * Mutating the region objects in place propagates through REGION_BY_CODE /
+ * REGION_BY_GEONAME because they hold the same references. Falls back to the
+ * static values when the API is unreachable.
+ */
+async function hydratePopulations(): Promise<void> {
+  try {
+    const regions = await fetchJson<Region[]>("/regions");
+    const byCode = new Map(regions.map((r) => [r.code, r.population]));
+    for (const region of REGIONS) {
+      const pop = byCode.get(region.code);
+      if (typeof pop === "number") region.population = pop;
+    }
+  } catch (err) {
+    console.warn("[healthwatch] population hydration failed; using static values.", err);
+  }
+}
+
+/**
  * Fetches all regions' series, validation metrics and outbreak data from
  * a single /dashboard endpoint. Resolves before the router renders any
  * route (gated in __root.tsx) so all downstream components can keep
@@ -381,6 +401,8 @@ export async function loadHealthwatchData(): Promise<void> {
     outbreak: OutbreakIndicator[];
   }
   const res = await fetchJson<DashboardResponse>("/dashboard");
+
+  await hydratePopulations();
 
   // Build a short→code lookup from the static REGIONS list
   const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
