@@ -31,6 +31,7 @@ export function NationalSnapshot({
   showOutbreakMarkers = false,
   onOutbreakMarkersChange,
   className,
+  id,
 }: {
   monthLabel: string;
   isForecast: boolean;
@@ -44,6 +45,7 @@ export function NationalSnapshot({
   showOutbreakMarkers?: boolean;
   onOutbreakMarkersChange?: (v: boolean) => void;
   className?: string;
+  id?: string;
 }) {
   const [legendOpen, setLegendOpen] = useState(false);
   const legendRef = useRef<HTMLDivElement>(null);
@@ -66,6 +68,7 @@ export function NationalSnapshot({
 
   return (
     <div
+      id={id}
       className={cn(
         "glass-panel pointer-events-auto flex flex-col gap-3.5 rounded-xl p-5 shadow-xl w-full",
         className,

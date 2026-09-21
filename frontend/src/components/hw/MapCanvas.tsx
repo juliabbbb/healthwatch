@@ -14,10 +14,12 @@ import {
   assessRegion,
   dataReady,
   formatMetric,
+  metricValue,
   RISK_META,
   type MetricMode,
   type Region,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export type DataLayer = "hotspot" | "density";
 
@@ -230,14 +232,43 @@ export default function MapCanvas({
       for (const r of REGIONS) {
         const next = assessRegion(r.code, illness, nextIdx, mode);
         if (next.risk !== "high") continue;
-        Lf.marker([r.lat, r.lng], { icon, interactive: true })
+
+        const targetMonth = formatMonthYear(next.point.label);
+        const casesCount = next.point.cases.toLocaleString();
+        const perCapitaVal = formatMetric(metricValue(next.point.cases, r, "percapita"), "percapita");
+
+        const tooltipHtml = `
+          <div class="hw-outbreak-tip">
+            <div class="hw-outbreak-tip-header">
+              <span class="hw-outbreak-tip-badge">Next Month Forecast</span>
+              <span class="hw-outbreak-tip-month">${targetMonth}</span>
+            </div>
+            <div class="hw-outbreak-tip-region">${r.short} · ${r.name}</div>
+            <div class="hw-outbreak-tip-stat">
+              <span class="hw-outbreak-tip-val">${mode === "percapita" ? perCapitaVal : casesCount}</span>
+              <span class="hw-outbreak-tip-unit">${mode === "percapita" ? "per 100k/mo" : "cases"}</span>
+              ${mode === "percapita" ? `<span class="hw-outbreak-tip-subval">(${casesCount} cases)</span>` : ""}
+            </div>
+            <div class="hw-outbreak-tip-footer">
+              <span class="hw-outbreak-tip-pill">High Risk Alert</span>
+              <span class="hw-outbreak-tip-note">Exceeds seasonal P75 threshold</span>
+            </div>
+          </div>
+        `;
+
+        const m = Lf.marker([r.lat, r.lng], { icon, interactive: true })
           .addTo(group)
-          .bindTooltip(formatMetric(next.point.cases, "raw"), {
+          .bindTooltip(tooltipHtml, {
             direction: "top",
             offset: [0, -8],
             className: "hw-outbreak-tooltip",
             opacity: 1,
           });
+
+        m.on("click", (e: import("leaflet").LeafletMouseEvent) => {
+          if (e?.originalEvent) Lf.DomEvent.stopPropagation(e);
+          stateRef.current.onSelect(r.code);
+        });
       }
     })();
     return () => {
