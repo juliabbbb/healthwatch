@@ -6,6 +6,7 @@ import {
   Download,
   FileDown,
   History,
+  Info,
   Loader2,
   Maximize2,
   MoreHorizontal,
@@ -57,12 +58,82 @@ import {
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
+import { BackToTop } from "@/components/BackToTop";
+import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const DECOMP_TABS: {
+  id: "observed" | "trend" | "seasonal" | "residual";
+  label: string;
+  dotClass: string;
+  takeaway: string;
+}[] = [
+  {
+    id: "observed",
+    label: "Observed",
+    dotClass: "bg-blue-400",
+    takeaway: "Raw monthly surveillance case records showing actual reported infections over time.",
+  },
+  {
+    id: "trend",
+    label: "Trend",
+    dotClass: "bg-emerald-400",
+    takeaway: "The long-term direction, with short-term ups and downs smoothed out.",
+  },
+  {
+    id: "seasonal",
+    label: "Seasonal",
+    dotClass: "bg-amber-400",
+    takeaway: "The predictable yearly rise and fall that repeats at the same times every calendar year.",
+  },
+  {
+    id: "residual",
+    label: "Residual",
+    dotClass: "bg-slate-400",
+    takeaway: "Random noise and unexpected fluctuations left over after removing trend and seasonality.",
+  },
+];
+
+function getSeasonalSummary(
+  regionName: string,
+  peakMonth: string,
+  strength: number,
+  illness: string,
+) {
+  const fullMonthMap: Record<string, string> = {
+    Jan: "January",
+    Feb: "February",
+    Mar: "March",
+    Apr: "April",
+    May: "May",
+    Jun: "June",
+    Jul: "July",
+    Aug: "August",
+    Sep: "September",
+    Oct: "October",
+    Nov: "November",
+    Dec: "December",
+  };
+  const peakFull = fullMonthMap[peakMonth] ?? peakMonth;
+  const illnessLabel = illness === "all" ? "illness" : illness;
+  const strengthPct = Math.round(strength * 100);
+
+  const strengthDescriptor =
+    strengthPct >= 60 ? "a pronounced" : strengthPct >= 40 ? "a distinct" : "a moderate";
+
+  return `${regionName} ${illnessLabel} cases follow ${strengthDescriptor} seasonal pattern, typically rising with the onset of the wet season in June and reaching peak transmission in ${peakFull}. Cases subsequently taper off to lower baseline levels during the dry months from December to May. Historical surveillance indicates that approximately ${strengthPct}% of the month-to-month case variation is driven by this recurring annual cycle rather than random noise.`;
+}
+
 export const Route = createFileRoute("/seasonality")({
   validateSearch: (search: Record<string, unknown>): { region?: string } => ({
-    region: typeof search.region === "string" ? search.region : undefined,
+    ...(typeof search["region"] === "string" ? { region: search["region"] } : {}),
   }),
   head: () => ({
     meta: [
@@ -113,6 +184,29 @@ function SeasonalityPage() {
   const isForecast = horizon > 0;
   const currentSeasonLabel =
     currentMonth.season === "wet" ? SEASON_CONFIG.wet.display : SEASON_CONFIG.dry.display;
+
+  // Simple / Advanced View mode toggle with localStorage persistence (defaults to "simple")
+  const [viewMode, setViewMode] = useState<"simple" | "advanced">(() => {
+    if (typeof window === "undefined") return "simple";
+    try {
+      const saved = localStorage.getItem("hw_seasonality_view");
+      return saved === "advanced" ? "advanced" : "simple";
+    } catch {
+      return "simple";
+    }
+  });
+
+  const handleViewModeChange = (mode: "simple" | "advanced") => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem("hw_seasonality_view", mode);
+    } catch {
+      // ignore
+    }
+  };
+
+  // Active decomposition chart tab
+  const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">("observed");
 
   // Right-click or CTA button tap → AI explanation workflow. Opt-in: when the setting is off,
   // choosing an AI action opens Settings instead and makes zero requests.
@@ -274,9 +368,27 @@ function SeasonalityPage() {
 
       const charts: SeasonalityPdfChart[] = [];
       for (const def of chartDefs) {
-        if (def.ref.current) {
-          const imageDataUrl = await captureChartAsImage(def.ref.current);
-          charts.push({ label: def.label, imageDataUrl });
+        const el = def.ref.current;
+        if (el) {
+          const container = el.parentElement;
+          const wasHidden = container?.classList.contains("hidden");
+          if (wasHidden && container) {
+            container.classList.remove("hidden");
+            container.style.position = "absolute";
+            container.style.left = "-9999px";
+            container.style.width = "800px";
+          }
+          try {
+            const imageDataUrl = await captureChartAsImage(el);
+            charts.push({ label: def.label, imageDataUrl });
+          } finally {
+            if (wasHidden && container) {
+              container.classList.add("hidden");
+              container.style.position = "";
+              container.style.left = "";
+              container.style.width = "";
+            }
+          }
         }
       }
 
@@ -474,7 +586,7 @@ function SeasonalityPage() {
   const wetMonths = 6;
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8">
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8" data-explain="seasonality-page">
       <Link
         to="/"
         className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -492,42 +604,92 @@ function SeasonalityPage() {
             Decompose any regional illness series into trend, seasonality and noise, then confirm
             the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
+
+          {/* Simple / Advanced View Toggle */}
+          <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
+            <span className="label-caps text-[10px] text-muted-foreground">View:</span>
+            <div
+              role="radiogroup"
+              aria-label="Seasonality view mode"
+              data-explain="view-toggle"
+              className="inline-flex items-center rounded-lg border border-border/80 bg-card/60 p-1 shadow-xs"
+            >
+              <button
+                type="button"
+                role="radio"
+                aria-checked={viewMode === "simple"}
+                onClick={() => handleViewModeChange("simple")}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
+                  viewMode === "simple"
+                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span>Simple</span>
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={viewMode === "advanced"}
+                onClick={() => handleViewModeChange("advanced")}
+                className={cn(
+                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
+                  viewMode === "advanced"
+                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span>Advanced</span>
+              </button>
+            </div>
+            <span className="text-[11px] text-muted-foreground hidden sm:inline">
+              {viewMode === "simple"
+                ? "Showing plain-language summary & observed cases"
+                : "Showing full statistical indicators & decomposition tabs"}
+            </span>
+          </div>
         </div>
         <div className="flex flex-col items-start md:items-end gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
             <Waves className="size-3.5 text-primary" /> {wetMonths} wet-season months ·{" "}
             {region.island}
           </span>
-          <button
-            type="button"
-            onClick={() => void exportPdf()}
-            disabled={exporting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors shadow-xs disabled:opacity-50 disabled:hover:bg-primary/10"
-            title="Export a seasonal pattern analysis PDF"
-          >
-            {exporting ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <FileDown className="size-4" />
-            )}
-            <span className="hidden sm:inline">
-              {exporting ? "Exporting…" : "Export Seasonal Report"}
-            </span>
-            <span className="sm:hidden">{exporting ? "Exporting…" : "Export"}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <ExplainModeButton />
+            <button
+              type="button"
+              onClick={() => void exportPdf()}
+              disabled={exporting}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors shadow-xs disabled:opacity-50 disabled:hover:bg-primary/10"
+              title="Export a seasonal pattern analysis PDF"
+            >
+              {exporting ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <FileDown className="size-4" />
+              )}
+              <span className="hidden sm:inline">
+                {exporting ? "Exporting…" : "Export Seasonal Report"}
+              </span>
+              <span className="sm:hidden">{exporting ? "Exporting…" : "Export"}</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* 12-Month Risk Strip (first-glance forecast summary) */}
-      <div className="mt-5 glass-panel rounded-2xl p-4">
-        <p className="label-caps mb-2 text-[10px] text-muted-foreground">
-          12-Month Risk Outlook · {region.name}
-        </p>
-        <HotspotTimeline regionCode={code} illness={illness} />
-      </div>
+      {/* 12-Month Risk Strip (shown in Advanced view) */}
+      {viewMode === "advanced" && (
+        <div className="mt-5 glass-panel rounded-2xl p-4" data-explain="risk-outlook">
+          <p className="label-caps mb-2 text-[10px] text-muted-foreground">
+            12-Month Risk Outlook · {region.name}
+          </p>
+          <HotspotTimeline regionCode={code} illness={illness} />
+        </div>
+      )}
 
       {/* Unified Filter Panel */}
-      <div className="mt-8">
+      <div className="mt-8" data-explain="filter-panel">
         <FilterPanel
           regions={REGIONS}
           selectedRegions={[code]}
@@ -660,64 +822,82 @@ function SeasonalityPage() {
       {/* Forecast & Season Filters */}
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <span className="label-caps text-[10px] text-muted-foreground">Forecast window:</span>
-        {HORIZONS.map((h) => (
-          <Chip key={h} active={forecastHorizon === h} onClick={() => setForecastHorizon(h)}>
-            {h}-month
-          </Chip>
-        ))}
+        <span data-explain="forecast-chips" className="contents">
+          {HORIZONS.map((h) => (
+            <Chip key={h} active={forecastHorizon === h} onClick={() => setForecastHorizon(h)}>
+              {h}-month
+            </Chip>
+          ))}
+        </span>
         <span className="mx-2 h-5 w-px bg-border" />
         <span className="label-caps text-[10px] text-muted-foreground">Season:</span>
-        {(["all", "wet", "dry"] as const).map((s) => (
-          <Chip key={s} active={seasonFilter === s} onClick={() => setSeasonFilter(s)}>
-            {s === "all" ? "All seasons" : `${s} season`}
-          </Chip>
-        ))}
+        <span data-explain="season-chips" className="contents">
+          {(["all", "wet", "dry"] as const).map((s) => (
+            <Chip key={s} active={seasonFilter === s} onClick={() => setSeasonFilter(s)}>
+              {s === "all" ? "All seasons" : `${s} season`}
+            </Chip>
+          ))}
+        </span>
       </div>
-      <div className="mt-8">
-        <div className="mb-2.5 flex items-center justify-between gap-2">
-          <p className="label-caps text-xs">Summary Metrics</p>
-          <button
-            onClick={(e) => openMenu(e, "kpis", "Summary Metrics")}
-            aria-label="Open AI analysis options for summary metrics"
-            className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 cursor-pointer touch-manipulation"
-          >
-            <Sparkles className="size-3.5 text-primary" />
-            <span>AI Options</span>
-            <MoreHorizontal className="size-3.5 text-primary/70" />
-          </button>
+      {/* Summary Metrics (shown in Advanced view with hover/focus tooltips) */}
+      {viewMode === "advanced" && (
+        <div className="mt-8">
+          <div className="mb-2.5 flex items-center justify-between gap-2">
+            <p className="label-caps text-xs">Summary Metrics</p>
+            <button
+              onClick={(e) => openMenu(e, "kpis", "Summary Metrics")}
+              aria-label="Open AI analysis options for summary metrics"
+              data-explain="ai-options"
+              className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 cursor-pointer touch-manipulation"
+            >
+              <Sparkles className="size-3.5 text-primary" />
+              <span>AI Options</span>
+              <MoreHorizontal className="size-3.5 text-primary/70" />
+            </button>
+          </div>
+          <TooltipProvider delayDuration={150}>
+            <div
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+              onContextMenu={(e) => openMenu(e, "kpis", "Summary Metrics")}
+            >
+              <Kpi
+                label="Seasonality strength"
+                value={`${Math.round(stats.strength * 100)}%`}
+                sub="var(seasonal) / (var(seasonal) + var(residual))"
+                tooltip="How much of the pattern repeats every year vs. random noise."
+                data-kpi="seasonality-strength"
+              />
+              <Kpi
+                label="ACF at lag 12"
+                value={stats.lag12.toFixed(2)}
+                sub={
+                  stats.lag12 > 0.4
+                    ? "Strong annual cycle confirmed"
+                    : "Weak annual cycle — check drivers"
+                }
+                tooltip="Measures how similar this month is to the same month last year."
+                data-kpi="acf-lag12"
+              />
+              <Kpi
+                label="Dominant cycle"
+                value={`${stats.peak.lag} months`}
+                sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 6) ${stats.lag6.toFixed(2)}`}
+                tooltip="The most common repeating time interval found in the case data, in months."
+                data-kpi="dominant-cycle"
+              />
+              <Kpi
+                label="Typical peak"
+                value={stats.peakMonth}
+                sub={`Median seasonal index · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
+                tooltip="The month that historically sees the highest case counts."
+                data-kpi="typical-peak"
+              />
+            </div>
+          </TooltipProvider>
         </div>
-        <div
-          className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
-          onContextMenu={(e) => openMenu(e, "kpis", "Summary Metrics")}
-        >
-          <Kpi
-            label="Seasonality strength"
-            value={`${Math.round(stats.strength * 100)}%`}
-            sub="var(seasonal) / (var(seasonal) + var(residual))"
-          />
-          <Kpi
-            label="ACF at lag 12"
-            value={stats.lag12.toFixed(2)}
-            sub={
-              stats.lag12 > 0.4
-                ? "Strong annual cycle confirmed"
-                : "Weak annual cycle — check drivers"
-            }
-          />
-          <Kpi
-            label="Dominant cycle"
-            value={`${stats.peak.lag} months`}
-            sub={`Peak ACF ${stats.peak.value.toFixed(2)} · semi-annual (lag 6) ${stats.lag6.toFixed(2)}`}
-          />
-          <Kpi
-            label="Typical peak"
-            value={stats.peakMonth}
-            sub={`Median seasonal index · 2-year trend ${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`}
-          />
-        </div>
-      </div>
+      )}
 
-      {/* 2x2 Decomposition Section with Per-Chart AI Analysis and Options */}
+      {/* Decomposition Section: Single Observed chart + summary in Simple; Tabbed decomposition in Advanced */}
       <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
@@ -726,14 +906,16 @@ function SeasonalityPage() {
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {region.name} · {illness === "all" ? "all illnesses" : illness} · window{" "}
-              {formatMonthYear(monthMeta(0).label)} – {formatMonthYear(currentMonth.label)} split
-              into a 12-month centred moving-average trend, a month-of-year seasonal index and the
-              irregular remainder.
+              {formatMonthYear(monthMeta(0).label)} – {formatMonthYear(currentMonth.label)}
+              {viewMode === "advanced"
+                ? " split into a 12-month centred moving-average trend, a month-of-year seasonal index and the irregular remainder."
+                : " monthly reported surveillance records."}
             </p>
           </div>
           <button
             onClick={(e) => openMenu(e, "decomposition", "Full Decomposition")}
             aria-label="Open AI analysis overview menu"
+            data-explain="ai-overview"
             className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer touch-manipulation"
           >
             <Sparkles className="size-3.5" />
@@ -742,78 +924,176 @@ function SeasonalityPage() {
           </button>
         </div>
 
-        {/* 4 Dedicated Chart Cards Grid (1 col on mobile, 2 cols on lg) */}
-        <div className="grid gap-4 lg:grid-cols-2">
+        {/* In Simple View: Plain-language seasonal summary banner */}
+        {viewMode === "simple" && (
+          <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="simple-summary">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-primary/15 p-2 text-primary shrink-0 mt-0.5">
+                <Sparkles className="size-4" />
+              </div>
+              <div className="space-y-1">
+                <p className="label-caps text-[10px] text-primary font-semibold">
+                  Regional Seasonal Summary · {region.name}
+                </p>
+                <p className="text-sm leading-relaxed text-foreground/90 font-normal">
+                  {getSeasonalSummary(region.name, stats.peakMonth, stats.strength, illness)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* In Advanced View: Chart Tabs with colored dots matching series color */}
+        {viewMode === "advanced" && (
+          <div className="mb-4">
+            <div
+              role="tablist"
+              aria-label="Decomposition series tabs"
+              className="flex flex-wrap items-center gap-1.5 p-1 rounded-xl border border-border/80 bg-card/60 w-fit"
+            >
+              {DECOMP_TABS.map((tab) => {
+                const isActive = decompTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    role="tab"
+                    id={`tab-${tab.id}`}
+                    aria-selected={isActive}
+                    aria-controls={`tabpanel-${tab.id}`}
+                    type="button"
+                    onClick={() => setDecompTab(tab.id)}
+                    className={cn(
+                      "flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-medium transition-all cursor-pointer touch-manipulation",
+                      isActive
+                        ? "bg-secondary text-foreground font-semibold shadow-xs border border-border/70"
+                        : "text-muted-foreground hover:text-foreground hover:bg-secondary/40 border border-transparent",
+                    )}
+                  >
+                    <span className={cn("size-2 rounded-full shrink-0", tab.dotClass)} aria-hidden="true" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* One-line plain-language takeaway sentence above the active chart */}
+            <div className="mt-3 flex items-center gap-2 rounded-lg border border-border/60 bg-secondary/30 px-3.5 py-2 text-xs text-muted-foreground">
+              <span
+                className={cn(
+                  "size-1.5 rounded-full shrink-0",
+                  DECOMP_TABS.find((t) => t.id === decompTab)?.dotClass,
+                )}
+                aria-hidden="true"
+              />
+              <span className="font-semibold text-foreground/90">Takeaway:</span>
+              <span className="text-foreground/80">
+                {DECOMP_TABS.find((t) => t.id === decompTab)?.takeaway}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Charts: In Simple mode, only Observed is shown. In Advanced mode, only active tab is shown.
+            All chart cards remain in DOM with hidden/block to preserve refs for PDF export. */}
+        <div>
           {/* 1. Observed Series */}
-          <SeasonalityChartCard
-            regionCode={code}
-            illness={illness}
-            component="observed"
-            title="Observed series"
-            subtitle="Raw monthly surveillance records (2022–2026)"
-            statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
-            height={160}
-            endIndex={monthIndex}
-            onRequestAI={requestExplain}
-            onExpand={setExpandComponent}
-            onOpenMenu={(e, c) => openMenu(e, c, "Observed series")}
-            onExportCsv={exportCsv}
-            chartRef={chartRefs.observed}
-          />
+          <div
+            id="tabpanel-observed"
+            role="tabpanel"
+            aria-labelledby="tab-observed"
+            className={viewMode === "simple" || decompTab === "observed" ? "block" : "hidden"}
+          >
+            <SeasonalityChartCard
+              regionCode={code}
+              illness={illness}
+              component="observed"
+              title="Observed series"
+              subtitle="Raw monthly surveillance records (2022–2026)"
+              statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
+              height={220}
+              endIndex={monthIndex}
+              onRequestAI={requestExplain}
+              onExpand={setExpandComponent}
+              onOpenMenu={(e, c) => openMenu(e, c, "Observed series")}
+              onExportCsv={exportCsv}
+              chartRef={chartRefs.observed}
+            />
+          </div>
 
-          {/* 2. Trend Component */}
-          <SeasonalityChartCard
-            regionCode={code}
-            illness={illness}
-            component="trend"
-            title="Trend component"
-            subtitle="12-month centred moving average filter"
-            statBadge={{
-              label: "2-yr change",
-              value: `${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`,
-            }}
-            height={160}
-            endIndex={monthIndex}
-            onRequestAI={requestExplain}
-            onExpand={setExpandComponent}
-            onOpenMenu={(e, c) => openMenu(e, c, "Trend component")}
-            onExportCsv={exportCsv}
-            chartRef={chartRefs.trend}
-          />
+          {/* 2. Trend Component (Advanced only) */}
+          <div
+            id="tabpanel-trend"
+            role="tabpanel"
+            aria-labelledby="tab-trend"
+            className={viewMode === "advanced" && decompTab === "trend" ? "block" : "hidden"}
+          >
+            <SeasonalityChartCard
+              regionCode={code}
+              illness={illness}
+              component="trend"
+              title="Trend component"
+              subtitle="12-month centred moving average filter"
+              statBadge={{
+                label: "2-yr change",
+                value: `${stats.trendChange >= 0 ? "+" : ""}${stats.trendChange}%`,
+              }}
+              height={220}
+              endIndex={monthIndex}
+              onRequestAI={requestExplain}
+              onExpand={setExpandComponent}
+              onOpenMenu={(e, c) => openMenu(e, c, "Trend component")}
+              onExportCsv={exportCsv}
+              chartRef={chartRefs.trend}
+            />
+          </div>
 
-          {/* 3. Seasonality Component */}
-          <SeasonalityChartCard
-            regionCode={code}
-            illness={illness}
-            component="seasonal"
-            title="Seasonality component"
-            subtitle="Month-of-year recurring seasonal index"
-            statBadge={{ label: "Peak month", value: stats.peakMonth }}
-            height={160}
-            endIndex={monthIndex}
-            onRequestAI={requestExplain}
-            onExpand={setExpandComponent}
-            onOpenMenu={(e, c) => openMenu(e, c, "Seasonality component")}
-            onExportCsv={exportCsv}
-            chartRef={chartRefs.seasonal}
-          />
+          {/* 3. Seasonality Component (Advanced only) */}
+          <div
+            id="tabpanel-seasonal"
+            role="tabpanel"
+            aria-labelledby="tab-seasonal"
+            className={viewMode === "advanced" && decompTab === "seasonal" ? "block" : "hidden"}
+          >
+            <SeasonalityChartCard
+              regionCode={code}
+              illness={illness}
+              component="seasonal"
+              title="Seasonality component"
+              subtitle="Month-of-year recurring seasonal index"
+              statBadge={{ label: "Peak month", value: stats.peakMonth }}
+              height={220}
+              endIndex={monthIndex}
+              onRequestAI={requestExplain}
+              onExpand={setExpandComponent}
+              onOpenMenu={(e, c) => openMenu(e, c, "Seasonality component")}
+              onExportCsv={exportCsv}
+              chartRef={chartRefs.seasonal}
+            />
+          </div>
 
-          {/* 4. Noise (Residual) */}
-          <SeasonalityChartCard
-            regionCode={code}
-            illness={illness}
-            component="residual"
-            title="Noise (residual)"
-            subtitle="Irregular remainder after subtracting trend and season"
-            statBadge={{ label: "Std dev", value: `±${stats.residualStd}` }}
-            height={160}
-            endIndex={monthIndex}
-            onRequestAI={requestExplain}
-            onExpand={setExpandComponent}
-            onOpenMenu={(e, c) => openMenu(e, c, "Noise (residual)")}
-            onExportCsv={exportCsv}
-            chartRef={chartRefs.residual}
-          />
+          {/* 4. Noise (Residual) (Advanced only) */}
+          <div
+            id="tabpanel-residual"
+            role="tabpanel"
+            aria-labelledby="tab-residual"
+            className={viewMode === "advanced" && decompTab === "residual" ? "block" : "hidden"}
+          >
+            <SeasonalityChartCard
+              regionCode={code}
+              illness={illness}
+              component="residual"
+              title="Noise (residual)"
+              subtitle="Irregular remainder after subtracting trend and season"
+              statBadge={{ label: "Std dev", value: `±${stats.residualStd}` }}
+              height={220}
+              endIndex={monthIndex}
+              onRequestAI={requestExplain}
+              onExpand={setExpandComponent}
+              onOpenMenu={(e, c) => openMenu(e, c, "Noise (residual)")}
+              onExportCsv={exportCsv}
+              chartRef={chartRefs.residual}
+            />
+          </div>
         </div>
       </section>
 
@@ -1083,17 +1363,57 @@ function SeasonalityPage() {
 
       {/* Settings Modal */}
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <BackToTop />
     </main>
   );
 }
 
-function Kpi({ label, value, sub }: { label: string; value: string; sub: string }) {
+function Kpi({
+  label,
+  value,
+  sub,
+  tooltip,
+  "data-kpi": dataKpi,
+}: {
+  label: string;
+  value: string;
+  sub: string;
+  tooltip?: string;
+  "data-kpi"?: string;
+}) {
   return (
-    <div className="glass-panel rounded-xl p-5 transition-all hover:border-border">
-      <p className="label-caps">{label}</p>
-      <p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums text-foreground">
-        {value}
-      </p>
+    <div
+      className="glass-panel rounded-xl p-5 transition-all hover:border-border flex flex-col justify-between"
+      data-kpi={dataKpi}
+    >
+      <div>
+        <div className="flex items-center justify-between gap-1.5">
+          <p className="label-caps">{label}</p>
+          {tooltip && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  type="button"
+                  className="text-muted-foreground/70 hover:text-foreground focus:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-primary rounded p-0.5 transition-colors inline-flex items-center cursor-help shrink-0"
+                  aria-label={`About ${label}`}
+                >
+                  <Info className="size-3.5" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent
+                side="top"
+                align="center"
+                className="max-w-[220px] bg-card text-foreground border border-border/80 shadow-lg p-2.5 text-xs rounded-lg leading-relaxed z-50 font-normal"
+              >
+                {tooltip}
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+        <p className="mt-1 font-mono text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+          {value}
+        </p>
+      </div>
       <p className="mt-1 text-[11px] leading-snug text-muted-foreground">{sub}</p>
     </div>
   );

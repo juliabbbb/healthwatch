@@ -8,6 +8,7 @@ import { ForecastCard } from "@/components/hw/ForecastCard";
 import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
+import { ExplainOverlay } from "@/components/hw/ExplainOverlay";
 import {
   CURRENT_MONTH_INDEX,
   OUTBREAK_BENCHMARK_SEASON,
@@ -20,6 +21,7 @@ import {
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
+import { useExplainMode } from "@/hooks/useTour";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -63,6 +65,9 @@ function MapView() {
 
   useEffect(() => setMounted(true), []);
 
+  // Onboarding guided tour — auto-launches once for first-time visitors
+  const { explainActive, toggleExplain, exitExplain } = useExplainMode();
+
   const assessments = useMemo(
     () => assessAll(illness, monthIndex, mode),
     [illness, monthIndex, mode],
@@ -93,7 +98,7 @@ function MapView() {
   return (
     <main className="relative h-screen w-full overflow-hidden bg-background">
       {/* 1. Interactive Map Layer */}
-      <div className="absolute inset-0 z-0">
+      <div id="hw-map" className="absolute inset-0 z-0">
         {mounted && (
           <Suspense fallback={null}>
             <MapCanvas
@@ -112,6 +117,7 @@ function MapView() {
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
       <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[22rem] lg:w-[30rem] xl:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
         <NationalSnapshot
+          id="hw-legend-card"
           monthLabel={meta.label}
           isForecast={meta.forecast}
           value={mode === "raw" ? totalCases : nationalPer100k}
@@ -134,7 +140,7 @@ function MapView() {
 
       {/* 5. DESKTOP ONLY: Floating Forecast Card on Right */}
       {selected && (
-        <div className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
+        <div id="hw-forecast-card" className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
           <ForecastCard
             regionCode={selected}
             illness={illness}
@@ -177,8 +183,11 @@ function MapView() {
 
       {/* 4. Top Navigation Bar (Desktop Toolbar / Mobile Hamburger Bar) */}
       <div className="absolute right-3 top-3 md:right-4 md:top-4 z-30">
-        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} />
+        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} onStartTour={toggleExplain} explainActive={explainActive} />
       </div>
+
+      {/* Explain Mode Inspector Overlay */}
+      <ExplainOverlay active={explainActive} onExit={exitExplain} />
 
       {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}
       <MobileBottomSheet
@@ -194,6 +203,7 @@ function MapView() {
 
       {/* 8. DatePlayer / Timeline Scrubber (Mutually exclusive with MobileBottomSheet on mobile) */}
       <div
+        id="hw-timeline"
         className={`absolute inset-x-3 md:inset-x-4 z-30 transition-all duration-300 ease-in-out md:bottom-4 md:translate-y-0 md:opacity-100 md:pointer-events-auto ${
           selected || mobileNationalOpen
             ? "bottom-3 translate-y-16 opacity-0 pointer-events-none"

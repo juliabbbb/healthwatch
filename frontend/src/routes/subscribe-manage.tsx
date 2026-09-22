@@ -127,7 +127,7 @@ function SubscriptionManager() {
   };
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-2xl px-6 py-10">
+    <main className="mx-auto min-h-screen w-full max-w-2xl px-6 py-10" data-explain="subscribe-page">
       <Link
         to="/"
         className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"

@@ -101,9 +101,9 @@ export function ForecastCard({
         label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May",
         sub: upcomingInd.outbreak
           ? `Outbreak signal — ${OUTBREAK_TRIGGER_LABEL[upcomingInd.trigger] ?? upcomingInd.trigger}`
-          : "Normal seasonal range expected",
+          : "Normal seasonal range",
       }
-    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "No seasonal outlook" };
+    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "Normal seasonal range" };
 
   const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast);
   const peakPt = histPts.length
@@ -118,7 +118,7 @@ export function ForecastCard({
 
   const kpi: KpiStripData = {
     nextMonth: nextMonthKpi,
-    currentRisk: { level: a.risk, sub: `${a.percentileRank}th percentile of national pool` },
+    currentRisk: { level: a.risk, sub: `${a.percentileRank}th %ile of nat'l pool` },
     season: seasonKpi,
     peak: peakKpi,
   };

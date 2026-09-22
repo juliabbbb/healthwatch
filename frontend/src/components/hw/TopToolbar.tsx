@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import {
+  HelpCircle,
   Mail,
   Menu,
   Minus,
@@ -32,9 +33,13 @@ export interface TopToolbarProps {
   trailing?: React.ReactNode;
   /** Currently selected region on the map; carried as ?region= into Seasonality links. */
   selectedRegionCode?: string | null;
+  /** Callback to toggle the Explain Mode inspector. */
+  onStartTour?: () => void;
+  /** Whether Explain Mode is currently active (highlights the ? button). */
+  explainActive?: boolean;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: TopToolbarProps) {
+export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onStartTour, explainActive }: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -189,7 +194,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: Top
         {/* Primary Desktop Nav Links */}
         <nav className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <NavLink to="/">Map</NavLink>
-          <NavLink to="/seasonality" search={seasonalitySearch}>
+          <NavLink to="/seasonality" {...(seasonalitySearch ? { search: seasonalitySearch } : {})}>
             Seasonality
           </NavLink>
           <NavLink to="/compare">Compare</NavLink>
@@ -198,6 +203,17 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: Top
 
         {/* Action icons */}
         <div className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
+          <IconButton
+            id="hw-tour-btn"
+            label={explainActive ? "Exit Explain Mode" : "Explain Mode — click anything to learn what it does"}
+            {...(onStartTour ? { onClick: onStartTour } : {})}
+            className={explainActive
+              ? "text-primary bg-primary/15 ring-1 ring-primary/50 hover:bg-primary/20 hover:text-primary"
+              : "text-primary hover:text-primary"
+            }
+          >
+            <HelpCircle className="size-4" />
+          </IconButton>
           {trailing}
           <IconButton
             label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -394,7 +410,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: Top
                 <MobileNavLink
                   to="/seasonality"
                   icon={Waves}
-                  search={seasonalitySearch}
+                  {...(seasonalitySearch ? { search: seasonalitySearch } : {})}
                   label="Seasonality &amp; Cycles"
                   onClick={() => setMobileMenuOpen(false)}
                 />
@@ -454,6 +470,20 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode }: Top
                     <Mail className="size-4 text-primary" />
                     <span>Subscribe</span>
                   </button>
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onStartTour?.();
+                    }}
+                    className={`col-span-2 flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors active:scale-98 ${
+                      explainActive
+                        ? "border-primary/60 bg-primary/20 text-primary hover:bg-primary/30"
+                        : "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
+                    }`}
+                  >
+                    <HelpCircle className="size-4" />
+                    <span>{explainActive ? "Exit Explain Mode" : "Explain Mode"}</span>
+                  </button>
                 </div>
               </div>
             </div>
@@ -479,7 +509,7 @@ function NavLink({
   return (
     <Link
       to={to}
-      search={search}
+      {...(search ? { search } : {})}
       activeOptions={{ exact: to === "/" }}
       className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       activeProps={{ className: "bg-secondary/80 text-foreground font-medium" }}
@@ -505,7 +535,7 @@ function MobileNavLink({
   return (
     <Link
       to={to}
-      search={search}
+      {...(search ? { search } : {})}
       onClick={onClick}
       activeOptions={{ exact: to === "/" }}
       className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -523,15 +553,18 @@ function IconButton({
   children,
   className,
   disabled,
+  id,
 }: {
   label: string;
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
   disabled?: boolean;
+  id?: string;
 }) {
   return (
     <button
+      id={id}
       title={label}
       aria-label={label}
       disabled={disabled}

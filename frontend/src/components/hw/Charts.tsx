@@ -329,11 +329,11 @@ export function DecompositionChart({
   const data = decompose(regionCode, illness, endIndex);
   const color =
     component === "trend"
-      ? "var(--chart-2)"
+      ? "var(--risk-low)"
       : component === "seasonal"
-        ? "var(--chart-3)"
+        ? "var(--dry)"
         : component === "residual"
-          ? "var(--chart-4)"
+          ? "var(--color-muted-foreground)"
           : "var(--chart-1)";
 
   return (

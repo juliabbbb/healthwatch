@@ -3,6 +3,9 @@ import { ArrowLeft, Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { ILLNESSES, REGIONS } from "@/lib/healthwatch/data";
 import { ValidationMetricsPanel } from "@/components/hw/ValidationMetricsPanel";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { BackToTop } from "@/components/BackToTop";
+import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
@@ -39,7 +42,7 @@ export const Route = createFileRoute("/methodology")({
 
 function Methodology() {
   return (
-    <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10">
+    <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10" data-explain="methodology-page">
       <Link
         to="/"
         className="mb-6 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -59,84 +62,88 @@ function Methodology() {
             regions of the Philippines.
           </p>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs shrink-0">
-          <span className="label-caps text-[10px]">18 regions · dengue only</span>
-        </span>
+        <div className="flex items-center gap-2 shrink-0">
+          <ExplainModeButton />
+          <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
+            <span className="label-caps text-[10px]">18 regions · dengue only</span>
+          </span>
+        </div>
       </div>
 
-      <Section title="Data sources">
-        <ul className="space-y-2 text-sm text-foreground/85">
-          <li>
-            <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong> — the
-            PIDSR morbidity-week case series per administrative region, summed to calendar months,
-            republished for open research by the UPRI-NOAH dengue-rainfall dataset (Zenodo
-            10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every series
-            in the system.
-          </li>
-          <li>
-            <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
-            for keying every record to a PSGC code.
-          </li>
-        </ul>
-        <p className="mt-3 glass-panel rounded-xl p-4 text-xs text-muted-foreground leading-relaxed">
-          This dashboard runs live: case series, forecasts, risk tiers and validation metrics are
-          served by a FastAPI backend reading from a PostgreSQL database on Supabase, built entirely
-          by the Python pipeline (<code>src/</code>). No values shown are synthetic.
-        </p>
-      </Section>
+      <div className="mt-8 space-y-4">
+        <CollapsibleSection title="Data sources" defaultOpen={true}>
+          <ul className="space-y-2 text-sm text-foreground/85">
+            <li>
+              <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong> — the
+              PIDSR morbidity-week case series per administrative region, summed to calendar months,
+              republished for open research by the UPRI-NOAH dengue-rainfall dataset (Zenodo
+              10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every series
+              in the system.
+            </li>
+            <li>
+              <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
+              for keying every record to a PSGC code.
+            </li>
+          </ul>
+          <p className="mt-3 glass-panel rounded-xl p-4 text-xs text-muted-foreground leading-relaxed">
+            This dashboard runs live: case series, forecasts, risk tiers and validation metrics are
+            served by a FastAPI backend reading from a PostgreSQL database on Supabase, built entirely
+            by the Python pipeline (<code>src/</code>). No values shown are synthetic.
+          </p>
+        </CollapsibleSection>
 
-      <Section title="Model approach — how the forecast is trained">
-        <ol className="list-decimal space-y-2 pl-5 text-sm text-foreground/85">
-          <li>
-            <strong>Cleaning &amp; resampling.</strong> Raw regional reports are standardised to
-            PSGC codes, deduplicated, and summed from morbidity weeks to contiguous calendar-month
-            series per region (56 months: January 2022 through August 2026).
-          </li>
-          <li>
-            <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry
-            season flag; non-negativity clipping is enforced on all counts before modelling. Lag
-            features (1 and 12 months) and a 3-month rolling mean capture short-memory and
-            same-month-last-year persistence.
-          </li>
-          <li>
-            <strong>Forecasting model.</strong> One <strong>Prophet</strong> model per region
-            (additive trend with automatic changepoint detection + Fourier yearly seasonality +
-            wet/dry season regressor). Model parameters are learned from data via Bayesian
-            estimation — this is the machine-learning step. The production forecast trains through
-            <strong>August 2026</strong> and publishes the next 12 months; the two validation
-            windows train through 31 December 2024 (prospective) and August 2025 (recent).
-          </li>
-          <li>
-            <strong>Horizon.</strong> Each regional model publishes a 12-month ahead forecast with
-            uncertainty intervals, stored in the backend and rendered here with 95% bands.
-          </li>
-        </ol>
-      </Section>
+        <CollapsibleSection title="Model approach — how the forecast is trained">
+          <ol className="list-decimal space-y-2 pl-5 text-sm text-foreground/85">
+            <li>
+              <strong>Cleaning &amp; resampling.</strong> Raw regional reports are standardised to
+              PSGC codes, deduplicated, and summed from morbidity weeks to contiguous calendar-month
+              series per region (56 months: January 2022 through August 2026).
+            </li>
+            <li>
+              <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry
+              season flag; non-negativity clipping is enforced on all counts before modelling. Lag
+              features (1 and 12 months) and a 3-month rolling mean capture short-memory and
+              same-month-last-year persistence.
+            </li>
+            <li>
+              <strong>Forecasting model.</strong> One <strong>Prophet</strong> model per region
+              (additive trend with automatic changepoint detection + Fourier yearly seasonality +
+              wet/dry season regressor). Model parameters are learned from data via Bayesian
+              estimation — this is the machine-learning step. The production forecast trains through
+              <strong>August 2026</strong> and publishes the next 12 months; the two validation
+              windows train through 31 December 2024 (prospective) and August 2025 (recent).
+            </li>
+            <li>
+              <strong>Horizon.</strong> Each regional model publishes a 12-month ahead forecast with
+              uncertainty intervals, stored in the backend and rendered here with 95% bands.
+            </li>
+          </ol>
+        </CollapsibleSection>
 
-      <Section title="Validation — proving the model generalises">
-        <p className="text-sm text-foreground/85">
-          Models are evaluated on months they never saw, using two chronological 12-month holdout
-          windows:
-        </p>
-        <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
-          <li>
-            <strong>last_12m window</strong> — held out 2025-09 through 2026-08, trained with a
-            refit-every-month walk-forward loop (primary quality measure for the current outlook).
-          </li>
-          <li>
-            <strong>2025_prospective window</strong> — held out calendar 2025, trained through 31
-            December 2024 exactly as a real deployment would have run.
-          </li>
-        </ul>
-        <p className="mt-3 text-sm text-foreground/85">
-          Reported metrics per region: MAE, RMSE, MAPE, and{" "}
-          <strong>skill versus a seasonal-naïve baseline</strong> (“same month last year”). Raw MAPE
-          alone is not used for tiering because near-zero case months inflate it into triple digits
-          even when forecasts are epidemiologically useful.
-        </p>
-      </Section>
+        <CollapsibleSection title="Validation — proving the model generalises">
+          <p className="text-sm text-foreground/85">
+            Models are evaluated on months they never saw, using two chronological 12-month holdout
+            windows:
+          </p>
+          <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
+            <li>
+              <strong>last_12m window</strong> — held out 2025-09 through 2026-08, trained with a
+              refit-every-month walk-forward loop (primary quality measure for the current outlook).
+            </li>
+            <li>
+              <strong>2025_prospective window</strong> — held out calendar 2025, trained through 31
+              December 2024 exactly as a real deployment would have run.
+            </li>
+          </ul>
+          <p className="mt-3 text-sm text-foreground/85">
+            Reported metrics per region: MAE, RMSE, MAPE, and{" "}
+            <strong>skill versus a seasonal-naïve baseline</strong> (“same month last year”). Raw MAPE
+            alone is not used for tiering because near-zero case months inflate it into triple digits
+            even when forecasts are epidemiologically useful.
+          </p>
+        </CollapsibleSection>
 
-      <Section title="Hotspot classification">
+        <CollapsibleSection title="Hotspot classification">
         <p className="text-sm text-foreground/85">
           Risk tiers answer one question: <em>how abnormal is this month for this region?</em> Every
           region-month threshold comes from the region&rsquo;s <em>own</em> historical monthly
@@ -171,253 +178,247 @@ function Methodology() {
           Moving Epidemic Method, which likewise derives intensity bands from historical
           distributions rather than fitted parameters.
         </p>
-      </Section>
+        </CollapsibleSection>
 
-      <Section title="Seasonal outbreak indicator">
-        <p className="text-sm text-foreground/85">
-          On top of the monthly tier, the pipeline publishes a season-level outbreak flag for each
-          validated benchmark window: <strong>dry (Jan–Mar 2025)</strong> and{" "}
-          <strong>wet (Jul–Sep 2025, the climatological peak)</strong>. Each purpose-built Prophet
-          probe forecasts the 3 months of that window; a region is flagged when either rule fires on
-          the probe:
-        </p>
-        <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
-          <li>
-            <strong>Rule A</strong> — at least 3 consecutive probe months classify High (above the
-            region-month P75).
-          </li>
-          <li>
-            <strong>Rule B</strong> — the window&rsquo;s forecast average monthly load exceeds the
-            season&rsquo;s long-run P75 (the seasonal alert line).
-          </li>
-        </ul>
-        <p className="mt-3 text-sm text-foreground/85">
-          The panel labels this indicator as a fixed benchmark —{" "}
-          <strong>Validated Outbreak Signal (Jul–Sep 2025 benchmark)</strong> — sourced from the
-          same frozen <code>outbreak_indicators.csv</code> / <code>outbreak_signals</code> table. It
-          is not recomputed from the current date: the displayed dry/wet flags always describe the
-          2025 probe windows, so the signal stays reproducible rather than drifting into a rolling
-          "upcoming season" label. Season attribution still follows the fixed calendar boundary
-          (wet: Jun–Nov, dry: Dec–May, per PAGASA's climatological definition), and the dashboard
-          still lets you toggle between the dry and wet benchmark windows for comparison.
-        </p>
-        <p className="mt-3 text-sm text-foreground/85">
-          Crucially, these flags were <strong>locked without retuning</strong> after a prospective
-          test: probes were generated from data through 31 December 2024 and compared against the
-          real, observed 2025 monthly series (never part of training). Across the 18 regions the
-          flag scored <strong>precision 0.43, recall 0.68, F1 0.53</strong> (13 true positives, 17
-          false positives, 6 missed surges). Dry-season accuracy was strong while the wet season
-          over-warns rather than misses a surge; that conservative posture is deliberate for a
-          public-health alerting layer and is the reason wet-season flags are framed as a watch, not
-          a confirmation.
-        </p>
-      </Section>
+        <CollapsibleSection title="Seasonal outbreak indicator">
+          <p className="text-sm text-foreground/85">
+            On top of the monthly tier, the pipeline publishes a season-level outbreak flag for each
+            validated benchmark window: <strong>dry (Jan–Mar 2025)</strong> and{" "}
+            <strong>wet (Jul–Sep 2025, the climatological peak)</strong>. Each purpose-built Prophet
+            probe forecasts the 3 months of that window; a region is flagged when either rule fires on
+            the probe:
+          </p>
+          <ul className="mt-3 space-y-1.5 text-sm text-foreground/85">
+            <li>
+              <strong>Rule A</strong> — at least 3 consecutive probe months classify High (above the
+              region-month P75).
+            </li>
+            <li>
+              <strong>Rule B</strong> — the window&rsquo;s forecast average monthly load exceeds the
+              season&rsquo;s long-run P75 (the seasonal alert line).
+            </li>
+          </ul>
+          <p className="mt-3 text-sm text-foreground/85">
+            The panel labels this indicator as a fixed benchmark —{" "}
+            <strong>Validated Outbreak Signal (Jul–Sep 2025 benchmark)</strong> — sourced from the
+            same frozen <code>outbreak_indicators.csv</code> / <code>outbreak_signals</code> table. It
+            is not recomputed from the current date: the displayed dry/wet flags always describe the
+            2025 probe windows, so the signal stays reproducible rather than drifting into a rolling
+            "upcoming season" label. Season attribution still follows the fixed calendar boundary
+            (wet: Jun–Nov, dry: Dec–May, per PAGASA's climatological definition), and the dashboard
+            still lets you toggle between the dry and wet benchmark windows for comparison.
+          </p>
+          <p className="mt-3 text-sm text-foreground/85">
+            Crucially, these flags were <strong>locked without retuning</strong> after a prospective
+            test: probes were generated from data through 31 December 2024 and compared against the
+            real, observed 2025 monthly series (never part of training). Across the 18 regions the
+            flag scored <strong>precision 0.43, recall 0.68, F1 0.53</strong> (13 true positives, 17
+            false positives, 6 missed surges). Dry-season accuracy was strong while the wet season
+            over-warns rather than misses a surge; that conservative posture is deliberate for a
+            public-health alerting layer and is the reason wet-season flags are framed as a watch, not
+            a confirmation.
+          </p>
+        </CollapsibleSection>
 
-      <Section title="Known-epidemic check">
-        <p className="text-sm text-foreground/85">
-          As an independent sanity check, the classification method was run against a real,
-          pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
-          Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
-          standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
-          weekly equivalents of the same percentile thresholds:
-        </p>
-        <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
-          <table className="w-full text-sm border-collapse">
-            <thead className="label-caps">
-              <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
-                <th className="px-4 py-3 text-left">Week ending</th>
-                <th className="px-4 py-3 text-right">National cases</th>
-                <th className="px-4 py-3 text-right">P50 / P75</th>
-                <th className="px-4 py-3 text-center">Tier</th>
-              </tr>
-            </thead>
-            <tbody>
-              {EPIDEMIC_ROWS.map((r) => (
-                <tr key={r.date} className="border-b border-border/40 odd:bg-card/40 even:bg-secondary/15 hover:bg-secondary/30 transition-colors">
-                  <td className="px-4 py-3 font-mono text-xs">{r.date}</td>
-                  <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">{r.cases.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">
-                    {r.p50.toLocaleString()} / {r.p75.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span
-                      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-                      style={{ color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }}
-                    >
-                      <span className="size-1.5 rounded-full bg-white/80" />
-                      {r.tier}
-                    </span>
-                  </td>
+        <CollapsibleSection title="Known-epidemic check">
+          <p className="text-sm text-foreground/85">
+            As an independent sanity check, the classification method was run against a real,
+            pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
+            Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
+            standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
+            weekly equivalents of the same percentile thresholds:
+          </p>
+          <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
+            <table className="w-full text-sm border-collapse">
+              <thead className="label-caps">
+                <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
+                  <th className="px-4 py-3 text-left">Week ending</th>
+                  <th className="px-4 py-3 text-right">National cases</th>
+                  <th className="px-4 py-3 text-right">P50 / P75</th>
+                  <th className="px-4 py-3 text-center">Tier</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="mt-2 text-xs text-muted-foreground">
-          All 7 of 7 weeks classify as High against the fixture&rsquo;s 2016–2018 weekly reference
-          distribution. Reproduce with <code>python -m src.validate_known_epidemic</code>.
-        </p>
-      </Section>
+              </thead>
+              <tbody>
+                {EPIDEMIC_ROWS.map((r) => (
+                  <tr key={r.date} className="border-b border-border/40 odd:bg-card/40 even:bg-secondary/15 hover:bg-secondary/30 transition-colors">
+                    <td className="px-4 py-3 font-mono text-xs">{r.date}</td>
+                    <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">{r.cases.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-right font-mono text-xs tabular-nums">
+                      {r.p50.toLocaleString()} / {r.p75.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span
+                        className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                        style={{ color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }}
+                      >
+                        <span className="size-1.5 rounded-full bg-white/80" />
+                        {r.tier}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            All 7 of 7 weeks classify as High against the fixture&rsquo;s 2016–2018 weekly reference
+            distribution. Reproduce with <code>python -m src.validate_known_epidemic</code>.
+          </p>
+        </CollapsibleSection>
 
-      <Section title="Deterministic rules enforced">
-        <ul className="space-y-2 text-sm text-foreground/85">
-          <li>Non-negativity: no predicted or lower-bound value may fall below zero.</li>
-          <li>
-            Season flagging: every month carries a calendar-based wet/dry tag, shaded on all charts.
-          </li>
-          <li>
-            Transparent tiers: thresholds are plain percentiles — reproducible without refitting any
-            model.
-          </li>
-        </ul>
-      </Section>
+        <CollapsibleSection title="Deterministic rules enforced">
+          <ul className="space-y-2 text-sm text-foreground/85">
+            <li>Non-negativity: no predicted or lower-bound value may fall below zero.</li>
+            <li>
+              Season flagging: every month carries a calendar-based wet/dry tag, shaded on all charts.
+            </li>
+            <li>
+              Transparent tiers: thresholds are plain percentiles — reproducible without refitting any
+              model.
+            </li>
+          </ul>
+        </CollapsibleSection>
 
-      <Section title="Diseases covered">
-        <div className="grid gap-3 sm:grid-cols-2">
-          {ILLNESSES.map((i) => (
-            <div key={i.id} className="glass-panel rounded-xl p-5 transition-all hover:border-border">
-              <p className="text-sm font-semibold text-foreground">{i.name}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
-              </p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Dengue is the pilot disease: it is notifiable, monthly-reported and strongly seasonal. The
-          data contract (region × month series → forecast → tier) is disease-agnostic, so additional
-          DOH surveillance tables can be added without UI changes.
-        </p>
-      </Section>
+        <CollapsibleSection title="Diseases covered">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {ILLNESSES.map((i) => (
+              <div key={i.id} className="glass-panel rounded-xl p-5 transition-all hover:border-border">
+                <p className="text-sm font-semibold text-foreground">{i.name}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
+                <p className="mt-2 text-[11px] text-muted-foreground">
+                  Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Dengue is the pilot disease: it is notifiable, monthly-reported and strongly seasonal. The
+            data contract (region × month series → forecast → tier) is disease-agnostic, so additional
+            DOH surveillance tables can be added without UI changes.
+          </p>
+        </CollapsibleSection>
 
-      <Section title="Limitations">
-        <ul className="space-y-2 text-sm text-foreground/85">
-          <li>
-            <strong>Short monthly history.</strong> The monthly series spans 56 months (2022–2026),
-            giving only ~4 full seasonal cycles — enough to fit a yearly Fourier seasonality but not
-            to model multi-year epidemic super-cycles.
-          </li>
-          <li>
-            <strong>Negative-skill windows.</strong> In several region-window validation runs a
-            seasonal-naive baseline outperformed the model — most on the 2025 prospective window
-            (whose skill is mostly negative by design, left un-retuned). The metrics panel surfaces
-            each region's skill so low-confidence forecasts are visible rather than hidden.
-          </li>
-          <li>
-            <strong>Weak prospective tier accuracy.</strong> Only ~27% of 2025 holdout months landed
-            in the exact risk tier and roughly 45% of wet-season surges were under-classified as
-            Low/Moderate. These numbers stayed locked; they are the honest cost of using plain
-            month-of-year percentiles on a short, high-variance series.
-          </li>
-          <li>
-            <strong>Outbreak-flag over-warning.</strong> The locked 2025 prospective flags scored
-            precision 0.43 (17 false positives) with recall 0.68. Wet-season flags by design favour
-            recall over precision so no surge is missed.
-          </li>
-          <li>
-            <strong>No intervention logs.</strong> LGU/DOH response activities are not published as
-            structured open data, so intervention panels are intentionally sparse rather than
-            showing estimated events.
-          </li>
-          <li>
-            <strong>No weather map layers.</strong> Precipitation, temperature and humidity overlays
-            were removed because they are not live feeds; the model's only weather-adjacent signal
-            is the deterministic calendar-based wet/dry season flag.
-          </li>
-          <li>
-            Region-level resolution only — province and city-level hotspots are a later phase.
-          </li>
-          <li>
-            Monthly reporting cadence, with lag and under-reporting in remote areas biasing
-            historical baselines downward.
-          </li>
-          <li>
-            Forecasts are advisory decision support. They inform intervention planning; they do not
-            replace clinical or epidemiological judgment.
-          </li>
-        </ul>
-      </Section>
-    <Section title="Validation — live metrics">
-        <p className="text-sm text-foreground/85">
-          Forecast accuracy (MAE/RMSE/MAPE + skill vs. seasonal-naive per region) and outbreak
-          classification performance (national 2025 prospective holdout) are pulled live from the
-          data API — the same numbers the Seasonal pattern page surfaces per region.
-        </p>
-        <div className="mt-3">
-          <ValidationMetricsPanel />
-        </div>
-      </Section>
+        <CollapsibleSection title="Limitations">
+          <ul className="space-y-2 text-sm text-foreground/85">
+            <li>
+              <strong>Short monthly history.</strong> The monthly series spans 56 months (2022–2026),
+              giving only ~4 full seasonal cycles — enough to fit a yearly Fourier seasonality but not
+              to model multi-year epidemic super-cycles.
+            </li>
+            <li>
+              <strong>Negative-skill windows.</strong> In several region-window validation runs a
+              seasonal-naive baseline outperformed the model — most on the 2025 prospective window
+              (whose skill is mostly negative by design, left un-retuned). The metrics panel surfaces
+              each region's skill so low-confidence forecasts are visible rather than hidden.
+            </li>
+            <li>
+              <strong>Weak prospective tier accuracy.</strong> Only ~27% of 2025 holdout months landed
+              in the exact risk tier and roughly 45% of wet-season surges were under-classified as
+              Low/Moderate. These numbers stayed locked; they are the honest cost of using plain
+              month-of-year percentiles on a short, high-variance series.
+            </li>
+            <li>
+              <strong>Outbreak-flag over-warning.</strong> The locked 2025 prospective flags scored
+              precision 0.43 (17 false positives) with recall 0.68. Wet-season flags by design favour
+              recall over precision so no surge is missed.
+            </li>
+            <li>
+              <strong>No intervention logs.</strong> LGU/DOH response activities are not published as
+              structured open data, so intervention panels are intentionally sparse rather than
+              showing estimated events.
+            </li>
+            <li>
+              <strong>No weather map layers.</strong> Precipitation, temperature and humidity overlays
+              were removed because they are not live feeds; the model's only weather-adjacent signal
+              is the deterministic calendar-based wet/dry season flag.
+            </li>
+            <li>
+              Region-level resolution only — province and city-level hotspots are a later phase.
+            </li>
+            <li>
+              Monthly reporting cadence, with lag and under-reporting in remote areas biasing
+              historical baselines downward.
+            </li>
+            <li>
+              Forecasts are advisory decision support. They inform intervention planning; they do not
+              replace clinical or epidemiological judgment.
+            </li>
+          </ul>
+        </CollapsibleSection>
 
-      <Section title="Developer API">
-        <p className="text-sm text-foreground/85">
-          HEALTHWATCH exposes read-only JSON endpoints for integration with other Philippine health
-          information systems. Base URL (dev): <code>http://localhost:8000</code> · Base URL
-          (deployed): <code>https://healthwatch-api-xepv.onrender.com</code>. Machine-readable specs:
-          <code> GET /openapi.json</code> and Swagger UI at <code>/docs</code>. All endpoints return
-          JSON; read the pinned contract in <code>docs/api_contract.md</code> before integrating.
-        </p>
-        <div className="mt-4 space-y-3">
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/forecast/{disease}?region={region}"
-            description="12-month Prophet forecast per region."
-            example={`{"disease":"Dengue","count":18,"items":[{"target_date":"2026-09-01","yhat":142,"yhat_lower":89,"yhat_upper":203}]}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/risk-classification/{disease}?region={region}"
-            description="Monthly Low/Moderate/High risk tier over the forecast horizon."
-            example={`{"items":[{"date":"2026-09-01","yhat":142,"p50":64,"p75":118,"risk_level":"High"}]}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/outbreak?region={region}"
-            description="Season-level outbreak flag, triggering rule and seasonal average."
-            example={`{"count":2,"items":[{"season":"wet","outbreak":true,"trigger":"both","season_avg":1646.4,"season_p75":1016.5}]}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/escalation?disease=Dengue&top=5"
-            description="Objective-4 risk-tier escalation ranking across regions."
-            example={`{"count":5,"items":[{"rank":1,"tier_climbs":4,"first_high_month":"2026-07","final_tier":"High"}]}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/metrics/{region}?disease=Dengue&window=last_12m"
-            description="Walk-forward validation metrics (MAE/RMSE/MAPE, skill vs. naive)."
-            example={`{"region":"National Capital Region","mape":71.2,"skill_vs_naive_pct":null,"confidence":{"label":"Low confidence"}}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/series/{region}?disease=Dengue&include_forecast=true"
-            description="Historical monthly series (+ forecast) per region."
-            example={`{"points":[{"index":50,"date":"2026-03-01","cases":120,"forecast":true}]}`}
-          />
-          <ApiEndpoint
-            method="GET"
-            url="https://healthwatch-api-xepv.onrender.com/status"
-            description="Pipeline freshness snapshot and supported diseases."
-            example={`{"generated_at":"2026-08-01T00:00:00Z","supported_diseases":["Dengue"]}`}
-          />
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Rate limits: <code>300/min</code> for forecast/classification/escalation surfaces,{" "}
-          <code>20/min</code> for the LLM narration endpoints (<code>/analysis/*</code>). Error
-          contract: <code>404</code> unknown region/disease, <code>429</code> rate limited,{" "}
-          <code>503</code> data still loading at cold start or AI unavailable.
-        </p>
-      </Section>
+        <CollapsibleSection title="Validation — live metrics">
+          <p className="text-sm text-foreground/85">
+            Forecast accuracy (MAE/RMSE/MAPE + skill vs. seasonal-naive per region) and outbreak
+            classification performance (national 2025 prospective holdout) are pulled live from the
+            data API — the same numbers the Seasonal pattern page surfaces per region.
+          </p>
+          <div className="mt-3" data-validation-panel>
+            <ValidationMetricsPanel />
+          </div>
+        </CollapsibleSection>
+
+        <CollapsibleSection title="Developer API">
+          <p className="text-sm text-foreground/85">
+            HEALTHWATCH exposes read-only JSON endpoints for integration with other Philippine health
+            information systems. Base URL (dev): <code>http://localhost:8000</code> · Base URL
+            (deployed): <code>https://healthwatch-api-xepv.onrender.com</code>. Machine-readable specs:
+            <code> GET /openapi.json</code> and Swagger UI at <code>/docs</code>. All endpoints return
+            JSON; read the pinned contract in <code>docs/api_contract.md</code> before integrating.
+          </p>
+          <div className="mt-4 space-y-3">
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/forecast/{disease}?region={region}"
+              description="12-month Prophet forecast per region."
+              example={`{"disease":"Dengue","count":18,"items":[{"target_date":"2026-09-01","yhat":142,"yhat_lower":89,"yhat_upper":203}]}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/risk-classification/{disease}?region={region}"
+              description="Monthly Low/Moderate/High risk tier over the forecast horizon."
+              example={`{"items":[{"date":"2026-09-01","yhat":142,"p50":64,"p75":118,"risk_level":"High"}]}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/outbreak?region={region}"
+              description="Season-level outbreak flag, triggering rule and seasonal average."
+              example={`{"count":2,"items":[{"season":"wet","outbreak":true,"trigger":"both","season_avg":1646.4,"season_p75":1016.5}]}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/escalation?disease=Dengue&top=5"
+              description="Objective-4 risk-tier escalation ranking across regions."
+              example={`{"count":5,"items":[{"rank":1,"tier_climbs":4,"first_high_month":"2026-07","final_tier":"High"}]}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/metrics/{region}?disease=Dengue&window=last_12m"
+              description="Walk-forward validation metrics (MAE/RMSE/MAPE, skill vs. naive)."
+              example={`{"region":"National Capital Region","mape":71.2,"skill_vs_naive_pct":null,"confidence":{"label":"Low confidence"}}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/series/{region}?disease=Dengue&include_forecast=true"
+              description="Historical monthly series (+ forecast) per region."
+              example={`{"points":[{"index":50,"date":"2026-03-01","cases":120,"forecast":true}]}`}
+            />
+            <ApiEndpoint
+              method="GET"
+              url="https://healthwatch-api-xepv.onrender.com/status"
+              description="Pipeline freshness snapshot and supported diseases."
+              example={`{"generated_at":"2026-08-01T00:00:00Z","supported_diseases":["Dengue"]}`}
+            />
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            Rate limits: <code>300/min</code> for forecast/classification/escalation surfaces,{" "}
+            <code>20/min</code> for the LLM narration endpoints (<code>/analysis/*</code>). Error
+            contract: <code>404</code> unknown region/disease, <code>429</code> rate limited,{" "}
+            <code>503</code> data still loading at cold start or AI unavailable.
+          </p>
+        </CollapsibleSection>
+      </div>
+      <BackToTop />
     </main>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="mt-8">
-      <h2 className="mb-3 text-lg font-semibold tracking-tight text-foreground">{title}</h2>
-      {children}
-    </section>
   );
 }
 

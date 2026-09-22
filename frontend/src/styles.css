@@ -318,22 +318,117 @@ svg.lucide {
   background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
-  backdrop-filter: blur(10px);
-  font-family: var(--font-mono);
-  font-size: 13px !important;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  border-radius: 6px !important;
-  padding: 3px 7px;
-  box-shadow: 0 4px 12px oklch(0.15 0.005 260 / 10%) !important;
+  backdrop-filter: blur(12px);
+  font-family: inherit;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  box-shadow: 0 8px 24px oklch(0.15 0.005 260 / 18%) !important;
+  pointer-events: none;
+  min-width: 190px;
+  max-width: 260px;
+  white-space: normal !important;
 }
 
 .dark .hw-outbreak-tooltip {
-  box-shadow: 0 4px 12px oklch(0 0 0 / 40%) !important;
+  background: color-mix(in oklab, var(--card) 94%, black) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 8px 24px oklch(0 0 0 / 50%) !important;
 }
 
 .hw-outbreak-tooltip::before {
   display: none !important;
+}
+
+.hw-outbreak-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.hw-outbreak-tip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hw-outbreak-tip-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.hw-outbreak-tip-month {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-region {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-foreground);
+  line-height: 1.25;
+}
+
+.hw-outbreak-tip-stat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.hw-outbreak-tip-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-foreground);
+  line-height: 1;
+}
+
+.hw-outbreak-tip-unit {
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-subval {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  padding-top: 4px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.hw-outbreak-tip-pill {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: color-mix(in oklab, var(--risk-high) 20%, transparent);
+  color: var(--risk-high);
+  white-space: nowrap;
+}
+
+.hw-outbreak-tip-note {
+  font-size: 9.5px;
+  color: var(--color-muted-foreground);
+  line-height: 1.2;
 }
 
 /* Range slider thumb styling — consistent across browsers */
@@ -398,3 +493,209 @@ input[type="range"]:focus-visible {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted-foreground);
 }
+
+/* ─── Explain Mode Inspector Overlay ────────────────────────────────────────
+   Inspector mode triggered by the ? button: highlights hovered elements and
+   shows an informative popover card upon click.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Full-screen dim overlay */
+.hw-explain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  cursor: crosshair;
+  background: oklch(0 0 0 / 0.35);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
+
+/* Highlight box that follows hovered element */
+.hw-explain-hover {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9991;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 4px oklch(from var(--primary) l c h / 0.2),
+              inset 0 0 0 9999px oklch(from var(--primary) l c h / 0.08);
+  border-radius: 8px;
+  transition: top 0.05s ease-out, left 0.05s ease-out, width 0.05s ease-out, height 0.05s ease-out;
+}
+
+/* Top-center mode banner */
+.hw-explain-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9992;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.35), 0 2px 8px oklch(0 0 0 / 0.2);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.hw-explain-banner-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--muted-foreground);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.hw-explain-banner-close:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Floating explanation popover card */
+.hw-explain-popover {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px -12px oklch(0 0 0 / 0.55), 0 8px 32px -8px oklch(0 0 0 / 0.3);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  padding: 18px;
+  pointer-events: auto;
+  animation: hw-popover-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes hw-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hw-explain-popover-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hw-explain-popover-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.hw-explain-popover-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+}
+.hw-explain-popover-close:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.hw-explain-popover-body {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hw-explain-popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.hw-explain-popover-footer > span {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hw-explain-exit-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--foreground);
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+.hw-explain-exit-btn:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Mobile: reposition popover to bottom-sheet style with touch safe areas */
+@media (max-width: 640px) {
+  .hw-explain-popover {
+    position: fixed !important;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: auto !important;
+    width: auto !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    border-radius: 20px !important;
+    box-shadow: 0 -12px 48px oklch(0 0 0 / 0.5) !important;
+  }
+  .hw-explain-banner {
+    font-size: 11px;
+    padding: 6px 12px;
+    max-width: calc(100vw - 32px);
+    white-space: normal;
+    text-align: center;
+  }
+  .hw-explain-exit-btn,
+  .hw-explain-popover-close,
+  .hw-explain-banner-close {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}
+

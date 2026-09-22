@@ -33,29 +33,29 @@ interface SeasonalityChartCardProps {
 
 const COLOR_MAP: Record<SeasonalityComponent, { dot: string; border: string; glow: string }> = {
   observed: {
-    dot: "bg-[var(--chart-1)]",
-    border: "border-[var(--chart-1)]/30",
-    glow: "shadow-[0_0_12px_rgba(45,212,191,0.15)]",
+    dot: "bg-blue-400",
+    border: "border-blue-400/30",
+    glow: "shadow-[0_0_12px_rgba(59,130,246,0.15)]",
   },
   trend: {
-    dot: "bg-[var(--chart-2)]",
-    border: "border-[var(--chart-2)]/30",
+    dot: "bg-emerald-400",
+    border: "border-emerald-400/30",
     glow: "shadow-[0_0_12px_rgba(52,211,153,0.15)]",
   },
   seasonal: {
-    dot: "bg-[var(--chart-3)]",
-    border: "border-[var(--chart-3)]/30",
+    dot: "bg-amber-400",
+    border: "border-amber-400/30",
     glow: "shadow-[0_0_12px_rgba(251,191,36,0.15)]",
   },
   residual: {
-    dot: "bg-[var(--chart-4)]",
-    border: "border-[var(--chart-4)]/30",
-    glow: "shadow-[0_0_12px_rgba(244,63,94,0.15)]",
+    dot: "bg-slate-400",
+    border: "border-slate-400/30",
+    glow: "shadow-[0_0_12px_rgba(148,163,184,0.15)]",
   },
   acf: {
-    dot: "bg-[var(--chart-1)]",
-    border: "border-[var(--chart-1)]/30",
-    glow: "shadow-[0_0_12px_rgba(45,212,191,0.15)]",
+    dot: "bg-blue-400",
+    border: "border-blue-400/30",
+    glow: "shadow-[0_0_12px_rgba(59,130,246,0.15)]",
   },
 };
 
@@ -85,6 +85,7 @@ export function SeasonalityChartCard({
 
   return (
     <div
+      data-explain={`seasonality-chart-${component}`}
       onContextMenu={(e) => onOpenMenu(e, component)}
       className={cn(
         "group relative flex flex-col rounded-xl border border-border/80 bg-card/40 p-5 transition-all duration-200",

@@ -211,7 +211,7 @@ export default function ComparePage() {
   }, [detailedCardRegionCode, illness]);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-32">
+    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-32" data-explain="compare-page">
       {/* Navigation & Header */}
       <Link
         to="/"

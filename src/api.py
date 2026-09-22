@@ -1360,6 +1360,46 @@ def analysis(
     }
 
 
+class ExplainElementPayload(BaseModel):
+    title: str
+    description: str
+    region: str | None = None
+    month: str | None = None
+    illness: str | None = "Dengue"
+    metric_value: str | None = None
+
+
+_EXPLAIN_ELEMENT_SYSTEM_PROMPT = (
+    "You are HealthWatch AI, a public health epidemiologist explaining dashboard elements. "
+    "Given an interface element description and optional live surveillance metrics, write a concise "
+    "2-sentence plain-language explanation of what this element represents and what the current "
+    "data means for disease surveillance. Stay strictly grounded in the provided facts."
+)
+
+
+@app.post("/analysis/explain-element", tags=["objective_5_interpretability"])
+@limiter.limit("15/minute")
+def explain_element(request: Request, payload: ExplainElementPayload):
+    """Generate an on-demand, data-aware AI explanation for a clicked UI element in Explain Mode."""
+    user_prompt = (
+        f"Element Title: {payload.title}\n"
+        f"Static Description: {payload.description}\n"
+    )
+    if payload.region:
+        user_prompt += f"Region: {payload.region}\n"
+    if payload.month:
+        user_prompt += f"Selected Month: {payload.month}\n"
+    if payload.metric_value:
+        user_prompt += f"Current Metric/Value: {payload.metric_value}\n"
+
+    narrative, model = _llm_narrate(_EXPLAIN_ELEMENT_SYSTEM_PROMPT, user_prompt)
+    return {
+        "title": payload.title,
+        "narrative": narrative,
+        "model": model,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Email subscription endpoints (anonymous, email-only, no login required)
 # ---------------------------------------------------------------------------
