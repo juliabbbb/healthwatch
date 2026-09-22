@@ -1,39 +1,39 @@
 disease,region,season,forecast_avg,actual_avg,actual_max,season_p75,actual_high_run,predicted,actual_outbreak,rule_a_actual,rule_b_actual,tp,fp,fn,tn
-Dengue,Bangsamoro (BARMM),dry,968.9,534.0,623.0,707.8,1,True,False,False,False,False,True,False,False
-Dengue,Bangsamoro (BARMM),wet,1646.4,637.3,756.0,1016.5,0,True,False,False,False,False,True,False,False
-Dengue,Bicol Region,dry,22.7,221.7,240.0,95.5,3,False,True,True,True,False,False,True,False
-Dengue,Bicol Region,wet,173.6,300.3,368.0,233.5,2,False,True,False,True,False,False,True,False
-Dengue,CALABARZON,dry,2295.6,5605.0,7426.0,1435.8,3,True,True,True,True,True,False,False,False
-Dengue,CALABARZON,wet,5748.8,5124.7,5861.0,5225.5,1,True,False,False,False,False,True,False,False
-Dengue,Cagayan Valley,dry,70.8,911.3,1085.0,644.0,3,False,True,True,True,False,False,True,False
-Dengue,Cagayan Valley,wet,2039.6,1847.0,2158.0,2703.5,0,False,False,False,False,False,False,False,True
-Dengue,Caraga,dry,1978.4,1146.3,1561.0,725.5,3,True,True,True,True,True,False,False,False
-Dengue,Caraga,wet,2697.3,268.0,369.0,1488.5,0,True,False,False,False,False,True,False,False
-Dengue,Central Luzon,dry,0.0,4941.0,6258.0,1710.5,3,False,True,True,True,False,False,True,False
-Dengue,Central Luzon,wet,4760.7,10053.0,12015.0,6316.8,3,False,True,True,True,False,False,True,False
-Dengue,Central Visayas,dry,3208.9,1568.0,2091.0,1240.5,2,True,True,False,True,True,False,False,False
-Dengue,Central Visayas,wet,4718.9,878.0,965.0,2915.5,0,True,False,False,False,False,True,False,False
-Dengue,Cordillera Administrative Region,dry,3276.7,581.7,627.0,484.5,3,True,True,True,True,True,False,False,False
-Dengue,Cordillera Administrative Region,wet,6136.5,986.3,1096.0,3220.5,0,True,False,False,False,False,True,False,False
-Dengue,Davao Region,dry,3512.2,1681.3,1878.0,1583.5,3,True,True,True,True,True,False,False,False
-Dengue,Davao Region,wet,4499.5,1080.3,1228.0,2505.0,0,True,False,False,False,False,True,False,False
-Dengue,Eastern Visayas,dry,459.1,512.0,575.0,421.2,3,True,True,True,True,True,False,False,False
-Dengue,Eastern Visayas,wet,989.7,227.0,270.0,812.8,0,True,False,False,False,False,True,False,False
-Dengue,Ilocos Region,dry,1451.6,652.3,791.0,209.8,3,True,True,True,True,True,False,False,False
-Dengue,Ilocos Region,wet,3010.3,2691.7,3298.0,1605.5,3,True,True,True,True,True,False,False,False
-Dengue,MIMAROPA,dry,1784.8,1368.3,1491.0,731.5,3,True,True,True,True,True,False,False,False
-Dengue,MIMAROPA,wet,3317.5,1516.0,1972.0,1957.2,0,True,False,False,False,False,True,False,False
-Dengue,National,dry,34690.9,30822.3,37470.0,15266.0,3,True,True,True,True,True,False,False,False
-Dengue,National,wet,68761.4,35328.7,39371.0,44641.5,0,True,False,False,False,False,True,False,False
-Dengue,National Capital Region,dry,908.4,5505.0,6812.0,1800.5,3,False,True,True,True,False,False,True,False
-Dengue,National Capital Region,wet,4136.5,4435.7,5095.0,5445.2,0,False,False,False,False,False,False,False,True
-Dengue,Negros Island Region,dry,1312.2,907.3,1127.0,431.5,3,True,True,True,True,True,False,False,False
-Dengue,Negros Island Region,wet,2597.9,900.7,1181.0,1827.5,0,True,False,False,False,False,True,False,False
-Dengue,Northern Mindanao,dry,2540.6,1383.0,1402.0,1365.8,2,True,True,False,True,True,False,False,False
-Dengue,Northern Mindanao,wet,3602.2,994.0,1278.0,1909.8,0,True,False,False,False,False,True,False,False
-Dengue,SOCCSKSARGEN,dry,2515.4,1213.3,1268.0,1577.2,1,True,False,False,False,False,True,False,False
-Dengue,SOCCSKSARGEN,wet,3255.7,1097.0,1292.0,1745.0,0,True,False,False,False,False,True,False,False
-Dengue,Western Visayas,dry,3173.2,1175.0,1243.0,571.8,3,True,True,True,True,True,False,False,False
-Dengue,Western Visayas,wet,4916.0,1721.0,2516.0,1811.8,0,True,False,False,False,False,True,False,False
-Dengue,Zamboanga Peninsula,dry,1329.9,915.7,1030.0,981.2,2,True,False,False,False,False,True,False,False
-Dengue,Zamboanga Peninsula,wet,2111.1,570.7,726.0,1514.5,0,True,False,False,False,False,True,False,False
+Dengue,Bangsamoro (BARMM),dry,779.6,534.0,623.0,707.8,1,True,False,False,False,False,True,False,False
+Dengue,Bangsamoro (BARMM),wet,1420.1,637.3,756.0,1016.5,0,True,False,False,False,False,True,False,False
+Dengue,Bicol Region,dry,55.4,221.7,240.0,95.5,3,False,True,True,True,False,False,True,False
+Dengue,Bicol Region,wet,102.9,300.3,368.0,233.5,2,False,True,False,True,False,False,True,False
+Dengue,CALABARZON,dry,2584.9,5605.0,7426.0,1435.8,3,True,True,True,True,True,False,False,False
+Dengue,CALABARZON,wet,6567.3,5124.7,5861.0,5225.5,1,True,False,False,False,False,True,False,False
+Dengue,Cagayan Valley,dry,240.9,911.3,1085.0,644.0,3,False,True,True,True,False,False,True,False
+Dengue,Cagayan Valley,wet,3170.2,1847.0,2158.0,2703.5,0,True,False,False,False,False,True,False,False
+Dengue,Caraga,dry,1132.5,1146.3,1561.0,725.5,3,True,True,True,True,True,False,False,False
+Dengue,Caraga,wet,2106.4,268.0,369.0,1488.5,0,True,False,False,False,False,True,False,False
+Dengue,Central Luzon,dry,657.8,4941.0,6258.0,1710.5,3,False,True,True,True,False,False,True,False
+Dengue,Central Luzon,wet,7544.6,10053.0,12015.0,6316.8,3,True,True,True,True,True,False,False,False
+Dengue,Central Visayas,dry,1629.9,1568.0,2091.0,1240.5,2,True,True,False,True,True,False,False,False
+Dengue,Central Visayas,wet,4324.8,878.0,965.0,2915.5,0,True,False,False,False,False,True,False,False
+Dengue,Cordillera Administrative Region,dry,431.0,581.7,627.0,484.5,3,False,True,True,True,False,False,True,False
+Dengue,Cordillera Administrative Region,wet,6474.4,986.3,1096.0,3220.5,0,True,False,False,False,False,True,False,False
+Dengue,Davao Region,dry,2159.9,1681.3,1878.0,1583.5,3,True,True,True,True,True,False,False,False
+Dengue,Davao Region,wet,3929.2,1080.3,1228.0,2505.0,0,True,False,False,False,False,True,False,False
+Dengue,Eastern Visayas,dry,374.1,512.0,575.0,421.2,3,False,True,True,True,False,False,True,False
+Dengue,Eastern Visayas,wet,727.4,227.0,270.0,812.8,0,False,False,False,False,False,False,False,True
+Dengue,Ilocos Region,dry,422.6,652.3,791.0,209.8,3,True,True,True,True,True,False,False,False
+Dengue,Ilocos Region,wet,2226.2,2691.7,3298.0,1605.5,3,True,True,True,True,True,False,False,False
+Dengue,MIMAROPA,dry,890.7,1368.3,1491.0,731.5,3,True,True,True,True,True,False,False,False
+Dengue,MIMAROPA,wet,2577.7,1516.0,1972.0,1957.2,0,True,False,False,False,False,True,False,False
+Dengue,National,dry,20541.1,30822.3,37470.0,15266.0,3,True,True,True,True,True,False,False,False
+Dengue,National,wet,52910.5,35328.7,39371.0,44641.5,0,True,False,False,False,False,True,False,False
+Dengue,National Capital Region,dry,2075.3,5505.0,6812.0,1800.5,3,True,True,True,True,True,False,False,False
+Dengue,National Capital Region,wet,5157.0,4435.7,5095.0,5445.2,0,False,False,False,False,False,False,False,True
+Dengue,Negros Island Region,dry,250.8,907.3,1127.0,431.5,3,False,True,True,True,False,False,True,False
+Dengue,Negros Island Region,wet,3889.3,900.7,1181.0,1827.5,0,True,False,False,False,False,True,False,False
+Dengue,Northern Mindanao,dry,1744.3,1383.0,1402.0,1365.8,2,True,True,False,True,True,False,False,False
+Dengue,Northern Mindanao,wet,2943.4,994.0,1278.0,1909.8,0,True,False,False,False,False,True,False,False
+Dengue,SOCCSKSARGEN,dry,1921.9,1213.3,1268.0,1577.2,1,True,False,False,False,False,True,False,False
+Dengue,SOCCSKSARGEN,wet,2822.1,1097.0,1292.0,1745.0,0,True,False,False,False,False,True,False,False
+Dengue,Western Visayas,dry,387.2,1175.0,1243.0,571.8,3,False,True,True,True,False,False,True,False
+Dengue,Western Visayas,wet,5471.5,1721.0,2516.0,1811.8,0,True,False,False,False,False,True,False,False
+Dengue,Zamboanga Peninsula,dry,1140.2,915.7,1030.0,981.2,2,True,False,False,False,False,True,False,False
+Dengue,Zamboanga Peninsula,wet,1846.4,570.7,726.0,1514.5,0,True,False,False,False,False,True,False,False

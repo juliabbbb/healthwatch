@@ -1,0 +1,43 @@
+Bangsamoro (BARMM)               [last_12m          ] MAE=   632.38  naive=   364.75  skill= -73.4%
+Bangsamoro (BARMM)               [2025_prospective  ] MAE=   512.81  naive=   390.58  skill= -31.3%
+Bicol Region                     [last_12m          ] MAE=   115.41  naive=    77.33  skill= -49.2%
+Bicol Region                     [2025_prospective  ] MAE=   113.59  naive=    49.50  skill=-129.5%
+CALABARZON                       [last_12m          ] MAE=  3533.30  naive=  2922.67  skill= -20.9%
+CALABARZON                       [2025_prospective  ] MAE=  2577.07  naive=  2314.00  skill= -11.4%
+Cagayan Valley                   [last_12m          ] MAE=  1092.24  naive=   619.50  skill= -76.3%
+Cagayan Valley                   [2025_prospective  ] MAE=  1193.68  naive=   665.83  skill= -79.3%
+Caraga                           [last_12m          ] MAE=  1047.76  naive=   824.42  skill= -27.1%
+Caraga                           [2025_prospective  ] MAE=   882.13  naive=   867.58  skill=  -1.7%
+Central Luzon                    [last_12m          ] MAE=  3904.23  naive=  2993.25  skill= -30.4%
+Central Luzon                    [2025_prospective  ] MAE=  3581.42  naive=  1785.42  skill=-100.6%
+Central Visayas                  [last_12m          ] MAE=  3350.04  naive=  1818.92  skill= -84.2%
+Central Visayas                  [2025_prospective  ] MAE=  2270.16  naive=  2005.00  skill= -13.2%
+Cordillera Administrative Region [last_12m          ] MAE=  2282.09  naive=  1867.17  skill= -22.2%
+Cordillera Administrative Region [2025_prospective  ] MAE=  2031.18  naive=  1749.25  skill= -16.1%
+Davao Region                     [last_12m          ] MAE=  1299.96  naive=   858.17  skill= -51.5%
+Davao Region                     [2025_prospective  ] MAE=  1328.00  naive=   770.08  skill= -72.4%
+Eastern Visayas                  [last_12m          ] MAE=   585.07  naive=   395.83  skill= -47.8%
+Eastern Visayas                  [2025_prospective  ] MAE=   652.61  naive=   367.00  skill= -77.8%
+Ilocos Region                    [last_12m          ] MAE=   535.56  naive=   529.58  skill=  -1.1%
+Ilocos Region                    [2025_prospective  ] MAE=   621.26  naive=   454.33  skill= -36.7%
+MIMAROPA                         [last_12m          ] MAE=  1007.74  naive=   719.08  skill= -40.1%
+MIMAROPA                         [2025_prospective  ] MAE=   648.24  naive=   489.67  skill= -32.4%
+National                         [last_12m          ] MAE= 14378.45  naive= 16702.17  skill=  13.9%
+National                         [2025_prospective  ] MAE= 14056.49  naive= 16611.92  skill=  15.4%
+National Capital Region          [last_12m          ] MAE=  3325.89  naive=  2645.17  skill= -25.7%
+National Capital Region          [2025_prospective  ] MAE=  2590.66  naive=  1697.25  skill= -52.6%
+Negros Island Region             [last_12m          ] MAE=   984.28  naive=  1064.83  skill=   7.6%
+Negros Island Region             [2025_prospective  ] MAE=  1262.87  naive=  1095.50  skill= -15.3%
+Northern Mindanao                [last_12m          ] MAE=  1347.60  naive=   825.58  skill= -63.2%
+Northern Mindanao                [2025_prospective  ] MAE=  1200.07  naive=   801.92  skill= -49.6%
+SOCCSKSARGEN                     [last_12m          ] MAE=  1135.30  naive=   762.33  skill= -48.9%
+SOCCSKSARGEN                     [2025_prospective  ] MAE=  1144.27  naive=   738.92  skill= -54.9%
+Western Visayas                  [last_12m          ] MAE=  2106.90  naive=  1595.50  skill= -32.1%
+Western Visayas                  [2025_prospective  ] MAE=  1761.56  naive=  1686.58  skill=  -4.4%
+Zamboanga Peninsula              [last_12m          ] MAE=   809.91  naive=   532.42  skill= -52.1%
+Zamboanga Peninsula              [2025_prospective  ] MAE=   947.02  naive=   355.33  skill=-166.5%
+Saved 114 seasonal probe rows -> data\processed\season_probes.csv
+
+Saved 228 forecast rows -> data\processed\forecasts.csv
+Saved 38 validation rows -> data\processed\validation_metrics.csv
+Saved 456 validation prediction rows -> data\processed\validation_predictions.csv

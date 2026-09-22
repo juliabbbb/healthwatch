@@ -1,8 +1,12 @@
 """Monthly dengue forecasting.
 
 Monthly Prophet (~55 observed months per region, 3 full yearly cycles) with a
-wet-season regressor, a 12-month production horizon and a 12-month walk-forward
-validation that REFITS EVERY MONTH (REFIT_EVERY = 1). Two validation windows:
+wet-season regressor only (Config B, the deployed default: yearly Fourier
+seasonality disabled after the ablation in src/ablation reported Config C, the
+former yearly + wet-regressor stack, as strictly worse, with a projected R2 of
+1.0 between the wet step and the Fourier columns on the training calendar), a
+12-month production horizon and a 12-month walk-forward validation that REFITS
+EVERY MONTH (REFIT_EVERY = 1). Two validation windows:
 
   last_12m         train through 2025-08, hold out 2025-09 .. 2026-08
   2025_prospective train through 2024-12, hold out 2025-01 .. 2025-12
@@ -58,7 +62,7 @@ def load_series():
     return df.sort_values(["disease", "region", "date"], ignore_index=True)
 
 
-def fit_prophet(train, use_year_seasonality=True, use_wet_regressor=True):
+def fit_prophet(train, use_year_seasonality=False, use_wet_regressor=True):
     model = Prophet(
         yearly_seasonality=use_year_seasonality,
         weekly_seasonality=False,
