@@ -231,6 +231,7 @@ validation_metrics = Table(
     Column("RMSE", Float, nullable=False),
     Column("MAPE", Float, nullable=False),
     Column("months", Integer, nullable=False),
+    Column("excluded_zero_actual", Integer, nullable=False, default=0),
     Column("naive_MAE", Float),
     Column("skill_vs_naive_pct", Float),
 )

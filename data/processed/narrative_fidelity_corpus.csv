@@ -1,0 +1,5 @@
+scenario,endpoint,region,component,model,error,weather_violations,numeric_violations,fallback_fired,dispatched_unverified
+0,ai_insight,National Capital Region,,skip-live,,,,False,0
+1,analysis,National Capital Region,,skip-live,,,,False,0
+2,seasonality,National Capital Region,observed,skip-live,,,,False,0
+3,seasonality,National Capital Region,trend,skip-live,,,,False,0

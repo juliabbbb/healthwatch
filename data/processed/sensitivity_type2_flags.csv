@@ -1,0 +1,39 @@
+disease,region,season,flag_national,trigger_national,flag_override,trigger_override,flip
+Dengue,Bangsamoro (BARMM),dry,True,both,True,both,False
+Dengue,Bangsamoro (BARMM),wet,True,both,True,both,False
+Dengue,Bicol Region,dry,False,none,False,none,False
+Dengue,Bicol Region,wet,False,none,False,none,False
+Dengue,CALABARZON,dry,True,season_p75,True,season_p75,False
+Dengue,CALABARZON,wet,True,both,True,both,False
+Dengue,Cagayan Valley,dry,False,none,False,none,False
+Dengue,Cagayan Valley,wet,False,none,False,none,False
+Dengue,Caraga,dry,True,both,True,both,False
+Dengue,Caraga,wet,True,both,True,both,False
+Dengue,Central Luzon,dry,False,none,False,none,False
+Dengue,Central Luzon,wet,False,none,False,none,False
+Dengue,Central Visayas,dry,True,both,True,both,False
+Dengue,Central Visayas,wet,True,both,True,both,False
+Dengue,Cordillera Administrative Region,dry,True,both,True,both,False
+Dengue,Cordillera Administrative Region,wet,True,both,True,both,False
+Dengue,Davao Region,dry,True,both,True,both,False
+Dengue,Davao Region,wet,True,both,True,both,False
+Dengue,Eastern Visayas,dry,True,season_p75,True,season_p75,False
+Dengue,Eastern Visayas,wet,True,season_p75,True,season_p75,False
+Dengue,Ilocos Region,dry,True,both,True,both,False
+Dengue,Ilocos Region,wet,True,both,True,both,False
+Dengue,MIMAROPA,dry,True,both,True,both,False
+Dengue,MIMAROPA,wet,True,both,True,both,False
+Dengue,National,dry,True,both,True,both,False
+Dengue,National,wet,True,both,True,both,False
+Dengue,National Capital Region,dry,False,none,False,none,False
+Dengue,National Capital Region,wet,False,none,False,none,False
+Dengue,Negros Island Region,dry,True,both,True,both,False
+Dengue,Negros Island Region,wet,True,both,True,both,False
+Dengue,Northern Mindanao,dry,True,both,True,both,False
+Dengue,Northern Mindanao,wet,True,both,True,both,False
+Dengue,SOCCSKSARGEN,dry,True,both,True,both,False
+Dengue,SOCCSKSARGEN,wet,True,both,True,both,False
+Dengue,Western Visayas,dry,True,both,True,both,False
+Dengue,Western Visayas,wet,True,both,True,both,False
+Dengue,Zamboanga Peninsula,dry,True,both,True,both,False
+Dengue,Zamboanga Peninsula,wet,True,both,True,both,False

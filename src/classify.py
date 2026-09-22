@@ -9,10 +9,30 @@ TIER_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
 # Calendar wet/dry season mapping used by the outbreak indicator, matching
 # features.py: wet = Jun-Nov (months 6-11), dry = Dec-May (12,1-5). The month
 # (not the date-week) decides the season, so months never split across seasons.
-def season_of(date):
-    """Return 'wet' | 'dry' for a date-like, matching features.py wet/dry flag."""
+#
+# PAGASA Modified Corona Climate Classification overrides: Type II regions
+# (Bicol Region, Eastern Visayas, Caraga) receive their maximum rainfall during
+# Dec-Feb, inverting the national monsoon-driven wet window. The production
+# pipeline keeps the national calendar (Type I generalization); SEASON_RULES
+# exists so the regional sensitivity study can re-run Rule B and the seasonal
+# probes under each region's local calendar without touching the month-anchored
+# percentile tiers (which are climate-agnostic by construction).
+SEASON_RULES = {
+    "Bicol Region": {12, 1, 2, 3, 4, 5},     # Type II
+    "Eastern Visayas": {12, 1, 2, 3, 4, 5},  # Type II
+    "Caraga": {12, 1, 2, 3, 4, 5},           # Type II
+}
+
+
+def wet_months_of(region):
+    return SEASON_RULES.get(region) or set(range(6, 12))
+
+
+def season_of(date, region=None):
+    """Return 'wet' | 'dry' for a date-like. Defaults to the national calendar
+    (features.py wet/dry flag); honours SEASON_RULES when a region is given."""
     m = pd.Timestamp(date).month
-    return "wet" if 6 <= m <= 11 else "dry"
+    return "wet" if m in wet_months_of(region) else "dry"
 
 
 def load_history():
@@ -71,16 +91,24 @@ def compute_thresholds(history):
     return thresholds.sort_values(["region", "month"], ignore_index=True)
 
 
-def compute_seasonal_thresholds(history):
+def compute_seasonal_thresholds(history, season_func=None):
     """Per-(disease, region, season) P75 of pre-2025 historical cases.
 
     Pools every historical monthly case count that falls within the season
     (wet = Jun-Nov, dry = Dec-May) and takes the 75th percentile. This season
     baseline backs Rule B of the outbreak indicator (season sum up-lift) and
-    reuses the same pre-2025 history as the monthly percentiles.
+    reuses the same pre-2025 history as the monthly percentiles. Pass a
+    per-region `season_func(date, region)` to apply a climate-type override.
     """
     h = history.copy()
-    h["season"] = h["date"].map(season_of)
+    if season_func is None:
+        h["season"] = np.where(
+            (h["date"].dt.month >= 6) & (h["date"].dt.month <= 11), "wet", "dry"
+        )
+    else:
+        h["season"] = h.apply(
+            lambda r: season_func(r["date"], r["region"]), axis=1
+        )
     thresholds = (
         h.groupby(["disease", "region", "season"])["cases"]
         .quantile(0.75)
@@ -126,17 +154,27 @@ def classify_forecasts(thresholds):
     return out.sort_values(["region", "date"], ignore_index=True)
 
 
-def classify_seasonal(thresholds):
+def classify_seasonal(thresholds, probes=None, season_func=None):
     """Classify the season-probe forecasts (dry + wet windows) into risk tiers.
 
     Same monthly P75 thresholding as classify_forecasts, but applied to
     season_probes.csv so each region gets a dry- and wet-season risk label for
     the outbreak indicator, without altering the dashboard's next-12-months view.
+    Pass `season_func(date, region)` to relabel probes under a regional
+    climate-type override (Type II regions: the Jan-Mar 'dry' probe is actually
+    their local wet peak).
     """
-    probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
-        columns={"target_date": "date"}
-    )
+    if probes is None:
+        probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
+            columns={"target_date": "date"}
+        )
+    else:
+        probes = probes.rename(columns={"target_date": "date"})
     probes["date"] = pd.to_datetime(probes["date"])
+    if season_func is not None:
+        probes["season"] = probes.apply(
+            lambda r: season_func(r["date"], r["region"]), axis=1
+        )
     merged = _apply_tiers(probes, thresholds)
     out = merged[
         ["disease", "region", "season", "date", "yhat", "p50", "p75", "risk_level"]

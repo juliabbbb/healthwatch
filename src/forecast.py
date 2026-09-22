@@ -58,23 +58,30 @@ def load_series():
     return df.sort_values(["disease", "region", "date"], ignore_index=True)
 
 
-def fit_prophet(train):
+def fit_prophet(train, use_year_seasonality=True, use_wet_regressor=True):
     model = Prophet(
-        yearly_seasonality=True,
+        yearly_seasonality=use_year_seasonality,
         weekly_seasonality=False,
         daily_seasonality=False,
         seasonality_mode="multiplicative",
     )
-    model.add_regressor("is_wet_season")
+    if use_wet_regressor:
+        model.add_regressor("is_wet_season")
     flagged = features.add_season_flags(train, date_col="ds")
-    model.fit(flagged[["ds", "y", "is_wet_season"]])
+    cols = ["ds", "y"]
+    if use_wet_regressor:
+        cols.append("is_wet_season")
+    model.fit(flagged[cols])
     return model
 
 
-def predict(model, dates):
+def predict(model, dates, use_wet_regressor=True):
     future = pd.DataFrame({"ds": pd.to_datetime(dates)})
     flagged = features.add_season_flags(future, date_col="ds")
-    fcst = model.predict(flagged[["ds", "is_wet_season"]])
+    cols = ["ds"]
+    if use_wet_regressor:
+        cols.append("is_wet_season")
+    fcst = model.predict(flagged[cols])
     return fcst[["ds", "yhat", "yhat_lower", "yhat_upper"]]
 
 
@@ -112,6 +119,12 @@ def score(validation):
         "RMSE": round(float(np.sqrt(np.mean(err**2))), 2),
         "MAPE": round(float(np.mean(np.abs(err[nonzero] / validation["y"][nonzero])) * 100), 2),
         "months": int(len(validation)),
+        # Auditability for the MAPE zero-exclusion (methodology 3.5.5): the
+        # module reports how many zero-actual months were dropped from the
+        # percentage-error denominator, per window, so a future dataset where
+        # zeros become common surfaces the data loss immediately instead of
+        # silently.
+        "excluded_zero_actual": int((~nonzero).sum()),
     }
 
 
