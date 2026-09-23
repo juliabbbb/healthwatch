@@ -32,7 +32,7 @@ held-out real-data year — a claim a reactive dashboard cannot make.
   forecast horizon, per region and per metric (trend, density/hotspot).
 - The map is the primary navigation: 18 regions (including NIR) colored by risk tier,
   with region pages, an active-alert panel, a national snapshot, and a methodology view.
-- Runs as a FastAPI backend (PostgreSQL / SQLite) + a React dashboard, deployed to Render,
+- Runs as a FastAPI backend (PostgreSQL only) + a React dashboard, deployed to Render,
   opened in a browser on desktop and mobile tiers.
 
 ## Capabilities and Constraints
@@ -60,7 +60,7 @@ held-out real-data year — a claim a reactive dashboard cannot make.
 - `data/raw/` — DOH-Epi-Dengue monthly file (2022–2026) + legacy weekly fixture for the
   2019 known-epidemic check.
 - `data/processed/` — cleaned series, forecasts, risk thresholds/classifications,
-  outbreak indicators, validation metrics, `healthwatch.db`.
+  outbreak indicators, validation metrics (pipeline checkpoints; mirrored into Postgres by `src.db`).
 - `frontend/public/geo/ph-regions.geojson` — PSGC region boundaries for the choropleth.
 - Validated against the real 2025 year (prospective) and the 2019 epidemic (independent check).
 - Absences future work must not fabricate: there are no non-dengue processed datasets,

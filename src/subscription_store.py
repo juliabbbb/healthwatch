@@ -1,22 +1,16 @@
 """Anonymous email-subscription store for recurring monthly forecast reports.
 
 Subscriptions are email-only (no login). Preferences are stored as JSON rows in
-a `subscriptions` table:
-
-- Postgres (production/Render): when DATABASE_URL is set, the store reuses the
-  app engine, so subscriptions survive redeploys. The table is auto-created on
-  first use.
-- SQLite (local/dev fallback): `data/subscriptions.sqlite3`, overridable with
-  SUBSCRIPTIONS_DB.
+a `subscriptions` table in the same PostgreSQL database as the pipeline schema
+(the SQLite fallback was removed). The table is auto-created on first use and
+survives Render redeploys. Requires DATABASE_URL to be set.
 """
 
 from __future__ import annotations
 
 import json
-import os
 import secrets
 from datetime import datetime, timezone
-from pathlib import Path
 
 import sqlalchemy as sa
 
@@ -34,42 +28,18 @@ CREATE TABLE IF NOT EXISTS subscriptions (
 )
 """
 
-_SQLITE_DDL = """
-CREATE TABLE IF NOT EXISTS subscriptions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    token TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL,
-    regions TEXT NOT NULL DEFAULT '[]',  -- JSON array of region codes; empty = all
-    illness TEXT NOT NULL DEFAULT 'all',
-    active INTEGER NOT NULL DEFAULT 1,
-    created_at TEXT NOT NULL,
-    last_sent_at TEXT,
-    sent_count INTEGER NOT NULL DEFAULT 0
-)
-"""
-
 _engine: sa.Engine | None = None
 
 
-def _use_postgres() -> bool:
-    return bool(os.environ.get("DATABASE_URL", "").strip())
-
-
 def _engine_for() -> sa.Engine:
-    """Lazily built (and schema-ensured) engine for the active backend."""
+    """Lazily built (and schema-ensured) Postgres engine for the store."""
     global _engine
     if _engine is None:
-        if _use_postgres():
-            from . import db
+        from . import db
 
-            _engine = db.engine()
-        else:
-            raw = os.environ.get("SUBSCRIPTIONS_DB", "").strip()
-            path = Path(raw) if raw else Path("data") / "subscriptions.sqlite3"
-            path.parent.mkdir(parents=True, exist_ok=True)
-            _engine = sa.create_engine(f"sqlite:///{path}")
+        _engine = db.engine()
     with _engine.begin() as conn:
-        conn.execute(sa.text(_PG_DDL if _use_postgres() else _SQLITE_DDL))
+        conn.execute(sa.text(_PG_DDL))
     return _engine
 
 

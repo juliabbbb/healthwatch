@@ -5,7 +5,7 @@ import re
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
-from datetime import datetime, timezone
+
 
 import pandas as pd
 from fastapi import FastAPI, Header, HTTPException, Query, Request
@@ -16,7 +16,7 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from . import db, email_report, ingest, subscription_store
+from . import db, email_report, subscription_store
 
 SUPPORTED_DISEASES = ["Dengue"]
 DISEASE_DEFAULT = "Dengue"
@@ -60,27 +60,6 @@ _ESCALATION: pd.DataFrame | None = None
 _data_ready = False
 
 
-def _csv_region_code(series):
-    """Map a processed-CSV `region` label ('National' or a REGION_META name)
-    to its PSGC code, mirroring what the relational DB stores in
-    `region_code`. Fails loudly on unknown labels instead of dropping rows."""
-    mapping = dict(db.REGION_CODE_BY_NAME)
-    mapping[db.NATIONAL_NAME] = db.NATIONAL_CODE
-    codes = series.map(mapping)
-    missing = set(series[codes.isna()].unique())
-    if missing:
-        raise ValueError(f"Unmapped region labels in processed CSV: {sorted(missing)}")
-    return codes
-
-
-def _load_processed(name):
-    """Read a shipped pipeline CSV (data/processed/<name>) or None if absent."""
-    path = ingest.PROCESSED_DIR / name
-    if not path.exists():
-        return None
-    return pd.read_csv(path)
-
-
 def _normalize_dates(df, col):
     """Ensure df has a real datetime `col`: consume it when present (CSV
     source), else derive it from year/month (the relational-DB shape)."""
@@ -112,67 +91,44 @@ def _dedupe_latest(df, subset, sort_col=None):
 
 
 def _load_repo_tables():
-    """Read the six pipeline tables straight from the CSVs that ship in the
-    repo (data/processed/*.csv). The relational DB holds the same rows, but
-    reading local disk avoids ~6 remote Postgres round-trips on every cold
-    start. Falls back to `db.read_table` when a CSV is missing."""
-    regional_csv = _load_processed("regional_dengue_monthly.csv")
-    national_csv = _load_processed("national_monthly.csv")
-    if regional_csv is not None and national_csv is not None:
-        obs = pd.concat([regional_csv, national_csv], ignore_index=True)
-        obs["region_code"] = _csv_region_code(obs["region"])
-        obs["year"] = pd.to_datetime(obs["date"]).dt.year
-        obs["month"] = pd.to_datetime(obs["date"]).dt.month
-    else:
-        obs = db.read_table("monthly_observations")
+    """Read every pipeline table from the PostgreSQL database (Postgres-only).
+
+    The repo's processed CSVs are pipeline checkpoints only; the API no longer
+    reads them. All data below comes from `db.read_table`. Depends on a working
+    DATABASE_URL and on the schema being built (auto-created via
+    `db.ensure_tables()` at startup)."""
+    obs = db.read_table("monthly_observations")
     obs = _dedupe_latest(obs, ["region_code", "year", "month"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
     _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
     _normalize_dates(_NATIONAL, "date")
     _normalize_dates(_REGIONAL, "date")
 
-    _FORECASTS = _load_processed("forecasts.csv")
-    if _FORECASTS is None:
-        _FORECASTS = db.read_table("forecasts")
-    else:
-        _FORECASTS["region_code"] = _csv_region_code(_FORECASTS["region"])
+    _FORECASTS = db.read_table("forecasts")
     _normalize_dates(_FORECASTS, "target_date")
     _FORECASTS = _dedupe_latest(_FORECASTS, ["region_code", "target_date"])
 
-    _CLASSIFICATION = _load_processed("risk_classification.csv")
-    if _CLASSIFICATION is None:
-        _CLASSIFICATION = db.read_table("risk_classifications")
-    else:
-        _CLASSIFICATION["region_code"] = _csv_region_code(_CLASSIFICATION["region"])
+    _CLASSIFICATION = db.read_table("risk_classifications")
     _normalize_dates(_CLASSIFICATION, "date")
     _CLASSIFICATION = _dedupe_latest(_CLASSIFICATION, ["region_code", "date"])
 
-    _THRESHOLDS = _load_processed("risk_thresholds.csv")
-    if _THRESHOLDS is None:
-        _THRESHOLDS = db.read_table("risk_thresholds")
-    else:
-        _THRESHOLDS["region_code"] = _csv_region_code(_THRESHOLDS["region"])
+    _THRESHOLDS = db.read_table("risk_thresholds")
     _THRESHOLDS = _dedupe_latest(_THRESHOLDS, ["region_code", "month"])
 
-    _METRICS = _load_processed("validation_metrics.csv")
-    if _METRICS is None:
-        _METRICS = db.read_table("validation_metrics")
-    else:
-        _METRICS["region_code"] = _csv_region_code(_METRICS["region"])
+    _METRICS = db.read_table("validation_metrics")
     _METRICS = _dedupe_latest(_METRICS, ["region_code"])
 
-    _OUTBREAKS = _load_processed("outbreak_indicators.csv")
-    if _OUTBREAKS is None:
-        _OUTBREAKS = db.read_table("outbreak_signals")
-    else:
-        _OUTBREAKS["region_code"] = _csv_region_code(_OUTBREAKS["region"])
+    _OUTBREAKS = db.read_table("outbreak_signals")
     _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season"])
 
-    csv_path = ingest.PROCESSED_DIR / "outbreak_validation_2025.csv"
-    _OUTBREAK_VALIDATION = pd.read_csv(csv_path) if csv_path.exists() else pd.DataFrame()
-    _OUTBREAK_VALIDATION = _dedupe_latest(_OUTBREAK_VALIDATION, ["region", "season"])
+    ov = db.read_table("outbreak_validation")
+    ov = _dedupe_latest(ov, ["region_code", "season"])
+    _OUTBREAK_VALIDATION = ov.assign(region=ov["region_code"].map(_label))
 
-    _ESCALATION = _load_processed("risk_escalation_ranking.csv")
+    esc = db.read_table("risk_escalation")
+    _ESCALATION = (
+        esc.assign(region=esc["region_code"].map(_label)) if not esc.empty else None
+    )
 
     return (
         _NATIONAL,
@@ -192,6 +148,7 @@ def _load_all_data() -> None:
     global _THRESHOLDS, _METRICS, _OUTBREAKS, _OUTBREAK_VALIDATION  # noqa: PLW0603
     global _ESCALATION, _data_ready  # noqa: PLW0603
 
+    db.ensure_tables()
     t0 = time.monotonic()
     (
         _NATIONAL,
@@ -1079,27 +1036,27 @@ def regions():
 
 @app.get("/status", tags=["objective_4_dashboard"])
 def status():
-    """Pipeline freshness: when outputs were generated and how far data reaches."""
+    """Pipeline freshness: the latest pipeline run recorded in the database."""
     if not _data_ready:
         raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
-    output_csvs = (
-        ingest.PROCESSED_DIR / "forecasts.csv",
-        ingest.PROCESSED_DIR / "risk_classification.csv",
-        ingest.PROCESSED_DIR / "risk_thresholds.csv",
-    )
-    stamps = [p.stat().st_mtime for p in output_csvs if p.exists()]
-    if not stamps:
-        raise HTTPException(status_code=404, detail="No pipeline outputs found")
-    generated = datetime.fromtimestamp(max(stamps), tz=timezone.utc)
+    runs = db.read_table("pipeline_runs")
+    if runs is None or runs.empty:
+        raise HTTPException(status_code=404, detail="No pipeline runs recorded")
+    row = runs.sort_values("id").iloc[-1]
+    generated = row["generated_at"]
+    if not isinstance(generated, str):
+        generated = generated.isoformat()
 
     # The regional table defines what the dashboard plots (national runs later).
     last_date = _REGIONAL["date"].max()
+    data_through = pd.to_datetime(row["data_through"])
     return {
-        "generated_at": generated.isoformat(),
+        "generated_at": generated,
         "data_through": {
             "date": last_date.date().isoformat(),
             "month": f"{int(last_date.year)}-{int(last_date.month):02d}",
         },
+        "pipeline_data_through": data_through.date().isoformat(),
         "supported_diseases": SUPPORTED_DISEASES,
     }
 

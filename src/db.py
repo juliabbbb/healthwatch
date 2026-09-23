@@ -1,8 +1,10 @@
 """Relational database layer for the monthly pipeline.
 
-Builds and reads the HEALTHWATCH schema (the ERD source of truth — 9 tables)
+Builds and reads the HEALTHWATCH schema (the ERD source of truth — 11 tables)
 through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
-to be set in the environment.
+to be set in the environment. This is the only relational store: the SQLite
+fallback was removed, so the API, subscription store, and email report all read
+from this PostgreSQL database.
 
 The pipeline never hand-writes tables: `build_db()` drops and recreates rows
 from the processed CSVs, so a rebuild is fully idempotent. Because this module
@@ -247,6 +249,40 @@ walk_forward_folds = Table(
     Column("predicted", Float, nullable=False),
 )
 
+risk_escalation = Table(
+    "risk_escalation",
+    metadata,
+    Column("region_code", String(9), primary_key=True),
+    Column("disease", String(32), primary_key=True),
+    Column("rank", Integer, nullable=False),
+    Column("tier_climbs", Integer, nullable=False),
+    Column("net_climb", Integer, nullable=False),
+    Column("n_high_months", Integer, nullable=False),
+    Column("first_high_month", String(7), nullable=False),
+    Column("final_tier", String(12), nullable=False),
+)
+
+outbreak_validation = Table(
+    "outbreak_validation",
+    metadata,
+    Column("region_code", String(9), primary_key=True),
+    Column("disease", String(32), primary_key=True),
+    Column("season", String(6), primary_key=True),
+    Column("forecast_avg", Float, nullable=False),
+    Column("actual_avg", Float, nullable=False),
+    Column("actual_max", Float, nullable=False),
+    Column("season_p75", Float, nullable=False),
+    Column("actual_high_run", Integer, nullable=False),
+    Column("predicted", Boolean, nullable=False),
+    Column("actual_outbreak", Boolean, nullable=False),
+    Column("rule_a_actual", Boolean, nullable=False),
+    Column("rule_b_actual", Boolean, nullable=False),
+    Column("tp", Boolean, nullable=False),
+    Column("fp", Boolean, nullable=False),
+    Column("fn", Boolean, nullable=False),
+    Column("tn", Boolean, nullable=False),
+)
+
 pipeline_runs = Table(
     "pipeline_runs",
     metadata,
@@ -295,6 +331,16 @@ def engine():
     return _engine._cached
 
 
+def ensure_tables():
+    """Idempotent schema bootstrap (create-if-absent, never drops).
+
+    Safe to call on every API startup: keeps tables from drifting on deploy
+    hosts where `python -m src.db` was never run directly."""
+    eng = engine()
+    metadata.create_all(eng)
+    return eng
+
+
 def _region_code(label):
     if label == NATIONAL_NAME:
         return NATIONAL_CODE
@@ -317,7 +363,8 @@ def _load_csv(name):
 
 def build_db():
     """(Re)build every table from the processed CSVs. Idempotent: each build
-    replaces the previous contents, so a full pipeline rerun fully resyncs it."""
+    replaces the previous contents, so a full pipeline rerun fully resyncs it.
+    Schemas unrelated to the pipeline (e.g. `subscriptions`) are untouched."""
     eng = engine()
     metadata.drop_all(eng)
     metadata.create_all(eng)
@@ -405,6 +452,30 @@ def build_db():
             folds = folds.rename(columns={"ds": "month", "y": "actual", "yhat": "predicted"})
             folds = _remap(folds, "region_code", date_col="month")
             conn.execute(walk_forward_folds.insert(), folds.to_dict(orient="records"))
+
+        esc = _load_csv("risk_escalation_ranking.csv")
+        if esc is not None and not esc.empty:
+            esc = _remap(esc, "region_code")
+            conn.execute(
+                risk_escalation.insert(),
+                esc[
+                    [
+                        "region_code",
+                        "disease",
+                        "rank",
+                        "tier_climbs",
+                        "net_climb",
+                        "n_high_months",
+                        "first_high_month",
+                        "final_tier",
+                    ]
+                ].to_dict(orient="records"),
+            )
+
+        ov = _load_csv("outbreak_validation_2025.csv")
+        if ov is not None and not ov.empty:
+            ov = _remap(ov, "region_code")
+            conn.execute(outbreak_validation.insert(), ov.to_dict(orient="records"))
 
         regional_dates = (
             regional["date"].max() if regional is not None and not regional.empty else None
