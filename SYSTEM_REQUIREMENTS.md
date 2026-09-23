@@ -12,8 +12,8 @@
 |---|---|---|
 | Backend API | Uvicorn on `localhost:8000` | `web` service, free tier, Python runtime |
 | Frontend (SSR) | Vite dev server (`localhost:3000`) | `web` service, free tier, Node runtime |
-| Database | SQLite fallback (`data/processed/healthwatch.db`) | Supabase PostgreSQL (external) |
-| Subscriptions | Local SQLite (`data/subscriptions.sqlite3`) | Ephemeral SQLite (best-effort on free tier) |
+| Database | Supabase PostgreSQL (external, `DATABASE_URL`) | Supabase PostgreSQL (external) — Postgres-only, no SQLite |
+| Subscriptions | Same Postgres `subscriptions` table | Same Postgres `subscriptions` table (persists across redeploys) |
 
 ---
 
@@ -73,7 +73,7 @@
 | Repository (source, excl. `.git`, `.venv`, `node_modules`) | ~5.3 MB |
 | Raw data CSVs + Excel (`data/raw/`) | ~2.9 MB |
 | Processed data CSVs (`data/processed/`) | ~1.2 MB |
-| SQLite DB (`data/processed/healthwatch.db`) | ~740 KB |
+| Postgres schema | Hosted (Supabase) — no local files |
 | GeoJSON (`frontend/public/geo/`) | ~211 KB |
 | Python venv + dependencies (`.venv/`) | ~800 MB - 1.2 GB |
 | Node `node_modules/` | ~300-500 MB |
@@ -147,15 +147,15 @@
 
 | Module | Purpose |
 |---|---|
-| `api.py` | FastAPI app (1,249 lines); loads all data into memory at startup |
-| `db.py` | SQLAlchemy schema + PostgreSQL connection (pool_size=5, max_overflow=10) |
+| `api.py` | FastAPI app; loads all tables from PostgreSQL into memory at startup |
+| `db.py` | SQLAlchemy schema + PostgreSQL connection (pool_size=5, max_overflow=10); Postgres-only |
 | `forecast.py` | Prophet monthly fits (12-month horizon, walk-forward validation) |
 | `classify.py` | Risk tier classification (Low / Moderate / High) |
 | `outbreak.py` | Season-level outbreak flag detection |
 | `ingest.py` | Raw CSV/Excel → monthly series |
 | `doh_eb_ingest.py` | DOH-Epi Bureau specific ingestion |
 | `email_report.py` | Monthly forecast report (HTML render + Resend delivery) |
-| `subscription_store.py` | Anonymous email subscription store (SQLite) |
+| `subscription_store.py` | Anonymous email subscription store (PostgreSQL, same DB as schema) |
 | `validate_2025.py` | Prospective 2025 validation |
 | `validate_known_epidemic.py` | Independent 2019 outbreak check |
 
@@ -165,13 +165,18 @@
 
 | Requirement | Localhost | Render (Production) |
 |---|---|---|
-| **Engine** | SQLite (fallback, no config needed) | PostgreSQL (Supabase) |
-| **Connection** | File: `data/processed/healthwatch.db` | `DATABASE_URL` env var (sslmode=require) |
-| **Pool size** | N/A (SQLite, single connection) | pool_size=5, max_overflow=10 |
-| **Pool recycle** | N/A | 300 seconds |
-| **Tables** | 9 tables (same schema) | 9 tables |
-| **Schema rebuild** | `python -m src.db` (idempotent, drop+recreate) | Same command, points to Postgres |
-| **Subscriptions store** | Separate SQLite: `data/subscriptions.sqlite3` | Ephemeral SQLite on Render free tier |
+| **Engine** | PostgreSQL (Supabase) via `DATABASE_URL` | PostgreSQL (Supabase) |
+| **Connection** | `DATABASE_URL` env var (sslmode=require) | `DATABASE_URL` env var (sslmode=require) |
+| **Pool size** | pool_size=5, max_overflow=10 | pool_size=5, max_overflow=10 |
+| **Pool recycle** | 300 seconds | 300 seconds |
+| **Tables** | 11 tables (same schema) | 11 tables |
+| **Schema rebuild** | `python -m src.db` (idempotent, drop+recreate of pipeline tables) | Same command, points to Postgres |
+| **Subscriptions store** | `subscriptions` table in the same Postgres | `subscriptions` table (persists across redeploys) |
+
+> Postgres-only: there is no SQLite anywhere. The API, email report, and
+> subscription store all require `DATABASE_URL` (parsed from the repo `.env`).
+> `data/processed/*.csv` are pipeline checkpoints; `python -m src.db` mirrors
+> them into PostgreSQL.
 
 ### Database Tables
 
@@ -183,7 +188,9 @@
 6. `outbreak_signals` — season-level outbreak flags
 7. `validation_metrics` — MAE/RMSE/MAPE per region
 8. `walk_forward_folds` — monthly actual vs predicted
-9. `pipeline_runs` — run metadata / lineage
+9. `risk_escalation` — regional ranking by forecast-tier climbs
+10. `outbreak_validation` — 2025 prospective flags vs observed (tp/fp/fn/tn)
+11. `pipeline_runs` — run metadata / lineage
 
 ---
 
@@ -223,12 +230,11 @@
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `DATABASE_URL` | Yes (prod) | SQLite fallback | PostgreSQL connection string |
+| `DATABASE_URL` | Yes | None (API will not start without it) | PostgreSQL connection string (Supabase) |
 | `GROQ_API_KEY` | No | None | Groq API key for AI-assisted analysis (Llama 4) |
 | `RESEND_API_KEY` | No | None | Resend email API key |
 | `RESEND_FROM` | No | `HealthWatch <onboarding@resend.dev>` | Sender address |
 | `APP_URL` | No | `https://healthwatch-ui.onrender.com` | Base URL for email CTAs |
-| `SUBSCRIPTIONS_DB` | No | `data/subscriptions.sqlite3` | Subscription store path |
 | `JOB_TOKEN` | No | None | Secret for POST `/subscriptions/send-due` |
 | `ALLOWED_ORIGINS` | No | localhost + `*.onrender.com` | CORS origins |
 | `DISABLE_SUBSCRIPTION_SCHEDULER` | No | Unset | Set `1` to disable in-process sender |
@@ -269,7 +275,7 @@
 
 - **512 MB RAM** per service (API + Frontend separate)
 - **Shared 1 vCPU** (burst only)
-- **No persistent disk** — subscription SQLite resets on redeploy
+- **No persistent disk on Render** — irrelevant for data: everything lives in the managed Supabase Postgres (schema tables + `subscriptions`), which survives redeploys
 - **Sleeps after 15 min** — first request after sleep takes ~30s
 - **No cron jobs** — use external cron (e.g., cron-job.org) to POST `/subscriptions/send-due`
 
@@ -337,7 +343,7 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 [  ] Git 2.30+ installed
 [  ] Python 3.10+ installed (.venv created)
 [  ] Node.js 20.19+ installed
-[  ] .env file created with DATABASE_URL (or accept SQLite fallback)
+[  ] .env file created with DATABASE_URL (Postgres-only; required)
 [  ] pip install -r requirements.txt (backend)
 [  ] npm install (frontend/)
 [  ] Backend running: uvicorn src.api:app --port 8000
@@ -353,7 +359,7 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 [  ] render.yaml blueprint deployed (API + Frontend services)
 [  ] CORS: ALLOWED_ORIGINS includes frontend URL
 [  ] External cron job configured for /subscriptions/send-due (optional)
-[  ] Pipeline CSVs committed to repo (data is in-repo, no pipeline run needed)
+[  ] Pipeline CSVs committed to repo; schema populated: `python -m src.db` against DATABASE_URL
 ```
 
 ---
@@ -379,8 +385,7 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 | Limitation | Impact | Mitigation |
 |---|---|---|
 | Render free tier sleeps after 15 min | ~30s cold start on first request | External keep-alive ping or upgrade plan |
-| Render free tier: no persistent disk | Subscriptions lost on redeploy | Set `SUBSCRIPTIONS_DB` to external volume |
-| SQLite fallback (no DATABASE_URL) | Single-writer, no concurrent access | Sufficient for single-user dev |
+| Postgres required (no SQLite) | API won't boot without `DATABASE_URL` | Set `.env` / Render env; Supabase free tier |
 | Prophet fit is CPU-bound | ~5-15 min for full pipeline | Run locally only, not on Render |
 | ML deps not on Render | Can't retrain on server | Pre-computed CSVs committed to repo |
 | Node SSR requires Node 20.19+ | Older Node versions fail | Render managed runtime handles this |

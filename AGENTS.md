@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Regional time-series analysis system for seasonal illness outbreak prediction (Philippines, dengue only). Backend: FastAPI + SQLAlchemy + PostgreSQL/SQLite. Frontend: React + Vite + TanStack Router + Leaflet choropleth. LLM narration layer (Gemini/Groq) for interpretability.
+Regional time-series analysis system for seasonal illness outbreak prediction (Philippines, dengue only). Backend: FastAPI + SQLAlchemy + PostgreSQL (Postgres-only, no SQLite). Frontend: React + Vite + TanStack Router + Leaflet choropleth. LLM narration layer (Groq) for interpretability.
 
 ## Quick Commands
 
@@ -62,18 +62,19 @@ RESEND_API_KEY=      # Optional: monthly forecast emails (100/day free at resend
 RESEND_FROM=         # Optional, default: HealthWatch <onboarding@resend.dev>
 JOB_TOKEN=           # Optional: secret for POST /subscriptions/send-due external cron
 APP_URL=https://healthwatch-ui.onrender.com  # Base URL used in email CTAs/footer
-SUBSCRIPTIONS_DB=    # Optional: override SQLite subscription store path
 DISABLE_SUBSCRIPTION_SCHEDULER=  # Set 1 to disable the in-process monthly sender
 ```
 
-When `DATABASE_URL` is unset, backend falls back to `data/processed/healthwatch.db`.
-Subscriptions (`src/subscription_store.py`) prefer Postgres when `DATABASE_URL` is set
-(auto-creates a `subscriptions` table in Supabase, so they survive Render redeploys);
-otherwise they fall back to SQLite via `SUBSCRIPTIONS_DB` (default
-`data/subscriptions.sqlite3`) for local/dev. `JOB_TOKEN` is required on deployed
-environments: it guards `POST /subscriptions/send-due` (external monthly cron, e.g.
-cron-job.org — the in-process 6-hourly scheduler won't fire while a free Render
-instance is asleep).
+Postgres-only: `DATABASE_URL` is **required** to start the API and is parsed by
+`db.py`, the subscription store (`src/subscription_store.py`), and the email
+report. The API reads every table from the database at startup (the SQLite
+fallback was removed). The schema is auto-created by `db.ensure_tables()` on
+startup and rebuilt from the processed CSVs with `.venv\Scripts\python -m src.db`
+(which drops/recreates only the 11 pipeline tables; the `subscriptions` table is
+untouched, so it survives rebuilds and Render redeploys). `JOB_TOKEN` is required
+on deployed environments: it guards `POST /subscriptions/send-due` (external
+monthly cron, e.g. cron-job.org — the in-process 6-hourly scheduler won't fire
+while a free Render instance is asleep).
 
 ## Design Tooling (Impeccable)
 
@@ -107,7 +108,7 @@ never body text, carrying shadow (`Glass Floor`).
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
 - `frontend/` — React + Vite + TanStack Router dashboard
 - `data/raw/` — canonical DOH-Epi-Dengue CSV (2022-2026, 56 months)
-- `data/processed/` — pipeline output (CSVs + SQLite DB)
+- `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
 - `frontend/public/geo/` — PSGC region GeoJSON for choropleth
 
 ## Key Constraints
@@ -115,7 +116,9 @@ never body text, carrying shadow (`Glass Floor`).
 - **Disease: dengue only** for this release. Schema is disease-agnostic; other illnesses are deferred.
 - **Prediction: Prophet only** (monthly, `freq="MS"`).
 - **National series is derived** (sum of 18 regions), never raw.
-- **Data ships in repo** — no pipeline run needed to start the app.
+- **Data ships in repo** — the pipeline runs offline from `data/raw` and writes
+  `data/processed`; a DB rebuild (`-m src.db`) pushes those artifacts to
+  Postgres. The API itself is Postgres-only and requires `DATABASE_URL`.
 
 ## Testing / Validation
 
