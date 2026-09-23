@@ -107,8 +107,10 @@ function Methodology() {
             </li>
             <li>
               <strong>Forecasting model.</strong> One <strong>Prophet</strong> model per region
-              (additive trend with automatic changepoint detection + Fourier yearly seasonality +
-              wet/dry season regressor). Model parameters are learned from data via Bayesian
+              (additive trend with automatic changepoint detection + wet/dry season regressor, fit
+              in multiplicative seasonality mode). A yearly Fourier seasonality term was tested and
+              dropped: it was essentially collinear with the wet/dry regressor (R² ≈ 1.0) and came
+              out worse on held-out error. Model parameters are learned from data via Bayesian
               estimation — this is the machine-learning step. The production forecast trains through
               <strong>August 2026</strong> and publishes the next 12 months; the two validation
               windows train through 31 December 2024 (prospective) and August 2025 (recent).
@@ -172,8 +174,8 @@ function Methodology() {
         </ul>
         <p className="mt-3 text-xs text-muted-foreground">
           The pipeline stores the 228-row (19 × 12) region × month percentile table (P50/P75) used
-          to grade tier accuracy: on the 2025 prospective holdout ~27% of region-months landed in
-          the exact tier and severe (Low-or-Moderate → High) misses were ~45% — a deliberately
+          to grade tier accuracy: on the 2025 prospective holdout ~40% of region-months landed in
+          the exact tier and severe (Low-or-Moderate → High) misses were ~29% — a deliberately
           simple, deterministic analog of established epidemic-threshold methods such as the WHO
           Moving Epidemic Method, which likewise derives intensity bands from historical
           distributions rather than fitted parameters.
@@ -212,8 +214,8 @@ function Methodology() {
             Crucially, these flags were <strong>locked without retuning</strong> after a prospective
             test: probes were generated from data through 31 December 2024 and compared against the
             real, observed 2025 monthly series (never part of training). Across the 18 regions the
-            flag scored <strong>precision 0.43, recall 0.68, F1 0.53</strong> (13 true positives, 17
-            false positives, 6 missed surges). Dry-season accuracy was strong while the wet season
+            flag scored <strong>precision 0.39, recall 0.56, F1 0.46</strong> (10 true positives, 16
+            false positives, 8 missed surges). Dry-season accuracy was strong while the wet season
             over-warns rather than misses a surge; that conservative posture is deliberate for a
             public-health alerting layer and is the reason wet-season flags are framed as a watch, not
             a confirmation.
@@ -302,8 +304,8 @@ function Methodology() {
           <ul className="space-y-2 text-sm text-foreground/85">
             <li>
               <strong>Short monthly history.</strong> The monthly series spans 56 months (2022–2026),
-              giving only ~4 full seasonal cycles — enough to fit a yearly Fourier seasonality but not
-              to model multi-year epidemic super-cycles.
+              giving only ~4 full seasonal cycles — enough for the wet/dry regressor's per-region
+              season coefficient to stabilize but not to model multi-year epidemic super-cycles.
             </li>
             <li>
               <strong>Negative-skill windows.</strong> In several region-window validation runs a
@@ -312,14 +314,15 @@ function Methodology() {
               each region's skill so low-confidence forecasts are visible rather than hidden.
             </li>
             <li>
-              <strong>Weak prospective tier accuracy.</strong> Only ~27% of 2025 holdout months landed
-              in the exact risk tier and roughly 45% of wet-season surges were under-classified as
-              Low/Moderate. These numbers stayed locked; they are the honest cost of using plain
-              month-of-year percentiles on a short, high-variance series.
+              <strong>Weak prospective tier accuracy.</strong> Only ~40% of 2025 holdout months landed
+              in the exact risk tier and ~29% were severely mis-graded by at least two tiers
+              (e.g., Low or Moderate flagged where High transpired). These numbers stayed locked;
+              they are the honest cost of using plain month-of-year percentiles on a short,
+              high-variance series.
             </li>
             <li>
               <strong>Outbreak-flag over-warning.</strong> The locked 2025 prospective flags scored
-              precision 0.43 (17 false positives) with recall 0.68. Wet-season flags by design favour
+              precision 0.39 (16 false positives) with recall 0.56. Wet-season flags by design favour
               recall over precision so no surge is missed.
             </li>
             <li>

@@ -31,6 +31,23 @@ powershell -ExecutionPolicy Bypass -File run-dev.ps1
 .venv\Scripts\python -m src.validate_2025           # prospective 2025 validation
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
 .venv\Scripts\python -m src.db                      # rebuild relational DB from processed CSVs
+
+# LLM narrative fidelity corpus (methodology 3.5.3; live, needs GROQ_API_KEY)
+# 152 narratives: 19 series x {ai_insight, analysis, seasonality x5, explain_element}.
+.venv\Scripts\python -m src.validate_narratives --skip-live  # dry run (no API calls)
+.venv\Scripts\python -m src.validate_narratives              # full live corpus
+```
+
+# Verification studies (analyst-facing; slow, run detached)
+
+```powershell
+# Seasonality ablation (configs A/B/C), ~1.4k Prophet fits, ~50 min.
+# Launch detached and poll for data/processed/ablation_*.csv:
+Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList "-m","src.ablation" -RedirectStandardOutput "ablation_out.log" -RedirectStandardError "ablation_err.log" -WindowStyle Hidden
+
+# Type II climate-type sensitivity (Bicol / Eastern Visayas / Caraga local
+# seasons vs national Jun-Nov calendar). Fast, reuses shipped CSVs.
+.venv\Scripts\python -m src.sensitivity
 ```
 
 ## Environment Variables

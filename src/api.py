@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 import time
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -22,6 +23,23 @@ DISEASE_DEFAULT = "Dengue"
 PRIMARY_WINDOW = "last_12m"
 
 WET_MONTHS = (6, 7, 8, 9, 10, 11)
+
+# PAGASA Modified Corona Climate Classification. The production pipeline labels
+# seasons with the national monsoon calendar (wet = Jun-Nov, dry = Dec-May), a
+# Type I generalisation. Three eastern regions are Type II: their maximum
+# rainfall falls Dec-Feb, so their local wet window is inverted relative to that
+# labelling. The dashboard never reasons about weather, but when an AI narrative
+# mentions "wet"/"dry season" the annotation below keeps the wording honest and
+# forbids monsoon-based causal claims. Matches classify.SEASON_RULES.
+CLIMATE_TYPES = {
+    "Bicol Region": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "inside its observed high case months)",
+    "Eastern Visayas": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "inside its observed high case months)",
+    "Caraga": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "inside its observed high case months)",
+}
+_CLIMATE_TYPE_DEFAULT = "Type I (national wet season Jun-Nov)"
 
 REGION_META = db.REGION_META
 NAME_BY_CODE = {
@@ -298,11 +316,16 @@ _PLAIN_LANGUAGE_RULES = (
     "sharply'\n"
     "- seasonal strength -> 'cases rise and fall in a steady yearly "
     "rhythm'\n"
-    "- wet vs dry season -> 'the rainy months (June to November)' vs 'the "
-    "drier months'\n"
     "- forecast accuracy/confidence -> 'this outlook is usually close to "
     "what really happens' or 'this outlook is less certain than usual'\n"
     "- risk tier -> 'the alert level for dengue is high/low'\n"
+    "SEASON WORDING RULE (hard constraint, applies to every response): never "
+    "blame weather, rainfall, the monsoon, typhoons, storms, or 'the rainy "
+    "season' for dengue levels. The figures are case counts compared with "
+    "historical baselines; season labels in the figures are probe windows, "
+    "not weather claims. Talk about which calendar months the numbers rise "
+    "and fall in, and which season label applies, without ever saying weather "
+    "drives the change.\n"
     "NUMBER RULES: round naturally ('about 90% lower', 'around 600 cases a "
     "month'). Always attach meaning ('roughly a tenth of what it was'). Name "
     "MONTHS, never month numbers ('around September', never 'month 9').\n"
@@ -381,6 +404,7 @@ def _build_grounding(db_region, disease, window):
     return {
         "region": _label(db_region),
         "disease": disease,
+        "climate": _climate_annotation(db_region),
         "observed_through": {
             "month_label": _month_point(0, last_obs["date"], last_obs["cases"], False)["label"],
             "cases": int(last_obs["cases"]),
@@ -437,6 +461,185 @@ def _variance(values):
     return sum((v - mean) ** 2 for v in values) / len(values)
 
 
+def _climate_annotation(db_region):
+    """Per-region climate-type annotation for LLM grounding payloads.
+
+    Surfaces the PAGASA Modified Corona classification for the region so the
+    narration layer never has to guess whether "dry season" means the same
+    months for this region as for the national Type I calendar."""
+    name = _label(db_region)
+    typ = CLIMATE_TYPES.get(name)
+    if typ is None:
+        return {
+            "climate_type": _CLIMATE_TYPE_DEFAULT,
+            "effective_wet_months": "June to November",
+            "effective_dry_months": "December to May, January to March probe is dry season",
+        }
+    return {
+        "climate_type": typ,
+        "effective_wet_months": "December to May (inverted from the national calendar)",
+        "effective_dry_months": "June to November (inverted from the national calendar)",
+    }
+
+
+_SAFE_SEASON_CLAUSE = (
+    "SEASON WORDING RULE (hard constraint): never attribute dengue levels to "
+    "weather, rainfall, the monsoon, storms, or 'wet/dry season' as a cause. "
+    "The pipeline compares case counts against historical percentiles; its "
+    "'dry season'/'wet season' labels label the probe windows, they are not a "
+    "claim about this region's rainfall pattern. Say what the numbers show "
+    "('cases climb every year from about June to September' if the figures "
+    "show that, and that the region has its own climate pattern when "
+    "annotated) without ever saying rain causes dengue. If the payload "
+    "carries a climate_type annotation, echo it verbatim only as a factual "
+    "aside, never as the mechanism."
+)
+
+_WEATHER_LEXICON = (
+    " rain", " rainy", " monsoon", "habagat", "amihan", " typhoon", "thunderstorm",
+    " wet season", " dry season", " rainy season", " north-east monsoon",
+    " south-west monsoon", " rains", " rainfall",
+)
+
+
+def _weather_violation(narrative):
+    """Deterministic post-generation guard: report which weather/monsoon terms
+    the narration used, so endpoints can swap in a safe templated fallback.
+    Empty tuple means the prose is clean under the constraint."""
+    low = narrative.lower()
+    return tuple(w.strip() for w in _WEATHER_LEXICON if w in low)
+
+
+def _safe_season_narrative(grounding):
+    """Strictly-weather-free fallback narration built from the same grounding
+    payload, used only when the model violates the SEASON WORDING RULE."""
+    region = grounding.get("region", "this region")
+    fore = grounding.get("forecast", grounding.get("next_month_forecast"))
+    if fore and fore.get("yhat") is not None:
+        v = int(round(float(fore["yhat"])))
+        month = fore.get("month", fore.get("target_date", "")) or ""
+        if isinstance(month, str) and len(month) == 10:
+            month = _month_label(pd.Timestamp(month).month)
+        lead = f"In {region}, around {v:,} dengue cases are expected"
+        if month:
+            lead += f" in {month}"
+        lead += "."
+    else:
+        seas = grounding.get("seasonal")
+        if seas:
+            lead = f"Across {region}, case counts move in a steady yearly rhythm"
+        else:
+            lead = f"Dengue numbers in {region} are tracked against historical levels."
+    climate = grounding.get("climate", {}).get("climate_type", "")
+    if "Type II" in climate:
+        climate_suffix = (
+            " This region has a Type II climate, so its usual pattern can differ "
+            "from the rest of the country."
+        )
+    else:
+        climate_suffix = ""
+    return lead + climate_suffix
+
+
+# ---------------------------------------------------------------------------
+# Numeric-fidelity guard (methodology 3.5.3). Deterministic post-generation
+# check: every numeric token in the generated prose must trace back to a value
+# in the grounding payload (or a known method/calendar constant). Any unknown
+# figure swaps in a deterministic templated narration, so no unverified number
+# is ever dispatched to a client.
+# ---------------------------------------------------------------------------
+
+# Calendar/method constants a narration may legitimately echo without the
+# pipeline having computed them: surveillance years, percentile/CI/window
+# labels, three-month probe length, 19 series, 18 regions, 36-month baseline.
+_METHOD_CONSTANTS = {
+    3.0, 6.0, 10.0, 12.0, 18.0, 24.0, 36.0, 48.0, 50.0, 75.0, 80.0, 95.0,
+    100.0, 0.5, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
+}
+
+
+def _extract_number_tokens(text):
+    """All decimal tokens in a string, with comma grouping stripped."""
+    out = []
+    for m in re.finditer(r"-?\d[\d,]*(?:\.\d+)?", text):
+        out.append(float(m.group().replace(",", "")))
+    return out
+
+
+def _numeric_allowed(grounding):
+    """Set of numeric values a narration may use, collected recursively from
+    the grounding payload (including digits inside date/label strings) plus the
+    method constants above."""
+    allowed = set(_METHOD_CONSTANTS)
+
+    def walk(obj):
+        if isinstance(obj, dict):
+            for v in obj.values():
+                walk(v)
+        elif isinstance(obj, (list, tuple)):
+            for v in obj:
+                walk(v)
+        elif isinstance(obj, bool):
+            return
+        elif isinstance(obj, (int, float)):
+            allowed.add(float(obj))
+        elif isinstance(obj, str):
+            allowed.update(_extract_number_tokens(obj))
+
+    walk(grounding)
+    return allowed
+
+
+_NUMERIC_TOLERANCE = 1.0  # absolute slack; 1%-of-value slack applied per token
+
+
+def _numeric_violation(narrative, grounding):
+    """Report numeric tokens with no allowed counterpart in the grounding
+    payload, within a 1%-or-1-unit rounding tolerance. Empty tuple means the
+    prose cites only figures the pipeline computed."""
+    allowed = _numeric_allowed(grounding)
+    bad = []
+    for token in _extract_number_tokens(narrative):
+        if any(abs(token - a) <= max(_NUMERIC_TOLERANCE, 0.01 * abs(a)) for a in allowed):
+            continue
+        bad.append(token)
+    return tuple(round(b, 3) for b in bad[:8])
+
+
+def _safe_element_narrative(g):
+    """Deterministic fallback for click-to-explain: restates only the payload
+    fields the user clicked, no LLM, no derived figures."""
+    parts = []
+    desc = str(g.get("description") or g.get("title") or "").strip().rstrip(".")
+    if desc:
+        parts.append(desc + ".")
+    if g.get("metric_value"):
+        parts.append(f"The current reading is {g['metric_value']}.")
+    if g.get("region"):
+        parts.append(f"This applies to {g['region']}.")
+    if g.get("month"):
+        parts.append(f"For {g['month']}.")
+    text = " ".join(parts).strip()
+    return text or "This element explains a dengue surveillance dashboard reading."
+
+
+def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn):
+    """Generate, then deterministically guard: weather-lexicon check, then
+    numeric-fidelity check against the grounding payload. On either violation
+    the narration is replaced by a templated fallback built from the same
+    grounding (no LLM). Returns narrative, model, flag, and both violation
+    reports for auditability."""
+    narrative, model = _llm_narrate(system_prompt, user_prompt)
+    weather = _weather_violation(narrative)
+    numbers = _numeric_violation(narrative, grounding)
+    if weather or numbers:
+        narrative = safe_fn(grounding)
+        used_safe_fallback = True
+    else:
+        used_safe_fallback = False
+    return narrative, model, used_safe_fallback, weather, numbers
+
+
 def _seasonality_grounding(db_region):
     """Deterministic server-side port of the Seasonality page's decomposition
     (frontend data.ts `decompose()`/`acf()`): centred ±6-month moving-average
@@ -491,6 +694,7 @@ def _seasonality_grounding(db_region):
 
     return {
         "region": _label(db_region),
+        "climate": _climate_annotation(db_region),
         "observed_months": n,
         "series_start": dates[0].date().isoformat(),
         "series_end": dates[-1].date().isoformat(),
@@ -537,7 +741,8 @@ _SEASONALITY_FOCUS = {
     ),
     "seasonal": (
         "Focus on the yearly rhythm: which months cases usually rise to a "
-        "peak and fall to a low, and how rainy months differ from dry ones."
+        "peak and fall to a low, sticking to calendar months and never "
+        "blaming rain or the seasons for the pattern."
     ),
     "residual": (
         "Focus on unusual months that jumped above or dropped below the normal "
@@ -1210,6 +1415,7 @@ def _ai_insight_grounding(db_region, disease):
     return {
         "region": _label(db_region),
         "disease": disease,
+        "climate": _climate_annotation(db_region),
         "latest_month": {
             "month": _month_label(last_obs["date"].month),
             "cases": int(last_obs["cases"]),
@@ -1272,12 +1478,17 @@ def ai_insight(
         "Give the one-line insight for this region's next month. Figures you "
         "may use:\n" + json.dumps(grounding)
     )
-    narrative, model = _llm_narrate(_AI_INSIGHT_SYSTEM_PROMPT, user_prompt)
+    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
+        _guarded_narrative(_AI_INSIGHT_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+    )
 
     return {
         "region": _label(db_region),
         "disease": disease,
         "narrative": narrative,
+        "safe_season_fallback": used_safe_fallback,
+        "weather_violations": list(weather_violations),
+        "numeric_violations": list(numeric_violations),
         "models": model,
         "grounding_data": grounding,
     }
@@ -1314,13 +1525,18 @@ def analysis_seasonality(
         f"{_SEASONALITY_FOCUS[component]} Figures you may use:\n"
         + json.dumps(grounding)
     )
-    narrative, model = _llm_narrate(_SEASONALITY_SYSTEM_PROMPT, user_prompt)
+    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
+        _guarded_narrative(_SEASONALITY_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+    )
 
     return {
         "region": _label(db_region),
         "disease": disease,
         "component": component,
         "narrative": narrative,
+        "safe_season_fallback": used_safe_fallback,
+        "weather_violations": list(weather_violations),
+        "numeric_violations": list(numeric_violations),
         "grounding_data": grounding,
         "model": model,
     }
@@ -1349,12 +1565,17 @@ def analysis(
         "Explain the current dengue situation for this region. Figures you "
         "may use:\n" + json.dumps(grounding)
     )
-    narrative, model = _llm_narrate(_ANALYSIS_SYSTEM_PROMPT, user_prompt)
+    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
+        _guarded_narrative(_ANALYSIS_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+    )
 
     return {
         "region": _label(db_region),
         "disease": disease,
         "narrative": narrative,
+        "safe_season_fallback": used_safe_fallback,
+        "weather_violations": list(weather_violations),
+        "numeric_violations": list(numeric_violations),
         "grounding_data": grounding,
         "model": model,
     }
@@ -1392,10 +1613,16 @@ def explain_element(request: Request, payload: ExplainElementPayload):
     if payload.metric_value:
         user_prompt += f"Current Metric/Value: {payload.metric_value}\n"
 
-    narrative, model = _llm_narrate(_EXPLAIN_ELEMENT_SYSTEM_PROMPT, user_prompt)
+    grounding = payload.model_dump()
+    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
+        _guarded_narrative(_EXPLAIN_ELEMENT_SYSTEM_PROMPT, user_prompt, grounding, _safe_element_narrative)
+    )
     return {
         "title": payload.title,
         "narrative": narrative,
+        "safe_season_fallback": used_safe_fallback,
+        "weather_violations": list(weather_violations),
+        "numeric_violations": list(numeric_violations),
         "model": model,
     }
 

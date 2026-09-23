@@ -1,457 +1,457 @@
 ds,y,yhat,disease,region,window
-2024-09-01,1247,735.4489966837027,Dengue,Bangsamoro (BARMM),last_12m
-2024-10-01,924,711.9419246497018,Dengue,Bangsamoro (BARMM),last_12m
-2024-11-01,666,995.2092929412702,Dengue,Bangsamoro (BARMM),last_12m
-2024-12-01,426,1168.4832326166925,Dengue,Bangsamoro (BARMM),last_12m
-2025-01-01,623,930.1803785797856,Dengue,Bangsamoro (BARMM),last_12m
-2025-02-01,491,929.5777972588403,Dengue,Bangsamoro (BARMM),last_12m
-2025-03-01,488,937.3322330838892,Dengue,Bangsamoro (BARMM),last_12m
-2025-04-01,457,895.0364658705184,Dengue,Bangsamoro (BARMM),last_12m
-2025-05-01,554,1029.90448663003,Dengue,Bangsamoro (BARMM),last_12m
-2025-06-01,710,1210.9912050991607,Dengue,Bangsamoro (BARMM),last_12m
-2025-07-01,756,1423.7689455412365,Dengue,Bangsamoro (BARMM),last_12m
-2025-08-01,709,1402.5029679388936,Dengue,Bangsamoro (BARMM),last_12m
-2024-01-01,718,582.4511276075264,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-02-01,717,543.9216167133909,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-03-01,779,477.92706622345213,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-04-01,752,633.5041214714165,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-05-01,939,923.0486368096135,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-06-01,1273,1171.6342212109566,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-07-01,1624,1290.4932087683974,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-08-01,1655,910.5259697411984,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-09-01,1247,735.4489966837027,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-10-01,924,711.9419246497018,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-11-01,666,995.2092929412702,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-12-01,426,1168.4832326166925,Dengue,Bangsamoro (BARMM),2025_prospective
-2024-09-01,190,0.0,Dengue,Bicol Region,last_12m
-2024-10-01,145,0.0,Dengue,Bicol Region,last_12m
-2024-11-01,126,0.0,Dengue,Bicol Region,last_12m
-2024-12-01,69,0.0,Dengue,Bicol Region,last_12m
-2025-01-01,233,0.0,Dengue,Bicol Region,last_12m
-2025-02-01,240,30.242442525817182,Dengue,Bicol Region,last_12m
-2025-03-01,192,67.50667996791037,Dengue,Bicol Region,last_12m
-2025-04-01,130,67.8913985143231,Dengue,Bicol Region,last_12m
-2025-05-01,125,105.6528765012024,Dengue,Bicol Region,last_12m
-2025-06-01,162,176.43918342203,Dengue,Bicol Region,last_12m
-2025-07-01,276,281.84727432235724,Dengue,Bicol Region,last_12m
-2025-08-01,368,294.4184659607125,Dengue,Bicol Region,last_12m
-2024-01-01,99,0.0,Dengue,Bicol Region,2025_prospective
-2024-02-01,50,0.0,Dengue,Bicol Region,2025_prospective
-2024-03-01,73,99.28679250232608,Dengue,Bicol Region,2025_prospective
-2024-04-01,50,0.0,Dengue,Bicol Region,2025_prospective
-2024-05-01,41,0.0,Dengue,Bicol Region,2025_prospective
-2024-06-01,86,197.88607880879727,Dengue,Bicol Region,2025_prospective
-2024-07-01,248,356.2047441707384,Dengue,Bicol Region,2025_prospective
-2024-08-01,330,195.2395864471739,Dengue,Bicol Region,2025_prospective
-2024-09-01,190,0.0,Dengue,Bicol Region,2025_prospective
-2024-10-01,145,0.0,Dengue,Bicol Region,2025_prospective
-2024-11-01,126,0.0,Dengue,Bicol Region,2025_prospective
-2024-12-01,69,0.0,Dengue,Bicol Region,2025_prospective
-2024-09-01,6233,2341.504325405007,Dengue,CALABARZON,last_12m
-2024-10-01,7860,0.0,Dengue,CALABARZON,last_12m
-2024-11-01,8435,0.0,Dengue,CALABARZON,last_12m
-2024-12-01,6814,0.0,Dengue,CALABARZON,last_12m
-2025-01-01,7426,1055.9223471462756,Dengue,CALABARZON,last_12m
-2025-02-01,5590,3168.0633320139314,Dengue,CALABARZON,last_12m
-2025-03-01,3799,3141.481477844005,Dengue,CALABARZON,last_12m
-2025-04-01,2034,3361.5602257298087,Dengue,CALABARZON,last_12m
-2025-05-01,1609,3577.6626599374213,Dengue,CALABARZON,last_12m
-2025-06-01,2351,4199.163432649046,Dengue,CALABARZON,last_12m
-2025-07-01,4551,6067.522142565336,Dengue,CALABARZON,last_12m
-2025-08-01,5861,7026.01579402855,Dengue,CALABARZON,last_12m
-2024-01-01,1949,195.07287861816258,Dengue,CALABARZON,2025_prospective
-2024-02-01,1441,0.0,Dengue,CALABARZON,2025_prospective
-2024-03-01,1131,2706.7165727478823,Dengue,CALABARZON,2025_prospective
-2024-04-01,970,958.9948722734625,Dengue,CALABARZON,2025_prospective
-2024-05-01,978,195.13251839274017,Dengue,CALABARZON,2025_prospective
-2024-06-01,1581,0.0,Dengue,CALABARZON,2025_prospective
-2024-07-01,4251,5364.5589265152485,Dengue,CALABARZON,2025_prospective
-2024-08-01,6656,5654.940390416694,Dengue,CALABARZON,2025_prospective
-2024-09-01,6233,2341.504325405007,Dengue,CALABARZON,2025_prospective
-2024-10-01,7860,0.0,Dengue,CALABARZON,2025_prospective
-2024-11-01,8435,0.0,Dengue,CALABARZON,2025_prospective
-2024-12-01,6814,0.0,Dengue,CALABARZON,2025_prospective
-2024-09-01,2707,0.0,Dengue,Cagayan Valley,last_12m
-2024-10-01,2018,0.0,Dengue,Cagayan Valley,last_12m
-2024-11-01,1424,0.0,Dengue,Cagayan Valley,last_12m
-2024-12-01,979,0.0,Dengue,Cagayan Valley,last_12m
-2025-01-01,1085,0.0,Dengue,Cagayan Valley,last_12m
-2025-02-01,901,173.26697313261752,Dengue,Cagayan Valley,last_12m
-2025-03-01,748,164.9877097501444,Dengue,Cagayan Valley,last_12m
-2025-04-01,454,248.42272824575184,Dengue,Cagayan Valley,last_12m
-2025-05-01,438,466.07669031861406,Dengue,Cagayan Valley,last_12m
-2025-06-01,696,1119.5675930578936,Dengue,Cagayan Valley,last_12m
-2025-07-01,1235,2218.780035106035,Dengue,Cagayan Valley,last_12m
-2025-08-01,2148,2713.306325479187,Dengue,Cagayan Valley,last_12m
-2024-01-01,602,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-02-01,375,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-03-01,233,786.9286714863338,Dengue,Cagayan Valley,2025_prospective
-2024-04-01,249,0.0,Dengue,Cagayan Valley,2025_prospective
+2024-09-01,1247,1402.3864714305448,Dengue,Bangsamoro (BARMM),last_12m
+2024-10-01,924,1405.5596711284777,Dengue,Bangsamoro (BARMM),last_12m
+2024-11-01,666,1351.6860018113553,Dengue,Bangsamoro (BARMM),last_12m
+2024-12-01,426,820.3586295395668,Dengue,Bangsamoro (BARMM),last_12m
+2025-01-01,623,766.967126054115,Dengue,Bangsamoro (BARMM),last_12m
+2025-02-01,491,759.9311096616332,Dengue,Bangsamoro (BARMM),last_12m
+2025-03-01,488,733.9925569824977,Dengue,Bangsamoro (BARMM),last_12m
+2025-04-01,457,717.4397986368743,Dengue,Bangsamoro (BARMM),last_12m
+2025-05-01,554,698.4989058528548,Dengue,Bangsamoro (BARMM),last_12m
+2025-06-01,710,1315.4066206988773,Dengue,Bangsamoro (BARMM),last_12m
+2025-07-01,756,1208.4260044163925,Dengue,Bangsamoro (BARMM),last_12m
+2025-08-01,709,1149.4308391328912,Dengue,Bangsamoro (BARMM),last_12m
+2024-01-01,718,504.0687519194997,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-02-01,717,557.127027439839,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-03-01,779,596.0820361593885,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-04-01,752,637.9070265219951,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-05-01,939,672.0374976917807,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-06-01,1273,1098.7291621342758,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-07-01,1624,1163.4632907298776,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-08-01,1655,1296.0850979922254,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-09-01,1247,1402.3864714305448,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-10-01,924,1405.5596711284777,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-11-01,666,1351.6860018113553,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-12-01,426,820.3586295395668,Dengue,Bangsamoro (BARMM),2025_prospective
+2024-09-01,190,135.11541285549356,Dengue,Bicol Region,last_12m
+2024-10-01,145,142.16873571107112,Dengue,Bicol Region,last_12m
+2024-11-01,126,138.60298105528364,Dengue,Bicol Region,last_12m
+2024-12-01,69,58.40020966664529,Dengue,Bicol Region,last_12m
+2025-01-01,233,57.04900425286624,Dengue,Bicol Region,last_12m
+2025-02-01,240,66.3336246831296,Dengue,Bicol Region,last_12m
+2025-03-01,192,78.25415995309916,Dengue,Bicol Region,last_12m
+2025-04-01,130,86.51731967909441,Dengue,Bicol Region,last_12m
+2025-05-01,125,89.71961325528959,Dengue,Bicol Region,last_12m
+2025-06-01,162,163.9837459063182,Dengue,Bicol Region,last_12m
+2025-07-01,276,162.29519968501336,Dengue,Bicol Region,last_12m
+2025-08-01,368,178.12998177168504,Dengue,Bicol Region,last_12m
+2024-01-01,99,32.71264418954174,Dengue,Bicol Region,2025_prospective
+2024-02-01,50,32.43125959741146,Dengue,Bicol Region,2025_prospective
+2024-03-01,73,29.755376727664412,Dengue,Bicol Region,2025_prospective
+2024-04-01,50,28.725665135087084,Dengue,Bicol Region,2025_prospective
+2024-05-01,41,25.55138967463391,Dengue,Bicol Region,2025_prospective
+2024-06-01,86,52.93931075752289,Dengue,Bicol Region,2025_prospective
+2024-07-01,248,53.170735267451434,Dengue,Bicol Region,2025_prospective
+2024-08-01,330,91.36356882013501,Dengue,Bicol Region,2025_prospective
+2024-09-01,190,135.11541285549356,Dengue,Bicol Region,2025_prospective
+2024-10-01,145,142.16873571107112,Dengue,Bicol Region,2025_prospective
+2024-11-01,126,138.60298105528364,Dengue,Bicol Region,2025_prospective
+2024-12-01,69,58.40020966664529,Dengue,Bicol Region,2025_prospective
+2024-09-01,6233,3433.831871068789,Dengue,CALABARZON,last_12m
+2024-10-01,7860,4011.672463638824,Dengue,CALABARZON,last_12m
+2024-11-01,8435,5968.281938351862,Dengue,CALABARZON,last_12m
+2024-12-01,6814,1114.1203948928487,Dengue,CALABARZON,last_12m
+2025-01-01,7426,2535.84864208878,Dengue,CALABARZON,last_12m
+2025-02-01,5590,3444.7016109612723,Dengue,CALABARZON,last_12m
+2025-03-01,3799,3857.1469941148207,Dengue,CALABARZON,last_12m
+2025-04-01,2034,3924.9551291521448,Dengue,CALABARZON,last_12m
+2025-05-01,1609,3765.152196043306,Dengue,CALABARZON,last_12m
+2025-06-01,2351,6590.260837958411,Dengue,CALABARZON,last_12m
+2025-07-01,4551,5901.623600271811,Dengue,CALABARZON,last_12m
+2025-08-01,5861,5781.637323536755,Dengue,CALABARZON,last_12m
+2024-01-01,1949,677.3215201514126,Dengue,CALABARZON,2025_prospective
+2024-02-01,1441,767.1758705325518,Dengue,CALABARZON,2025_prospective
+2024-03-01,1131,811.2427689047367,Dengue,CALABARZON,2025_prospective
+2024-04-01,970,816.5800971179685,Dengue,CALABARZON,2025_prospective
+2024-05-01,978,821.2279560322343,Dengue,CALABARZON,2025_prospective
+2024-06-01,1581,2252.9222765034738,Dengue,CALABARZON,2025_prospective
+2024-07-01,4251,1991.3561895086093,Dengue,CALABARZON,2025_prospective
+2024-08-01,6656,2519.5763424961274,Dengue,CALABARZON,2025_prospective
+2024-09-01,6233,3433.831871068789,Dengue,CALABARZON,2025_prospective
+2024-10-01,7860,4011.672463638824,Dengue,CALABARZON,2025_prospective
+2024-11-01,8435,5968.281938351862,Dengue,CALABARZON,2025_prospective
+2024-12-01,6814,1114.1203948928487,Dengue,CALABARZON,2025_prospective
+2024-09-01,2707,2521.9233230911086,Dengue,Cagayan Valley,last_12m
+2024-10-01,2018,2723.494834206865,Dengue,Cagayan Valley,last_12m
+2024-11-01,1424,2641.872407840853,Dengue,Cagayan Valley,last_12m
+2024-12-01,979,196.04448685425632,Dengue,Cagayan Valley,last_12m
+2025-01-01,1085,232.50155798655504,Dengue,Cagayan Valley,last_12m
+2025-02-01,901,262.08404214195855,Dengue,Cagayan Valley,last_12m
+2025-03-01,748,279.3998960780343,Dengue,Cagayan Valley,last_12m
+2025-04-01,454,345.2294076766788,Dengue,Cagayan Valley,last_12m
+2025-05-01,438,341.8734282006407,Dengue,Cagayan Valley,last_12m
+2025-06-01,696,2997.657636939911,Dengue,Cagayan Valley,last_12m
+2025-07-01,1235,1322.5351411395716,Dengue,Cagayan Valley,last_12m
+2025-08-01,2148,1273.6564054815694,Dengue,Cagayan Valley,last_12m
+2024-01-01,602,56.15604136340067,Dengue,Cagayan Valley,2025_prospective
+2024-02-01,375,35.789747861662576,Dengue,Cagayan Valley,2025_prospective
+2024-03-01,233,12.850925648304912,Dengue,Cagayan Valley,2025_prospective
+2024-04-01,249,149.35062666709484,Dengue,Cagayan Valley,2025_prospective
 2024-05-01,350,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-06-01,778,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-07-01,2249,2513.4554088358273,Dengue,Cagayan Valley,2025_prospective
-2024-08-01,3730,836.9994266627582,Dengue,Cagayan Valley,2025_prospective
-2024-09-01,2707,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-10-01,2018,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-11-01,1424,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-12-01,979,0.0,Dengue,Cagayan Valley,2025_prospective
-2024-09-01,2225,0.0,Dengue,Caraga,last_12m
-2024-10-01,1685,0.0,Dengue,Caraga,last_12m
-2024-11-01,1644,0.0,Dengue,Caraga,last_12m
-2024-12-01,1194,398.3802416356775,Dengue,Caraga,last_12m
-2025-01-01,1561,1787.1619411162956,Dengue,Caraga,last_12m
-2025-02-01,1071,2161.381131455786,Dengue,Caraga,last_12m
-2025-03-01,807,1332.6119635849107,Dengue,Caraga,last_12m
-2025-04-01,571,1219.6845607029334,Dengue,Caraga,last_12m
-2025-05-01,515,1275.2503783656682,Dengue,Caraga,last_12m
-2025-06-01,411,1278.8954590587764,Dengue,Caraga,last_12m
-2025-07-01,369,1624.3564562248212,Dengue,Caraga,last_12m
-2025-08-01,235,2131.6803877271054,Dengue,Caraga,last_12m
-2024-01-01,1143,615.1092130279621,Dengue,Caraga,2025_prospective
-2024-02-01,756,68.64111093998326,Dengue,Caraga,2025_prospective
-2024-03-01,634,993.5415431636266,Dengue,Caraga,2025_prospective
-2024-04-01,556,903.6422310587882,Dengue,Caraga,2025_prospective
-2024-05-01,837,675.1959727746143,Dengue,Caraga,2025_prospective
-2024-06-01,1022,444.18130739637036,Dengue,Caraga,2025_prospective
-2024-07-01,1773,380.56032044808944,Dengue,Caraga,2025_prospective
-2024-08-01,2868,167.99639472441413,Dengue,Caraga,2025_prospective
-2024-09-01,2225,0.0,Dengue,Caraga,2025_prospective
-2024-10-01,1685,0.0,Dengue,Caraga,2025_prospective
-2024-11-01,1644,0.0,Dengue,Caraga,2025_prospective
-2024-12-01,1194,398.3802416356775,Dengue,Caraga,2025_prospective
-2024-09-01,5215,0.0,Dengue,Central Luzon,last_12m
-2024-10-01,5441,0.0,Dengue,Central Luzon,last_12m
-2024-11-01,6277,0.0,Dengue,Central Luzon,last_12m
-2024-12-01,5984,0.0,Dengue,Central Luzon,last_12m
-2025-01-01,6258,0.0,Dengue,Central Luzon,last_12m
-2025-02-01,4683,0.0,Dengue,Central Luzon,last_12m
-2025-03-01,3882,740.4655170685437,Dengue,Central Luzon,last_12m
-2025-04-01,2241,1185.401121736155,Dengue,Central Luzon,last_12m
-2025-05-01,1733,1899.6418146471187,Dengue,Central Luzon,last_12m
-2025-06-01,3716,3643.5246200109104,Dengue,Central Luzon,last_12m
-2025-07-01,9125,7272.538807608355,Dengue,Central Luzon,last_12m
-2025-08-01,12015,8338.558476085738,Dengue,Central Luzon,last_12m
-2024-01-01,1484,0.0,Dengue,Central Luzon,2025_prospective
-2024-02-01,1050,0.0,Dengue,Central Luzon,2025_prospective
-2024-03-01,751,2605.5520557469645,Dengue,Central Luzon,2025_prospective
-2024-04-01,625,0.0,Dengue,Central Luzon,2025_prospective
+2024-06-01,778,1283.8365115292236,Dengue,Cagayan Valley,2025_prospective
+2024-07-01,2249,818.5649241016014,Dengue,Cagayan Valley,2025_prospective
+2024-08-01,3730,1600.891091567571,Dengue,Cagayan Valley,2025_prospective
+2024-09-01,2707,2521.9233230911086,Dengue,Cagayan Valley,2025_prospective
+2024-10-01,2018,2723.494834206865,Dengue,Cagayan Valley,2025_prospective
+2024-11-01,1424,2641.872407840853,Dengue,Cagayan Valley,2025_prospective
+2024-12-01,979,196.04448685425632,Dengue,Cagayan Valley,2025_prospective
+2024-09-01,2225,1453.3727299197722,Dengue,Caraga,last_12m
+2024-10-01,1685,1651.3129195090526,Dengue,Caraga,last_12m
+2024-11-01,1644,1702.9718200923799,Dengue,Caraga,last_12m
+2024-12-01,1194,1051.7352572698971,Dengue,Caraga,last_12m
+2025-01-01,1561,1104.5952497534781,Dengue,Caraga,last_12m
+2025-02-01,1071,1212.1326638948403,Dengue,Caraga,last_12m
+2025-03-01,807,1218.908653893285,Dengue,Caraga,last_12m
+2025-04-01,571,1191.1597958819038,Dengue,Caraga,last_12m
+2025-05-01,515,1134.7324400557186,Dengue,Caraga,last_12m
+2025-06-01,411,1981.6396695213002,Dengue,Caraga,last_12m
+2025-07-01,369,1684.9604317604844,Dengue,Caraga,last_12m
+2025-08-01,235,1484.22178283859,Dengue,Caraga,last_12m
+2024-01-01,1143,465.1118154653596,Dengue,Caraga,2025_prospective
+2024-02-01,756,658.5059567780642,Dengue,Caraga,2025_prospective
+2024-03-01,634,696.4417134944752,Dengue,Caraga,2025_prospective
+2024-04-01,556,697.1289925894888,Dengue,Caraga,2025_prospective
+2024-05-01,837,676.829723328649,Dengue,Caraga,2025_prospective
+2024-06-01,1022,769.9747122289735,Dengue,Caraga,2025_prospective
+2024-07-01,1773,832.9485109612457,Dengue,Caraga,2025_prospective
+2024-08-01,2868,1042.8282307325035,Dengue,Caraga,2025_prospective
+2024-09-01,2225,1453.3727299197722,Dengue,Caraga,2025_prospective
+2024-10-01,1685,1651.3129195090526,Dengue,Caraga,2025_prospective
+2024-11-01,1644,1702.9718200923799,Dengue,Caraga,2025_prospective
+2024-12-01,1194,1051.7352572698971,Dengue,Caraga,2025_prospective
+2024-09-01,5215,5183.896262736247,Dengue,Central Luzon,last_12m
+2024-10-01,5441,5433.63706486917,Dengue,Central Luzon,last_12m
+2024-11-01,6277,5605.314051089628,Dengue,Central Luzon,last_12m
+2024-12-01,5984,522.2780812395988,Dengue,Central Luzon,last_12m
+2025-01-01,6258,637.7732409732756,Dengue,Central Luzon,last_12m
+2025-02-01,4683,1306.088743708144,Dengue,Central Luzon,last_12m
+2025-03-01,3882,1523.714139236461,Dengue,Central Luzon,last_12m
+2025-04-01,2241,1693.898317546207,Dengue,Central Luzon,last_12m
+2025-05-01,1733,1750.852647681321,Dengue,Central Luzon,last_12m
+2025-06-01,3716,4659.964538697204,Dengue,Central Luzon,last_12m
+2025-07-01,9125,4437.7247402298935,Dengue,Central Luzon,last_12m
+2025-08-01,12015,5262.32609952663,Dengue,Central Luzon,last_12m
+2024-01-01,1484,204.23253279069695,Dengue,Central Luzon,2025_prospective
+2024-02-01,1050,153.2683906750917,Dengue,Central Luzon,2025_prospective
+2024-03-01,751,107.29413398129415,Dengue,Central Luzon,2025_prospective
+2024-04-01,625,44.94646609587748,Dengue,Central Luzon,2025_prospective
 2024-05-01,649,0.0,Dengue,Central Luzon,2025_prospective
 2024-06-01,1572,0.0,Dengue,Central Luzon,2025_prospective
-2024-07-01,4919,11129.38472200797,Dengue,Central Luzon,2025_prospective
-2024-08-01,8236,8039.837848670148,Dengue,Central Luzon,2025_prospective
-2024-09-01,5215,0.0,Dengue,Central Luzon,2025_prospective
-2024-10-01,5441,0.0,Dengue,Central Luzon,2025_prospective
-2024-11-01,6277,0.0,Dengue,Central Luzon,2025_prospective
-2024-12-01,5984,0.0,Dengue,Central Luzon,2025_prospective
-2024-09-01,6116,0.0,Dengue,Central Visayas,last_12m
-2024-10-01,4074,0.0,Dengue,Central Visayas,last_12m
-2024-11-01,3008,0.0,Dengue,Central Visayas,last_12m
-2024-12-01,1928,0.0,Dengue,Central Visayas,last_12m
-2025-01-01,2091,2513.7818322198727,Dengue,Central Visayas,last_12m
-2025-02-01,1574,4462.477263437906,Dengue,Central Visayas,last_12m
-2025-03-01,1039,2465.1175381416597,Dengue,Central Visayas,last_12m
-2025-04-01,590,2066.3354180708448,Dengue,Central Visayas,last_12m
-2025-05-01,526,1912.934537639816,Dengue,Central Visayas,last_12m
-2025-06-01,603,1759.9441775354644,Dengue,Central Visayas,last_12m
-2025-07-01,965,2615.848115551533,Dengue,Central Visayas,last_12m
-2025-08-01,876,5058.451596588409,Dengue,Central Visayas,last_12m
-2024-01-01,1617,0.0,Dengue,Central Visayas,2025_prospective
-2024-02-01,1259,0.0,Dengue,Central Visayas,2025_prospective
-2024-03-01,1158,1213.5789486710082,Dengue,Central Visayas,2025_prospective
-2024-04-01,744,378.7112822634472,Dengue,Central Visayas,2025_prospective
-2024-05-01,690,975.4756213780538,Dengue,Central Visayas,2025_prospective
-2024-06-01,810,1663.8186132185529,Dengue,Central Visayas,2025_prospective
-2024-07-01,3003,390.9105845298254,Dengue,Central Visayas,2025_prospective
-2024-08-01,7966,0.0,Dengue,Central Visayas,2025_prospective
-2024-09-01,6116,0.0,Dengue,Central Visayas,2025_prospective
-2024-10-01,4074,0.0,Dengue,Central Visayas,2025_prospective
-2024-11-01,3008,0.0,Dengue,Central Visayas,2025_prospective
-2024-12-01,1928,0.0,Dengue,Central Visayas,2025_prospective
-2024-09-01,4910,0.0,Dengue,Cordillera Administrative Region,last_12m
-2024-10-01,2018,0.0,Dengue,Cordillera Administrative Region,last_12m
-2024-11-01,1095,488.8261156797762,Dengue,Cordillera Administrative Region,last_12m
-2024-12-01,718,4190.963893251001,Dengue,Cordillera Administrative Region,last_12m
-2025-01-01,627,3705.253169712667,Dengue,Cordillera Administrative Region,last_12m
-2025-02-01,567,4323.33883721524,Dengue,Cordillera Administrative Region,last_12m
-2025-03-01,551,1344.1738043560144,Dengue,Cordillera Administrative Region,last_12m
-2025-04-01,422,1139.6390892053423,Dengue,Cordillera Administrative Region,last_12m
-2025-05-01,463,1402.2320483017902,Dengue,Cordillera Administrative Region,last_12m
-2025-06-01,825,2924.707859621052,Dengue,Cordillera Administrative Region,last_12m
-2025-07-01,862,5110.103005178775,Dengue,Cordillera Administrative Region,last_12m
-2025-08-01,1001,6133.925083317565,Dengue,Cordillera Administrative Region,last_12m
-2024-01-01,487,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-02-01,296,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-03-01,194,552.5375826037543,Dengue,Cordillera Administrative Region,2025_prospective
-2024-04-01,292,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-05-01,882,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-06-01,3159,805.8209532721739,Dengue,Cordillera Administrative Region,2025_prospective
-2024-07-01,7020,2742.811059304866,Dengue,Cordillera Administrative Region,2025_prospective
-2024-08-01,9659,2157.3639285282843,Dengue,Cordillera Administrative Region,2025_prospective
-2024-09-01,4910,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-10-01,2018,0.0,Dengue,Cordillera Administrative Region,2025_prospective
-2024-11-01,1095,488.8261156797762,Dengue,Cordillera Administrative Region,2025_prospective
-2024-12-01,718,4190.963893251001,Dengue,Cordillera Administrative Region,2025_prospective
-2024-09-01,3645,1554.0359562853046,Dengue,Davao Region,last_12m
-2024-10-01,2536,1396.1588280574833,Dengue,Davao Region,last_12m
-2024-11-01,1932,2621.708696767035,Dengue,Davao Region,last_12m
-2024-12-01,1510,2655.8239141674294,Dengue,Davao Region,last_12m
-2025-01-01,1878,3612.4754159213253,Dengue,Davao Region,last_12m
-2025-02-01,1552,4022.57964754623,Dengue,Davao Region,last_12m
-2025-03-01,1614,2623.0417614635335,Dengue,Davao Region,last_12m
-2025-04-01,1308,2285.0643954101834,Dengue,Davao Region,last_12m
-2025-05-01,1123,2257.957622502183,Dengue,Davao Region,last_12m
-2025-06-01,1240,2614.8397313200394,Dengue,Davao Region,last_12m
-2025-07-01,1228,3297.6206915593903,Dengue,Davao Region,last_12m
-2025-08-01,1002,4172.797082304747,Dengue,Davao Region,last_12m
-2024-01-01,2127,2870.193422746215,Dengue,Davao Region,2025_prospective
-2024-02-01,1665,2529.9172752662193,Dengue,Davao Region,2025_prospective
-2024-03-01,1646,1467.6613645624393,Dengue,Davao Region,2025_prospective
-2024-04-01,1271,2449.5592887641883,Dengue,Davao Region,2025_prospective
-2024-05-01,1255,3180.340982996294,Dengue,Davao Region,2025_prospective
-2024-06-01,2085,3982.3970886806333,Dengue,Davao Region,2025_prospective
-2024-07-01,3515,3546.801546682449,Dengue,Davao Region,2025_prospective
-2024-08-01,5242,2329.696424596217,Dengue,Davao Region,2025_prospective
-2024-09-01,3645,1554.0359562853046,Dengue,Davao Region,2025_prospective
-2024-10-01,2536,1396.1588280574833,Dengue,Davao Region,2025_prospective
-2024-11-01,1932,2621.708696767035,Dengue,Davao Region,2025_prospective
-2024-12-01,1510,2655.8239141674294,Dengue,Davao Region,2025_prospective
-2024-09-01,820,0.0,Dengue,Eastern Visayas,last_12m
-2024-10-01,364,0.0,Dengue,Eastern Visayas,last_12m
-2024-11-01,287,302.43854227637803,Dengue,Eastern Visayas,last_12m
-2024-12-01,204,621.6715022291164,Dengue,Eastern Visayas,last_12m
-2025-01-01,575,361.33555485964644,Dengue,Eastern Visayas,last_12m
-2025-02-01,571,578.8186802233013,Dengue,Eastern Visayas,last_12m
-2025-03-01,390,455.5732807572422,Dengue,Eastern Visayas,last_12m
-2025-04-01,265,373.97995597253794,Dengue,Eastern Visayas,last_12m
-2025-05-01,221,507.8291602081099,Dengue,Eastern Visayas,last_12m
-2025-06-01,167,603.852721005549,Dengue,Eastern Visayas,last_12m
-2025-07-01,218,902.5671535105157,Dengue,Eastern Visayas,last_12m
-2025-08-01,270,1284.0205567086368,Dengue,Eastern Visayas,last_12m
-2024-01-01,569,32.506328409288926,Dengue,Eastern Visayas,2025_prospective
-2024-02-01,367,0.0,Dengue,Eastern Visayas,2025_prospective
-2024-03-01,389,268.278522684956,Dengue,Eastern Visayas,2025_prospective
-2024-04-01,255,298.097955122631,Dengue,Eastern Visayas,2025_prospective
-2024-05-01,424,640.9118363703869,Dengue,Eastern Visayas,2025_prospective
-2024-06-01,573,619.7512660730113,Dengue,Eastern Visayas,2025_prospective
-2024-07-01,1092,275.19043512669487,Dengue,Eastern Visayas,2025_prospective
-2024-08-01,1957,46.84832151402588,Dengue,Eastern Visayas,2025_prospective
-2024-09-01,820,0.0,Dengue,Eastern Visayas,2025_prospective
-2024-10-01,364,0.0,Dengue,Eastern Visayas,2025_prospective
-2024-11-01,287,302.43854227637803,Dengue,Eastern Visayas,2025_prospective
-2024-12-01,204,621.6715022291164,Dengue,Eastern Visayas,2025_prospective
-2024-09-01,2471,611.7672941572582,Dengue,Ilocos Region,last_12m
-2024-10-01,1654,0.0,Dengue,Ilocos Region,last_12m
-2024-11-01,1239,0.0,Dengue,Ilocos Region,last_12m
-2024-12-01,1069,879.1842097592562,Dengue,Ilocos Region,last_12m
-2025-01-01,791,1557.2421853095148,Dengue,Ilocos Region,last_12m
-2025-02-01,631,1713.2603961780405,Dengue,Ilocos Region,last_12m
-2025-03-01,535,731.0042904981201,Dengue,Ilocos Region,last_12m
-2025-04-01,379,692.1813025666033,Dengue,Ilocos Region,last_12m
-2025-05-01,398,705.7384798615476,Dengue,Ilocos Region,last_12m
-2025-06-01,1193,1084.7273474730155,Dengue,Ilocos Region,last_12m
-2025-07-01,2687,2042.766002075923,Dengue,Ilocos Region,last_12m
-2025-08-01,3298,3071.1447662387163,Dengue,Ilocos Region,last_12m
-2024-01-01,160,615.1448260010147,Dengue,Ilocos Region,2025_prospective
-2024-02-01,123,404.81858462687524,Dengue,Ilocos Region,2025_prospective
-2024-03-01,115,143.01026567621375,Dengue,Ilocos Region,2025_prospective
-2024-04-01,121,189.0376564832659,Dengue,Ilocos Region,2025_prospective
-2024-05-01,192,552.0938947616341,Dengue,Ilocos Region,2025_prospective
-2024-06-01,663,1478.4191951263838,Dengue,Ilocos Region,2025_prospective
-2024-07-01,1826,2569.845766090215,Dengue,Ilocos Region,2025_prospective
-2024-08-01,3670,2334.0423827372215,Dengue,Ilocos Region,2025_prospective
-2024-09-01,2471,611.7672941572582,Dengue,Ilocos Region,2025_prospective
-2024-10-01,1654,0.0,Dengue,Ilocos Region,2025_prospective
-2024-11-01,1239,0.0,Dengue,Ilocos Region,2025_prospective
-2024-12-01,1069,879.1842097592562,Dengue,Ilocos Region,2025_prospective
-2024-09-01,1718,882.2274099309398,Dengue,MIMAROPA,last_12m
-2024-10-01,1327,95.28301663847014,Dengue,MIMAROPA,last_12m
-2024-11-01,1288,1206.9698222251827,Dengue,MIMAROPA,last_12m
-2024-12-01,1052,2272.5575733173973,Dengue,MIMAROPA,last_12m
-2025-01-01,1491,1901.0281321612674,Dengue,MIMAROPA,last_12m
-2025-02-01,1345,2129.9317254125044,Dengue,MIMAROPA,last_12m
-2025-03-01,1269,1243.5108415956047,Dengue,MIMAROPA,last_12m
-2025-04-01,991,1218.079867024784,Dengue,MIMAROPA,last_12m
-2025-05-01,944,1347.093202730458,Dengue,MIMAROPA,last_12m
-2025-06-01,1435,2177.4574356936373,Dengue,MIMAROPA,last_12m
-2025-07-01,1972,3907.108533673496,Dengue,MIMAROPA,last_12m
-2025-08-01,1570,3338.971490659982,Dengue,MIMAROPA,last_12m
-2024-01-01,702,1063.8792306286437,Dengue,MIMAROPA,2025_prospective
-2024-02-01,603,745.7772919449781,Dengue,MIMAROPA,2025_prospective
-2024-03-01,631,527.0044908617019,Dengue,MIMAROPA,2025_prospective
-2024-04-01,570,289.1682613876983,Dengue,MIMAROPA,2025_prospective
-2024-05-01,630,697.0624838842668,Dengue,MIMAROPA,2025_prospective
-2024-06-01,1573,1307.3014701921402,Dengue,MIMAROPA,2025_prospective
-2024-07-01,4070,3079.5957511925535,Dengue,MIMAROPA,2025_prospective
-2024-08-01,3900,2106.7870800519086,Dengue,MIMAROPA,2025_prospective
-2024-09-01,1718,882.2274099309398,Dengue,MIMAROPA,2025_prospective
-2024-10-01,1327,95.28301663847014,Dengue,MIMAROPA,2025_prospective
-2024-11-01,1288,1206.9698222251827,Dengue,MIMAROPA,2025_prospective
-2024-12-01,1052,2272.5575733173973,Dengue,MIMAROPA,2025_prospective
-2024-09-01,55818,434.61440734926146,Dengue,National,last_12m
-2024-10-01,45245,0.0,Dengue,National,last_12m
-2024-11-01,42831,0.0,Dengue,National,last_12m
-2024-12-01,33188,0.0,Dengue,National,last_12m
-2025-01-01,37470,30190.266122179688,Dengue,National,last_12m
-2025-02-01,30622,36657.49107122453,Dengue,National,last_12m
-2025-03-01,24375,25983.278307445376,Dengue,National,last_12m
-2025-04-01,15733,24773.138567220973,Dengue,National,last_12m
-2025-05-01,14781,27055.089603004453,Dengue,National,last_12m
-2025-06-01,21475,35230.18087729931,Dengue,National,last_12m
-2025-07-01,34418,55478.763445278746,Dengue,National,last_12m
-2025-08-01,39371,67221.00942073273,Dengue,National,last_12m
-2024-01-01,19313,3688.5042856266373,Dengue,National,2025_prospective
-2024-02-01,15565,0.0,Dengue,National,2025_prospective
-2024-03-01,14369,18462.273086458532,Dengue,National,2025_prospective
-2024-04-01,12000,8335.055977571988,Dengue,National,2025_prospective
-2024-05-01,13733,5900.18749113119,Dengue,National,2025_prospective
-2024-06-01,23885,18020.44163011029,Dengue,National,2025_prospective
-2024-07-01,54925,49553.53756517501,Dengue,National,2025_prospective
-2024-08-01,83109,34770.22657031898,Dengue,National,2025_prospective
-2024-09-01,55818,434.61440734926146,Dengue,National,2025_prospective
-2024-10-01,45245,0.0,Dengue,National,2025_prospective
-2024-11-01,42831,0.0,Dengue,National,2025_prospective
-2024-12-01,33188,0.0,Dengue,National,2025_prospective
-2024-09-01,5673,4900.459162407164,Dengue,National Capital Region,last_12m
-2024-10-01,7037,925.4632120796941,Dengue,National Capital Region,last_12m
-2024-11-01,8641,0.0,Dengue,National Capital Region,last_12m
-2024-12-01,6250,0.0,Dengue,National Capital Region,last_12m
-2025-01-01,6812,0.0,Dengue,National Capital Region,last_12m
-2025-02-01,5801,1069.5494006396475,Dengue,National Capital Region,last_12m
-2025-03-01,3902,2288.73191227411,Dengue,National Capital Region,last_12m
-2025-04-01,1877,2455.7058507349066,Dengue,National Capital Region,last_12m
-2025-05-01,1134,2690.545114860761,Dengue,National Capital Region,last_12m
-2025-06-01,1568,3318.8568746146193,Dengue,National Capital Region,last_12m
-2025-07-01,3181,4416.683841603866,Dengue,National Capital Region,last_12m
-2025-08-01,5031,5655.367899941688,Dengue,National Capital Region,last_12m
-2024-01-01,1992,608.432507901689,Dengue,National Capital Region,2025_prospective
-2024-02-01,1562,0.0,Dengue,National Capital Region,2025_prospective
-2024-03-01,1147,3081.5199749704534,Dengue,National Capital Region,2025_prospective
-2024-04-01,787,1501.180549132212,Dengue,National Capital Region,2025_prospective
-2024-05-01,663,0.0,Dengue,National Capital Region,2025_prospective
-2024-06-01,973,0.0,Dengue,National Capital Region,2025_prospective
-2024-07-01,2302,3127.33456865856,Dengue,National Capital Region,2025_prospective
-2024-08-01,4230,6291.310493914856,Dengue,National Capital Region,2025_prospective
-2024-09-01,5673,4900.459162407164,Dengue,National Capital Region,2025_prospective
-2024-10-01,7037,925.4632120796941,Dengue,National Capital Region,2025_prospective
-2024-11-01,8641,0.0,Dengue,National Capital Region,2025_prospective
-2024-12-01,6250,0.0,Dengue,National Capital Region,2025_prospective
-2024-09-01,2657,0.0,Dengue,Negros Island Region,last_12m
-2024-10-01,1898,0.0,Dengue,Negros Island Region,last_12m
-2024-11-01,1609,0.0,Dengue,Negros Island Region,last_12m
-2024-12-01,1140,0.0,Dengue,Negros Island Region,last_12m
-2025-01-01,1127,1094.2054114115572,Dengue,Negros Island Region,last_12m
-2025-02-01,973,1794.9209636948099,Dengue,Negros Island Region,last_12m
-2025-03-01,622,1003.06567890737,Dengue,Negros Island Region,last_12m
-2025-04-01,506,923.0397770544478,Dengue,Negros Island Region,last_12m
-2025-05-01,677,955.5320099042847,Dengue,Negros Island Region,last_12m
-2025-06-01,1091,1107.5510006412287,Dengue,Negros Island Region,last_12m
-2025-07-01,1181,2204.452515476378,Dengue,Negros Island Region,last_12m
-2025-08-01,890,3056.4962438351886,Dengue,Negros Island Region,last_12m
-2024-01-01,533,0.0,Dengue,Negros Island Region,2025_prospective
-2024-02-01,451,0.0,Dengue,Negros Island Region,2025_prospective
-2024-03-01,446,314.80662939059766,Dengue,Negros Island Region,2025_prospective
+2024-07-01,4919,753.4282175197503,Dengue,Central Luzon,2025_prospective
+2024-08-01,8236,3081.562889777596,Dengue,Central Luzon,2025_prospective
+2024-09-01,5215,5183.896262736247,Dengue,Central Luzon,2025_prospective
+2024-10-01,5441,5433.63706486917,Dengue,Central Luzon,2025_prospective
+2024-11-01,6277,5605.314051089628,Dengue,Central Luzon,2025_prospective
+2024-12-01,5984,522.2780812395988,Dengue,Central Luzon,2025_prospective
+2024-09-01,6116,2575.9740683481314,Dengue,Central Visayas,last_12m
+2024-10-01,4074,3401.4870582978265,Dengue,Central Visayas,last_12m
+2024-11-01,3008,3624.7255946053397,Dengue,Central Visayas,last_12m
+2024-12-01,1928,474.27211745322745,Dengue,Central Visayas,last_12m
+2025-01-01,2091,1592.4492869977266,Dengue,Central Visayas,last_12m
+2025-02-01,1574,1746.8222767922173,Dengue,Central Visayas,last_12m
+2025-03-01,1039,1733.4688345422308,Dengue,Central Visayas,last_12m
+2025-04-01,590,1701.1426680180598,Dengue,Central Visayas,last_12m
+2025-05-01,526,1581.0419032551044,Dengue,Central Visayas,last_12m
+2025-06-01,603,4089.2265511308506,Dengue,Central Visayas,last_12m
+2025-07-01,965,3339.2807906213466,Dengue,Central Visayas,last_12m
+2025-08-01,876,2929.201476961655,Dengue,Central Visayas,last_12m
+2024-01-01,1617,265.75483156381773,Dengue,Central Visayas,2025_prospective
+2024-02-01,1259,390.6018244958622,Dengue,Central Visayas,2025_prospective
+2024-03-01,1158,494.10762515754476,Dengue,Central Visayas,2025_prospective
+2024-04-01,744,576.4049231548446,Dengue,Central Visayas,2025_prospective
+2024-05-01,690,584.6968935711527,Dengue,Central Visayas,2025_prospective
+2024-06-01,810,822.9415756190112,Dengue,Central Visayas,2025_prospective
+2024-07-01,3003,795.2983366055287,Dengue,Central Visayas,2025_prospective
+2024-08-01,7966,1172.5133421925955,Dengue,Central Visayas,2025_prospective
+2024-09-01,6116,2575.9740683481314,Dengue,Central Visayas,2025_prospective
+2024-10-01,4074,3401.4870582978265,Dengue,Central Visayas,2025_prospective
+2024-11-01,3008,3624.7255946053397,Dengue,Central Visayas,2025_prospective
+2024-12-01,1928,474.27211745322745,Dengue,Central Visayas,2025_prospective
+2024-09-01,4910,8703.034726930522,Dengue,Cordillera Administrative Region,last_12m
+2024-10-01,2018,7374.733445470587,Dengue,Cordillera Administrative Region,last_12m
+2024-11-01,1095,5993.919429714962,Dengue,Cordillera Administrative Region,last_12m
+2024-12-01,718,395.3090796015948,Dengue,Cordillera Administrative Region,last_12m
+2025-01-01,627,415.02929656339535,Dengue,Cordillera Administrative Region,last_12m
+2025-02-01,567,435.20106520410553,Dengue,Cordillera Administrative Region,last_12m
+2025-03-01,551,437.75314240409995,Dengue,Cordillera Administrative Region,last_12m
+2025-04-01,422,0.0,Dengue,Cordillera Administrative Region,last_12m
+2025-05-01,463,0.0,Dengue,Cordillera Administrative Region,last_12m
+2025-06-01,825,0.0,Dengue,Cordillera Administrative Region,last_12m
+2025-07-01,862,0.0,Dengue,Cordillera Administrative Region,last_12m
+2025-08-01,1001,3023.7961418630844,Dengue,Cordillera Administrative Region,last_12m
+2024-01-01,487,129.24416968811434,Dengue,Cordillera Administrative Region,2025_prospective
+2024-02-01,296,120.78413229874221,Dengue,Cordillera Administrative Region,2025_prospective
+2024-03-01,194,105.13300681508046,Dengue,Cordillera Administrative Region,2025_prospective
+2024-04-01,292,88.09106454822971,Dengue,Cordillera Administrative Region,2025_prospective
+2024-05-01,882,73.34659407276864,Dengue,Cordillera Administrative Region,2025_prospective
+2024-06-01,3159,365.91799894861833,Dengue,Cordillera Administrative Region,2025_prospective
+2024-07-01,7020,3218.017551936458,Dengue,Cordillera Administrative Region,2025_prospective
+2024-08-01,9659,5863.429920767609,Dengue,Cordillera Administrative Region,2025_prospective
+2024-09-01,4910,8703.034726930522,Dengue,Cordillera Administrative Region,2025_prospective
+2024-10-01,2018,7374.733445470587,Dengue,Cordillera Administrative Region,2025_prospective
+2024-11-01,1095,5993.919429714962,Dengue,Cordillera Administrative Region,2025_prospective
+2024-12-01,718,395.3090796015948,Dengue,Cordillera Administrative Region,2025_prospective
+2024-09-01,3645,3494.1413430999405,Dengue,Davao Region,last_12m
+2024-10-01,2536,3615.965714094429,Dengue,Davao Region,last_12m
+2024-11-01,1932,3517.1602568641492,Dengue,Davao Region,last_12m
+2024-12-01,1510,2195.256849474437,Dengue,Davao Region,last_12m
+2025-01-01,1878,2113.385736337419,Dengue,Davao Region,last_12m
+2025-02-01,1552,2128.359789328925,Dengue,Davao Region,last_12m
+2025-03-01,1614,2081.469484044303,Dengue,Davao Region,last_12m
+2025-04-01,1308,2067.6292747930775,Dengue,Davao Region,last_12m
+2025-05-01,1123,2018.8688228497763,Dengue,Davao Region,last_12m
+2025-06-01,1240,3653.956961690011,Dengue,Davao Region,last_12m
+2025-07-01,1228,3207.326881997847,Dengue,Davao Region,last_12m
+2025-08-01,1002,2911.816827365193,Dengue,Davao Region,last_12m
+2024-01-01,2127,1877.2663025546847,Dengue,Davao Region,2025_prospective
+2024-02-01,1665,2006.9617707400157,Dengue,Davao Region,2025_prospective
+2024-03-01,1646,1985.9401085177951,Dengue,Davao Region,2025_prospective
+2024-04-01,1271,1980.7485764686212,Dengue,Davao Region,2025_prospective
+2024-05-01,1255,1914.040873373567,Dengue,Davao Region,2025_prospective
+2024-06-01,2085,2711.0038103663305,Dengue,Davao Region,2025_prospective
+2024-07-01,3515,2597.619128651851,Dengue,Davao Region,2025_prospective
+2024-08-01,5242,2884.5459390234682,Dengue,Davao Region,2025_prospective
+2024-09-01,3645,3494.1413430999405,Dengue,Davao Region,2025_prospective
+2024-10-01,2536,3615.965714094429,Dengue,Davao Region,2025_prospective
+2024-11-01,1932,3517.1602568641492,Dengue,Davao Region,2025_prospective
+2024-12-01,1510,2195.256849474437,Dengue,Davao Region,2025_prospective
+2024-09-01,820,898.1236790433114,Dengue,Eastern Visayas,last_12m
+2024-10-01,364,889.6176417621789,Dengue,Eastern Visayas,last_12m
+2024-11-01,287,809.8921637492551,Dengue,Eastern Visayas,last_12m
+2024-12-01,204,390.16424390176223,Dengue,Eastern Visayas,last_12m
+2025-01-01,575,373.6427445614126,Dengue,Eastern Visayas,last_12m
+2025-02-01,571,394.28652756510746,Dengue,Eastern Visayas,last_12m
+2025-03-01,390,414.76543897666,Dengue,Eastern Visayas,last_12m
+2025-04-01,265,411.38066723502845,Dengue,Eastern Visayas,last_12m
+2025-05-01,221,399.85871073716976,Dengue,Eastern Visayas,last_12m
+2025-06-01,167,735.9196279409355,Dengue,Eastern Visayas,last_12m
+2025-07-01,218,631.3888567280561,Dengue,Eastern Visayas,last_12m
+2025-08-01,270,563.3734643053527,Dengue,Eastern Visayas,last_12m
+2024-01-01,569,225.44969113247274,Dengue,Eastern Visayas,2025_prospective
+2024-02-01,367,263.1486891845319,Dengue,Eastern Visayas,2025_prospective
+2024-03-01,389,271.35490515686973,Dengue,Eastern Visayas,2025_prospective
+2024-04-01,255,282.738481483179,Dengue,Eastern Visayas,2025_prospective
+2024-05-01,424,272.7526268552194,Dengue,Eastern Visayas,2025_prospective
+2024-06-01,573,498.4155976189456,Dengue,Eastern Visayas,2025_prospective
+2024-07-01,1092,506.34095213100505,Dengue,Eastern Visayas,2025_prospective
+2024-08-01,1957,623.6583251333498,Dengue,Eastern Visayas,2025_prospective
+2024-09-01,820,898.1236790433114,Dengue,Eastern Visayas,2025_prospective
+2024-10-01,364,889.6176417621789,Dengue,Eastern Visayas,2025_prospective
+2024-11-01,287,809.8921637492551,Dengue,Eastern Visayas,2025_prospective
+2024-12-01,204,390.16424390176223,Dengue,Eastern Visayas,2025_prospective
+2024-09-01,2471,2198.350490057393,Dengue,Ilocos Region,last_12m
+2024-10-01,1654,2428.127861227526,Dengue,Ilocos Region,last_12m
+2024-11-01,1239,2211.948644099061,Dengue,Ilocos Region,last_12m
+2024-12-01,1069,310.1737807997536,Dengue,Ilocos Region,last_12m
+2025-01-01,791,414.9974657869271,Dengue,Ilocos Region,last_12m
+2025-02-01,631,464.1997969642252,Dengue,Ilocos Region,last_12m
+2025-03-01,535,489.3382234421607,Dengue,Ilocos Region,last_12m
+2025-04-01,379,505.5780941624197,Dengue,Ilocos Region,last_12m
+2025-05-01,398,500.8228352751529,Dengue,Ilocos Region,last_12m
+2025-06-01,1193,2165.87763456572,Dengue,Ilocos Region,last_12m
+2025-07-01,2687,1974.8507173293128,Dengue,Ilocos Region,last_12m
+2025-08-01,3298,2155.6869883872864,Dengue,Ilocos Region,last_12m
+2024-01-01,160,248.32172142842077,Dengue,Ilocos Region,2025_prospective
+2024-02-01,123,240.08148599764266,Dengue,Ilocos Region,2025_prospective
+2024-03-01,115,235.2247771314096,Dengue,Ilocos Region,2025_prospective
+2024-04-01,121,220.69826526325815,Dengue,Ilocos Region,2025_prospective
+2024-05-01,192,217.02967758621878,Dengue,Ilocos Region,2025_prospective
+2024-06-01,663,1212.3754154864762,Dengue,Ilocos Region,2025_prospective
+2024-07-01,1826,1012.5408287368077,Dengue,Ilocos Region,2025_prospective
+2024-08-01,3670,1252.6525353049824,Dengue,Ilocos Region,2025_prospective
+2024-09-01,2471,2198.350490057393,Dengue,Ilocos Region,2025_prospective
+2024-10-01,1654,2428.127861227526,Dengue,Ilocos Region,2025_prospective
+2024-11-01,1239,2211.948644099061,Dengue,Ilocos Region,2025_prospective
+2024-12-01,1069,310.1737807997536,Dengue,Ilocos Region,2025_prospective
+2024-09-01,1718,2817.5681257892056,Dengue,MIMAROPA,last_12m
+2024-10-01,1327,2642.1490717888582,Dengue,MIMAROPA,last_12m
+2024-11-01,1288,2448.84437442199,Dengue,MIMAROPA,last_12m
+2024-12-01,1052,834.715293071034,Dengue,MIMAROPA,last_12m
+2025-01-01,1491,877.9387147409661,Dengue,MIMAROPA,last_12m
+2025-02-01,1345,970.9161681932533,Dengue,MIMAROPA,last_12m
+2025-03-01,1269,1032.0879056161825,Dengue,MIMAROPA,last_12m
+2025-04-01,991,1074.609193759702,Dengue,MIMAROPA,last_12m
+2025-05-01,944,1083.7938329374408,Dengue,MIMAROPA,last_12m
+2025-06-01,1435,2575.0051584154503,Dengue,MIMAROPA,last_12m
+2025-07-01,1972,2378.2520898395096,Dengue,MIMAROPA,last_12m
+2025-08-01,1570,2336.0191290396465,Dengue,MIMAROPA,last_12m
+2024-01-01,702,731.4262146123493,Dengue,MIMAROPA,2025_prospective
+2024-02-01,603,720.1048877692598,Dengue,MIMAROPA,2025_prospective
+2024-03-01,631,723.6466729507756,Dengue,MIMAROPA,2025_prospective
+2024-04-01,570,717.9953013224049,Dengue,MIMAROPA,2025_prospective
+2024-05-01,630,708.3406902517129,Dengue,MIMAROPA,2025_prospective
+2024-06-01,1573,1817.9711497869505,Dengue,MIMAROPA,2025_prospective
+2024-07-01,4070,1769.8742055873945,Dengue,MIMAROPA,2025_prospective
+2024-08-01,3900,2405.279231877112,Dengue,MIMAROPA,2025_prospective
+2024-09-01,1718,2817.5681257892056,Dengue,MIMAROPA,2025_prospective
+2024-10-01,1327,2642.1490717888582,Dengue,MIMAROPA,2025_prospective
+2024-11-01,1288,2448.84437442199,Dengue,MIMAROPA,2025_prospective
+2024-12-01,1052,834.715293071034,Dengue,MIMAROPA,2025_prospective
+2024-09-01,55818,42207.45165984955,Dengue,National,last_12m
+2024-10-01,45245,56732.26662011975,Dengue,National,last_12m
+2024-11-01,42831,54669.22259584139,Dengue,National,last_12m
+2024-12-01,33188,16575.833540753432,Dengue,National,last_12m
+2025-01-01,37470,20234.562887601664,Dengue,National,last_12m
+2025-02-01,30622,22955.987562891805,Dengue,National,last_12m
+2025-03-01,24375,24236.027599851175,Dengue,National,last_12m
+2025-04-01,15733,24695.485184835423,Dengue,National,last_12m
+2025-05-01,14781,24021.87011149758,Dengue,National,last_12m
+2025-06-01,21475,51999.79698048794,Dengue,National,last_12m
+2025-07-01,34418,46550.51919185142,Dengue,National,last_12m
+2025-08-01,39371,44951.11800317565,Dengue,National,last_12m
+2024-01-01,19313,7523.503837602009,Dengue,National,2025_prospective
+2024-02-01,15565,8374.550978904488,Dengue,National,2025_prospective
+2024-03-01,14369,8959.264917872633,Dengue,National,2025_prospective
+2024-04-01,12000,9425.633826960546,Dengue,National,2025_prospective
+2024-05-01,13733,9557.60661491205,Dengue,National,2025_prospective
+2024-06-01,23885,22715.524534482756,Dengue,National,2025_prospective
+2024-07-01,54925,22755.35766134134,Dengue,National,2025_prospective
+2024-08-01,83109,30284.04474965383,Dengue,National,2025_prospective
+2024-09-01,55818,42207.45165984955,Dengue,National,2025_prospective
+2024-10-01,45245,56732.26662011975,Dengue,National,2025_prospective
+2024-11-01,42831,54669.22259584139,Dengue,National,2025_prospective
+2024-12-01,33188,16575.833540753432,Dengue,National,2025_prospective
+2024-09-01,5673,2266.567907904348,Dengue,National Capital Region,last_12m
+2024-10-01,7037,2897.9011345718727,Dengue,National Capital Region,last_12m
+2024-11-01,8641,3628.9773901403987,Dengue,National Capital Region,last_12m
+2024-12-01,6250,978.5022827730677,Dengue,National Capital Region,last_12m
+2025-01-01,6812,2052.17537375626,Dengue,National Capital Region,last_12m
+2025-02-01,5801,2770.9902214767485,Dengue,National Capital Region,last_12m
+2025-03-01,3902,3284.834619153448,Dengue,National Capital Region,last_12m
+2025-04-01,1877,3427.5842517408496,Dengue,National Capital Region,last_12m
+2025-05-01,1134,3274.6975905905983,Dengue,National Capital Region,last_12m
+2025-06-01,1568,5536.8446144675345,Dengue,National Capital Region,last_12m
+2025-07-01,3181,4912.712365284158,Dengue,National Capital Region,last_12m
+2025-08-01,5031,4697.158773894739,Dengue,National Capital Region,last_12m
+2024-01-01,1992,686.9461968281443,Dengue,National Capital Region,2025_prospective
+2024-02-01,1562,763.5331403721499,Dengue,National Capital Region,2025_prospective
+2024-03-01,1147,802.3992009232193,Dengue,National Capital Region,2025_prospective
+2024-04-01,787,816.7548681772664,Dengue,National Capital Region,2025_prospective
+2024-05-01,663,786.4611078172495,Dengue,National Capital Region,2025_prospective
+2024-06-01,973,2247.891007353845,Dengue,National Capital Region,2025_prospective
+2024-07-01,2302,1748.5380956318693,Dengue,National Capital Region,2025_prospective
+2024-08-01,4230,1795.848298285374,Dengue,National Capital Region,2025_prospective
+2024-09-01,5673,2266.567907904348,Dengue,National Capital Region,2025_prospective
+2024-10-01,7037,2897.9011345718727,Dengue,National Capital Region,2025_prospective
+2024-11-01,8641,3628.9773901403987,Dengue,National Capital Region,2025_prospective
+2024-12-01,6250,978.5022827730677,Dengue,National Capital Region,2025_prospective
+2024-09-01,2657,3168.3283185239543,Dengue,Negros Island Region,last_12m
+2024-10-01,1898,3143.8763976700575,Dengue,Negros Island Region,last_12m
+2024-11-01,1609,2895.8338941250195,Dengue,Negros Island Region,last_12m
+2024-12-01,1140,206.6012892371425,Dengue,Negros Island Region,last_12m
+2025-01-01,1127,238.46788733017158,Dengue,Negros Island Region,last_12m
+2025-02-01,973,738.004880205998,Dengue,Negros Island Region,last_12m
+2025-03-01,622,368.66457188989136,Dengue,Negros Island Region,last_12m
+2025-04-01,506,406.1001340141144,Dengue,Negros Island Region,last_12m
+2025-05-01,677,447.13913577368993,Dengue,Negros Island Region,last_12m
+2025-06-01,1091,3618.13116598646,Dengue,Negros Island Region,last_12m
+2025-07-01,1181,1935.0353682319078,Dengue,Negros Island Region,last_12m
+2025-08-01,890,1818.0513286929095,Dengue,Negros Island Region,last_12m
+2024-01-01,533,9.659658396425867,Dengue,Negros Island Region,2025_prospective
+2024-02-01,451,1.946165981292335,Dengue,Negros Island Region,2025_prospective
+2024-03-01,446,0.0,Dengue,Negros Island Region,2025_prospective
 2024-04-01,388,0.0,Dengue,Negros Island Region,2025_prospective
 2024-05-01,355,0.0,Dengue,Negros Island Region,2025_prospective
-2024-06-01,591,7.640505474314523,Dengue,Negros Island Region,2025_prospective
-2024-07-01,2426,1079.59769849029,Dengue,Negros Island Region,2025_prospective
-2024-08-01,4344,193.41731359125697,Dengue,Negros Island Region,2025_prospective
-2024-09-01,2657,0.0,Dengue,Negros Island Region,2025_prospective
-2024-10-01,1898,0.0,Dengue,Negros Island Region,2025_prospective
-2024-11-01,1609,0.0,Dengue,Negros Island Region,2025_prospective
-2024-12-01,1140,0.0,Dengue,Negros Island Region,2025_prospective
-2024-09-01,2548,1125.5603595352259,Dengue,Northern Mindanao,last_12m
-2024-10-01,1557,595.5418579018733,Dengue,Northern Mindanao,last_12m
-2024-11-01,1318,1569.8297632785143,Dengue,Northern Mindanao,last_12m
-2024-12-01,1084,1879.5404296101296,Dengue,Northern Mindanao,last_12m
-2025-01-01,1351,2672.9127456579663,Dengue,Northern Mindanao,last_12m
-2025-02-01,1402,2744.481132975492,Dengue,Northern Mindanao,last_12m
-2025-03-01,1396,2027.1448046339283,Dengue,Northern Mindanao,last_12m
-2025-04-01,1051,1821.6936641658613,Dengue,Northern Mindanao,last_12m
-2025-05-01,1116,1916.2298844774668,Dengue,Northern Mindanao,last_12m
-2025-06-01,1242,2187.9145991542173,Dengue,Northern Mindanao,last_12m
-2025-07-01,1278,3132.4492202583897,Dengue,Northern Mindanao,last_12m
-2025-08-01,931,3454.113322395997,Dengue,Northern Mindanao,last_12m
-2024-01-01,1948,1478.1106797233697,Dengue,Northern Mindanao,2025_prospective
-2024-02-01,1654,1454.921987056723,Dengue,Northern Mindanao,2025_prospective
-2024-03-01,1440,1278.1382605102044,Dengue,Northern Mindanao,2025_prospective
-2024-04-01,1237,1827.7204693605472,Dengue,Northern Mindanao,2025_prospective
-2024-05-01,1403,2446.82011374403,Dengue,Northern Mindanao,2025_prospective
-2024-06-01,1894,3179.5932437291704,Dengue,Northern Mindanao,2025_prospective
-2024-07-01,3587,2752.6575830859983,Dengue,Northern Mindanao,2025_prospective
-2024-08-01,4473,1581.945278141864,Dengue,Northern Mindanao,2025_prospective
-2024-09-01,2548,1125.5603595352259,Dengue,Northern Mindanao,2025_prospective
-2024-10-01,1557,595.5418579018733,Dengue,Northern Mindanao,2025_prospective
-2024-11-01,1318,1569.8297632785143,Dengue,Northern Mindanao,2025_prospective
-2024-12-01,1084,1879.5404296101296,Dengue,Northern Mindanao,2025_prospective
-2024-09-01,2385,1307.248674110877,Dengue,SOCCSKSARGEN,last_12m
-2024-10-01,1749,810.7466264725479,Dengue,SOCCSKSARGEN,last_12m
-2024-11-01,1261,1795.493905835714,Dengue,SOCCSKSARGEN,last_12m
-2024-12-01,871,2376.1687814293896,Dengue,SOCCSKSARGEN,last_12m
-2025-01-01,1268,2462.8209685492548,Dengue,SOCCSKSARGEN,last_12m
-2025-02-01,1126,2409.591702267968,Dengue,SOCCSKSARGEN,last_12m
-2025-03-01,1246,2505.1547497941174,Dengue,SOCCSKSARGEN,last_12m
-2025-04-01,954,2225.202710673837,Dengue,SOCCSKSARGEN,last_12m
-2025-05-01,1167,2231.1768595110225,Dengue,SOCCSKSARGEN,last_12m
-2025-06-01,1278,2390.5119661169992,Dengue,SOCCSKSARGEN,last_12m
-2025-07-01,1292,2644.789149649394,Dengue,SOCCSKSARGEN,last_12m
-2025-08-01,1140,2799.941720369454,Dengue,SOCCSKSARGEN,last_12m
-2024-01-01,1509,1528.4859853997932,Dengue,SOCCSKSARGEN,2025_prospective
-2024-02-01,1675,1725.081986516033,Dengue,SOCCSKSARGEN,2025_prospective
-2024-03-01,2098,1195.6534614819711,Dengue,SOCCSKSARGEN,2025_prospective
-2024-04-01,1755,1927.061500213594,Dengue,SOCCSKSARGEN,2025_prospective
-2024-05-01,1628,2249.058812426262,Dengue,SOCCSKSARGEN,2025_prospective
-2024-06-01,2074,2756.4011410991034,Dengue,SOCCSKSARGEN,2025_prospective
-2024-07-01,2939,2067.573002661964,Dengue,SOCCSKSARGEN,2025_prospective
-2024-08-01,3438,1779.8501979728085,Dengue,SOCCSKSARGEN,2025_prospective
-2024-09-01,2385,1307.248674110877,Dengue,SOCCSKSARGEN,2025_prospective
-2024-10-01,1749,810.7466264725479,Dengue,SOCCSKSARGEN,2025_prospective
-2024-11-01,1261,1795.493905835714,Dengue,SOCCSKSARGEN,2025_prospective
-2024-12-01,871,2376.1687814293896,Dengue,SOCCSKSARGEN,2025_prospective
-2024-09-01,3566,0.0,Dengue,Western Visayas,last_12m
-2024-10-01,1691,0.0,Dengue,Western Visayas,last_12m
-2024-11-01,1509,0.0,Dengue,Western Visayas,last_12m
-2024-12-01,1177,2626.719121250615,Dengue,Western Visayas,last_12m
-2025-01-01,1243,3330.6462489242895,Dengue,Western Visayas,last_12m
-2025-02-01,1224,4088.601814143308,Dengue,Western Visayas,last_12m
-2025-03-01,1058,1776.75985744227,Dengue,Western Visayas,last_12m
-2025-04-01,828,1489.476671832199,Dengue,Western Visayas,last_12m
-2025-05-01,1181,1447.568374696495,Dengue,Western Visayas,last_12m
-2025-06-01,2036,1908.6640353533512,Dengue,Western Visayas,last_12m
-2025-07-01,2516,4277.79400058795,Dengue,Western Visayas,last_12m
-2025-08-01,1496,5487.965567629588,Dengue,Western Visayas,last_12m
-2024-01-01,678,0.0,Dengue,Western Visayas,2025_prospective
-2024-02-01,590,0.0,Dengue,Western Visayas,2025_prospective
-2024-03-01,579,411.79341722572644,Dengue,Western Visayas,2025_prospective
-2024-04-01,441,0.0,Dengue,Western Visayas,2025_prospective
-2024-05-01,550,0.0,Dengue,Western Visayas,2025_prospective
-2024-06-01,1230,844.2868602964918,Dengue,Western Visayas,2025_prospective
-2024-07-01,5242,2440.9242962027492,Dengue,Western Visayas,2025_prospective
-2024-08-01,8303,0.0,Dengue,Western Visayas,2025_prospective
-2024-09-01,3566,0.0,Dengue,Western Visayas,2025_prospective
-2024-10-01,1691,0.0,Dengue,Western Visayas,2025_prospective
-2024-11-01,1509,0.0,Dengue,Western Visayas,2025_prospective
-2024-12-01,1177,2626.719121250615,Dengue,Western Visayas,2025_prospective
-2024-09-01,1492,45.67802285122525,Dengue,Zamboanga Peninsula,last_12m
-2024-10-01,1267,0.0,Dengue,Zamboanga Peninsula,last_12m
-2024-11-01,1072,437.06029771228714,Dengue,Zamboanga Peninsula,last_12m
-2024-12-01,719,1565.9196451338048,Dengue,Zamboanga Peninsula,last_12m
-2025-01-01,1030,1287.4059206342627,Dengue,Zamboanga Peninsula,last_12m
-2025-02-01,880,1409.0821134123598,Dengue,Zamboanga Peninsula,last_12m
-2025-03-01,837,1245.2613364585013,Dengue,Zamboanga Peninsula,last_12m
-2025-04-01,675,1383.6400460829173,Dengue,Zamboanga Peninsula,last_12m
-2025-05-01,857,1647.4795037024514,Dengue,Zamboanga Peninsula,last_12m
-2025-06-01,751,1934.4471569479665,Dengue,Zamboanga Peninsula,last_12m
-2025-07-01,726,2201.575134305842,Dengue,Zamboanga Peninsula,last_12m
-2025-08-01,530,1774.2565286156841,Dengue,Zamboanga Peninsula,last_12m
-2024-01-01,996,1057.3849003489222,Dengue,Zamboanga Peninsula,2025_prospective
-2024-02-01,931,1331.086418649662,Dengue,Zamboanga Peninsula,2025_prospective
-2024-03-01,925,188.193703014711,Dengue,Zamboanga Peninsula,2025_prospective
-2024-04-01,937,1644.2906491507356,Dengue,Zamboanga Peninsula,2025_prospective
-2024-05-01,1267,2495.1132301753814,Dengue,Zamboanga Peninsula,2025_prospective
-2024-06-01,1948,2593.500982592775,Dengue,Zamboanga Peninsula,2025_prospective
-2024-07-01,2839,1686.4047273545702,Dengue,Zamboanga Peninsula,2025_prospective
-2024-08-01,2452,674.1454835025161,Dengue,Zamboanga Peninsula,2025_prospective
-2024-09-01,1492,45.67802285122525,Dengue,Zamboanga Peninsula,2025_prospective
-2024-10-01,1267,0.0,Dengue,Zamboanga Peninsula,2025_prospective
-2024-11-01,1072,437.06029771228714,Dengue,Zamboanga Peninsula,2025_prospective
-2024-12-01,719,1565.9196451338048,Dengue,Zamboanga Peninsula,2025_prospective
+2024-06-01,591,0.0,Dengue,Negros Island Region,2025_prospective
+2024-07-01,2426,142.8622990389401,Dengue,Negros Island Region,2025_prospective
+2024-08-01,4344,718.6872651687318,Dengue,Negros Island Region,2025_prospective
+2024-09-01,2657,3168.3283185239543,Dengue,Negros Island Region,2025_prospective
+2024-10-01,1898,3143.8763976700575,Dengue,Negros Island Region,2025_prospective
+2024-11-01,1609,2895.8338941250195,Dengue,Negros Island Region,2025_prospective
+2024-12-01,1140,206.6012892371425,Dengue,Negros Island Region,2025_prospective
+2024-09-01,2548,2995.065040093979,Dengue,Northern Mindanao,last_12m
+2024-10-01,1557,2977.1746675246045,Dengue,Northern Mindanao,last_12m
+2024-11-01,1318,2800.231480605587,Dengue,Northern Mindanao,last_12m
+2024-12-01,1084,1810.4629763949738,Dengue,Northern Mindanao,last_12m
+2025-01-01,1351,1714.5809667739848,Dengue,Northern Mindanao,last_12m
+2025-02-01,1402,1689.8114707030204,Dengue,Northern Mindanao,last_12m
+2025-03-01,1396,1679.52119075539,Dengue,Northern Mindanao,last_12m
+2025-04-01,1051,1671.475817228563,Dengue,Northern Mindanao,last_12m
+2025-05-01,1116,1627.003363598282,Dengue,Northern Mindanao,last_12m
+2025-06-01,1242,2752.4841293255786,Dengue,Northern Mindanao,last_12m
+2025-07-01,1278,2503.1182030797627,Dengue,Northern Mindanao,last_12m
+2025-08-01,931,2323.393978877294,Dengue,Northern Mindanao,last_12m
+2024-01-01,1948,1346.6908009538897,Dengue,Northern Mindanao,2025_prospective
+2024-02-01,1654,1522.761667781793,Dengue,Northern Mindanao,2025_prospective
+2024-03-01,1440,1585.2673327291807,Dengue,Northern Mindanao,2025_prospective
+2024-04-01,1237,1593.6478690636154,Dengue,Northern Mindanao,2025_prospective
+2024-05-01,1403,1566.571290095137,Dengue,Northern Mindanao,2025_prospective
+2024-06-01,1894,2184.8225408214357,Dengue,Northern Mindanao,2025_prospective
+2024-07-01,3587,2148.4681621179902,Dengue,Northern Mindanao,2025_prospective
+2024-08-01,4473,2517.229211409624,Dengue,Northern Mindanao,2025_prospective
+2024-09-01,2548,2995.065040093979,Dengue,Northern Mindanao,2025_prospective
+2024-10-01,1557,2977.1746675246045,Dengue,Northern Mindanao,2025_prospective
+2024-11-01,1318,2800.231480605587,Dengue,Northern Mindanao,2025_prospective
+2024-12-01,1084,1810.4629763949738,Dengue,Northern Mindanao,2025_prospective
+2024-09-01,2385,2611.1225840652696,Dengue,SOCCSKSARGEN,last_12m
+2024-10-01,1749,2641.700691279515,Dengue,SOCCSKSARGEN,last_12m
+2024-11-01,1261,2555.4702189852273,Dengue,SOCCSKSARGEN,last_12m
+2024-12-01,871,2079.381509872285,Dengue,SOCCSKSARGEN,last_12m
+2025-01-01,1268,1879.6413407522264,Dengue,SOCCSKSARGEN,last_12m
+2025-02-01,1126,1817.7106361119515,Dengue,SOCCSKSARGEN,last_12m
+2025-03-01,1246,1748.8530841992094,Dengue,SOCCSKSARGEN,last_12m
+2025-04-01,954,1717.4515716363549,Dengue,SOCCSKSARGEN,last_12m
+2025-05-01,1167,1656.7276403769006,Dengue,SOCCSKSARGEN,last_12m
+2025-06-01,1278,2572.900609197724,Dengue,SOCCSKSARGEN,last_12m
+2025-07-01,1292,2357.0761446794877,Dengue,SOCCSKSARGEN,last_12m
+2025-08-01,1140,2213.4953089706346,Dengue,SOCCSKSARGEN,last_12m
+2024-01-01,1509,1272.0371277807455,Dengue,SOCCSKSARGEN,2025_prospective
+2024-02-01,1675,1376.4775392144006,Dengue,SOCCSKSARGEN,2025_prospective
+2024-03-01,2098,1482.0926486647706,Dengue,SOCCSKSARGEN,2025_prospective
+2024-04-01,1755,1654.2129606251003,Dengue,SOCCSKSARGEN,2025_prospective
+2024-05-01,1628,1725.7610662631153,Dengue,SOCCSKSARGEN,2025_prospective
+2024-06-01,2074,1933.679206868312,Dengue,SOCCSKSARGEN,2025_prospective
+2024-07-01,2939,2025.8716103759252,Dengue,SOCCSKSARGEN,2025_prospective
+2024-08-01,3438,2299.653703225889,Dengue,SOCCSKSARGEN,2025_prospective
+2024-09-01,2385,2611.1225840652696,Dengue,SOCCSKSARGEN,2025_prospective
+2024-10-01,1749,2641.700691279515,Dengue,SOCCSKSARGEN,2025_prospective
+2024-11-01,1261,2555.4702189852273,Dengue,SOCCSKSARGEN,2025_prospective
+2024-12-01,871,2079.381509872285,Dengue,SOCCSKSARGEN,2025_prospective
+2024-09-01,3566,6686.43660319024,Dengue,Western Visayas,last_12m
+2024-10-01,1691,5705.109117607043,Dengue,Western Visayas,last_12m
+2024-11-01,1509,4659.948249697708,Dengue,Western Visayas,last_12m
+2024-12-01,1177,343.98279499529224,Dengue,Western Visayas,last_12m
+2025-01-01,1243,370.178094858331,Dengue,Western Visayas,last_12m
+2025-02-01,1224,991.5537693657411,Dengue,Western Visayas,last_12m
+2025-03-01,1058,1017.3876608065975,Dengue,Western Visayas,last_12m
+2025-04-01,828,532.8669561792717,Dengue,Western Visayas,last_12m
+2025-05-01,1181,1049.5432528861154,Dengue,Western Visayas,last_12m
+2025-06-01,2036,3633.906814242914,Dengue,Western Visayas,last_12m
+2025-07-01,2516,3333.888406136133,Dengue,Western Visayas,last_12m
+2025-08-01,1496,3269.322731064856,Dengue,Western Visayas,last_12m
+2024-01-01,678,53.76305327888884,Dengue,Western Visayas,2025_prospective
+2024-02-01,590,52.81352551943945,Dengue,Western Visayas,2025_prospective
+2024-03-01,579,55.41346808118301,Dengue,Western Visayas,2025_prospective
+2024-04-01,441,63.25295091673253,Dengue,Western Visayas,2025_prospective
+2024-05-01,550,70.75864508639427,Dengue,Western Visayas,2025_prospective
+2024-06-01,1230,286.7626957090199,Dengue,Western Visayas,2025_prospective
+2024-07-01,5242,573.0294312730261,Dengue,Western Visayas,2025_prospective
+2024-08-01,8303,3774.888540417239,Dengue,Western Visayas,2025_prospective
+2024-09-01,3566,6686.43660319024,Dengue,Western Visayas,2025_prospective
+2024-10-01,1691,5705.109117607043,Dengue,Western Visayas,2025_prospective
+2024-11-01,1509,4659.948249697708,Dengue,Western Visayas,2025_prospective
+2024-12-01,1177,343.98279499529224,Dengue,Western Visayas,2025_prospective
+2024-09-01,1492,1973.957981721067,Dengue,Zamboanga Peninsula,last_12m
+2024-10-01,1267,1924.0422911271135,Dengue,Zamboanga Peninsula,last_12m
+2024-11-01,1072,1824.2232623556988,Dengue,Zamboanga Peninsula,last_12m
+2024-12-01,719,1178.9313687574784,Dengue,Zamboanga Peninsula,last_12m
+2025-01-01,1030,1129.1843906958009,Dengue,Zamboanga Peninsula,last_12m
+2025-02-01,880,1128.9489452384016,Dengue,Zamboanga Peninsula,last_12m
+2025-03-01,837,1110.347240561657,Dengue,Zamboanga Peninsula,last_12m
+2025-04-01,675,1091.7900230894425,Dengue,Zamboanga Peninsula,last_12m
+2025-05-01,857,1060.6695417865574,Dengue,Zamboanga Peninsula,last_12m
+2025-06-01,751,1727.2630928531605,Dengue,Zamboanga Peninsula,last_12m
+2025-07-01,726,1558.8229272582896,Dengue,Zamboanga Peninsula,last_12m
+2025-08-01,530,1435.6382142656735,Dengue,Zamboanga Peninsula,last_12m
+2024-01-01,996,937.7359835955957,Dengue,Zamboanga Peninsula,2025_prospective
+2024-02-01,931,951.888723307581,Dengue,Zamboanga Peninsula,2025_prospective
+2024-03-01,925,951.2054599463188,Dengue,Zamboanga Peninsula,2025_prospective
+2024-04-01,937,951.6125167712687,Dengue,Zamboanga Peninsula,2025_prospective
+2024-05-01,1267,953.1809586726794,Dengue,Zamboanga Peninsula,2025_prospective
+2024-06-01,1948,1338.2593166342704,Dengue,Zamboanga Peninsula,2025_prospective
+2024-07-01,2839,1486.8939208015643,Dengue,Zamboanga Peninsula,2025_prospective
+2024-08-01,2452,1809.4859315320466,Dengue,Zamboanga Peninsula,2025_prospective
+2024-09-01,1492,1973.957981721067,Dengue,Zamboanga Peninsula,2025_prospective
+2024-10-01,1267,1924.0422911271135,Dengue,Zamboanga Peninsula,2025_prospective
+2024-11-01,1072,1824.2232623556988,Dengue,Zamboanga Peninsula,2025_prospective
+2024-12-01,719,1178.9313687574784,Dengue,Zamboanga Peninsula,2025_prospective
