@@ -66,13 +66,6 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     description:
       "Copies a shareable URL containing your exact active dashboard state (selected region, month, filters) to your clipboard.",
   },
-  {
-    selector: "button[aria-label='Subscribe to monthly forecast reports'], [data-explain='subscribe-nav-btn']",
-    title: "Email Subscriptions",
-    icon: "Mail",
-    description:
-      "Subscribe to receive automated monthly dengue forecast summaries and regional risk reports directly in your inbox.",
-  },
 
   // ── Map Dashboard (homepage / root route) ──────────────────────────────────
   {
@@ -394,36 +387,6 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     icon: "BookOpen",
     description:
       "Comprehensive technical reference explaining how HealthWatch ingests DOH data, fits Prophet time-series models, classifies risk, and validates predictions.",
-  },
-
-  // ── Subscriptions Page ────────────────────────────────────────────────────
-  {
-    selector: "[data-explain='subscribe-email-input']",
-    title: "Email Address Input",
-    icon: "Mail",
-    description:
-      "Enter your email address to receive monthly automated dengue forecast digests and regional alert summaries.",
-  },
-  {
-    selector: "[data-explain='subscribe-regions-select']",
-    title: "Target Regions Filter",
-    icon: "MapPin",
-    description:
-      "Select specific Philippine regions of interest for your email digest, or leave blank to receive the nationwide summary.",
-  },
-  {
-    selector: "[data-explain='subscribe-submit-btn']",
-    title: "Subscribe Button",
-    icon: "CheckCircle",
-    description:
-      "Submits your email subscription. You will receive an immediate report preview and automated monthly updates when new forecasts publish.",
-  },
-  {
-    selector: "[data-explain='subscribe-page']",
-    title: "Monthly Email Subscription Center",
-    icon: "Mail",
-    description:
-      "Manage your automated email report preferences, update monitored regions, or unsubscribe at any time.",
   },
 
   // ── Shared UI & Branding ──────────────────────────────────────────────────

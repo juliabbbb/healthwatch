@@ -63,23 +63,14 @@ GEMINI_API_KEY=      # Removed — replaced by GROQ_API_KEY
 GROQ_API_KEY=        # Primary AI-assisted analysis (free at console.groq.com)
 OPENAI_API_KEY=      # Fallback AI provider when Groq rate limits/quotas are reached
 OPENAI_MODEL=        # Optional fallback model override (default: gpt-4o-mini)
-RESEND_API_KEY=      # Optional: monthly forecast emails (100/day free at resend.com)
-RESEND_FROM=         # Optional, default: HealthWatch <onboarding@resend.dev>
-JOB_TOKEN=           # Optional: secret for POST /subscriptions/send-due external cron
-APP_URL=https://healthwatch-ui.onrender.com  # Base URL used in email CTAs/footer
-DISABLE_SUBSCRIPTION_SCHEDULER=  # Set 1 to disable the in-process monthly sender
 ```
 
 Postgres-only: `DATABASE_URL` is **required** to start the API and is parsed by
-`db.py`, the subscription store (`src/subscription_store.py`), and the email
-report. The API reads every table from the database at startup (the SQLite
+`db.py`. The API reads every table from the database at startup (the SQLite
 fallback was removed). The schema is auto-created by `db.ensure_tables()` on
 startup and rebuilt from the processed CSVs with `.venv\Scripts\python -m src.db`
-(which drops/recreates only the 11 pipeline tables; the `subscriptions` table is
-untouched, so it survives rebuilds and Render redeploys). `JOB_TOKEN` is required
-on deployed environments: it guards `POST /subscriptions/send-due` (external
-monthly cron, e.g. cron-job.org — the in-process 6-hourly scheduler won't fire
-while a free Render instance is asleep).
+(which drops/recreates only the 11 pipeline tables; the `subscriptions` table was
+removed with the email-report feature).
 
 ## Design Tooling (Impeccable)
 

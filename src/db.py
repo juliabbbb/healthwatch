@@ -3,8 +3,7 @@
 Builds and reads the HEALTHWATCH schema (the ERD source of truth — 11 tables)
 through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
 to be set in the environment. This is the only relational store: the SQLite
-fallback was removed, so the API, subscription store, and email report all read
-from this PostgreSQL database.
+fallback was removed, so every component reads from this PostgreSQL database.
 
 The pipeline never hand-writes tables: `build_db()` drops and recreates rows
 from the processed CSVs, so a rebuild is fully idempotent. Because this module
@@ -92,7 +91,7 @@ NATIONAL_NAME = "National"
 # (region_population.csv) instead of being hardcoded. The loader locates each
 # region's total row inside the raw multi-block layout and reads the population
 # for the selected census year; REGION_META["population"] is then overridden so
-# every consumer (API, email report, DB seed) picks up the latest figures.
+# every consumer (API, DB seed) picks up the latest figures.
 POPULATION_CSV = Path(__file__).resolve().parent.parent / "data" / "raw" / "region_population.csv"
 POPULATION_CENSUS_YEAR = 2024
 _POPULATION_COL_BY_YEAR = {2010: 2, 2015: 3, 2020: 4, 2024: 5}
@@ -364,7 +363,7 @@ def _load_csv(name):
 def build_db():
     """(Re)build every table from the processed CSVs. Idempotent: each build
     replaces the previous contents, so a full pipeline rerun fully resyncs it.
-    Schemas unrelated to the pipeline (e.g. `subscriptions`) are untouched."""
+    Only the HEALTHWATCH metadata tables are dropped/recreated."""
     eng = engine()
     metadata.drop_all(eng)
     metadata.create_all(eng)

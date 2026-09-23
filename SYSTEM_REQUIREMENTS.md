@@ -2,7 +2,7 @@
 
 > Regional dengue outbreak prediction dashboard.
 > Backend: FastAPI + SQLAlchemy + PostgreSQL. Frontend: React 19 + TanStack Start (SSR) + Vite 8 + Leaflet.
-> ML layer: Facebook Prophet (local training only). LLM narration: Gemini / Groq. Email: Resend.
+> ML layer: Facebook Prophet (local training only). LLM narration: Groq (gpt-oss / Llama) with OpenAI fallback.
 
 ---
 
@@ -13,7 +13,6 @@
 | Backend API | Uvicorn on `localhost:8000` | `web` service, free tier, Python runtime |
 | Frontend (SSR) | Vite dev server (`localhost:3000`) | `web` service, free tier, Node runtime |
 | Database | Supabase PostgreSQL (external, `DATABASE_URL`) | Supabase PostgreSQL (external) — Postgres-only, no SQLite |
-| Subscriptions | Same Postgres `subscriptions` table | Same Postgres `subscriptions` table (persists across redeploys) |
 
 ---
 
@@ -131,7 +130,6 @@
 | groq ≥ 0.9.0 | LLM narration (Groq API client) | ~2 MB |
 | sqlalchemy | ORM / database layer | ~5 MB |
 | psycopg2-binary | PostgreSQL adapter | ~5 MB |
-| resend | Transactional email | ~1 MB |
 
 ### ML Pipeline Dependencies (`requirements-ml.txt` — local only)
 
@@ -154,8 +152,6 @@
 | `outbreak.py` | Season-level outbreak flag detection |
 | `ingest.py` | Raw CSV/Excel → monthly series |
 | `doh_eb_ingest.py` | DOH-Epi Bureau specific ingestion |
-| `email_report.py` | Monthly forecast report (HTML render + Resend delivery) |
-| `subscription_store.py` | Anonymous email subscription store (PostgreSQL, same DB as schema) |
 | `validate_2025.py` | Prospective 2025 validation |
 | `validate_known_epidemic.py` | Independent 2019 outbreak check |
 
@@ -171,10 +167,9 @@
 | **Pool recycle** | 300 seconds | 300 seconds |
 | **Tables** | 11 tables (same schema) | 11 tables |
 | **Schema rebuild** | `python -m src.db` (idempotent, drop+recreate of pipeline tables) | Same command, points to Postgres |
-| **Subscriptions store** | `subscriptions` table in the same Postgres | `subscriptions` table (persists across redeploys) |
 
-> Postgres-only: there is no SQLite anywhere. The API, email report, and
-> subscription store all require `DATABASE_URL` (parsed from the repo `.env`).
+> Postgres-only: there is no SQLite anywhere. Every component of the API reads
+> through `DATABASE_URL` (parsed from the repo `.env`).
 > `data/processed/*.csv` are pipeline checkpoints; `python -m src.db` mirrors
 > them into PostgreSQL.
 
@@ -198,9 +193,9 @@
 
 | Service | Key Required | Source | Free Tier |
 |---|---|---|---|
-| **Groq** (LLM, Llama 4) | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) | Yes (no card) |
+| **Groq** (LLM, gpt-oss / Llama) | `GROQ_API_KEY` | [console.groq.com](https://console.groq.com) | Yes (no card) |
 | **Supabase** (PostgreSQL) | `DATABASE_URL` | [supabase.com](https://supabase.com) | Yes (500 MB) |
-| **Resend** (email delivery) | `RESEND_API_KEY` | [resend.com](https://resend.com) | Yes (100/day) |
+| **OpenAI** (LLM fallback) | `OPENAI_API_KEY` | [platform.openai.com](https://platform.openai.com) | No |
 | **CARTO** (basemap tiles) | `VITE_CARTO_API_KEY` | [carto.com](https://carto.com) | Yes (watermark removal) |
 
 ### CORS Configuration
@@ -231,13 +226,10 @@
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `DATABASE_URL` | Yes | None (API will not start without it) | PostgreSQL connection string (Supabase) |
-| `GROQ_API_KEY` | No | None | Groq API key for AI-assisted analysis (Llama 4) |
-| `RESEND_API_KEY` | No | None | Resend email API key |
-| `RESEND_FROM` | No | `HealthWatch <onboarding@resend.dev>` | Sender address |
-| `APP_URL` | No | `https://healthwatch-ui.onrender.com` | Base URL for email CTAs |
-| `JOB_TOKEN` | No | None | Secret for POST `/subscriptions/send-due` |
+| `GROQ_API_KEY` | No | None | Groq API key for AI-assisted analysis (gpt-oss / Llama) |
+| `OPENAI_API_KEY` | No | None | OpenAI API key (fallback provider when Groq rate limits/quotas are reached) |
+| `OPENAI_MODEL` | No | `gpt-4o-mini` | Fallback OpenAI model override |
 | `ALLOWED_ORIGINS` | No | localhost + `*.onrender.com` | CORS origins |
-| `DISABLE_SUBSCRIPTION_SCHEDULER` | No | Unset | Set `1` to disable in-process sender |
 
 ### Frontend (`frontend/.env.*`)
 
@@ -275,9 +267,9 @@
 
 - **512 MB RAM** per service (API + Frontend separate)
 - **Shared 1 vCPU** (burst only)
-- **No persistent disk on Render** — irrelevant for data: everything lives in the managed Supabase Postgres (schema tables + `subscriptions`), which survives redeploys
+- **No persistent disk on Render** — irrelevant for data: everything lives in the managed Supabase Postgres (schema tables), which survives redeploys
 - **Sleeps after 15 min** — first request after sleep takes ~30s
-- **No cron jobs** — use external cron (e.g., cron-job.org) to POST `/subscriptions/send-due`
+- **No cron jobs** — none needed (no scheduled jobs; all dashboard data is static until the pipeline is re-run)
 
 ---
 
@@ -358,7 +350,6 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 [  ] GROQ_API_KEY set in Render env
 [  ] render.yaml blueprint deployed (API + Frontend services)
 [  ] CORS: ALLOWED_ORIGINS includes frontend URL
-[  ] External cron job configured for /subscriptions/send-due (optional)
 [  ] Pipeline CSVs committed to repo; schema populated: `python -m src.db` against DATABASE_URL
 ```
 

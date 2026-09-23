@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import {
   HelpCircle,
-  Mail,
   Menu,
   Minus,
   Moon,
@@ -19,7 +18,6 @@ import {
   BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
-import { SubscribeModal } from "@/components/modals/SubscribeModal";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
@@ -45,7 +43,6 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -226,12 +223,6 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           </IconButton>
           <IconButton label="Share this view" onClick={() => void handleShare()}>
             <Share2 className="size-4" />
-          </IconButton>
-          <IconButton
-            label="Subscribe to monthly forecast reports"
-            onClick={() => setSubscribeOpen(true)}
-          >
-            <Mail className="size-4" />
           </IconButton>
           {onZoom && (
             <>
@@ -463,16 +454,6 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      setSubscribeOpen(true);
-                    }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
-                  >
-                    <Mail className="size-4 text-primary" />
-                    <span>Subscribe</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
                       onStartTour?.();
                     }}
                     className={`col-span-2 flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors active:scale-98 ${
@@ -492,7 +473,6 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
         )}
 
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
-      <SubscribeModal open={subscribeOpen} onOpenChange={setSubscribeOpen} />
     </>
   );
 }

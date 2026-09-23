@@ -28,9 +28,8 @@ unless noted. `disease` is case-sensitive (`Dengue`).
 | `GET /regions` | Region metadata | – | `[{code, name, short, geoName}]` |
 | `GET /status` | Pipeline freshness snapshot | – | `{generated_at, data_through:{date,month}, supported_diseases}` |
 | `GET /health` | Liveness (`data_ready` flag) | – | `{status, data_ready}` |
-| `POST /subscriptions` + `/subscriptions/manage/{token}` | Optional email reports (external systems normally skip these) | – | – |
 
-Live / interactive endpoints (AI narratives, email sends) are intentionally
+Live / interactive endpoints (AI narratives) are intentionally
 excluded from the integration contract; they are for dashboard users, not
 headless consumers. Their OpenAPI entries remain available under
 `/analysis/*`.
@@ -70,8 +69,6 @@ In-memory per-client-IP, applied at the application layer:
 | `/forecast/{disease}`, `/risk-classification/{disease}`, `/escalation` | 300/min |
 | `/dashboard` | 300/min |
 | `/analysis/*` (LLM) | 20/min |
-| `/subscriptions` | 10/min |
-| `/subscriptions/send-due` | 2/min |
 
 ## 5. Data freshness & consistency
 

@@ -13,4 +13,3 @@ openai>=1.0.0
 # anthropic  # keep commented until the Groq swap is verified end-to-end
 sqlalchemy
 psycopg2-binary
-resend

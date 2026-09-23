@@ -123,8 +123,7 @@ re-run the pipeline modules in `src/` to regenerate everything in `data/processe
 ```
 
 `src.db` drops and recreates the 11 pipeline tables from the processed CSVs in one idempotent
-transaction against PostgreSQL (requires `DATABASE_URL`); the `subscriptions` table is outside the
-schema and survives rebuilds. `data/processed/` is pipeline output and is never hand-edited; all
+transaction against PostgreSQL (requires `DATABASE_URL`). `data/processed/` is pipeline output and is never hand-edited; all
 hand-placed inputs go in `data/raw/`. Commit the regenerated `data/processed/*.csv` to version the
 new artifacts.
 
