@@ -19,6 +19,9 @@ npm run dev          # Vite dev server
 
 # One-shot launcher
 powershell -ExecutionPolicy Bypass -File run-dev.ps1
+
+# One-shot data update (raw → processed → Postgres)
+powershell -ExecutionPolicy Bypass -File update-data.ps1
 ```
 
 ## Data Pipeline (only if raw data changes)

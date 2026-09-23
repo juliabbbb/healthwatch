@@ -94,11 +94,23 @@ Interactive API docs: <http://localhost:8000/docs>
   fallback anymore.
 - **`npm install` fails on Node version** — check `node -v`; Vite 8 needs 20.19+/22.12+.
 
-## Rebuilding data from scratch
+## Updating / rebuilding data
 
-Only needed if the raw data changes. Replace `data/raw/DOH-Epi-Dengue-2022-2026.csv` (columns
-`Year, Month, Region, Cases, Deaths`), then re-run the pipeline modules in `src/` to regenerate
-everything in `data/processed/`:
+One-shot: drop the updated export in `data/raw/`, then run the whole pipeline and sync to Postgres:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File update-data.ps1
+```
+
+This runs ingest → forecast → classify → outbreak → 2025 validation → 2019 epidemic check, then
+mirrors `data/processed/` into PostgreSQL via `src.db` (the only step that touches the DB — it
+requires `DATABASE_URL` in `.env`, so the dashboard will keep serving the *old* numbers until that
+last step succeeds). Each step is checked; any failure stops the run so Postgres is never
+half-synced.
+
+Or run the steps manually (only needed if the raw data changes). Replace
+`data/raw/DOH-Epi-Dengue-2022-2026.csv` (columns `Year, Month, Region, Cases, Deaths`), then
+re-run the pipeline modules in `src/` to regenerate everything in `data/processed/`:
 
 ```powershell
 .venv\Scripts\python -m src.doh_eb_ingest           # canonical DOH-EB file -> monthly series
@@ -107,13 +119,14 @@ everything in `data/processed/`:
 .venv\Scripts\python -m src.outbreak                # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025           # prospective check of the 2025 flags (real data)
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (weekly fixture)
-.venv\Scripts\python -m src.db                      # rebuild the relational DB from processed CSVs
+.venv\Scripts\python -m src.db                      # mirrors processed CSVs into PostgreSQL (required)
 ```
 
 `src.db` drops and recreates the 11 pipeline tables from the processed CSVs in one idempotent
 transaction against PostgreSQL (requires `DATABASE_URL`); the `subscriptions` table is outside the
 schema and survives rebuilds. `data/processed/` is pipeline output and is never hand-edited; all
-hand-placed inputs go in `data/raw/`.
+hand-placed inputs go in `data/raw/`. Commit the regenerated `data/processed/*.csv` to version the
+new artifacts.
 
 ## Structure
 
