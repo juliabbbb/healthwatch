@@ -138,6 +138,10 @@ new artifacts.
 | `src/` | Pipeline (ingest, forecast, classify, outbreak, validate, db) + FastAPI app (`api.py`) |
 | `frontend/` | React + Vite + TanStack Router dashboard (monthly map with outbreak layer, region pages, methodology) |
 
+## System Diagram
+https://mermaid.ai/d/607a617f-271b-4e42-b4d3-380c41741d1d
+
+
 ### Relational database (11 tables)
 
 PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgres server.
