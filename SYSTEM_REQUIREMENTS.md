@@ -71,7 +71,7 @@
 | Item | Size |
 |---|---|
 | Repository (source, excl. `.git`, `.venv`, `node_modules`) | ~5.3 MB |
-| Raw data CSVs + Excel (`data/raw/`) | ~2.9 MB |
+| Raw data CSVs (`data/raw/`) | ~2.5 MB |
 | Processed data CSVs (`data/processed/`) | ~1.2 MB |
 | Postgres schema | Hosted (Supabase) — no local files |
 | GeoJSON (`frontend/public/geo/`) | ~211 KB |
