@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import json
 import os
 import re
@@ -735,68 +736,124 @@ def _load_dotenv() -> None:
 _load_dotenv()
 
 
-def _llm_narrate(system_prompt, user_prompt):
+_AI_RESPONSE_CACHE: dict[str, tuple[str, str, float]] = {}
+_AI_CACHE_TTL_SECONDS = int(os.environ.get("AI_CACHE_TTL_SECONDS", "1800"))
+_GROQ_COOLDOWN_UNTIL: float = 0.0
+_GROQ_COOLDOWN_DURATION = int(os.environ.get("GROQ_COOLDOWN_SECONDS", "300"))
+
+
+def _get_ai_cache_key(system_prompt: str, user_prompt: str) -> str:
+    combined = f"{system_prompt}\n---\n{user_prompt}"
+    return hashlib.sha256(combined.encode("utf-8")).hexdigest()
+
+
+def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
     """Shared constrained LLM call for interpretability endpoints.
 
-    Uses Groq's Llama 3 70B (llama3-70b-8192 by default). Model is
-    configurable via GROQ_MODEL env var. Requires GROQ_API_KEY (free at
-    console.groq.com). Fails soft (503) on missing key or API errors so no
-    dashboard view ever breaks because of the AI layer."""
-    groq_key = os.environ.get("GROQ_API_KEY")
-    if not groq_key:
+    Uses Groq as primary provider and OpenAI as fallback when Groq limits/errors are reached.
+    Includes in-memory TTL caching (30m) and a 5-minute Groq circuit breaker cooldown
+    to protect against quota reach and spam. Fails soft (503) on missing keys or total API errors."""
+    global _GROQ_COOLDOWN_UNTIL
+
+    now = time.time()
+    cache_key = _get_ai_cache_key(system_prompt, user_prompt)
+
+    # 1. In-memory TTL Response Cache check (Anti-spam / Anti-quota)
+    if cache_key in _AI_RESPONSE_CACHE:
+        cached_narrative, cached_model, cached_time = _AI_RESPONSE_CACHE[cache_key]
+        if now - cached_time < _AI_CACHE_TTL_SECONDS:
+            return cached_narrative, f"{cached_model} (cached)"
+
+    groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+    openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
+
+    narrative = ""
+    used_model = None
+
+    # 2. Primary Provider: Groq API
+    if groq_key and now >= _GROQ_COOLDOWN_UNTIL:
+        try:
+            from groq import Groq
+
+            GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+            fallback_groq_models = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"]
+            _gpt_oss = {"openai/gpt-oss-120b", "openai/gpt-oss-20b"}
+
+            client = Groq(api_key=groq_key, timeout=25.0, max_retries=0)
+            models_to_try = [GROQ_MODEL]
+            for m in fallback_groq_models:
+                if m not in models_to_try:
+                    models_to_try.append(m)
+
+            for model in models_to_try:
+                try:
+                    params: dict = {
+                        "model": model,
+                        "max_tokens": 1024,
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                    }
+                    if model not in _gpt_oss:
+                        params["temperature"] = 0.3
+                    res = client.chat.completions.create(**params)
+                    narrative = (res.choices[0].message.content or "").strip()
+                    if narrative:
+                        used_model = f"groq:{model}"
+                        break
+                except Exception as exc:
+                    exc_str = str(exc).lower()
+                    is_rate_limit = any(term in exc_str for term in ("429", "rate limit", "quota", "requests per minute", "tokens per minute", "rate_limit_exceeded"))
+                    if is_rate_limit:
+                        print(f"[llm] Groq rate limit/quota reached ({model}): {exc!r}. Activating {min(_GROQ_COOLDOWN_DURATION, 300)}s Groq cooldown.", flush=True)
+                        _GROQ_COOLDOWN_UNTIL = now + _GROQ_COOLDOWN_DURATION
+                        break
+                    else:
+                        print(f"[llm] Groq model '{model}' failed: {exc!r}", flush=True)
+                        continue
+        except Exception as exc:
+            print(f"[llm] Groq primary provider error: {exc!r}", flush=True)
+
+    # 3. Fallback Provider: OpenAI API
+    if not narrative and openai_key:
+        try:
+            from openai import OpenAI
+
+            OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+            client = OpenAI(api_key=openai_key, timeout=25.0, max_retries=1)
+            res = client.chat.completions.create(
+                model=OPENAI_MODEL,
+                max_tokens=1024,
+                temperature=0.3,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+            )
+            narrative = (res.choices[0].message.content or "").strip()
+            if narrative:
+                used_model = f"openai:{OPENAI_MODEL} (fallback)"
+        except Exception as exc:
+            print(f"[llm] OpenAI fallback provider error: {exc!r}", flush=True)
+
+    # 4. Success handling and Caching
+    if narrative and used_model:
+        clean_model_tag = used_model.replace(" (fallback)", "")
+        _AI_RESPONSE_CACHE[cache_key] = (narrative, clean_model_tag, now)
+        return narrative, used_model
+
+    # 5. Soft Failure Responses
+    if not groq_key and not openai_key:
         raise HTTPException(
             status_code=503,
-            detail="AI-assisted analysis unavailable: set GROQ_API_KEY (free at "
-            "console.groq.com) on the server.",
+            detail="AI-assisted analysis unavailable: set GROQ_API_KEY or OPENAI_API_KEY on the server.",
         )
 
-    try:
-        from groq import Groq
-    except ImportError:
-        raise HTTPException(
-            status_code=503,
-            detail="AI-assisted analysis unavailable: groq package not installed.",
-        )
-
-    GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-    fallback_models = ["openai/gpt-oss-20b"]
-    # gpt-oss models do not accept temperature; strip it when using those.
-    _gpt_oss = {"openai/gpt-oss-120b", "openai/gpt-oss-20b"}
-    try:
-        client = Groq(api_key=groq_key, timeout=30.0, max_retries=0)
-        narrative = ""
-        used_model = None
-        for model in [GROQ_MODEL, *fallback_models]:
-            try:
-                params: dict = {
-                    "model": model,
-                    "max_tokens": 1024,
-                    "messages": [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                }
-                if model not in _gpt_oss:
-                    params["temperature"] = 0.3
-                message = client.chat.completions.create(**params)
-                narrative = (message.choices[0].message.content or "").strip()
-                used_model = model
-                break
-            except Exception as exc:
-                print(f"[llm] {model} failed: {exc!r}", flush=True)
-                continue
-    except Exception as exc:  # client construction or network errors
-        raise HTTPException(
-            status_code=503,
-            detail=f"AI-assisted analysis failed: {type(exc).__name__}",
-        )
-    if not narrative:
-        # Never let LLM failure crash the API response.
-        raise HTTPException(
-            status_code=503,
-            detail="AI summary unavailable. Please refer to the forecast data directly.",
-        )
-    return narrative, used_model
+    raise HTTPException(
+        status_code=503,
+        detail="AI summary unavailable due to provider quota/rate limits. Please refer to forecast data directly.",
+    )
 
 
 @asynccontextmanager

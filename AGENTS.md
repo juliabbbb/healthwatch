@@ -60,7 +60,9 @@ Create `.env` at repo root (git-ignored):
 ```
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
 GEMINI_API_KEY=      # Removed — replaced by GROQ_API_KEY
-GROQ_API_KEY=        # AI-assisted analysis (free at console.groq.com)
+GROQ_API_KEY=        # Primary AI-assisted analysis (free at console.groq.com)
+OPENAI_API_KEY=      # Fallback AI provider when Groq rate limits/quotas are reached
+OPENAI_MODEL=        # Optional fallback model override (default: gpt-4o-mini)
 RESEND_API_KEY=      # Optional: monthly forecast emails (100/day free at resend.com)
 RESEND_FROM=         # Optional, default: HealthWatch <onboarding@resend.dev>
 JOB_TOKEN=           # Optional: secret for POST /subscriptions/send-due external cron
