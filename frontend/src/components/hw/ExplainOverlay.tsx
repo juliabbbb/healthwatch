@@ -289,7 +289,7 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
       });
 
       if (!res.ok) {
-        let detail = "AI analysis unavailable: GROQ_API_KEY is not configured on the server.";
+        let detail = "AI analysis unavailable: AI provider keys (GROQ_API_KEY / OPENAI_API_KEY) are not configured on the server.";
         try {
           const errData = (await res.json()) as { detail?: string };
           if (errData?.detail) detail = errData.detail;
