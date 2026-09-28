@@ -135,7 +135,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Timeline Scrubber Control",
     icon: "Clock",
     description:
-      "Drag the slider or click Play to animate dengue case patterns from 2022 through 2026. Grey markers represent historical DOH surveillance data; orange markers represent forward 12-month forecasts.",
+      "Drag the slider or click Play to animate dengue case patterns from 2019 through the forecast horizon into 2027. Grey markers represent historical DOH surveillance data; orange markers represent forward 12-month forecasts.",
   },
 
   // ── Seasonality Page ──────────────────────────────────────────────────────
@@ -186,7 +186,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Seasonality Time Scrubber",
     icon: "SlidersHorizontal",
     description:
-      "Drag to shift the focus window across past historical data (2022–2025) or into the future 12-month forecast horizon.",
+      "Drag to shift the focus window across past historical data (2019–2026) or into the future 12-month forecast horizon.",
   },
   {
     selector: "[data-explain='simple-summary']",
@@ -214,7 +214,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Observed Series Chart",
     icon: "BarChart2",
     description:
-      "Raw monthly dengue cases reported by the DOH Epidemiology Bureau from 2022 to the selected month. Shows real surveillance data prior to mathematical decomposition.",
+      "Raw monthly dengue cases reported by the DOH Epidemiology Bureau from 2019 to the selected month. Shows real surveillance data prior to mathematical decomposition.",
   },
   {
     selector: "[data-explain='seasonality-chart-trend']",

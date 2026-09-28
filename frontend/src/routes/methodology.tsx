@@ -9,13 +9,18 @@ import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
-  { date: "2019-07-21", cases: 18820, p50: 6951, p75: 11618.5, tier: "High" },
-  { date: "2019-07-28", cases: 20266, p50: 8489, p75: 12111, tier: "High" },
-  { date: "2019-08-04", cases: 19969, p50: 9121, p75: 13764, tier: "High" },
-  { date: "2019-08-11", cases: 19231, p50: 9244, p75: 14246, tier: "High" },
-  { date: "2019-08-18", cases: 19981, p50: 8902, p75: 14259, tier: "High" },
-  { date: "2019-08-25", cases: 19093, p50: 8150, p75: 12922, tier: "High" },
-  { date: "2019-09-01", cases: 18601, p50: 7989, p75: 11986, tier: "High" },
+  { date: "2019-01", cases: 34534, p50: 14876.5, p75: 23923.25, tier: "High" },
+  { date: "2019-02", cases: 19631, p50: 12440, p75: 17625, tier: "High" },
+  { date: "2019-03", cases: 12285, p50: 10478.5, p75: 12088.5, tier: "High" },
+  { date: "2019-04", cases: 9009, p50: 8772, p75: 10442.25, tier: "Moderate" },
+  { date: "2019-05", cases: 15811, p50: 13395, p75: 15737.5, tier: "High" },
+  { date: "2019-06", cases: 30153, p50: 22077.5, p75: 28189.75, tier: "High" },
+  { date: "2019-07", cases: 68915, p50: 32788, p75: 46783, tier: "High" },
+  { date: "2019-08", cases: 101741, p50: 33302.5, p75: 78867, tier: "High" },
+  { date: "2019-09", cases: 58345, p50: 30074, p75: 48578, tier: "High" },
+  { date: "2019-10", cases: 46675, p50: 21639.5, p75: 40954.25, tier: "High" },
+  { date: "2019-11", cases: 23597, p50: 20653.5, p75: 25745, tier: "Moderate" },
+  { date: "2019-12", cases: 16393, p50: 15705, p75: 16270.5, tier: "High" },
 ];
 
 export const Route = createFileRoute("/methodology")({
@@ -79,7 +84,9 @@ function Methodology() {
               Clinical Classification, Final Case Classification, Admitted, No. of Cases, No. of
               Deaths), summed to contiguous calendar months by the pipeline. Reported cases include
               all final classifications (Suspect + Probable + Confirmed). This canonical file is the
-              backbone of every series in the system.
+              backbone of every series in the system. Its per-record demographics also power the
+              Reported Data Breakdown shown per region-month (age group, sex, clinical severity,
+              admission status), read live from the relational database.
             </li>
             <li>
               <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
@@ -227,17 +234,16 @@ function Methodology() {
           <p className="text-sm text-foreground/85">
             As an independent sanity check, the classification method was run against a real,
             pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
-            At weekly resolution the check reuses the standalone 2016–2021 weekly fixture —
-            deliberately independent of the monthly line-list pipeline — and grades the surrounding
-            national weekly counts with weekly equivalents of the same percentile thresholds. The
-            line-list era also confirms the 2019 epidemic through the production monthly rule
-            (Aug–Oct 2019 all High):
+            The 2019 line-list carries no pre-2019 weeks, so the check runs the production monthly
+            rule on real 2019 rows: national monthly P50/P75 are pooled from the line-list over
+            2019–2024 (the pre-2025 validation pool), then each 2019 month is labelled against them.
+            The Jul–Oct 2019 epidemic peak all classify High:
           </p>
           <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
             <table className="w-full text-sm border-collapse">
               <thead className="label-caps">
                 <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
-                  <th className="px-4 py-3 text-left">Week ending</th>
+                  <th className="px-4 py-3 text-left">Month</th>
                   <th className="px-4 py-3 text-right">National cases</th>
                   <th className="px-4 py-3 text-right">P50 / P75</th>
                   <th className="px-4 py-3 text-center">Tier</th>
@@ -266,8 +272,8 @@ function Methodology() {
             </table>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            All 7 of 7 weeks classify as High against the fixture&rsquo;s 2016–2018 weekly reference
-            distribution. Reproduce with <code>python -m src.validate_known_epidemic</code>.
+            10 of 12 months classify as High, with the Jul–Oct 2019 epidemic peak all High.
+            Reproduce with <code>python -m src.validate_known_epidemic</code>.
           </p>
         </CollapsibleSection>
 

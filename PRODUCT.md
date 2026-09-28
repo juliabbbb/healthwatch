@@ -57,8 +57,7 @@ held-out real-data year — a claim a reactive dashboard cannot make.
 
 ## Evidence on Hand
 
-- `data/raw/` — DOH dengue case line-list (2019–2026) + legacy weekly fixture for the
-  2019 known-epidemic check.
+- `data/raw/` — DOH dengue case line-list (2019–2026) for the 2019 known-epidemic check.
 - `data/processed/` — cleaned series, forecasts, risk thresholds/classifications,
   outbreak indicators, validation metrics (pipeline checkpoints; mirrored into Postgres by `src.db`).
 - `frontend/public/geo/ph-regions.geojson` — PSGC region boundaries for the choropleth.

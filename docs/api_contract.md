@@ -25,6 +25,7 @@ unless noted. `disease` is case-sensitive (`Dengue`).
 | `GET /validation/outbreak` | Prospective 2025 outbreak validation | – | `{scope, overall:{tp,fp,fn,tn,precision,recall,f1}, by_season:{dry,wet:{…}}}` |
 | `GET /metrics/{region}` | Forecast error metrics + confidence | `disease`, `window` | `{region, disease, windows:[…], primary_window, mae, rmse, mape, skill_vs_naive_pct, confidence}` |
 | `GET /series/{region}` | Historical series (+ forecast) | `disease`, `include_forecast` | `{region, disease, points:[{index,date,label,season,forecast,cases,lower,upper}]}` |
+| `GET /reported/{region}` | Population/clinical breakdown of reported cases for one month | `year`, `month`, `disease` | `{region, region_code, label, total_cases, total_deaths, records, breakdowns:{final_classification,age_group,sex,clinical_classification,admitted}}` |
 | `GET /regions` | Region metadata | – | `[{code, name, short, geoName}]` |
 | `GET /status` | Pipeline freshness snapshot | – | `{generated_at, data_through:{date,month}, supported_diseases}` |
 | `GET /health` | Liveness (`data_ready` flag) | – | `{status, data_ready}` |
@@ -50,6 +51,14 @@ headless consumers. Their OpenAPI entries remain available under
   for `/escalation`. Flat/declining regions score 0.
 - **`MAE` / `RMSE` / `MAPE`** — walk-forward window error metrics. `MAPE` can
   exceed 100% on near-zero months; read `skill_vs_naive_pct` alongside it.
+- **`/reported/{region}`** — the only **live** endpoint: it groups
+  `dengue_case_records` (the raw DOH line-list) in Postgres on demand, so it
+  reflects the shipped line-list rather than a startup snapshot. `year` must be
+  2019–2026. Each `breakdowns` dimension lists `{value, cases, deaths, share}`
+  and each dimension's cases sum to `total_cases` (the month's reported series
+  total). `records` is the count of line-list rows. `sex` values are
+  `Female|Male`; `admitted` is `Admitted|Not admitted`.
+- **`National`** for `/reported/{region}` spans all 18 regions.
 
 ## 3. Error responses
 

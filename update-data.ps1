@@ -27,7 +27,7 @@ $steps = @(
     'src.classify'               # month-of-year thresholds, risk + probe classification
     'src.outbreak'               # season-level outbreak flags
     'src.validate_2025'          # prospective check of the 2025 flags (real data)
-    'src.validate_known_epidemic' # independent 2019 outbreak check (weekly fixture)
+    'src.validate_known_epidemic' # independent 2019 outbreak check (line-list 2019 monthly cross-check)
     'src.db'                     # mirrors processed CSVs into PostgreSQL (DATABASE_URL)
 )
 

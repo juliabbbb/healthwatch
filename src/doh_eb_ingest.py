@@ -134,8 +134,11 @@ def load_case_records(data_dir=None):
     """Return the FULL line-list as case records (region-mapped, raw dims).
 
     No monthly aggregation and no DATA_END cut — every 2019-2026 record, for
-    the relational `dengue_case_records` table backing the deferred
-    severity/demographic analyses. Cases/deaths clipped at zero.
+    the relational `dengue_case_records` table backing the reported-data
+    breakdown endpoint (`/reported/{region}`) and severity/demographic
+    analyses. Each record also carries the `month` bucket (same Thursday
+    epi-week rule as the modelling grid) so breakdowns align with the monthly
+    reported series. Cases/deaths clipped at zero.
     """
     data_dir = data_dir if data_dir is not None else ingest.RAW_DIR
     path = data_dir / DOH_FILE
@@ -166,8 +169,9 @@ def load_case_records(data_dir=None):
     df["deaths"] = pd.to_numeric(df["deaths"], errors="coerce").clip(lower=0).fillna(0).astype(int)
     df["year"] = pd.to_numeric(df["year"], errors="coerce").astype("Int64")
     df["morbidity_week"] = pd.to_numeric(df["morbidity_week"], errors="coerce").astype("Int64")
+    df["month"] = _epi_week_month(df["year"], df["morbidity_week"]).dt.month.astype(int)
     df = df.drop(columns=["region_label"])
-    return df[["year", "morbidity_week", "region", "province", "age_group", "sex",
+    return df[["year", "morbidity_week", "month", "region", "province", "age_group", "sex",
                "clinical_classification", "final_case_classification", "admitted",
                "cases", "deaths"]]
 

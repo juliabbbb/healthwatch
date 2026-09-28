@@ -1,279 +1,157 @@
 [population] applied 18 region populations (2024 census).
 Connected to Supabase PostgreSQL
 Database connection verified.
-Backend data loaded in 12.7s
-INFO:     127.0.0.1:54679 - "GET /health HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54733 - "GET /dashboard HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54735 - "GET /regions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54741 - "GET /dashboard HTTP/1.1" 200 OK
-INFO:     127.0.0.1:54741 - "GET /regions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55112 - "GET /dashboard HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55118 - "GET /regions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55149 - "GET /dashboard HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55149 - "GET /regions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55157 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55159 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /ai-insight?region=CAR&disease=dengue HTTP/1.1" 429 Too Many Requests
-INFO:     127.0.0.1:55162 - "GET /validation/outbreak HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55162 - "GET /validation/outbreak HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55173 - "GET /metrics/National%20Capital%20Region?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55175 - "GET /validation/outbreak HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55173 - "GET /metrics/National%20Capital%20Region?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55175 - "GET /validation/outbreak HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55173 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
-INFO:     127.0.0.1:55173 - "GET /analysis/NCR?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+Backend data loaded in 6.4s
+INFO:     127.0.0.1:55380 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55382 - "GET /reported/National%20Capital%20Region?year=2025&month=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55382 - "GET /reported/National?year=2026&month=8 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55944 - "GET /ai-insight?region=Region%20V&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55944 - "GET /ai-insight?region=Region%20V&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55949 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55952 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55963 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55963 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55970 - "GET /ai-insight?region=Region%20VIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55970 - "GET /ai-insight?region=Region%20VIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55980 - "GET /metrics/Eastern%20Visayas?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55982 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55980 - "GET /metrics/Eastern%20Visayas?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55982 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55982 - "GET /analysis/Region%20VIII?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:55982 - "GET /analysis/Region%20VIII?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:55986 - "GET /ai-insight?region=Region%20II&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55986 - "GET /ai-insight?region=Region%20II&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55997 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55997 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55997 - "GET /ai-insight?region=Region%20VI&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:55997 - "GET /ai-insight?region=Region%20VI&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56004 - "GET /reported/120000000?year=2023&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56004 - "GET /reported/120000000?year=2023&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56014 - "GET /ai-insight?region=Region%20XIII&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56021 - "GET /reported/130000000?year=2024&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56021 - "GET /reported/130000000?year=2024&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56048 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56048 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20IV-A&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 429 Too Many Requests
+INFO:     127.0.0.1:56052 - "GET /metrics/Central%20Luzon?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56063 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56052 - "GET /metrics/Central%20Luzon?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56063 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56063 - "GET /analysis/Region%20III?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:56063 - "GET /analysis/Region%20III?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:56373 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56378 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56385 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56385 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56399 - "GET /reported/080000000?year=2024&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56399 - "GET /reported/080000000?year=2024&month=9 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56477 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56477 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56819 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56826 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56833 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56833 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56843 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56843 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56863 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56861 - "GET /metrics/Central%20Luzon?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56864 - "GET /analysis/Region%20III?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:56864 - "GET /analysis/seasonality?region=Region%20III&disease=Dengue&component=observed HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:57015 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57015 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57015 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57017 - "GET /metrics/Central%20Luzon?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57017 - "GET /metrics/Central%20Luzon?disease=Dengue&window=last_12m HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57015 - "GET /validation/outbreak HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57019 - "GET /analysis/Region%20III?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:57019 - "GET /analysis/Region%20III?disease=Dengue&window=last_12m HTTP/1.1" 503 Service Unavailable
+INFO:     127.0.0.1:57038 - "GET /ai-insight?region=Region%20XI&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57038 - "GET /ai-insight?region=Region%20XI&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57156 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57156 - "GET /regions HTTP/1.1" 200 OK

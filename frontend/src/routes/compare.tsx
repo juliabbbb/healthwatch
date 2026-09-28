@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
+import { ReportedBreakdown } from "@/components/hw/ReportedBreakdown";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import { ExportCustomizationModal } from "@/components/modals/ExportCustomizationModal";
@@ -822,6 +823,14 @@ export default function ComparePage() {
               </div>
 
               {/* Expanded Detailed Trajectory Chart */}
+              {detailedCardRegionCode && !currentMonth.forecast && (
+                <ReportedBreakdown
+                  regionCode={detailedCardRegionCode}
+                  year={currentMonth.year}
+                  month={currentMonth.month}
+                />
+              )}
+
               <div className="rounded-xl border border-border/80 bg-card p-5 shadow-xs">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-xs font-semibold text-foreground">

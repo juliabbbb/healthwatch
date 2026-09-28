@@ -103,9 +103,15 @@ never body text, carrying shadow (`Glass Floor`).
 
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
 - `frontend/` — React + Vite + TanStack Router dashboard
-- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows) + legacy weekly fixture (`DOH-Epi-Dengue-2016-2021.csv`) for the known-epidemic check
+- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows)
 - `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
 - `frontend/public/geo/` — PSGC region GeoJSON for choropleth
+
+The API hot-loads the 8 modelling tables at startup; `dengue_case_records`
+(the raw 749,683-row line-list) is **not** part of that snapshot. Its reported-data
+breakdowns (`GET /reported/{region}?year=&month=`) are grouped in Postgres on
+demand by `db.case_breakdown()` — totals are guaranteed to equal the monthly
+reported series (`month` bucket = same Thursday epi-week rule).
 
 ## Key Constraints
 
@@ -120,7 +126,7 @@ never body text, carrying shadow (`Glass Floor`).
 
 No formal test suite. Validation scripts are run manually:
 - `src.validate_2025` — prospective check of 2025 outbreak flags
-- `src.validate_known_epidemic` — independent 2019 outbreak check (weekly fixture)
+- `src.validate_known_epidemic` — independent 2019 outbreak check (line-list 2019 monthly cross-check)
 
 ## Lovable Connection
 

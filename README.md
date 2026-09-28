@@ -119,7 +119,7 @@ re-run the pipeline modules in `src/` to regenerate everything in `data/processe
 .venv\Scripts\python -m src.classify                # month-of-year thresholds, risk + probe classification
 .venv\Scripts\python -m src.outbreak                # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025           # prospective check of the 2025 flags (real data)
-.venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (weekly fixture)
+.venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (line-list 2019 monthly cross-check)
 .venv\Scripts\python -m src.db                      # mirrors processed CSVs into PostgreSQL (required)
 ```
 
@@ -132,7 +132,7 @@ new artifacts.
 
 | Path | Purpose |
 |---|---|
-| `data/raw/` | DOH dengue case line-list (2019–2026), aggregated monthly by the pipeline + the legacy weekly 2016–2021 fixture used only by the known-epidemic check |
+| `data/raw/` | DOH dengue case line-list (2019–2026), aggregated monthly by the pipeline |
 | `data/processed/` | Cleaned monthly series, forecasts, probes, thresholds, outbreak indicators, validation (checkpoints — mirrored into Postgres by `src.db`) |
 | `frontend/public/geo/` | PSGC region GeoJSON for the choropleth map |
 | `src/` | Pipeline (ingest, forecast, classify, outbreak, validate, db) + FastAPI app (`api.py`) |

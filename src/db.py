@@ -26,6 +26,7 @@ from sqlalchemy import (
     Column,
     Date,
     Float,
+    Index,
     Integer,
     MetaData,
     String,
@@ -302,6 +303,7 @@ dengue_case_records = Table(
     Column("province", String(120), nullable=False),
     Column("year", Integer, nullable=False),
     Column("morbidity_week", Integer, nullable=False),
+    Column("month", Integer, nullable=False),
     Column("age_group", String(24), nullable=False),
     Column("sex", String(8), nullable=False),
     Column("clinical_classification", String(28), nullable=False),
@@ -309,6 +311,7 @@ dengue_case_records = Table(
     Column("admitted", Boolean, nullable=False),
     Column("cases", Integer, nullable=False),
     Column("deaths", Integer, nullable=False),
+    Index("ix_dengue_case_records_region_year_month", "region_code", "year", "month"),
 )
 
 
@@ -521,8 +524,9 @@ def _seed_case_records(conn):
     """Load the raw dengue line-list (2019-2026) into dengue_case_records.
 
     Kept out of the API's startup hot-load (api.py reads the 8 modelling
-    tables only); this table exists for the deferred severity/demographic
-    analyses. Region label -> PSGC region code via REGION_CODE_BY_NAME.
+    tables only and queries this table on demand through `case_breakdown` for
+    the /reported/{region} endpoint). Region label -> PSGC region code via
+    REGION_CODE_BY_NAME.
     """
     recs = load_case_records()
     if recs is None or recs.empty:
@@ -534,7 +538,7 @@ def _seed_case_records(conn):
         unknown = sorted(recs.loc[recs["region_code"].isna(), "region"].unique())
         raise ValueError(f"Unmapped case-record regions: {unknown}")
     cols = [
-        "region_code", "province", "year", "morbidity_week", "age_group", "sex",
+        "region_code", "province", "year", "morbidity_week", "month", "age_group", "sex",
         "clinical_classification", "final_case_classification", "admitted",
         "cases", "deaths",
     ]
@@ -554,7 +558,8 @@ PROVIDENCE_NOTES = (
     "classifications; production risk tiers on the full 2019-2026 baseline, "
     "2025 prospective validation on the pre-2025 pool; walk-forward validation "
     "refits every month; 2025 probes fit through 2024-12-31 as true prospective "
-    "holdouts."
+    "holdouts. Reported-data demographics served on demand from "
+    "dengue_case_records via /reported/{region}."
 )
 
 
@@ -571,6 +576,63 @@ def _monthly_observation_rows(regional):
 def read_table(table):
     with engine().connect() as conn:
         return pd.read_sql_table(table, conn)
+
+
+# Dimensions exposed by /reported/{region}. Values are the raw line-list
+# levels; api.py re-orders them into canonical presentation orders.
+_CASE_DIM_PICK = {
+    "final_classification": "final_case_classification AS value",
+    "age_group": "age_group AS value",
+    "sex": "sex AS value",
+    "clinical_classification": "clinical_classification AS value",
+    "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
+}
+
+
+def case_breakdown(region_code, year, month):
+    """Per-dimension reported-case counts for one (region, year, month).
+
+    Aggregates `dengue_case_records` (the raw DOH line-list) by each
+    demographic/clinical dimension, weighting every record by its `cases` and
+    `deaths`. When `region_code` is None the query spans all regions (use for
+    National, which is never a row in the line-list itself).
+    """
+    region = " AND region_code = :rc" if region_code is not None else ""
+    params = {"y": year, "m": month}
+    if region_code is not None:
+        params["rc"] = region_code
+
+    with engine().connect() as conn:
+        total = conn.execute(
+            text(
+                "SELECT COALESCE(SUM(cases), 0) AS cases,"
+                " COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
+                " FROM dengue_case_records WHERE year = :y AND month = :m" + region
+            ),
+            params,
+        ).fetchone()
+        dims = {}
+        for name, pick in _CASE_DIM_PICK.items():
+            rows = conn.execute(
+                text(
+                    "SELECT " + pick + ", SUM(cases) AS cases, SUM(deaths) AS deaths"
+                    " FROM dengue_case_records WHERE year = :y AND month = :m"
+                    + region
+                    + " GROUP BY value ORDER BY value"
+                ),
+                params,
+            ).mappings().all()
+            dims[name] = [
+                {"value": r["value"], "cases": int(r["cases"]), "deaths": int(r["deaths"])}
+                for r in rows
+            ]
+
+    return {
+        "total_cases": int(total.cases),
+        "total_deaths": int(total.deaths),
+        "records": int(total.records),
+        "dims": dims,
+    }
 
 
 def region_label_to_code(label):

@@ -904,7 +904,7 @@ export function getMonthIndexFromLabel(label: string): number {
   const y = parseInt(yStr, 10);
   const m = parseInt(mStr, 10);
   if (isNaN(y) || isNaN(m)) return HIST_MONTHS - 1;
-  return (y - 2022) * 12 + (m - 1);
+  return (y - 2019) * 12 + (m - 1);
 }
 
 /** Active surveillance baseline date locked to Asia/Manila (PHT, UTC+8). */
