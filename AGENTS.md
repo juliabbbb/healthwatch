@@ -103,7 +103,7 @@ never body text, carrying shadow (`Glass Floor`).
 
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
 - `frontend/` — React + Vite + TanStack Router dashboard
-- `data/raw/` — canonical DOH-Epi-Dengue CSV (2022-2026, 56 months)
+- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows) + legacy weekly fixture (`DOH-Epi-Dengue-2016-2021.csv`) for the known-epidemic check
 - `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
 - `frontend/public/geo/` — PSGC region GeoJSON for choropleth
 

@@ -508,10 +508,11 @@ def _safe_season_narrative(grounding):
 
 # Calendar/method constants a narration may legitimately echo without the
 # pipeline having computed them: surveillance years, percentile/CI/window
-# labels, three-month probe length, 19 series, 18 regions, 36-month baseline.
+# labels, three-month probe length, 19 series, 18 regions, full 2019-2026
+# baseline.
 _METHOD_CONSTANTS = {
     3.0, 6.0, 10.0, 12.0, 18.0, 24.0, 36.0, 48.0, 50.0, 75.0, 80.0, 95.0,
-    100.0, 0.5, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
+    100.0, 0.5, 2019.0, 2020.0, 2021.0, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
 }
 
 

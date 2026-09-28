@@ -2,9 +2,24 @@ import numpy as np
 import pandas as pd
 
 from . import ingest
+from .doh_eb_ingest import DATA_END
 
+# Validation pool end (invariant): every walk-forward/2025-prospective check and
+# the 2025 prospective validation reuse percentiles computed ONLY from history
+# through 2024-12-31, so the validated months were never in the baseline.
 HISTORY_END = pd.Timestamp("2024-12-31")
+# Production pool end (Option A): the dashboard risk tiers (risk_thresholds,
+# risk_classification, seasonal thresholds) observe the FULL observed monthly
+# series (2019-01..2026-08), i.e. up to the last reported month — no lookahead
+# past the forecast horizon's anchor, and never touches the validation pools.
+PROD_HISTORY_END = DATA_END
 TIER_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
+
+# Companion validation-pool files written by run() so the 2025 prospective
+# check can keep using pre-2025 thresholds even though the production risk
+# tiers moved to the full 2019-2026 baseline.
+VALIDATION_THRESHOLDS = "validation_thresholds.csv"
+VALIDATION_SEASONAL = "validation_seasonal_thresholds.csv"
 
 # Calendar wet/dry season mapping used by the outbreak indicator, matching
 # features.py: wet = Jun-Nov (months 6-11), dry = Dec-May (12,1-5). The month
@@ -35,7 +50,7 @@ def season_of(date, region=None):
     return "wet" if m in wet_months_of(region) else "dry"
 
 
-def load_history():
+def load_history(end=HISTORY_END):
     national = pd.read_csv(
         ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
     )
@@ -43,7 +58,7 @@ def load_history():
         ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]
     )
     df = pd.concat([national, regional], ignore_index=True)
-    return df[df["date"] <= HISTORY_END].copy()
+    return df[df["date"] <= end].copy()
 
 
 def with_month_of_year(df, date_col="date"):
@@ -213,11 +228,11 @@ def tier_backtest(thresholds):
 
 
 def run():
-    history = load_history()
-    thresholds = compute_thresholds(history)
+    prod_history = load_history(PROD_HISTORY_END)
+    thresholds = compute_thresholds(prod_history)
     thresholds_path = ingest.save_processed(thresholds, "risk_thresholds.csv")
 
-    seasonal_thr = compute_seasonal_thresholds(history)
+    seasonal_thr = compute_seasonal_thresholds(prod_history)
     seasonal_thr_path = ingest.save_processed(seasonal_thr, "seasonal_thresholds.csv")
 
     classification = classify_forecasts(thresholds)
@@ -226,11 +241,22 @@ def run():
     seasonal_cls = classify_seasonal(thresholds)
     seasonal_cls_path = ingest.save_processed(seasonal_cls, "seasonal_classification.csv")
 
-    accuracy = tier_backtest(thresholds)
+    # Validation artifacts stay on the pre-2025 pool (see HISTORY_END). Companion
+    # threshold files are written for validate_2025, which must not read the
+    # extended production baselines (2019-2026) that would leak 2025 itself.
+    val_history = load_history(HISTORY_END)
+    val_thresholds = compute_thresholds(val_history)
+    val_seasonal = compute_seasonal_thresholds(val_history)
+    ingest.save_processed(val_thresholds, VALIDATION_THRESHOLDS)
+    ingest.save_processed(val_seasonal, VALIDATION_SEASONAL)
+
+    accuracy = tier_backtest(val_thresholds)
     accuracy_path = ingest.save_processed(accuracy, "tier_accuracy.csv")
 
-    print(f"History used: {history['date'].min().year}-{HISTORY_END.year} "
-          f"({len(history)} rows, pre-2025 baseline)")
+    print(f"Production history used: {prod_history['date'].min().year}-"
+          f"{PROD_HISTORY_END.year} ({len(prod_history)} rows, full baseline)")
+    print(f"Validation history used: {val_history['date'].min().year}-"
+          f"{HISTORY_END.year} ({len(val_history)} rows, pre-2025 baseline)")
     print(f"Saved {len(thresholds)} region-month thresholds -> {thresholds_path}")
     print(f"Saved {len(seasonal_thr)} region-season thresholds -> {seasonal_thr_path}")
     print(f"Saved {len(classification)} classified forecasts -> {classification_path}")

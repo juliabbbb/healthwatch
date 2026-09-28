@@ -1,0 +1,39 @@
+disease,region,season,p75,n_months
+Dengue,Bangsamoro (BARMM),dry,439.5,36
+Dengue,Bangsamoro (BARMM),wet,946.2,36
+Dengue,Bicol Region,dry,169.5,36
+Dengue,Bicol Region,wet,323.2,36
+Dengue,CALABARZON,dry,1580.2,36
+Dengue,CALABARZON,wet,4713.8,36
+Dengue,Cagayan Valley,dry,564.0,36
+Dengue,Cagayan Valley,wet,2012.2,36
+Dengue,Caraga,dry,822.5,36
+Dengue,Caraga,wet,869.2,36
+Dengue,Central Luzon,dry,1849.0,36
+Dengue,Central Luzon,wet,5263.2,36
+Dengue,Central Visayas,dry,1304.8,36
+Dengue,Central Visayas,wet,2344.8,36
+Dengue,Cordillera Administrative Region,dry,415.8,36
+Dengue,Cordillera Administrative Region,wet,1881.8,36
+Dengue,Davao Region,dry,1124.0,36
+Dengue,Davao Region,wet,1969.2,36
+Dengue,Eastern Visayas,dry,521.8,36
+Dengue,Eastern Visayas,wet,858.2,36
+Dengue,Ilocos Region,dry,468.8,36
+Dengue,Ilocos Region,wet,1603.8,36
+Dengue,MIMAROPA,dry,717.0,36
+Dengue,MIMAROPA,wet,1639.8,36
+Dengue,National,dry,15834.0,36
+Dengue,National,wet,41685.2,36
+Dengue,National Capital Region,dry,1606.5,36
+Dengue,National Capital Region,wet,4566.2,36
+Dengue,Negros Island Region,dry,517.8,36
+Dengue,Negros Island Region,wet,1825.0,36
+Dengue,Northern Mindanao,dry,1198.5,36
+Dengue,Northern Mindanao,wet,2091.2,36
+Dengue,SOCCSKSARGEN,dry,1091.5,36
+Dengue,SOCCSKSARGEN,wet,1833.5,36
+Dengue,Western Visayas,dry,583.2,36
+Dengue,Western Visayas,wet,2011.8,36
+Dengue,Zamboanga Peninsula,dry,956.8,36
+Dengue,Zamboanga Peninsula,wet,1643.5,36

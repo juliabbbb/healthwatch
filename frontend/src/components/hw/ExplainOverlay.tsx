@@ -60,6 +60,7 @@ import {
   Sliders,
   Loader2,
   Bot,
+  Mail,
   type LucideIcon,
 } from "lucide-react";
 import { EXPLAIN_REGISTRY } from "@/lib/explainRegistry";

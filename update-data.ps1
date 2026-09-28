@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 Set-Location -LiteralPath $root
 $py = Join-Path $root '.venv\Scripts\python.exe'
-$raw = Join-Path $root 'data\raw\DOH-Epi-Dengue-2022-2026.csv'
+$raw = Join-Path $root 'data\raw\DOH-Epi-Dengue-2019-2026-line-list.csv'
 
 if (-not (Test-Path -LiteralPath $py)) {
     throw "Python venv not found: $py`nCreate it first: python -m venv .venv && .venv\Scripts\pip install -r requirements.txt"

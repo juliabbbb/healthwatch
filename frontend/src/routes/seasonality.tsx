@@ -1008,7 +1008,7 @@ function SeasonalityPage() {
               illness={illness}
               component="observed"
               title="Observed series"
-              subtitle="Raw monthly surveillance records (2022–2026)"
+              subtitle="Raw monthly surveillance records (2019–2026)"
               statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
               height={220}
               endIndex={monthIndex}
@@ -1212,7 +1212,7 @@ function SeasonalityPage() {
               Case volume forecast
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Reported 2022–2026 with {forecastHorizon}-month predicted horizon and 95% interval,
+              Reported 2019–2026 with {forecastHorizon}-month predicted horizon and 95% interval,
               wet-season shading.
             </p>
           </div>

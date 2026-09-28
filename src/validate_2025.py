@@ -9,7 +9,7 @@ Ground truth mirrors the detector's own semantics, computed on observed data:
   Rule A (actual): longest run of >= 3 consecutive months whose cases exceed the
       region-month historical P75 (risk tier 'High' on observed cases).
   Rule B (actual): season's observed average monthly load exceeds the season's
-      historical P75 (seasonal_thresholds.csv, history <= 2024).
+      historical P75 (validation_seasonal_thresholds.csv, history <= 2024).
   actual_flag = RuleA_obs OR RuleB_obs.
 
 Predicted flag comes from outbreak_indicators.csv. Result: per (region, season)
@@ -48,11 +48,12 @@ def load_indicators():
 
 
 def load_monthly_thresholds():
-    return pd.read_csv(ingest.PROCESSED_DIR / "risk_thresholds.csv")
+    # Pre-2025 validation pool (classify.run writes these from history <= 2024-12-31).
+    return pd.read_csv(ingest.PROCESSED_DIR / "validation_thresholds.csv")
 
 
 def load_seasonal_thresholds():
-    return pd.read_csv(ingest.PROCESSED_DIR / "seasonal_thresholds.csv")
+    return pd.read_csv(ingest.PROCESSED_DIR / "validation_seasonal_thresholds.csv")
 
 
 def _actual_high_run(month_cases, month_p75s):

@@ -1,6 +1,6 @@
 """Relational database layer for the monthly pipeline.
 
-Builds and reads the HEALTHWATCH schema (the ERD source of truth — 11 tables)
+Builds and reads the HEALTHWATCH schema (the ERD source of truth — 12 tables)
 through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
 to be set in the environment. This is the only relational store: the SQLite
 fallback was removed, so every component reads from this PostgreSQL database.
@@ -21,6 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     Date,
@@ -35,7 +36,7 @@ from sqlalchemy import (
 )
 
 from . import ingest
-from .doh_eb_ingest import REGION_LABELS
+from .doh_eb_ingest import REGION_LABELS, load_case_records
 
 
 def _load_env():
@@ -293,6 +294,23 @@ pipeline_runs = Table(
     Column("notes", Text),
 )
 
+dengue_case_records = Table(
+    "dengue_case_records",
+    metadata,
+    Column("id", BigInteger, primary_key=True, autoincrement=True),
+    Column("region_code", String(9), nullable=False),
+    Column("province", String(120), nullable=False),
+    Column("year", Integer, nullable=False),
+    Column("morbidity_week", Integer, nullable=False),
+    Column("age_group", String(24), nullable=False),
+    Column("sex", String(8), nullable=False),
+    Column("clinical_classification", String(28), nullable=False),
+    Column("final_case_classification", String(28), nullable=False),
+    Column("admitted", Boolean, nullable=False),
+    Column("cases", Integer, nullable=False),
+    Column("deaths", Integer, nullable=False),
+)
+
 
 def _engine():
     db_url = os.environ.get("DATABASE_URL")
@@ -476,6 +494,8 @@ def build_db():
             ov = _remap(ov, "region_code")
             conn.execute(outbreak_validation.insert(), ov.to_dict(orient="records"))
 
+        _seed_case_records(conn)
+
         regional_dates = (
             regional["date"].max() if regional is not None and not regional.empty else None
         )
@@ -488,7 +508,7 @@ def build_db():
                     if regional_dates is not None
                     else None
                 ),
-                "version": "monthly-2022-2026",
+                "version": "monthly-2019-2026",
                 "model": "prophet-monthly",
                 "notes": PROVIDENCE_NOTES,
             },
@@ -497,11 +517,44 @@ def build_db():
     return eng
 
 
+def _seed_case_records(conn):
+    """Load the raw dengue line-list (2019-2026) into dengue_case_records.
+
+    Kept out of the API's startup hot-load (api.py reads the 8 modelling
+    tables only); this table exists for the deferred severity/demographic
+    analyses. Region label -> PSGC region code via REGION_CODE_BY_NAME.
+    """
+    recs = load_case_records()
+    if recs is None or recs.empty:
+        print("[db] no line-list rows to seed into dengue_case_records.", file=sys.stderr)
+        return
+    recs["region_code"] = recs["region"].map(REGION_CODE_BY_NAME)
+    missing = recs["region_code"].isna().any()
+    if missing:
+        unknown = sorted(recs.loc[recs["region_code"].isna(), "region"].unique())
+        raise ValueError(f"Unmapped case-record regions: {unknown}")
+    cols = [
+        "region_code", "province", "year", "morbidity_week", "age_group", "sex",
+        "clinical_classification", "final_case_classification", "admitted",
+        "cases", "deaths",
+    ]
+    payload = recs[cols]
+    batch = 20000
+    for i in range(0, len(payload), batch):
+        conn.execute(
+            dengue_case_records.insert(),
+            payload.iloc[i : i + batch].to_dict(orient="records"),
+        )
+    print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records")
+
+
 PROVIDENCE_NOTES = (
-    "Monthly pipeline v2: real DOH-EB monthly dengue counts (2022-01..2026-08), "
-    "18 regions incl. NIR; production forecast fits all observed history; "
-    "walk-forward validation refits every month; 2025 probes fit through "
-    "2024-12-31 as true prospective holdouts."
+    "Monthly pipeline v3: real DOH dengue case line-list (2019-01..2026-08, "
+    "92 months, 18 regions incl. NIR), reported cases = sum of all final "
+    "classifications; production risk tiers on the full 2019-2026 baseline, "
+    "2025 prospective validation on the pre-2025 pool; walk-forward validation "
+    "refits every month; 2025 probes fit through 2024-12-31 as true prospective "
+    "holdouts."
 )
 
 

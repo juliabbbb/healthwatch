@@ -41,7 +41,7 @@ const COMPONENT_METADATA: Record<
     color: "var(--chart-1)",
     formula: "y_t = T_t + S_t + R_t",
     description:
-      "The recorded monthly dengue case counts as reported by the DOH Epidemiology Bureau surveillance system (2022–2026).",
+      "The recorded monthly dengue case counts as reported by the DOH dengue case line-list surveillance system (2019–2026).",
     interpretation:
       "Shows actual reported monthly incidence across historical months. Combines underlying multi-year baseline trends, annual wet-season outbreak cycles, and random sporadic shocks.",
   },

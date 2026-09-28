@@ -41,7 +41,7 @@ headless consumers. Their OpenAPI entries remain available under
   (production floor of 1); never log-scale. Rounding to an integer is safe.
 - **`yhat_lower` / `yhat_upper`** — 80% Prophet interval, floor applied.
 - **`p50` / `p75`** — historical 50th/75th percentile of monthly cases for that
-  region-month, from the fixed 2022-01..2024-12 baseline.
+  region-month, from the full 2019-01..2026-08 observed baseline.
 - **`risk_level`** — one of `Low | Moderate | High`, where
   `yhat < p50 → Low`, `p50 ≤ yhat ≤ p75 → Moderate`, `yhat > p75 → High`.
 - **`trigger`** — `none | consecutive_high | season_p75 | both`.

@@ -8,8 +8,8 @@ indicator for the upcoming dry (Dec–May) and wet (Jun–Nov) windows, served b
 over a PostgreSQL database (Supabase; Postgres-only, no SQLite) and visualized in a React dashboard
 with an interactive choropleth map.
 
-Canonical source is the DOH Epidemiology Bureau **monthly** dengue surveillance export
-(2022-01 … 2026-08, 56 months), covering all 18 Philippine regions including NIR. The National
+Canonical source is the DOH dengue case line-list, aggregated from morbidity weeks to calendar
+months (2019-01 … 2026-08, 92 months), covering all 18 Philippine regions including NIR. The National
 series is derived (never raw) as the sum of the 18 regions so regional and national counts stay
 consistent.
 
@@ -109,7 +109,8 @@ last step succeeds). Each step is checked; any failure stops the run so Postgres
 half-synced.
 
 Or run the steps manually (only needed if the raw data changes). Replace
-`data/raw/DOH-Epi-Dengue-2022-2026.csv` (columns `Year, Month, Region, Cases, Deaths`), then
+`data/raw/DOH-Epi-Dengue-2019-2026-line-list.csv` (case line-list: `Year, Morbidity Week, Region, Province, ...,
+No. of Cases, No. of Deaths`), then
 re-run the pipeline modules in `src/` to regenerate everything in `data/processed/`:
 
 ```powershell
@@ -131,7 +132,7 @@ new artifacts.
 
 | Path | Purpose |
 |---|---|
-| `data/raw/` | DOH Epidemiology Bureau monthly dengue surveillance file (2022–2026) + the legacy weekly 2016–2021 fixture used only by the known-epidemic check |
+| `data/raw/` | DOH dengue case line-list (2019–2026), aggregated monthly by the pipeline + the legacy weekly 2016–2021 fixture used only by the known-epidemic check |
 | `data/processed/` | Cleaned monthly series, forecasts, probes, thresholds, outbreak indicators, validation (checkpoints — mirrored into Postgres by `src.db`) |
 | `frontend/public/geo/` | PSGC region GeoJSON for the choropleth map |
 | `src/` | Pipeline (ingest, forecast, classify, outbreak, validate, db) + FastAPI app (`api.py`) |
@@ -141,13 +142,13 @@ new artifacts.
 https://mermaid.ai/d/607a617f-271b-4e42-b4d3-380c41741d1d
 
 
-### Relational database (11 tables)
+### Relational database (12 tables)
 
 PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgres server.
 
 - `regions` — 19 rows (18 + National `000000000`); population/density/centroid power per-100k
   normalization and map fills; the hub every other table joins on.
-- `monthly_observations` — raw reported cases/deaths per region+disease+year+month (56 months).
+- `monthly_observations` — raw reported cases/deaths per region+disease+year+month (92 months).
 - `forecasts` — Prophet point/interval output per region+disease+target_date (12-month horizon).
 - `risk_thresholds` — p50/p75 per region + calendar month (month-of-year seasonality).
 - `risk_classifications` — dated Low/Moderate/High labels from classifying forecasts vs thresholds.
@@ -172,9 +173,9 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
   per region-calendar-month (month-of-year P75 alert line)
 - Outbreak indicator: Rule A (≥ 3 consecutive High **months** in the 3-month probe window) or
   Rule B (upcoming season forecast average > seasonal P75); locked without tuning after 2025
-  prospective validation — precision 0.393, recall 0.579, F1 0.468 across all 38 rows
-  (11 true positives, 17 false positives, 8 false negatives, 2 true negatives)
+  prospective validation — precision 0.316, recall 0.300, F1 0.308 across all 38 rows
+  (6 true positives, 13 false positives, 14 false negatives, 5 true negatives)
 - Rules: deterministic post-processing only (non-negativity clipping, dry/wet season regressor)
-- Training data: 56 observed months (2022-01…2026-08); holdout windows `last_12m` and
+- Training data: 92 observed months (2019-01…2026-08); holdout windows `last_12m` and
   `2025_prospective` (fits through 2024-12-31); known-epidemic cross-check on the 2019 weekly
-  fixture (7/7 weeks High)
+  fixture (7/7 weeks High) plus a line-list 2019 monthly cross-check (Aug-Oct 2019 High)

@@ -25,7 +25,7 @@ export const Route = createFileRoute("/methodology")({
       {
         name: "description",
         content:
-          "How HEALTHWATCH works: DOH Epidemiology Bureau monthly dengue surveillance (2022–2026), per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
+          "How HEALTHWATCH works: DOH dengue case line-list (2019–2026) aggregated to monthly, per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
       },
       { property: "og:title", content: "Data & Methodology — HEALTHWATCH" },
       {
@@ -74,11 +74,12 @@ function Methodology() {
         <CollapsibleSection title="Data sources" defaultOpen={true}>
           <ul className="space-y-2 text-sm text-foreground/85">
             <li>
-              <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong> — the
-              PIDSR morbidity-week case series per administrative region, summed to calendar months,
-              republished for open research by the UPRI-NOAH dengue-rainfall dataset (Zenodo
-              10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every series
-              in the system.
+              <strong>DOH dengue case line-list (2019–2026)</strong> — the
+              pre-aggregated case records (Year, Morbidity Week, Region, Province, Age Group, Sex,
+              Clinical Classification, Final Case Classification, Admitted, No. of Cases, No. of
+              Deaths), summed to contiguous calendar months by the pipeline. Reported cases include
+              all final classifications (Suspect + Probable + Confirmed). This canonical file is the
+              backbone of every series in the system.
             </li>
             <li>
               <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
@@ -97,7 +98,7 @@ function Methodology() {
             <li>
               <strong>Cleaning &amp; resampling.</strong> Raw regional reports are standardised to
               PSGC codes, deduplicated, and summed from morbidity weeks to contiguous calendar-month
-              series per region (56 months: January 2022 through August 2026).
+              series per region (92 months: January 2019 through August 2026).
             </li>
             <li>
               <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry
@@ -226,9 +227,11 @@ function Methodology() {
           <p className="text-sm text-foreground/85">
             As an independent sanity check, the classification method was run against a real,
             pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
-            Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
-            standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
-            weekly equivalents of the same percentile thresholds:
+            At weekly resolution the check reuses the standalone 2016–2021 weekly fixture —
+            deliberately independent of the monthly line-list pipeline — and grades the surrounding
+            national weekly counts with weekly equivalents of the same percentile thresholds. The
+            line-list era also confirms the 2019 epidemic through the production monthly rule
+            (Aug–Oct 2019 all High):
           </p>
           <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
             <table className="w-full text-sm border-collapse">
@@ -303,9 +306,9 @@ function Methodology() {
         <CollapsibleSection title="Limitations">
           <ul className="space-y-2 text-sm text-foreground/85">
             <li>
-              <strong>Short monthly history.</strong> The monthly series spans 56 months (2022–2026),
-              giving only ~4 full seasonal cycles — enough for the wet/dry regressor's per-region
-              season coefficient to stabilize but not to model multi-year epidemic super-cycles.
+              <strong>Multi-year epidemic super-cycles.</strong> The monthly series spans 92 months (2019–2026),
+              which captures the 2019 and 2024 epidemic years, but a single ~7-year window cannot
+              model inter-cycle drift beyond the observed wet/dry seasonality.
             </li>
             <li>
               <strong>Negative-skill windows.</strong> In several region-window validation runs a
