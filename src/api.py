@@ -508,10 +508,11 @@ def _safe_season_narrative(grounding):
 
 # Calendar/method constants a narration may legitimately echo without the
 # pipeline having computed them: surveillance years, percentile/CI/window
-# labels, three-month probe length, 19 series, 18 regions, 36-month baseline.
+# labels, three-month probe length, 19 series, 18 regions, full 2019-2026
+# baseline.
 _METHOD_CONSTANTS = {
     3.0, 6.0, 10.0, 12.0, 18.0, 24.0, 36.0, 48.0, 50.0, 75.0, 80.0, 95.0,
-    100.0, 0.5, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
+    100.0, 0.5, 2019.0, 2020.0, 2021.0, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
 }
 
 
@@ -1071,6 +1072,82 @@ def series(
                 )
             )
     return {"region": _label(db_region), "disease": disease, "points": points}
+
+
+# Canonical presentation orders for the reported-data breakdown dimensions.
+_REPORT_ORDER = {
+    "final_classification": ["SUSPECT", "PROBABLE", "CONFIRMED"],
+    "age_group": ["Below 5", "5 to 14", "15 to 24", "25 to 64", "65 and above", "Unspecified"],
+    "sex": ["F", "M"],
+    "clinical_classification": [
+        "DENGUE WITH WARNING SIGNS",
+        "DENGUE WITHOUT WARNING SIGNS",
+        "SEVERE DENGUE",
+        "UNKNOWN",
+        "UNSPECIFIED",
+    ],
+    "admitted": ["Admitted", "Not admitted"],
+}
+_SEX_LABELS = {"F": "Female", "M": "Male"}
+
+
+@app.get("/reported/{region}", tags=["objective_3_api"])
+def reported_breakdown(
+    region: str,
+    year: int = Query(ge=2019, le=2026),
+    month: int = Query(ge=1, le=12),
+    disease: str = Query(default=DISEASE_DEFAULT),
+):
+    """Demographic/clinical breakdown of reported cases for one region-month.
+
+    Aggregated from the raw DOH dengue case line-list (`dengue_case_records`,
+    grouped in Postgres on demand, not part of the startup hot-load). Every
+    record is weighted by its case/death count; the `month` bucket is the same
+    Thursday epi-week convention as the monthly modelling grid, so the
+    dimension totals exactly equal the reported monthly series. Accepts
+    region names or codes; "National" spans all 18 regions.
+    """
+    _check_disease(disease)
+    code = _resolve_region(region)
+    if code is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    bd = db.case_breakdown(None if code == db.NATIONAL_CODE else code, year, month)
+    if bd["records"] == 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"No reported case records for {year}-{month:02d} in {region}.",
+        )
+    breakdowns = {}
+    for dim, rows in bd["dims"].items():
+        by_value = {r["value"]: r for r in rows}
+        ordered = []
+        for value in _REPORT_ORDER[dim]:
+            r = by_value.get(value)
+            if r is None:
+                continue
+            ordered.append(
+                {
+                    "value": _SEX_LABELS.get(value, value),
+                    "cases": r["cases"],
+                    "deaths": r["deaths"],
+                    "share": round(r["cases"] / bd["total_cases"], 4)
+                    if bd["total_cases"]
+                    else 0.0,
+                }
+            )
+        breakdowns[dim] = ordered
+    return {
+        "disease": disease,
+        "region": _label(code),
+        "region_code": code,
+        "year": year,
+        "month": month,
+        "label": f"{year}-{month:02d}",
+        "total_cases": bd["total_cases"],
+        "total_deaths": bd["total_deaths"],
+        "records": bd["records"],
+        "breakdowns": breakdowns,
+    }
 
 
 @app.get("/forecast/{disease}", tags=["objective_2_forecast", "objective_3_api"])

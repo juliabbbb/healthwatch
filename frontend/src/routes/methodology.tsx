@@ -1,21 +1,27 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Check, Copy } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Copy } from "lucide-react";
 import { useState } from "react";
-import { ILLNESSES, REGIONS } from "@/lib/healthwatch/data";
+import { ILLNESSES, REGIONS, REPORTED_CASE_NOTES } from "@/lib/healthwatch/data";
 import { ValidationMetricsPanel } from "@/components/hw/ValidationMetricsPanel";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { BackToTop } from "@/components/BackToTop";
 import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
+import { cn } from "@/lib/utils";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
-  { date: "2019-07-21", cases: 18820, p50: 6951, p75: 11618.5, tier: "High" },
-  { date: "2019-07-28", cases: 20266, p50: 8489, p75: 12111, tier: "High" },
-  { date: "2019-08-04", cases: 19969, p50: 9121, p75: 13764, tier: "High" },
-  { date: "2019-08-11", cases: 19231, p50: 9244, p75: 14246, tier: "High" },
-  { date: "2019-08-18", cases: 19981, p50: 8902, p75: 14259, tier: "High" },
-  { date: "2019-08-25", cases: 19093, p50: 8150, p75: 12922, tier: "High" },
-  { date: "2019-09-01", cases: 18601, p50: 7989, p75: 11986, tier: "High" },
+  { date: "2019-01", cases: 34534, p50: 14876.5, p75: 23923.25, tier: "High" },
+  { date: "2019-02", cases: 19631, p50: 12440, p75: 17625, tier: "High" },
+  { date: "2019-03", cases: 12285, p50: 10478.5, p75: 12088.5, tier: "High" },
+  { date: "2019-04", cases: 9009, p50: 8772, p75: 10442.25, tier: "Moderate" },
+  { date: "2019-05", cases: 15811, p50: 13395, p75: 15737.5, tier: "High" },
+  { date: "2019-06", cases: 30153, p50: 22077.5, p75: 28189.75, tier: "High" },
+  { date: "2019-07", cases: 68915, p50: 32788, p75: 46783, tier: "High" },
+  { date: "2019-08", cases: 101741, p50: 33302.5, p75: 78867, tier: "High" },
+  { date: "2019-09", cases: 58345, p50: 30074, p75: 48578, tier: "High" },
+  { date: "2019-10", cases: 46675, p50: 21639.5, p75: 40954.25, tier: "High" },
+  { date: "2019-11", cases: 23597, p50: 20653.5, p75: 25745, tier: "Moderate" },
+  { date: "2019-12", cases: 16393, p50: 15705, p75: 16270.5, tier: "High" },
 ];
 
 export const Route = createFileRoute("/methodology")({
@@ -25,7 +31,7 @@ export const Route = createFileRoute("/methodology")({
       {
         name: "description",
         content:
-          "How HEALTHWATCH works: DOH Epidemiology Bureau monthly dengue surveillance (2022–2026), per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
+          "How HEALTHWATCH works: DOH dengue case line-list (2019–2026) aggregated to monthly, per-region Prophet forecasting with a calendar-based wet/dry season regressor, percentile-based hotspot classification, seasonal outbreak indicators with prospective 2025 validation and walk-forward validation.",
       },
       { property: "og:title", content: "Data & Methodology — HEALTHWATCH" },
       {
@@ -41,6 +47,7 @@ export const Route = createFileRoute("/methodology")({
 });
 
 function Methodology() {
+  const [openNotes, setOpenNotes] = useState<string | null>(null);
   return (
     <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10" data-explain="methodology-page">
       <Link
@@ -74,11 +81,14 @@ function Methodology() {
         <CollapsibleSection title="Data sources" defaultOpen={true}>
           <ul className="space-y-2 text-sm text-foreground/85">
             <li>
-              <strong>DOH Epidemiology Bureau monthly dengue surveillance (2022–2026)</strong> — the
-              PIDSR morbidity-week case series per administrative region, summed to calendar months,
-              republished for open research by the UPRI-NOAH dengue-rainfall dataset (Zenodo
-              10.5281/zenodo.19448854, ODC-ODbL). This canonical file is the backbone of every series
-              in the system.
+              <strong>DOH dengue case line-list (2019–2026)</strong> — the
+              pre-aggregated case records (Year, Morbidity Week, Region, Province, Age Group, Sex,
+              Clinical Classification, Final Case Classification, Admitted, No. of Cases, No. of
+              Deaths), summed to contiguous calendar months by the pipeline. Reported cases include
+              all final classifications (Suspect + Probable + Confirmed). This canonical file is the
+              backbone of every series in the system. Its per-record demographics also power the
+              Reported Data Breakdown shown per region-month (age group, sex, clinical severity,
+              admission status), read live from the relational database.
             </li>
             <li>
               <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and
@@ -97,7 +107,7 @@ function Methodology() {
             <li>
               <strong>Cleaning &amp; resampling.</strong> Raw regional reports are standardised to
               PSGC codes, deduplicated, and summed from morbidity weeks to contiguous calendar-month
-              series per region (56 months: January 2022 through August 2026).
+              series per region (92 months: January 2019 through August 2026).
             </li>
             <li>
               <strong>Feature engineering.</strong> Each month receives a calendar-based wet/dry
@@ -226,15 +236,16 @@ function Methodology() {
           <p className="text-sm text-foreground/85">
             As an independent sanity check, the classification method was run against a real,
             pre-declared national emergency: DOH declared a national dengue epidemic on 6 August 2019.
-            Because the monthly pipeline (2022–2026) does not cover 2019, the check reuses the
-            standalone 2016–2021 weekly fixture and grades the surrounding national weekly counts with
-            weekly equivalents of the same percentile thresholds:
+            The 2019 line-list carries no pre-2019 weeks, so the check runs the production monthly
+            rule on real 2019 rows: national monthly P50/P75 are pooled from the line-list over
+            2019–2024 (the pre-2025 validation pool), then each 2019 month is labelled against them.
+            The Jul–Oct 2019 epidemic peak all classify High:
           </p>
           <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
             <table className="w-full text-sm border-collapse">
               <thead className="label-caps">
                 <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
-                  <th className="px-4 py-3 text-left">Week ending</th>
+                  <th className="px-4 py-3 text-left">Month</th>
                   <th className="px-4 py-3 text-right">National cases</th>
                   <th className="px-4 py-3 text-right">P50 / P75</th>
                   <th className="px-4 py-3 text-center">Tier</th>
@@ -263,8 +274,8 @@ function Methodology() {
             </table>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            All 7 of 7 weeks classify as High against the fixture&rsquo;s 2016–2018 weekly reference
-            distribution. Reproduce with <code>python -m src.validate_known_epidemic</code>.
+            10 of 12 months classify as High, with the Jul–Oct 2019 epidemic peak all High.
+            Reproduce with <code>python -m src.validate_known_epidemic</code>.
           </p>
         </CollapsibleSection>
 
@@ -283,15 +294,85 @@ function Methodology() {
 
         <CollapsibleSection title="Diseases covered">
           <div className="grid gap-3 sm:grid-cols-2">
-            {ILLNESSES.map((i) => (
-              <div key={i.id} className="glass-panel rounded-xl p-5 transition-all hover:border-border">
-                <p className="text-sm font-semibold text-foreground">{i.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
-                <p className="mt-2 text-[11px] text-muted-foreground">
-                  Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
-                </p>
-              </div>
-            ))}
+            {ILLNESSES.map((i) => {
+              const hasNotes = i.id === "dengue";
+              const open = openNotes === i.id;
+              const header = (
+                <>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{i.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
+                    </p>
+                  </div>
+                  {hasNotes && (
+                    <ChevronDown
+                      className={cn(
+                        "size-4 text-muted-foreground shrink-0 transition-transform duration-300 ease-in-out mt-0.5",
+                        open && "rotate-180 text-foreground",
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                </>
+              );
+              return (
+                <div
+                  key={i.id}
+                  className="glass-panel rounded-xl p-5 transition-all hover:border-border"
+                >
+                  {hasNotes ? (
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={`illness-notes-${i.id}`}
+                      onClick={() => setOpenNotes(open ? null : i.id)}
+                      className="flex w-full items-start justify-between gap-3 rounded-lg text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
+                      {header}
+                    </button>
+                  ) : (
+                    header
+                  )}
+                  {hasNotes && (
+                    <div
+                      id={`illness-notes-${i.id}`}
+                      role="region"
+                      aria-hidden={!open}
+                      className={cn(
+                        "grid transition-[grid-template-rows] duration-300 ease-in-out",
+                        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="mt-4 pt-3 border-t border-border/40 space-y-3">
+                          {REPORTED_CASE_NOTES.disclaimer.map((line) => (
+                            <p key={line} className="text-[11px] text-muted-foreground leading-relaxed">
+                              {line}
+                            </p>
+                          ))}
+                          <p className="label-caps text-[10px] font-bold text-muted-foreground uppercase">
+                            {REPORTED_CASE_NOTES.heading}
+                          </p>
+                          <ul className="space-y-1.5">
+                            {REPORTED_CASE_NOTES.classes.map((c) => (
+                              <li key={c.label} className="text-[11px] text-muted-foreground leading-relaxed">
+                                <strong className="font-semibold text-foreground">{c.label}</strong>
+                                <span className="text-muted-foreground"> — {c.definition}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="text-[11px] text-muted-foreground">
+                            {REPORTED_CASE_NOTES.source}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             Dengue is the pilot disease: it is notifiable, monthly-reported and strongly seasonal. The
@@ -303,9 +384,9 @@ function Methodology() {
         <CollapsibleSection title="Limitations">
           <ul className="space-y-2 text-sm text-foreground/85">
             <li>
-              <strong>Short monthly history.</strong> The monthly series spans 56 months (2022–2026),
-              giving only ~4 full seasonal cycles — enough for the wet/dry regressor's per-region
-              season coefficient to stabilize but not to model multi-year epidemic super-cycles.
+              <strong>Multi-year epidemic super-cycles.</strong> The monthly series spans 92 months (2019–2026),
+              which captures the 2019 and 2024 epidemic years, but a single ~7-year window cannot
+              model inter-cycle drift beyond the observed wet/dry seasonality.
             </li>
             <li>
               <strong>Negative-skill windows.</strong> In several region-window validation runs a

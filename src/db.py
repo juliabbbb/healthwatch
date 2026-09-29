@@ -1,6 +1,6 @@
 """Relational database layer for the monthly pipeline.
 
-Builds and reads the HEALTHWATCH schema (the ERD source of truth — 11 tables)
+Builds and reads the HEALTHWATCH schema (the ERD source of truth — 12 tables)
 through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
 to be set in the environment. This is the only relational store: the SQLite
 fallback was removed, so every component reads from this PostgreSQL database.
@@ -12,19 +12,23 @@ DATABASE_URL regardless of launch context.
 """
 
 import csv
+import io
 import os
 import re
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import pandas as pd
 from sqlalchemy import (
+    BigInteger,
     Boolean,
     Column,
     Date,
     Float,
+    Index,
     Integer,
     MetaData,
     String,
@@ -35,7 +39,7 @@ from sqlalchemy import (
 )
 
 from . import ingest
-from .doh_eb_ingest import REGION_LABELS
+from .doh_eb_ingest import REGION_LABELS, load_case_records
 
 
 def _load_env():
@@ -293,6 +297,38 @@ pipeline_runs = Table(
     Column("notes", Text),
 )
 
+dengue_case_records = Table(
+    "dengue_case_records",
+    metadata,
+    Column("id", BigInteger, primary_key=True, autoincrement=True),
+    Column("region_code", String(9), nullable=False),
+    Column("province", String(120), nullable=False),
+    Column("year", Integer, nullable=False),
+    Column("morbidity_week", Integer, nullable=False),
+    Column("month", Integer, nullable=False),
+    Column("age_group", String(24), nullable=False),
+    Column("sex", String(8), nullable=False),
+    Column("clinical_classification", String(28), nullable=False),
+    Column("final_case_classification", String(28), nullable=False),
+    Column("admitted", Boolean, nullable=False),
+    Column("cases", Integer, nullable=False),
+    Column("deaths", Integer, nullable=False),
+    Index("ix_dengue_case_records_region_year_month", "region_code", "year", "month"),
+)
+
+
+def _require_ssl(url):
+    """Ensure the Postgres URL carries sslmode=require (Supabase requires SSL).
+
+    Adds sslmode=require when the URL has no sslmode parameter, keeping any
+    existing query params (e.g. ?pgbouncer=true) intact. An existing
+    sslmode value always wins."""
+    parts = urlsplit(url)
+    params = parse_qsl(parts.query)
+    if not any(key.lower() == "sslmode" for key, _ in params):
+        params.append(("sslmode", "require"))
+    return urlunsplit(parts._replace(query=urlencode(params)))
+
 
 def _engine():
     db_url = os.environ.get("DATABASE_URL")
@@ -304,9 +340,10 @@ def _engine():
     # Supabase connection-pooler guidance: for Render (persistent, short-lived
     # web workers) use the session pooler on port 5432, or the transaction
     # pooler on port 6543 with ?pgbouncer=true for serverless workloads.
-    # Ensure ?sslmode=require is present in the URL if not already set.
+    # sslmode=require is added automatically if the URL omits it.
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = _require_ssl(db_url)
     eng = create_engine(
         db_url,
         pool_pre_ping=True,
@@ -454,6 +491,10 @@ def build_db():
 
         esc = _load_csv("risk_escalation_ranking.csv")
         if esc is not None and not esc.empty:
+            # Regions that never reach High store an empty first_high_month;
+            # pandas reads the blank as NaN, which psycopg2 would bind as the
+            # string 'NaN'. Normalize to "" so the NOT NULL varchar stays clean.
+            esc["first_high_month"] = esc["first_high_month"].fillna("")
             esc = _remap(esc, "region_code")
             conn.execute(
                 risk_escalation.insert(),
@@ -476,6 +517,8 @@ def build_db():
             ov = _remap(ov, "region_code")
             conn.execute(outbreak_validation.insert(), ov.to_dict(orient="records"))
 
+        _seed_case_records(conn)
+
         regional_dates = (
             regional["date"].max() if regional is not None and not regional.empty else None
         )
@@ -488,7 +531,7 @@ def build_db():
                     if regional_dates is not None
                     else None
                 ),
-                "version": "monthly-2022-2026",
+                "version": "monthly-2019-2026",
                 "model": "prophet-monthly",
                 "notes": PROVIDENCE_NOTES,
             },
@@ -497,11 +540,63 @@ def build_db():
     return eng
 
 
+def _seed_case_records(conn):
+    """Load the raw dengue line-list (2019-2026) into dengue_case_records.
+
+    Kept out of the API's startup hot-load (api.py reads the 8 modelling
+    tables only and queries this table on demand through `case_breakdown` for
+    the /reported/{region} endpoint). Region label -> PSGC region code via
+    REGION_CODE_BY_NAME.
+
+    Loaded with chunked PostgreSQL COPY (STDIN). The Supabase pooler imposes a
+    2-minute statement timeout, so a single COPY of all 749k rows is cancelled
+    mid-stream; a per-row executemany stays under the timeout but is crippled
+    by round-trip latency. 50k-row COPY chunks land safely inside the budget.
+    """
+    recs = load_case_records()
+    if recs is None or recs.empty:
+        print("[db] no line-list rows to seed into dengue_case_records.", file=sys.stderr)
+        return
+    recs["region_code"] = recs["region"].map(REGION_CODE_BY_NAME)
+    missing = recs["region_code"].isna().any()
+    if missing:
+        unknown = sorted(recs.loc[recs["region_code"].isna(), "region"].unique())
+        raise ValueError(f"Unmapped case-record regions: {unknown}")
+    cols = [
+        "region_code", "province", "year", "morbidity_week", "month", "age_group", "sex",
+        "clinical_classification", "final_case_classification", "admitted",
+        "cases", "deaths",
+    ]
+    payload = recs[cols]
+    stmt = (
+        "COPY dengue_case_records (" + ", ".join(cols) + ") "
+        "FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '\\N', QUOTE E'\"')"
+    )
+    chunk = 50000
+    done = 0
+    for start in range(0, len(payload), chunk):
+        sub = payload.iloc[start : start + chunk]
+        buf = io.StringIO()
+        sub.to_csv(buf, index=False, header=False, sep="\t", na_rep="\\N", lineterminator="\n")
+        buf.seek(0)
+        cur = conn.connection.cursor()
+        try:
+            cur.copy_expert(stmt, buf)
+        finally:
+            cur.close()
+        done += len(sub)
+        print(f"[db] COPY {done}/{len(payload)} case records -> dengue_case_records")
+    print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records")
+
+
 PROVIDENCE_NOTES = (
-    "Monthly pipeline v2: real DOH-EB monthly dengue counts (2022-01..2026-08), "
-    "18 regions incl. NIR; production forecast fits all observed history; "
-    "walk-forward validation refits every month; 2025 probes fit through "
-    "2024-12-31 as true prospective holdouts."
+    "Monthly pipeline v3: real DOH dengue case line-list (2019-01..2026-08, "
+    "92 months, 18 regions incl. NIR), reported cases = sum of all final "
+    "classifications; production risk tiers on the full 2019-2026 baseline, "
+    "2025 prospective validation on the pre-2025 pool; walk-forward validation "
+    "refits every month; 2025 probes fit through 2024-12-31 as true prospective "
+    "holdouts. Reported-data demographics served on demand from "
+    "dengue_case_records via /reported/{region}."
 )
 
 
@@ -518,6 +613,63 @@ def _monthly_observation_rows(regional):
 def read_table(table):
     with engine().connect() as conn:
         return pd.read_sql_table(table, conn)
+
+
+# Dimensions exposed by /reported/{region}. Values are the raw line-list
+# levels; api.py re-orders them into canonical presentation orders.
+_CASE_DIM_PICK = {
+    "final_classification": "final_case_classification AS value",
+    "age_group": "age_group AS value",
+    "sex": "sex AS value",
+    "clinical_classification": "clinical_classification AS value",
+    "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
+}
+
+
+def case_breakdown(region_code, year, month):
+    """Per-dimension reported-case counts for one (region, year, month).
+
+    Aggregates `dengue_case_records` (the raw DOH line-list) by each
+    demographic/clinical dimension, weighting every record by its `cases` and
+    `deaths`. When `region_code` is None the query spans all regions (use for
+    National, which is never a row in the line-list itself).
+    """
+    region = " AND region_code = :rc" if region_code is not None else ""
+    params = {"y": year, "m": month}
+    if region_code is not None:
+        params["rc"] = region_code
+
+    with engine().connect() as conn:
+        total = conn.execute(
+            text(
+                "SELECT COALESCE(SUM(cases), 0) AS cases,"
+                " COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
+                " FROM dengue_case_records WHERE year = :y AND month = :m" + region
+            ),
+            params,
+        ).fetchone()
+        dims = {}
+        for name, pick in _CASE_DIM_PICK.items():
+            rows = conn.execute(
+                text(
+                    "SELECT " + pick + ", SUM(cases) AS cases, SUM(deaths) AS deaths"
+                    " FROM dengue_case_records WHERE year = :y AND month = :m"
+                    + region
+                    + " GROUP BY value ORDER BY value"
+                ),
+                params,
+            ).mappings().all()
+            dims[name] = [
+                {"value": r["value"], "cases": int(r["cases"]), "deaths": int(r["deaths"])}
+                for r in rows
+            ]
+
+    return {
+        "total_cases": int(total.cases),
+        "total_deaths": int(total.deaths),
+        "records": int(total.records),
+        "dims": dims,
+    }
 
 
 def region_label_to_code(label):

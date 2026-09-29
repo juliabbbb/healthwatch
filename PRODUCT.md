@@ -15,7 +15,7 @@ ahead of the season — before cases spike, and with evidence they can defend.
 
 ## Product Purpose
 
-HealthWatch turns DOH Epidemiology Bureau monthly dengue surveillance into a per-region,
+HealthWatch turns DOH dengue case line-list records (2019–2026) into a per-region,
 per-month risk outlook for the Philippines: where risk is climbing, when a region is
 moving toward an outbreak, and which regions need response attention this season.
 
@@ -28,7 +28,7 @@ held-out real-data year — a claim a reactive dashboard cannot make.
 
 ## Operating Context
 
-- Monthly review rhythm: users scrub across 2022–2026 observed months plus the 12-month
+- Monthly review rhythm: users scrub across 2019–2026 observed months plus the 12-month
   forecast horizon, per region and per metric (trend, density/hotspot).
 - The map is the primary navigation: 18 regions (including NIR) colored by risk tier,
   with region pages, an active-alert panel, a national snapshot, and a methodology view.
@@ -44,8 +44,8 @@ held-out real-data year — a claim a reactive dashboard cannot make.
 - Risk tiers are percentile-based per region-month (< P50 Low · P50–75 Moderate · > P75 High).
 - Outbreak indicator: Rule A (≥ 3 consecutive High months in the probe window) or Rule B
   (upcoming season forecast average > seasonal P75). Validated on the 2025 prospective
-  year: precision 0.43, recall 0.68, F1 0.53.
-- Data: DOH Epidemiology Bureau monthly dengue export, 2022-01 … 2026-08 (56 months),
+  year: precision 0.32, recall 0.30, F1 0.31.
+- Data: DOH dengue case line-list, 2019-01 … 2026-08 (92 months),
   shipped in the repo; data-through date 2026-08-01.
 - Deterministic post-processing only (non-negativity clipping, dry/wet season regressor).
 
@@ -57,8 +57,7 @@ held-out real-data year — a claim a reactive dashboard cannot make.
 
 ## Evidence on Hand
 
-- `data/raw/` — DOH-Epi-Dengue monthly file (2022–2026) + legacy weekly fixture for the
-  2019 known-epidemic check.
+- `data/raw/` — DOH dengue case line-list (2019–2026) for the 2019 known-epidemic check.
 - `data/processed/` — cleaned series, forecasts, risk thresholds/classifications,
   outbreak indicators, validation metrics (pipeline checkpoints; mirrored into Postgres by `src.db`).
 - `frontend/public/geo/ph-regions.geojson` — PSGC region boundaries for the choropleth.

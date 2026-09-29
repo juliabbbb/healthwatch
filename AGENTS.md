@@ -30,6 +30,7 @@ powershell -ExecutionPolicy Bypass -File update-data.ps1
 .venv\Scripts\python -m src.doh_eb_ingest           # raw → monthly series
 .venv\Scripts\python -m src.forecast                # Prophet fits + 12-month forecasts
 .venv\Scripts\python -m src.classify                # risk + probe classification
+.venv\Scripts\python -m src.rank_escalation          # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak                # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025           # prospective 2025 validation
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
@@ -103,9 +104,15 @@ never body text, carrying shadow (`Glass Floor`).
 
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
 - `frontend/` — React + Vite + TanStack Router dashboard
-- `data/raw/` — canonical DOH-Epi-Dengue CSV (2022-2026, 56 months)
+- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows)
 - `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
 - `frontend/public/geo/` — PSGC region GeoJSON for choropleth
+
+The API hot-loads the 8 modelling tables at startup; `dengue_case_records`
+(the raw 749,683-row line-list) is **not** part of that snapshot. Its reported-data
+breakdowns (`GET /reported/{region}?year=&month=`) are grouped in Postgres on
+demand by `db.case_breakdown()` — totals are guaranteed to equal the monthly
+reported series (`month` bucket = same Thursday epi-week rule).
 
 ## Key Constraints
 
@@ -120,7 +127,7 @@ never body text, carrying shadow (`Glass Floor`).
 
 No formal test suite. Validation scripts are run manually:
 - `src.validate_2025` — prospective check of 2025 outbreak flags
-- `src.validate_known_epidemic` — independent 2019 outbreak check (weekly fixture)
+- `src.validate_known_epidemic` — independent 2019 outbreak check (line-list 2019 monthly cross-check)
 
 ## Lovable Connection
 

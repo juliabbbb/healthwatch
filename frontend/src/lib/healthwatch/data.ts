@@ -1,9 +1,9 @@
 /**
  * HEALTHWATCH data layer.
  *
- * Sources real DOH Epidemiology Bureau monthly dengue surveillance
- * (2022-01 .. 2026-08, 18 regions incl. NIR) served by the FastAPI backend
- * (src/api.py) over the relational DB (Supabase Postgres / local SQLite).
+ * Sources real DOH dengue case line-list surveillance
+ * (2019-01 .. 2026-08, 18 regions incl. NIR) served by the FastAPI backend
+ * (src/api.py) over the relational DB (Supabase Postgres).
  * Series and validation metrics are fetched once at startup via
  * `loadHealthwatchData()`; every component then reads the caches
  * synchronously, keeping render output stable across renders/SSR.
@@ -278,22 +278,53 @@ export const ILLNESSES: Illness[] = [
   },
 ];
 
+/**
+ * DOH definitions behind the reported-cases breakdown (Suspect / Probable /
+ * Confirmed). Shared by the methodology "Diseases covered" disclosure and the
+ * compare module's Clinical Classification dimension tooltip. Source: DOH
+ * Department Memorandum No. 2024-0333.
+ */
+export const REPORTED_CASE_NOTES = {
+  disclaimer: [
+    "Reported cases included in this request consist of suspect, probable, and confirmed cases (see definition below).",
+    "Reported deaths are unofficial and are used for surveillance purposes only. The official source of mortality data is the Philippine Statistics Authority (PSA).",
+  ],
+  heading: "Dengue Case Classification",
+  classes: [
+    {
+      label: "Suspect",
+      definition:
+        "A previously well person with acute febrile illness of 2-7 days duration with clinical signs and symptoms of dengue.",
+    },
+    {
+      label: "Probable",
+      definition: "A suspect case with positive dengue IgM antibody test.",
+    },
+    {
+      label: "Confirmed",
+      definition:
+        "A suspected case with positive results for viral culture isolation, Polymerase Chain Reaction, or Dengue NS1 antigen test.",
+    },
+  ],
+  source: "Source: DOH DM No. 2024-0333",
+} as const;
+
 export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
 
 export const MONTHS_PER_YEAR = 12;
 /**
- * Observed monthly rows per region served by the backend: 2022-01 through
- * 2026-08 (DOH Epidemiology Bureau monthly surveillance, 18 regions incl. NIR).
+ * Observed monthly rows per region served by the backend: 2019-01 through
+ * 2026-08 (DOH dengue case line-list, 18 regions incl. NIR).
  */
-export const HIST_MONTHS = 56;
+export const HIST_MONTHS = 92;
 export const FORECAST_MONTHS = 12;
 export const TOTAL_MONTHS = HIST_MONTHS + FORECAST_MONTHS;
 
-const ANCHOR_MONTH = Date.UTC(2022, 0, 1);
+const ANCHOR_MONTH = Date.UTC(2019, 0, 1);
 
 export function monthMeta(index: number) {
   const date = new Date(ANCHOR_MONTH + index * 31 * 24 * 3600 * 1000);
-  const y = 2022 + Math.floor(index / 12);
+  const y = 2019 + Math.floor(index / 12);
   const m = (index % 12) + 1;
   return {
     year: y,
@@ -904,7 +935,7 @@ export function getMonthIndexFromLabel(label: string): number {
   const y = parseInt(yStr, 10);
   const m = parseInt(mStr, 10);
   if (isNaN(y) || isNaN(m)) return HIST_MONTHS - 1;
-  return (y - 2022) * 12 + (m - 1);
+  return (y - 2019) * 12 + (m - 1);
 }
 
 /** Active surveillance baseline date locked to Asia/Manila (PHT, UTC+8). */

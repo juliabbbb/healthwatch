@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { FileDown, Loader2, TriangleAlert, X } from "lucide-react";
+import { FileDown, Loader2, Table2, TriangleAlert, X } from "lucide-react";
 import {
   CURRENT_MONTH_INDEX,
   ILLNESSES,
@@ -8,12 +8,17 @@ import {
   REGION_BY_CODE,
   TOTAL_MONTHS,
   assessRegion,
+  classify,
   formatPHTDateTime,
+  getThresholds,
   metricValue,
   modelMetrics,
   monthMeta,
   seriesFor,
   type MetricMode,
+  type MonthPoint,
+  type Region,
+  type RiskLevel,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -46,6 +51,62 @@ const ALL_SECTIONS: { key: SectionKey; label: string }[] = [
   { key: "recommendations", label: "Recommendations" },
 ];
 
+type CsvDataset = "comparison" | "forecast" | "timeseries";
+
+const CSV_DATASETS: { key: CsvDataset; label: string; desc: string }[] = [
+  {
+    key: "comparison",
+    label: "Comparative Snapshot",
+    desc: "One row per region at baseline: reported vs predicted, CI, risk.",
+  },
+  {
+    key: "forecast",
+    label: "12-Month Forecast",
+    desc: "Per-region predicted cases with CI and risk tier for each month.",
+  },
+  {
+    key: "timeseries",
+    label: "Full Time Series",
+    desc: "Observed + forecast history per region, month-by-month.",
+  },
+];
+
+const csvEscape = (value: string | number | boolean): string => {
+  const s = String(value);
+  return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
+};
+
+/** Case count in the active metric as a plain CSV decimal (no grouping). */
+const csvMetric = (cases: number, region: Region, mode: MetricMode): string =>
+  mode === "raw" ? String(Math.round(cases)) : ((cases / region.population) * 100000).toFixed(2);
+
+/** Hotspot tier for a single month point, identical to the dashboard's classify(). */
+const pointRisk = (
+  code: string,
+  illness: string,
+  p: MonthPoint,
+  mode: MetricMode,
+): RiskLevel =>
+  classify(
+    metricValue(p.cases, REGION_BY_CODE[code]!, mode),
+    getThresholds(illness, p.month, mode),
+  );
+
+const downloadCsv = (header: string[], body: (string | number)[][], filename: string) => {
+  const content =
+    "\ufeff" +
+    [header, ...body].map((row) => row.map(csvEscape).join(",")).join("\n");
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+};
+
 export function ExportCustomizationModal({
   open,
   onOpenChange,
@@ -68,6 +129,7 @@ export function ExportCustomizationModal({
   const [phase, setPhase] = useState<0 | 1 | 2 | 3>(0); // 0 idle, 1 rasterizing, 2 building, 3 downloading
   const [progress, setProgress] = useState(0);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [csvDataset, setCsvDataset] = useState<CsvDataset>("forecast");
 
   // Sync the date slider with the dashboard each time the modal opens.
   useEffect(() => {
@@ -196,6 +258,138 @@ export function ExportCustomizationModal({
     }
   }, [illness, regionCodes, exportMonthIndex, mode, unit, sections, baselineLabel]);
 
+  const buildCSV = useCallback(() => {
+    if (regionCodes.length === 0) return;
+
+    if (csvDataset === "comparison") {
+      const header = [
+        "region_code",
+        "region",
+        "short",
+        "unit",
+        "risk_tier",
+        "reported_latest",
+        "predicted_baseline",
+        "lower",
+        "upper",
+        "percentile_rank",
+        "change_3m_pct",
+        "dominant_illness",
+        "baseline_is_forecast",
+      ];
+      const body = regionCodes.map((code) => {
+        const a = assessRegion(code, illness, exportMonthIndex, mode);
+        const region = REGION_BY_CODE[code]!;
+        const lastObserved = [...seriesFor(code, illness)].reverse().find((p) => !p.forecast);
+        const reported = lastObserved ? metricValue(lastObserved.cases, region, mode) : a.value;
+        return [
+          region.code,
+          region.name,
+          region.short,
+          unit,
+          a.risk,
+          csvMetric(reported, region, mode),
+          csvMetric(a.value, region, mode),
+          csvMetric(a.point.lower, region, mode),
+          csvMetric(a.point.upper, region, mode),
+          a.percentileRank,
+          a.changePct,
+          a.dominantIllness.shortName,
+          monthMeta(exportMonthIndex).forecast ? 1 : 0,
+        ];
+      });
+      downloadCsv(header, body, `Comparative_Snapshot_${baselineLabel}.csv`);
+      return;
+    }
+
+    if (csvDataset === "forecast") {
+      const header = [
+        "region_code",
+        "region",
+        "short",
+        "unit",
+        "year",
+        "month",
+        "label",
+        "season",
+        "predicted_cases",
+        "lower",
+        "upper",
+        "risk_tier",
+      ];
+      const body: (string | number)[][] = [];
+      for (const code of regionCodes) {
+        const a = assessRegion(code, illness, exportMonthIndex, mode);
+        const region = REGION_BY_CODE[code]!;
+        for (const p of a.forecastWindow) {
+          body.push([
+            region.code,
+            region.name,
+            region.short,
+            unit,
+            p.year,
+            p.month,
+            p.label,
+            p.season,
+            csvMetric(p.cases, region, mode),
+            csvMetric(p.lower, region, mode),
+            csvMetric(p.upper, region, mode),
+            pointRisk(code, illness, p, mode),
+          ]);
+        }
+      }
+      const fw = regionCodes.length
+        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode).forecastWindow
+        : [];
+      const start = fw[0]?.label ?? baselineLabel;
+      const end = fw.at(-1)?.label ?? baselineLabel;
+      downloadCsv(header, body, `Forecast_Window_${start}_${end}.csv`);
+      return;
+    }
+
+    const header = [
+      "region_code",
+      "region",
+      "short",
+      "unit",
+      "year",
+      "month",
+      "label",
+      "season",
+      "is_forecast",
+      "cases",
+      "lower",
+      "upper",
+      "risk_tier",
+    ];
+    const body: (string | number)[][] = [];
+    for (const code of regionCodes) {
+      const region = REGION_BY_CODE[code]!;
+      for (const p of seriesFor(code, illness)) {
+        body.push([
+          region.code,
+          region.name,
+          region.short,
+          unit,
+          p.year,
+          p.month,
+          p.label,
+          p.season,
+          p.forecast ? 1 : 0,
+          csvMetric(p.cases, region, mode),
+          csvMetric(p.lower, region, mode),
+          csvMetric(p.upper, region, mode),
+          pointRisk(code, illness, p, mode),
+        ]);
+      }
+    }
+    downloadCsv(
+      header,
+      body,
+      `TimeSeries_${monthMeta(0).label}_${monthMeta(TOTAL_MONTHS - 1).label}.csv`,
+    );
+  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, unit, baselineLabel]);
+
   if (!open) return null;
 
   const merging = phase !== 0;
@@ -308,6 +502,32 @@ export function ExportCustomizationModal({
               ))}
             </div>
           </div>
+
+          {/* 3. CSV Dataset Export */}
+          <div>
+            <p className="label-caps text-[11px] font-semibold text-foreground mb-2">
+              CSV Time-Series Datasets
+            </p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {CSV_DATASETS.map((d) => (
+                <button
+                  key={d.key}
+                  type="button"
+                  onClick={() => setCsvDataset(d.key)}
+                  aria-pressed={csvDataset === d.key}
+                  className={cn(
+                    "text-left rounded-lg border px-3 py-2.5 transition-all",
+                    csvDataset === d.key
+                      ? "border-primary/50 bg-primary/10 text-foreground shadow-sm"
+                      : "border-border/70 bg-secondary/15 text-muted-foreground hover:border-primary/30 hover:text-foreground",
+                  )}
+                >
+                  <span className="block text-xs font-semibold">{d.label}</span>
+                  <span className="mt-0.5 block text-[10px] leading-snug opacity-75">{d.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Footer / progress + export */}
@@ -343,22 +563,34 @@ export function ExportCustomizationModal({
             </div>
           ) : (
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] text-muted-foreground leading-snug max-w-xs">
+              <p className="text-[11px] text-muted-foreground leading-snug max-w-[11rem]">
                 Generates{" "}
                 <span className="font-mono text-foreground">
                   Epidemiological_Report_{baselineLabel}.pdf
                 </span>{" "}
                 in {unit}.
               </p>
-              <button
-                type="button"
-                disabled={effectiveRegions.length === 0}
-                onClick={buildExport}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 transition-all disabled:opacity-50 min-h-[40px]"
-              >
-                <FileDown className="size-4" />
-                <span>Export Report</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  disabled={effectiveRegions.length === 0}
+                  onClick={buildCSV}
+                  aria-label="Export the selected CSV dataset"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-border/70 bg-secondary/40 px-4 py-2.5 text-xs font-semibold text-foreground shadow-sm hover:bg-secondary transition-all disabled:opacity-50 min-h-[40px]"
+                >
+                  <Table2 className="size-4" />
+                  <span>Export CSV</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={effectiveRegions.length === 0}
+                  onClick={buildExport}
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 transition-all disabled:opacity-50 min-h-[40px]"
+                >
+                  <FileDown className="size-4" />
+                  <span>Export Report</span>
+                </button>
+              </div>
             </div>
           )}
 

@@ -165,7 +165,7 @@
 | **Connection** | `DATABASE_URL` env var (sslmode=require) | `DATABASE_URL` env var (sslmode=require) |
 | **Pool size** | pool_size=5, max_overflow=10 | pool_size=5, max_overflow=10 |
 | **Pool recycle** | 300 seconds | 300 seconds |
-| **Tables** | 11 tables (same schema) | 11 tables |
+| **Tables** | 12 tables (same schema) | 12 tables |
 | **Schema rebuild** | `python -m src.db` (idempotent, drop+recreate of pipeline tables) | Same command, points to Postgres |
 
 > Postgres-only: there is no SQLite anywhere. Every component of the API reads

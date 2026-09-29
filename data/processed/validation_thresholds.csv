@@ -1,0 +1,229 @@
+disease,region,month,p50,p75
+Dengue,Bangsamoro (BARMM),1,369.5,459.25
+Dengue,Bangsamoro (BARMM),2,315.0,389.25
+Dengue,Bangsamoro (BARMM),3,295.0,383.0
+Dengue,Bangsamoro (BARMM),4,303.0,390.5
+Dengue,Bangsamoro (BARMM),5,462.5,577.0
+Dengue,Bangsamoro (BARMM),6,686.5,883.25
+Dengue,Bangsamoro (BARMM),7,769.0,977.75
+Dengue,Bangsamoro (BARMM),8,936.5,1177.0
+Dengue,Bangsamoro (BARMM),9,687.0,871.5
+Dengue,Bangsamoro (BARMM),10,548.0,718.75
+Dengue,Bangsamoro (BARMM),11,404.5,583.75
+Dengue,Bangsamoro (BARMM),12,312.0,416.0
+Dengue,Bicol Region,1,87.5,381.25
+Dengue,Bicol Region,2,85.5,281.0
+Dengue,Bicol Region,3,113.5,153.25
+Dengue,Bicol Region,4,75.0,123.75
+Dengue,Bicol Region,5,64.0,200.0
+Dengue,Bicol Region,6,92.5,371.0
+Dengue,Bicol Region,7,164.0,344.5
+Dengue,Bicol Region,8,229.0,357.75
+Dengue,Bicol Region,9,146.5,221.75
+Dengue,Bicol Region,10,107.0,155.25
+Dengue,Bicol Region,11,131.5,185.5
+Dengue,Bicol Region,12,102.5,130.5
+Dengue,CALABARZON,1,1509.5,3332.0
+Dengue,CALABARZON,2,1401.5,1749.25
+Dengue,CALABARZON,3,893.5,1095.5
+Dengue,CALABARZON,4,806.0,898.0
+Dengue,CALABARZON,5,1027.0,1318.5
+Dengue,CALABARZON,6,1966.0,3130.25
+Dengue,CALABARZON,7,2712.0,4524.25
+Dengue,CALABARZON,8,3527.5,6677.25
+Dengue,CALABARZON,9,3450.0,5432.0
+Dengue,CALABARZON,10,2532.5,7449.0
+Dengue,CALABARZON,11,2479.0,4065.25
+Dengue,CALABARZON,12,1590.5,2796.75
+Dengue,Cagayan Valley,1,460.5,545.0
+Dengue,Cagayan Valley,2,352.0,429.0
+Dengue,Cagayan Valley,3,267.0,442.25
+Dengue,Cagayan Valley,4,243.0,361.25
+Dengue,Cagayan Valley,5,379.0,652.75
+Dengue,Cagayan Valley,6,663.0,1179.5
+Dengue,Cagayan Valley,7,1244.5,2158.75
+Dengue,Cagayan Valley,8,1831.5,2947.75
+Dengue,Cagayan Valley,9,1124.5,2235.75
+Dengue,Cagayan Valley,10,1339.5,1529.25
+Dengue,Cagayan Valley,11,972.0,1295.5
+Dengue,Cagayan Valley,12,521.5,897.0
+Dengue,Caraga,1,788.5,1299.0
+Dengue,Caraga,2,632.0,928.25
+Dengue,Caraga,3,439.0,522.5
+Dengue,Caraga,4,300.0,377.5
+Dengue,Caraga,5,377.0,447.75
+Dengue,Caraga,6,444.0,660.25
+Dengue,Caraga,7,519.0,937.25
+Dengue,Caraga,8,581.5,1136.5
+Dengue,Caraga,9,652.0,839.25
+Dengue,Caraga,10,517.5,938.25
+Dengue,Caraga,11,604.5,795.25
+Dengue,Caraga,12,701.5,965.25
+Dengue,Central Luzon,1,2237.0,3257.25
+Dengue,Central Luzon,2,1311.0,1668.0
+Dengue,Central Luzon,3,821.0,965.25
+Dengue,Central Luzon,4,670.0,857.75
+Dengue,Central Luzon,5,777.0,886.0
+Dengue,Central Luzon,6,1558.0,2264.25
+Dengue,Central Luzon,7,2889.0,4012.0
+Dengue,Central Luzon,8,6001.5,9538.0
+Dengue,Central Luzon,9,3988.0,6193.5
+Dengue,Central Luzon,10,3710.0,4823.75
+Dengue,Central Luzon,11,2810.5,3104.0
+Dengue,Central Luzon,12,2260.0,2679.25
+Dengue,Central Visayas,1,1013.0,2673.5
+Dengue,Central Visayas,2,1093.5,1577.0
+Dengue,Central Visayas,3,945.0,1058.25
+Dengue,Central Visayas,4,399.0,635.0
+Dengue,Central Visayas,5,416.0,712.0
+Dengue,Central Visayas,6,621.0,782.75
+Dengue,Central Visayas,7,1262.0,1945.0
+Dengue,Central Visayas,8,1216.0,3498.75
+Dengue,Central Visayas,9,1131.0,2677.25
+Dengue,Central Visayas,10,823.0,2555.75
+Dengue,Central Visayas,11,1104.0,2076.75
+Dengue,Central Visayas,12,872.5,1715.25
+Dengue,Cordillera Administrative Region,1,313.0,427.75
+Dengue,Cordillera Administrative Region,2,257.0,336.5
+Dengue,Cordillera Administrative Region,3,202.0,249.75
+Dengue,Cordillera Administrative Region,4,194.0,265.75
+Dengue,Cordillera Administrative Region,5,361.5,817.75
+Dengue,Cordillera Administrative Region,6,865.5,2460.75
+Dengue,Cordillera Administrative Region,7,1489.0,3027.25
+Dengue,Cordillera Administrative Region,8,1611.5,2742.0
+Dengue,Cordillera Administrative Region,9,1303.0,2349.25
+Dengue,Cordillera Administrative Region,10,1093.0,1350.5
+Dengue,Cordillera Administrative Region,11,669.5,994.5
+Dengue,Cordillera Administrative Region,12,480.5,636.75
+Dengue,Davao Region,1,759.5,1050.0
+Dengue,Davao Region,2,623.5,995.5
+Dengue,Davao Region,3,567.0,1084.5
+Dengue,Davao Region,4,560.0,891.25
+Dengue,Davao Region,5,631.5,1240.75
+Dengue,Davao Region,6,964.5,1790.5
+Dengue,Davao Region,7,1049.0,1786.0
+Dengue,Davao Region,8,1184.5,2592.75
+Dengue,Davao Region,9,928.5,1932.0
+Dengue,Davao Region,10,713.5,1527.0
+Dengue,Davao Region,11,798.0,1742.0
+Dengue,Davao Region,12,734.5,1405.5
+Dengue,Eastern Visayas,1,408.0,1364.0
+Dengue,Eastern Visayas,2,373.5,708.0
+Dengue,Eastern Visayas,3,383.0,520.75
+Dengue,Eastern Visayas,4,252.0,385.75
+Dengue,Eastern Visayas,5,328.0,620.0
+Dengue,Eastern Visayas,6,447.0,943.75
+Dengue,Eastern Visayas,7,683.0,930.25
+Dengue,Eastern Visayas,8,614.5,1775.5
+Dengue,Eastern Visayas,9,580.0,772.5
+Dengue,Eastern Visayas,10,477.5,531.75
+Dengue,Eastern Visayas,11,462.5,740.75
+Dengue,Eastern Visayas,12,347.5,500.0
+Dengue,Ilocos Region,1,394.5,747.75
+Dengue,Ilocos Region,2,278.5,442.75
+Dengue,Ilocos Region,3,161.0,208.75
+Dengue,Ilocos Region,4,167.5,193.0
+Dengue,Ilocos Region,5,293.0,308.25
+Dengue,Ilocos Region,6,837.0,962.25
+Dengue,Ilocos Region,7,1534.5,1688.5
+Dengue,Ilocos Region,8,1604.0,3409.0
+Dengue,Ilocos Region,9,1175.0,2077.5
+Dengue,Ilocos Region,10,1074.5,1690.5
+Dengue,Ilocos Region,11,1049.5,1079.75
+Dengue,Ilocos Region,12,396.0,776.0
+Dengue,MIMAROPA,1,647.5,698.75
+Dengue,MIMAROPA,2,624.5,729.5
+Dengue,MIMAROPA,3,400.5,558.0
+Dengue,MIMAROPA,4,231.0,463.75
+Dengue,MIMAROPA,5,453.0,678.25
+Dengue,MIMAROPA,6,1140.5,1586.5
+Dengue,MIMAROPA,7,2143.0,2338.25
+Dengue,MIMAROPA,8,1858.0,2285.0
+Dengue,MIMAROPA,9,1118.0,1253.0
+Dengue,MIMAROPA,10,711.5,1168.0
+Dengue,MIMAROPA,11,560.0,1039.25
+Dengue,MIMAROPA,12,374.5,764.25
+Dengue,National,1,14876.5,23923.25
+Dengue,National,2,12440.0,17625.0
+Dengue,National,3,10478.5,12088.5
+Dengue,National,4,8772.0,10442.25
+Dengue,National,5,13395.0,15737.5
+Dengue,National,6,22077.5,28189.75
+Dengue,National,7,32788.0,46783.0
+Dengue,National,8,33302.5,78867.0
+Dengue,National,9,30074.0,48578.0
+Dengue,National,10,21639.5,40954.25
+Dengue,National,11,20653.5,25745.0
+Dengue,National,12,15705.0,16270.5
+Dengue,National Capital Region,1,1720.0,2818.25
+Dengue,National Capital Region,2,1409.5,1563.5
+Dengue,National Capital Region,3,827.0,951.75
+Dengue,National Capital Region,4,611.0,742.25
+Dengue,National Capital Region,5,679.0,873.25
+Dengue,National Capital Region,6,917.5,2014.25
+Dengue,National Capital Region,7,1796.5,2802.0
+Dengue,National Capital Region,8,3561.0,5414.5
+Dengue,National Capital Region,9,4056.0,6143.5
+Dengue,National Capital Region,10,3135.0,6023.25
+Dengue,National Capital Region,11,3009.0,3641.0
+Dengue,National Capital Region,12,1904.0,2180.25
+Dengue,Negros Island Region,1,376.5,989.0
+Dengue,Negros Island Region,2,405.5,583.75
+Dengue,Negros Island Region,3,277.5,374.75
+Dengue,Negros Island Region,4,271.5,366.0
+Dengue,Negros Island Region,5,296.5,483.0
+Dengue,Negros Island Region,6,434.5,1162.0
+Dengue,Negros Island Region,7,1209.0,1929.25
+Dengue,Negros Island Region,8,1005.5,4018.5
+Dengue,Negros Island Region,9,761.0,2178.75
+Dengue,Negros Island Region,10,409.5,1743.75
+Dengue,Negros Island Region,11,475.5,1015.75
+Dengue,Negros Island Region,12,363.0,670.25
+Dengue,Northern Mindanao,1,1255.5,1656.25
+Dengue,Northern Mindanao,2,943.5,1370.5
+Dengue,Northern Mindanao,3,894.5,1142.75
+Dengue,Northern Mindanao,4,743.5,940.75
+Dengue,Northern Mindanao,5,1041.5,1459.0
+Dengue,Northern Mindanao,6,1613.0,1761.5
+Dengue,Northern Mindanao,7,1518.5,2785.0
+Dengue,Northern Mindanao,8,1746.0,4329.25
+Dengue,Northern Mindanao,9,1525.5,2224.75
+Dengue,Northern Mindanao,10,1326.5,1816.5
+Dengue,Northern Mindanao,11,1042.5,1682.5
+Dengue,Northern Mindanao,12,880.0,1059.0
+Dengue,SOCCSKSARGEN,1,694.5,1171.5
+Dengue,SOCCSKSARGEN,2,639.0,1242.0
+Dengue,SOCCSKSARGEN,3,747.5,1001.5
+Dengue,SOCCSKSARGEN,4,697.5,864.5
+Dengue,SOCCSKSARGEN,5,1197.5,1733.75
+Dengue,SOCCSKSARGEN,6,1608.0,2009.0
+Dengue,SOCCSKSARGEN,7,1084.0,2351.0
+Dengue,SOCCSKSARGEN,8,1206.5,3060.5
+Dengue,SOCCSKSARGEN,9,1006.0,1356.25
+Dengue,SOCCSKSARGEN,10,737.0,1223.75
+Dengue,SOCCSKSARGEN,11,550.0,1009.25
+Dengue,SOCCSKSARGEN,12,430.0,779.75
+Dengue,Western Visayas,1,443.5,557.5
+Dengue,Western Visayas,2,398.5,654.75
+Dengue,Western Visayas,3,278.5,492.75
+Dengue,Western Visayas,4,241.5,383.5
+Dengue,Western Visayas,5,420.5,722.75
+Dengue,Western Visayas,6,815.5,1853.5
+Dengue,Western Visayas,7,1543.0,3853.5
+Dengue,Western Visayas,8,1047.0,7304.25
+Dengue,Western Visayas,9,697.5,2780.0
+Dengue,Western Visayas,10,439.5,1572.5
+Dengue,Western Visayas,11,445.5,702.0
+Dengue,Western Visayas,12,270.5,326.5
+Dengue,Zamboanga Peninsula,1,775.5,860.0
+Dengue,Zamboanga Peninsula,2,603.5,794.25
+Dengue,Zamboanga Peninsula,3,816.5,921.5
+Dengue,Zamboanga Peninsula,4,789.0,1128.5
+Dengue,Zamboanga Peninsula,5,1214.5,1686.25
+Dengue,Zamboanga Peninsula,6,1687.0,2059.75
+Dengue,Zamboanga Peninsula,7,1228.5,2232.75
+Dengue,Zamboanga Peninsula,8,1242.0,2520.0
+Dengue,Zamboanga Peninsula,9,1214.0,1395.75
+Dengue,Zamboanga Peninsula,10,945.0,1405.0
+Dengue,Zamboanga Peninsula,11,888.5,1089.75
+Dengue,Zamboanga Peninsula,12,607.0,696.5
