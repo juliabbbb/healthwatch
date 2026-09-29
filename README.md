@@ -117,6 +117,7 @@ re-run the pipeline modules in `src/` to regenerate everything in `data/processe
 .venv\Scripts\python -m src.doh_eb_ingest           # canonical DOH-EB file -> monthly series
 .venv\Scripts\python -m src.forecast                # Prophet fits + 12-month forecasts, validation folds
 .venv\Scripts\python -m src.classify                # month-of-year thresholds, risk + probe classification
+.venv\Scripts\python -m src.rank_escalation          # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak                # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025           # prospective check of the 2025 flags (real data)
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (line-list 2019 monthly cross-check)

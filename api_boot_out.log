@@ -155,3 +155,21 @@ INFO:     127.0.0.1:57038 - "GET /ai-insight?region=Region%20XI&disease=dengue H
 INFO:     127.0.0.1:57038 - "GET /ai-insight?region=Region%20XI&disease=dengue HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:57156 - "GET /dashboard HTTP/1.1" 200 OK
 INFO:     127.0.0.1:57156 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57222 - "GET /ai-insight?region=NCR&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60080 - "GET /dashboard HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60080 - "GET /regions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60086 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60086 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60090 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60090 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60090 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60090 - "GET /ai-insight?region=Region%20III&disease=dengue HTTP/1.1" 404 Not Found

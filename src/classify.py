@@ -67,32 +67,6 @@ def with_month_of_year(df, date_col="date"):
     return out
 
 
-def with_iso_week(df, date_col="date"):
-    """ISO-week bucketing used only by the standalone known-epidemic check on
-    the historical weekly fixture; the live pipeline is monthly."""
-    out = df.copy()
-    out["iso_week"] = pd.to_datetime(out[date_col]).dt.isocalendar().week.astype(int)
-    out.loc[out["iso_week"] > 52, "iso_week"] = 1
-    return out
-
-
-def compute_weekly_thresholds(history):
-    """Per-(disease, region, iso_week) P50/P75 of historical weekly cases.
-
-    Weekly variant for the known-epidemic fixture (2016-2021); the monthly
-    pipeline uses `compute_thresholds` instead."""
-    h = with_iso_week(history)
-    thresholds = (
-        h.groupby(["disease", "region", "iso_week"])["cases"]
-        .quantile([0.5, 0.75])
-        .unstack()
-        .rename(columns={0.5: "p50", 0.75: "p75"})
-        .clip(lower=0)
-        .reset_index()
-    )
-    return thresholds.sort_values(["region", "iso_week"], ignore_index=True)
-
-
 def compute_thresholds(history):
     h = with_month_of_year(history)
     thresholds = (

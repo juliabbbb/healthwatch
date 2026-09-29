@@ -30,6 +30,7 @@ powershell -ExecutionPolicy Bypass -File update-data.ps1
 .venv\Scripts\python -m src.doh_eb_ingest           # raw → monthly series
 .venv\Scripts\python -m src.forecast                # Prophet fits + 12-month forecasts
 .venv\Scripts\python -m src.classify                # risk + probe classification
+.venv\Scripts\python -m src.rank_escalation          # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak                # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025           # prospective 2025 validation
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
