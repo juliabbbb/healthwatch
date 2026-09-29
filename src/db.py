@@ -12,12 +12,14 @@ DATABASE_URL regardless of launch context.
 """
 
 import csv
+import io
 import os
 import re
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 import pandas as pd
 from sqlalchemy import (
@@ -315,6 +317,19 @@ dengue_case_records = Table(
 )
 
 
+def _require_ssl(url):
+    """Ensure the Postgres URL carries sslmode=require (Supabase requires SSL).
+
+    Adds sslmode=require when the URL has no sslmode parameter, keeping any
+    existing query params (e.g. ?pgbouncer=true) intact. An existing
+    sslmode value always wins."""
+    parts = urlsplit(url)
+    params = parse_qsl(parts.query)
+    if not any(key.lower() == "sslmode" for key, _ in params):
+        params.append(("sslmode", "require"))
+    return urlunsplit(parts._replace(query=urlencode(params)))
+
+
 def _engine():
     db_url = os.environ.get("DATABASE_URL")
     if not db_url:
@@ -325,9 +340,10 @@ def _engine():
     # Supabase connection-pooler guidance: for Render (persistent, short-lived
     # web workers) use the session pooler on port 5432, or the transaction
     # pooler on port 6543 with ?pgbouncer=true for serverless workloads.
-    # Ensure ?sslmode=require is present in the URL if not already set.
+    # sslmode=require is added automatically if the URL omits it.
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
+    db_url = _require_ssl(db_url)
     eng = create_engine(
         db_url,
         pool_pre_ping=True,
@@ -475,6 +491,10 @@ def build_db():
 
         esc = _load_csv("risk_escalation_ranking.csv")
         if esc is not None and not esc.empty:
+            # Regions that never reach High store an empty first_high_month;
+            # pandas reads the blank as NaN, which psycopg2 would bind as the
+            # string 'NaN'. Normalize to "" so the NOT NULL varchar stays clean.
+            esc["first_high_month"] = esc["first_high_month"].fillna("")
             esc = _remap(esc, "region_code")
             conn.execute(
                 risk_escalation.insert(),
@@ -527,6 +547,11 @@ def _seed_case_records(conn):
     tables only and queries this table on demand through `case_breakdown` for
     the /reported/{region} endpoint). Region label -> PSGC region code via
     REGION_CODE_BY_NAME.
+
+    Loaded with chunked PostgreSQL COPY (STDIN). The Supabase pooler imposes a
+    2-minute statement timeout, so a single COPY of all 749k rows is cancelled
+    mid-stream; a per-row executemany stays under the timeout but is crippled
+    by round-trip latency. 50k-row COPY chunks land safely inside the budget.
     """
     recs = load_case_records()
     if recs is None or recs.empty:
@@ -543,12 +568,24 @@ def _seed_case_records(conn):
         "cases", "deaths",
     ]
     payload = recs[cols]
-    batch = 20000
-    for i in range(0, len(payload), batch):
-        conn.execute(
-            dengue_case_records.insert(),
-            payload.iloc[i : i + batch].to_dict(orient="records"),
-        )
+    stmt = (
+        "COPY dengue_case_records (" + ", ".join(cols) + ") "
+        "FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '\\N', QUOTE E'\"')"
+    )
+    chunk = 50000
+    done = 0
+    for start in range(0, len(payload), chunk):
+        sub = payload.iloc[start : start + chunk]
+        buf = io.StringIO()
+        sub.to_csv(buf, index=False, header=False, sep="\t", na_rep="\\N", lineterminator="\n")
+        buf.seek(0)
+        cur = conn.connection.cursor()
+        try:
+            cur.copy_expert(stmt, buf)
+        finally:
+            cur.close()
+        done += len(sub)
+        print(f"[db] COPY {done}/{len(payload)} case records -> dengue_case_records")
     print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records")
 
 
