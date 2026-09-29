@@ -11,6 +11,14 @@
  */
 
 import { useEffect, useState } from "react";
+import { Info } from "lucide-react";
+import { REPORTED_CASE_NOTES } from "@/lib/healthwatch/data";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
@@ -41,6 +49,54 @@ const DIM_LABELS: Record<string, string> = {
   clinical_classification: "Clinical Severity",
   admitted: "Admission Status",
 };
+
+function DimensionHeader({ dim, label }: { dim: string; label: string }) {
+  return (
+    <div className="mb-2 flex items-center gap-1.5">
+      <p className="label-caps text-[10px] font-bold text-muted-foreground uppercase">{label}</p>
+      {dim === "final_classification" && (
+        <TooltipProvider delayDuration={150}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label="Dengue case classification definitions"
+                className="inline-flex shrink-0 rounded-sm text-muted-foreground/70 transition-colors hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <Info className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent
+              side="right"
+              align="start"
+              className="max-w-[280px] border border-border/80 bg-card px-3.5 py-3 text-foreground shadow-sm"
+            >
+              <div className="space-y-2">
+                {REPORTED_CASE_NOTES.disclaimer.map((line) => (
+                  <p key={line} className="text-[11px] leading-relaxed text-muted-foreground">
+                    {line}
+                  </p>
+                ))}
+                <p className="label-caps text-[9px] font-bold text-muted-foreground uppercase">
+                  {REPORTED_CASE_NOTES.heading}
+                </p>
+                <ul className="space-y-1">
+                  {REPORTED_CASE_NOTES.classes.map((c) => (
+                    <li key={c.label} className="text-[11px] leading-snug text-muted-foreground">
+                      <strong className="font-semibold text-foreground">{c.label}</strong>
+                      <span className="text-muted-foreground"> — {c.definition}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="text-[10px] text-muted-foreground">{REPORTED_CASE_NOTES.source}</p>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </div>
+  );
+}
 
 function DimensionRows({ rows }: { rows: BreakdownRow[] }) {
   return (
@@ -148,9 +204,7 @@ export function ReportedBreakdown({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
           {Object.entries(DIM_LABELS).map(([dim, label]) => (
             <div key={dim}>
-              <p className="label-caps text-[10px] font-bold text-muted-foreground mb-2 uppercase">
-                {label}
-              </p>
+              <DimensionHeader dim={dim} label={label} />
               <DimensionRows rows={data.breakdowns[dim] ?? []} />
             </div>
           ))}

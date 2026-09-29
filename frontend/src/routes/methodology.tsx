@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Check, Copy } from "lucide-react";
+import { ArrowLeft, Check, ChevronDown, Copy } from "lucide-react";
 import { useState } from "react";
-import { ILLNESSES, REGIONS } from "@/lib/healthwatch/data";
+import { ILLNESSES, REGIONS, REPORTED_CASE_NOTES } from "@/lib/healthwatch/data";
 import { ValidationMetricsPanel } from "@/components/hw/ValidationMetricsPanel";
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { BackToTop } from "@/components/BackToTop";
 import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
+import { cn } from "@/lib/utils";
 
 /* Computed by `python -m src.validate_known_epidemic` — keep in sync. */
 const EPIDEMIC_ROWS: { date: string; cases: number; p50: number; p75: number; tier: string }[] = [
@@ -46,6 +47,7 @@ export const Route = createFileRoute("/methodology")({
 });
 
 function Methodology() {
+  const [openNotes, setOpenNotes] = useState<string | null>(null);
   return (
     <main className="mx-auto min-h-screen w-full max-w-4xl px-6 py-10" data-explain="methodology-page">
       <Link
@@ -292,15 +294,85 @@ function Methodology() {
 
         <CollapsibleSection title="Diseases covered">
           <div className="grid gap-3 sm:grid-cols-2">
-            {ILLNESSES.map((i) => (
-              <div key={i.id} className="glass-panel rounded-xl p-5 transition-all hover:border-border">
-                <p className="text-sm font-semibold text-foreground">{i.name}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
-                <p className="mt-2 text-[11px] text-muted-foreground">
-                  Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
-                </p>
-              </div>
-            ))}
+            {ILLNESSES.map((i) => {
+              const hasNotes = i.id === "dengue";
+              const open = openNotes === i.id;
+              const header = (
+                <>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">{i.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{i.driver}</p>
+                    <p className="mt-2 text-[11px] text-muted-foreground">
+                      Historical transmission peak ≈ month {i.peakMonth} ({i.season} season)
+                    </p>
+                  </div>
+                  {hasNotes && (
+                    <ChevronDown
+                      className={cn(
+                        "size-4 text-muted-foreground shrink-0 transition-transform duration-300 ease-in-out mt-0.5",
+                        open && "rotate-180 text-foreground",
+                      )}
+                      aria-hidden="true"
+                    />
+                  )}
+                </>
+              );
+              return (
+                <div
+                  key={i.id}
+                  className="glass-panel rounded-xl p-5 transition-all hover:border-border"
+                >
+                  {hasNotes ? (
+                    <button
+                      type="button"
+                      aria-expanded={open}
+                      aria-controls={`illness-notes-${i.id}`}
+                      onClick={() => setOpenNotes(open ? null : i.id)}
+                      className="flex w-full items-start justify-between gap-3 rounded-lg text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
+                      {header}
+                    </button>
+                  ) : (
+                    header
+                  )}
+                  {hasNotes && (
+                    <div
+                      id={`illness-notes-${i.id}`}
+                      role="region"
+                      aria-hidden={!open}
+                      className={cn(
+                        "grid transition-[grid-template-rows] duration-300 ease-in-out",
+                        open ? "grid-rows-[1fr]" : "grid-rows-[0fr]",
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="mt-4 pt-3 border-t border-border/40 space-y-3">
+                          {REPORTED_CASE_NOTES.disclaimer.map((line) => (
+                            <p key={line} className="text-[11px] text-muted-foreground leading-relaxed">
+                              {line}
+                            </p>
+                          ))}
+                          <p className="label-caps text-[10px] font-bold text-muted-foreground uppercase">
+                            {REPORTED_CASE_NOTES.heading}
+                          </p>
+                          <ul className="space-y-1.5">
+                            {REPORTED_CASE_NOTES.classes.map((c) => (
+                              <li key={c.label} className="text-[11px] text-muted-foreground leading-relaxed">
+                                <strong className="font-semibold text-foreground">{c.label}</strong>
+                                <span className="text-muted-foreground"> — {c.definition}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <p className="text-[11px] text-muted-foreground">
+                            {REPORTED_CASE_NOTES.source}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
             Dengue is the pilot disease: it is notifiable, monthly-reported and strongly seasonal. The

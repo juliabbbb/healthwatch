@@ -278,6 +278,37 @@ export const ILLNESSES: Illness[] = [
   },
 ];
 
+/**
+ * DOH definitions behind the reported-cases breakdown (Suspect / Probable /
+ * Confirmed). Shared by the methodology "Diseases covered" disclosure and the
+ * compare module's Clinical Classification dimension tooltip. Source: DOH
+ * Department Memorandum No. 2024-0333.
+ */
+export const REPORTED_CASE_NOTES = {
+  disclaimer: [
+    "Reported cases included in this request consist of suspect, probable, and confirmed cases (see definition below).",
+    "Reported deaths are unofficial and are used for surveillance purposes only. The official source of mortality data is the Philippine Statistics Authority (PSA).",
+  ],
+  heading: "Dengue Case Classification",
+  classes: [
+    {
+      label: "Suspect",
+      definition:
+        "A previously well person with acute febrile illness of 2-7 days duration with clinical signs and symptoms of dengue.",
+    },
+    {
+      label: "Probable",
+      definition: "A suspect case with positive dengue IgM antibody test.",
+    },
+    {
+      label: "Confirmed",
+      definition:
+        "A suspected case with positive results for viral culture isolation, Polymerase Chain Reaction, or Dengue NS1 antigen test.",
+    },
+  ],
+  source: "Source: DOH DM No. 2024-0333",
+} as const;
+
 export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
 
 export const MONTHS_PER_YEAR = 12;
