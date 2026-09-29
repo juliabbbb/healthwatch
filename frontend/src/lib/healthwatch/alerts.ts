@@ -70,7 +70,7 @@ export function deriveAlerts(
       });
     }
 
-    const flag = getOutbreak(a.region.code)[activeSeason];
+    const flag = getOutbreak(a.region.code, illnessId)[activeSeason];
     if (flag?.outbreak) {
       const avg = Math.round(flag.season_avg);
       const p75 = Math.round(flag.season_p75);

@@ -161,7 +161,9 @@ export function TimelineScrubber({
       {expanded && (
         <div className="mt-1.5 flex justify-between items-baseline text-[9px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
           <span>{formatMonthYear(monthMeta(0).label)}</span>
-          <span className="hidden sm:inline">Reported → Forecast (2019–2027)</span>
+          <span className="hidden sm:inline">
+            Reported → Forecast ({monthMeta(0).year}–{monthMeta(TOTAL_MONTHS - 1).year})
+          </span>
           <span>{formatMonthYear(monthMeta(TOTAL_MONTHS - 1).label)}</span>
         </div>
       )}

@@ -41,7 +41,7 @@ const COMPONENT_METADATA: Record<
     color: "var(--chart-1)",
     formula: "y_t = T_t + S_t + R_t",
     description:
-      "The recorded monthly dengue case counts as reported by the DOH dengue case line-list surveillance system (2019–2026).",
+      "Recorded monthly case counts as reported by the DOH disease surveillance line-lists (shared 2018–2026 calendar).",
     interpretation:
       "Shows actual reported monthly incidence across historical months. Combines underlying multi-year baseline trends, annual wet-season outbreak cycles, and random sporadic shocks.",
   },
@@ -53,7 +53,7 @@ const COMPONENT_METADATA: Record<
     description:
       "A 12-month centred moving average filter that smooths away annual seasonal cycles and irregular monthly noise.",
     interpretation:
-      "Reveals whether long-term endemic dengue transmission is structurally rising, falling, or remaining stable over multi-year periods independently of seasonal weather peaks.",
+      "Reveals whether long-term endemic transmission is structurally rising, falling, or remaining stable over multi-year periods independently of seasonal weather peaks.",
   },
   seasonal: {
     title: "Month-of-Year Seasonal Index (S_t)",
@@ -63,7 +63,7 @@ const COMPONENT_METADATA: Record<
     description:
       "The recurring month-by-month deviation from the multi-year baseline trend, representing the climatological outbreak cycle.",
     interpretation:
-      "Peaks during the Philippine wet season (typically July–October) due to increased mosquito breeding habitats, and troughs during the dry months (January–April).",
+      "Transmission typically peaks during the Philippine wet season (Jun–Nov) and troughs during the dry months (Dec–May), with month-of-year timing varying by disease.",
   },
   residual: {
     title: "Irregular Remainder / Noise (R_t)",

@@ -114,14 +114,15 @@ No. of Cases, No. of Deaths`), then
 re-run the pipeline modules in `src/` to regenerate everything in `data/processed/`:
 
 ```powershell
-.venv\Scripts\python -m src.doh_eb_ingest           # canonical DOH-EB file -> monthly series
-.venv\Scripts\python -m src.forecast                # Prophet fits + 12-month forecasts, validation folds
-.venv\Scripts\python -m src.classify                # month-of-year thresholds, risk + probe classification
-.venv\Scripts\python -m src.rank_escalation          # risk-tier escalation ranking (hotspot priority)
-.venv\Scripts\python -m src.outbreak                # season-level outbreak flags
-.venv\Scripts\python -m src.validate_2025           # prospective check of the 2025 flags (real data)
+.venv\Scripts\python -m src.fwbd_ingest         # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> 4 monthly series
+.venv\Scripts\python -m src.doh_eb_ingest       # canonical DOH-EB file -> monthly series
+.venv\Scripts\python -m src.forecast            # Prophet fits + 12-month forecasts, validation folds
+.venv\Scripts\python -m src.classify            # month-of-year thresholds, risk + probe classification
+.venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
+.venv\Scripts\python -m src.outbreak            # season-level outbreak flags
+.venv\Scripts\python -m src.validate_2025       # prospective check of the 2025 flags (real data)
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (line-list 2019 monthly cross-check)
-.venv\Scripts\python -m src.db                      # mirrors processed CSVs into PostgreSQL (required)
+.venv\Scripts\python -m src.db                  # mirrors processed CSVs into PostgreSQL (required)
 ```
 
 `src.db` drops and recreates the 11 pipeline tables from the processed CSVs in one idempotent
@@ -149,7 +150,7 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 
 - `regions` — 19 rows (18 + National `000000000`); population/density/centroid power per-100k
   normalization and map fills; the hub every other table joins on.
-- `monthly_observations` — raw reported cases/deaths per region+disease+year+month (92 months).
+- `monthly_observations` — raw reported cases/deaths per region+disease+year+month (dengue 2019-2026; four FWD diseases 2018-2026).
 - `forecasts` — Prophet point/interval output per region+disease+target_date (12-month horizon).
 - `risk_thresholds` — p50/p75 per region + calendar month (month-of-year seasonality).
 - `risk_classifications` — dated Low/Moderate/High labels from classifying forecasts vs thresholds.
@@ -162,13 +163,11 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 
 ## Locked scope
 
-- **Disease: dengue only, for this release.** The original proposal covered five illnesses
-  (dengue, leptospirosis, influenza-like illness, acute gastroenteritis, heat-related illness).
-  Regional forecasting and the choropleth are scoped to dengue only because it's the only disease
-  with a usable regional-breakdown dataset (DOH Epidemiology Bureau monthly export); the other four
-  are **deferred**, not implemented — no national-level fallback is wired in either. The pipeline
-  and schema aren't disease-locked, so adding another disease later is an extension, not a rewrite,
-  but it isn't scheduled work right now.
+- **Disease: dengue + four food/waterborne diseases** (Acute Bloody Diarrhea, Cholera, Typhoid Fever,
+  Acute Viral Hepatitis) from the DOH FWD line-lists; each runs its own forecast, risk tiers, outbreak
+  flags and escalation ranking. The FWD group tag is presentation-only. Other notifiable illnesses
+  (e.g., leptospirosis, ILI) are out of scope until their regional datasets are available; the pipeline
+  and schema stay disease-agnostic, so adding one is an extension, not a rewrite.
 - Prediction: Prophet only (monthly, `freq="MS"`)
 - Risk classes: percentile thresholds (&lt; 50 Low, 50–75 Moderate, &gt; 75 High) per region-month and
   per region-calendar-month (month-of-year P75 alert line)

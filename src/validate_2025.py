@@ -33,13 +33,7 @@ PROBE_WINDOWS = {
 
 
 def load_observed():
-    national = pd.read_csv(
-        ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
-    )
-    regional = pd.read_csv(
-        ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]
-    )
-    df = pd.concat([national, regional], ignore_index=True)
+    df = ingest.load_monthly_series()
     return df.sort_values(["disease", "region", "date"], ignore_index=True)
 
 
@@ -68,16 +62,16 @@ def validate(observed=None, indicators=None, monthly=None, seasonal=None):
     seasonal = seasonal if seasonal is not None else load_seasonal_thresholds()
 
     rows = []
-    for region in indicators["region"].unique():
+    for disease, region in indicators[["disease", "region"]].drop_duplicates().itertuples(index=False):
         for season, (start, end) in PROBE_WINDOWS.items():
             seg = observed[
-                (observed["region"] == region)
+                (observed["disease"] == disease)
+                & (observed["region"] == region)
                 & (observed["date"] >= start)
                 & (observed["date"] <= end)
             ].sort_values("date")
             if seg.empty:
                 continue
-            disease = seg["disease"].iloc[0]
 
             avg_actual = float(seg["cases"].mean())
             max_actual = float(seg["cases"].max())
@@ -102,7 +96,9 @@ def validate(observed=None, indicators=None, monthly=None, seasonal=None):
             actual_flag = bool(rule_a_actual or rule_b_actual)
 
             ind = indicators[
-                (indicators["region"] == region) & (indicators["season"] == season)
+                (indicators["disease"] == disease)
+                & (indicators["region"] == region)
+                & (indicators["season"] == season)
             ]
             predicted = bool(ind["outbreak"].iloc[0]) if not ind.empty else False
             forecast_avg = float(ind["season_avg"].iloc[0]) if not ind.empty else float("nan")

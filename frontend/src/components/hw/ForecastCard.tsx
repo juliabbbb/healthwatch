@@ -77,7 +77,7 @@ export function ForecastCard({
   const meta = monthMeta(monthIndex);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
-  const outlookData = getOutbreak(regionCode);
+  const outlookData = getOutbreak(regionCode, illness);
   const upcoming = upcomingSeasonForMonth(meta.month);
   const upcomingInd = outlookData[upcoming];
   const [aiEnabled] = useAiAnalysisSetting();
@@ -331,6 +331,7 @@ export function ForecastCard({
             regionShort={a.region.short}
             regionName={a.region.name}
             monthLabel={meta.label}
+            illness={illness}
           />
         </section>
       )}

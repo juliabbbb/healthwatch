@@ -413,7 +413,7 @@ function SeasonalityPage() {
       const riskThresholds = getThresholds(illness, assessment.point.month, "percapita");
 
       // Outbreak indicator
-      const outbreakData = getOutbreak(code);
+      const outbreakData = getOutbreak(code, illness);
       const outbreakSeason = OUTBREAK_BENCHMARK_SEASON;
       const outbreakEntry = outbreakData[outbreakSeason] ?? null;
 
@@ -1008,7 +1008,7 @@ function SeasonalityPage() {
               illness={illness}
               component="observed"
               title="Observed series"
-              subtitle="Raw monthly surveillance records (2019–2026)"
+              subtitle="Raw monthly surveillance records (shared 2018–2026 calendar)"
               statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
               height={220}
               endIndex={monthIndex}
@@ -1105,9 +1105,9 @@ function SeasonalityPage() {
               Yearly rhythm
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Average dengue cases by calendar month (wet Jun–Nov / dry Dec–May) with the pooled
-              P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically
-              declared.
+              {illness === "all"
+                ? "Average all-illness cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically declared."
+                : "Average reported cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically declared."}
             </p>
           </div>
         </div>
@@ -1212,8 +1212,8 @@ function SeasonalityPage() {
               Case volume forecast
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Reported 2019–2026 with {forecastHorizon}-month predicted horizon and 95% interval,
-              wet-season shading.
+              Reported through August 2026 with {forecastHorizon}-month predicted horizon and 95%
+              interval, wet-season shading.
             </p>
           </div>
           <ChartTypeToggle value={forecastChartType} onChange={setForecastChartType} />
@@ -1277,7 +1277,7 @@ function SeasonalityPage() {
             </p>
           </div>
         </div>
-        <SeasonalOutbreakView code={code} />
+        <SeasonalOutbreakView code={code} illness={illness} />
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
           The detection rules were validated prospectively against real 2025 DOH-EB data; live
           precision / recall / F1 are in the Validation panel below.
@@ -1313,7 +1313,7 @@ function SeasonalityPage() {
             </p>
           </div>
         </div>
-        <ValidationMetricsPanel regionCode={code} />
+        <ValidationMetricsPanel regionCode={code} illness={illness} />
       </section>
 
       {/* AI-Assisted Analysis */}
@@ -1329,7 +1329,7 @@ function SeasonalityPage() {
               </p>
             </div>
           </div>
-          <AIAnalysisPanel regionCode={code} />
+          <AIAnalysisPanel regionCode={code} illness={illness} />
         </section>
       )}
 
@@ -1443,8 +1443,8 @@ function Chip({
   );
 }
 
-function SeasonalOutbreakView({ code }: { code: string }) {
-  const outlook = getOutbreak(code);
+function SeasonalOutbreakView({ code, illness }: { code: string; illness: string }) {
+  const outlook = getOutbreak(code, illness);
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       {(["dry", "wet"] as const).map((season) => {

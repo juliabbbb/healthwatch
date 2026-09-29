@@ -17,8 +17,10 @@ import { formatMonthYear } from "@/utils/formatDate";
  */
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-const DISEASE = "Dengue";
 const WINDOW = "last_12m";
+
+const ACCESSIBLE_DISEASE = (disease: string) =>
+  disease === "all" ? "Dengue" : disease;
 
 interface GroundingData {
   observed_through: { month_label: string; cases: number };
@@ -44,15 +46,16 @@ interface AnalysisResponse {
 
 const analysisCache = new Map<string, AnalysisResponse>();
 
-function cacheKey(regionShort: string): string {
-  return `${regionShort}:${DISEASE}:${WINDOW}`;
+function cacheKey(regionShort: string, disease: string): string {
+  return `${regionShort}:${disease}:${WINDOW}`;
 }
 
 async function requestAnalysis(
   regionShort: string,
+  disease: string,
   signal?: AbortSignal,
 ): Promise<AnalysisResponse> {
-  const path = `/analysis/${encodeURIComponent(regionShort)}?disease=${DISEASE}&window=${WINDOW}`;
+  const path = `/analysis/${encodeURIComponent(regionShort)}?disease=${encodeURIComponent(disease)}&window=${WINDOW}`;
   const res = await fetch(`${API_BASE}${path}`, { signal: signal ?? null });
   if (!res.ok) {
     let detail = `request failed (HTTP ${res.status})`;
@@ -67,20 +70,27 @@ async function requestAnalysis(
   return (await res.json()) as AnalysisResponse;
 }
 
-export function AIAnalysisPanel({ regionCode }: { regionCode: string }) {
+export function AIAnalysisPanel({
+  regionCode,
+  illness = "Dengue",
+}: {
+  regionCode: string;
+  illness?: string;
+}) {
   const region = REGION_BY_CODE[regionCode];
   const regionShort = region?.short ?? regionCode;
+  const disease = ACCESSIBLE_DISEASE(illness);
 
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [result, setResult] = useState<AnalysisResponse | null>(
-    analysisCache.get(cacheKey(regionShort)) ?? null,
+    analysisCache.get(cacheKey(regionShort, disease)) ?? null,
   );
   const [error, setError] = useState<string | null>(null);
   const [showGrounding, setShowGrounding] = useState(false);
 
   const load = useCallback(
     async (bypassCache: boolean, signal?: AbortSignal) => {
-      const key = cacheKey(regionShort);
+      const key = cacheKey(regionShort, disease);
       if (!bypassCache) {
         const cached = analysisCache.get(key);
         if (cached) {
@@ -93,7 +103,7 @@ export function AIAnalysisPanel({ regionCode }: { regionCode: string }) {
       setStatus("loading");
       setError(null);
       try {
-        const res = await requestAnalysis(regionShort, signal);
+        const res = await requestAnalysis(regionShort, disease, signal);
         analysisCache.set(key, res);
         setResult(res);
         setStatus("success");
@@ -103,7 +113,7 @@ export function AIAnalysisPanel({ regionCode }: { regionCode: string }) {
         setStatus("error");
       }
     },
-    [regionShort],
+    [regionShort, disease],
   );
 
   useEffect(() => {

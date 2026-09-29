@@ -51,13 +51,16 @@ headless consumers. Their OpenAPI entries remain available under
   for `/escalation`. Flat/declining regions score 0.
 - **`MAE` / `RMSE` / `MAPE`** — walk-forward window error metrics. `MAPE` can
   exceed 100% on near-zero months; read `skill_vs_naive_pct` alongside it.
-- **`/reported/{region}`** — the only **live** endpoint: it groups
-  `dengue_case_records` (the raw DOH line-list) in Postgres on demand, so it
-  reflects the shipped line-list rather than a startup snapshot. `year` must be
-  2019–2026. Each `breakdowns` dimension lists `{value, cases, deaths, share}`
-  and each dimension's cases sum to `total_cases` (the month's reported series
-  total). `records` is the count of line-list rows. `sex` values are
-  `Female|Male`; `admitted` is `Admitted|Not admitted`.
+- **`/reported/{region}`** — the only **live** endpoint: it groups the raw case
+  tables (`dengue_case_records` or `fwbd_case_records` per the `disease` query
+  param) in Postgres on demand, so it reflects the shipped line-lists rather
+  than a startup snapshot. `year` must be 2018–2026 (FWD) / 2019–2026 (dengue).
+  Dengue returns `{final_classification, age_group, sex, clinical_classification,
+  admitted}`; FWD diseases return `{final_classification, age_group, sex, admitted,
+  outcome}`. Each dimension lists `{value, cases, deaths, share}` and sums to
+  `total_cases` (the month's reported series total). `records` is the count of
+  line-list rows. `sex` values are `Female|Male`; `admitted` is
+  `Admitted|Not admitted`; `outcome` is `Alive|Died`.
 - **`National`** for `/reported/{region}` spans all 18 regions.
 
 ## 3. Error responses

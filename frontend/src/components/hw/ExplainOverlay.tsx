@@ -140,7 +140,12 @@ function findExplanation(
     for (const entry of EXPLAIN_REGISTRY) {
       try {
         if (node.matches(entry.selector) || node.closest(entry.selector)) {
-          return { title: entry.title, description: entry.description, icon: entry.icon };
+          const found: { title: string; description: string; icon?: string } = {
+            title: entry.title,
+            description: entry.description,
+          };
+          if (entry.icon) found.icon = entry.icon;
+          return found;
         }
       } catch {
         // ignore invalid selectors

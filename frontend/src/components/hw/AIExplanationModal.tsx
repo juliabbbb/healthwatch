@@ -12,7 +12,6 @@ import { cn } from "@/lib/utils";
  */
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-const DISEASE = "Dengue";
 
 export type SeasonalityComponent = "observed" | "trend" | "seasonal" | "residual" | "acf";
 

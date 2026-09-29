@@ -3,16 +3,17 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * Demographic/clinical breakdown of one region-month of reported cases.
  *
- * Pulls from `/reported/{region}?year=&month=` (aggregated from the raw DOH
- * dengue case line-list in Postgres on demand). Renders final classification,
- * age group, sex, clinical severity, and admission status as a compact
- * descriptive panel — neutrals only, since green/amber/red are reserved for
- * risk data (Risk Reservation).
+ * Pulls from `/reported/{region}?disease=&year=&month=` (aggregated from the
+ * raw DOH line-lists in Postgres on demand). Each disease surfaces its own
+ * dimensions and classification rules — dengue uses the final/clinical split,
+ * FWD line-lists carry a single Suspect/Probable/Confirmed class plus outcome.
+ * Renders as a compact descriptive panel — neutrals only, since
+ * green/amber/red are reserved for risk data (Risk Reservation).
  */
 
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
-import { REPORTED_CASE_NOTES } from "@/lib/healthwatch/data";
+import { caseNotesFor, REPORTED_SOURCE } from "@/lib/healthwatch/data";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +22,9 @@ import {
 } from "@/components/ui/tooltip";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
+
+const ACCESSIBLE_DISEASE = (disease: string) =>
+  disease === "all" ? "Dengue" : disease;
 
 interface BreakdownRow {
   value: string;
@@ -42,15 +46,53 @@ interface ReportedBreakdownData {
   breakdowns: Record<string, BreakdownRow[]>;
 }
 
-const DIM_LABELS: Record<string, string> = {
-  final_classification: "Clinical Classification",
-  age_group: "Age Group",
-  sex: "Sex",
-  clinical_classification: "Clinical Severity",
-  admitted: "Admission Status",
+const DIM_LABELS: Record<string, Record<string, string>> = {
+  "Dengue": {
+    final_classification: "Clinical Classification",
+    age_group: "Age Group",
+    sex: "Sex",
+    clinical_classification: "Clinical Severity",
+    admitted: "Admission Status",
+  },
+  "Acute Bloody Diarrhea": {
+    final_classification: "Case Classification",
+    age_group: "Age Group",
+    sex: "Sex",
+    admitted: "Admission Status",
+    outcome: "Outcome",
+  },
+  "Cholera": {
+    final_classification: "Case Classification",
+    age_group: "Age Group",
+    sex: "Sex",
+    admitted: "Admission Status",
+    outcome: "Outcome",
+  },
+  "Typhoid Fever": {
+    final_classification: "Case Classification",
+    age_group: "Age Group",
+    sex: "Sex",
+    admitted: "Admission Status",
+    outcome: "Outcome",
+  },
+  "Acute Viral Hepatitis": {
+    final_classification: "Case Classification",
+    age_group: "Age Group",
+    sex: "Sex",
+    admitted: "Admission Status",
+    outcome: "Outcome",
+  },
 };
 
-function DimensionHeader({ dim, label }: { dim: string; label: string }) {
+function DimensionHeader({
+  dim,
+  label,
+  notes,
+}: {
+  dim: string;
+  label: string;
+  notes: ReturnType<typeof caseNotesFor>;
+}) {
   return (
     <div className="mb-2 flex items-center gap-1.5">
       <p className="label-caps text-[10px] font-bold text-muted-foreground uppercase">{label}</p>
@@ -60,7 +102,7 @@ function DimensionHeader({ dim, label }: { dim: string; label: string }) {
             <TooltipTrigger asChild>
               <button
                 type="button"
-                aria-label="Dengue case classification definitions"
+                aria-label="Case classification definitions"
                 className="inline-flex shrink-0 rounded-sm text-muted-foreground/70 transition-colors hover:text-foreground cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <Info className="size-3.5" />
@@ -72,23 +114,23 @@ function DimensionHeader({ dim, label }: { dim: string; label: string }) {
               className="max-w-[280px] border border-border/80 bg-card px-3.5 py-3 text-foreground shadow-sm"
             >
               <div className="space-y-2">
-                {REPORTED_CASE_NOTES.disclaimer.map((line) => (
+                {notes.disclaimer.map((line) => (
                   <p key={line} className="text-[11px] leading-relaxed text-muted-foreground">
                     {line}
                   </p>
                 ))}
                 <p className="label-caps text-[9px] font-bold text-muted-foreground uppercase">
-                  {REPORTED_CASE_NOTES.heading}
+                  {notes.heading}
                 </p>
                 <ul className="space-y-1">
-                  {REPORTED_CASE_NOTES.classes.map((c) => (
+                  {notes.classes.map((c) => (
                     <li key={c.label} className="text-[11px] leading-snug text-muted-foreground">
                       <strong className="font-semibold text-foreground">{c.label}</strong>
                       <span className="text-muted-foreground"> — {c.definition}</span>
                     </li>
                   ))}
                 </ul>
-                <p className="text-[10px] text-muted-foreground">{REPORTED_CASE_NOTES.source}</p>
+                <p className="text-[10px] text-muted-foreground">{notes.source}</p>
               </div>
             </TooltipContent>
           </Tooltip>
@@ -135,13 +177,18 @@ function DimensionRows({ rows }: { rows: BreakdownRow[] }) {
 
 export function ReportedBreakdown({
   regionCode,
+  illness = "Dengue",
   year,
   month,
 }: {
   regionCode: string;
+  illness?: string;
   year: number;
   month: number;
 }) {
+  const disease = ACCESSIBLE_DISEASE(illness);
+  const notes = caseNotesFor(illness);
+  const dims = DIM_LABELS[disease] ?? DIM_LABELS["Dengue"]!;
   const [data, setData] = useState<ReportedBreakdownData | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -149,7 +196,7 @@ export function ReportedBreakdown({
     let stale = false;
     setData(null);
     setError(null);
-    const url = `${API_BASE}/reported/${encodeURIComponent(regionCode)}?year=${year}&month=${month}`;
+    const url = `${API_BASE}/reported/${encodeURIComponent(regionCode)}?disease=${encodeURIComponent(disease)}&year=${year}&month=${month}`;
     fetch(url)
       .then(async (res) => {
         if (!res.ok) {
@@ -173,7 +220,7 @@ export function ReportedBreakdown({
     return () => {
       stale = true;
     };
-  }, [regionCode, year, month]);
+  }, [regionCode, disease, year, month]);
 
   return (
     <section
@@ -185,7 +232,7 @@ export function ReportedBreakdown({
         <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
           {data
             ? `${data.region} · ${data.label} · ${data.total_cases.toLocaleString()} cases · ${data.total_deaths.toLocaleString()} deaths`
-            : "Source: DOH dengue case line-list"}
+            : REPORTED_SOURCE[disease] ?? "Source: DOH disease line-list"}
         </p>
       </header>
 
@@ -202,9 +249,9 @@ export function ReportedBreakdown({
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-          {Object.entries(DIM_LABELS).map(([dim, label]) => (
+          {Object.entries(dims).map(([dim, label]) => (
             <div key={dim}>
-              <DimensionHeader dim={dim} label={label} />
+              <DimensionHeader dim={dim} label={label} notes={notes} />
               <DimensionRows rows={data.breakdowns[dim] ?? []} />
             </div>
           ))}

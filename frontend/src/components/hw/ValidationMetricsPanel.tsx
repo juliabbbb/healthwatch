@@ -3,8 +3,10 @@ import { TriangleAlert } from "lucide-react";
 import { REGION_BY_CODE } from "@/lib/healthwatch/data";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-const DISEASE = "Dengue";
 const WINDOW = "last_12m";
+
+const ACCESSIBLE_DISEASE = (disease: string) =>
+  disease === "all" ? "Dengue" : disease;
 
 interface MetricsData {
   region: string;
@@ -30,9 +32,13 @@ interface OutbreakValidationData {
 
 const metricsCache = new Map<string, MetricsData>();
 
-async function fetchMetrics(regionCode: string, signal?: AbortSignal): Promise<MetricsData> {
+async function fetchMetrics(
+  regionCode: string,
+  disease: string,
+  signal?: AbortSignal,
+): Promise<MetricsData> {
   const res = await fetch(
-    `${API_BASE}/metrics/${encodeURIComponent(regionCode)}?disease=${DISEASE}&window=${WINDOW}`,
+    `${API_BASE}/metrics/${encodeURIComponent(regionCode)}?disease=${encodeURIComponent(disease)}&window=${WINDOW}`,
     { signal: signal ?? null },
   );
   if (!res.ok) throw new Error(`metrics ${res.status}`);
@@ -96,7 +102,14 @@ function accuracyLabel(frac: number | null): "good" | "moderate" | "poor" | null
  * right = outbreak classification (precision/recall/F1 + counts). All numbers
  * come live from the API — no hardcoded figures.
  */
-export function ValidationMetricsPanel({ regionCode }: { regionCode?: string }) {
+export function ValidationMetricsPanel({
+  regionCode,
+  illness = "Dengue",
+}: {
+  regionCode?: string;
+  illness?: string;
+}) {
+  const disease = ACCESSIBLE_DISEASE(illness);
   const [status, setStatus] = useState<"loading" | "done" | "error">("loading");
   const [metrics, setMetrics] = useState<MetricsData | null>(null);
   const [outbreak, setOutbreak] = useState<OutbreakValidationData | null>(null);
@@ -107,12 +120,12 @@ export function ValidationMetricsPanel({ regionCode }: { regionCode?: string }) 
       try {
         const regionName = regionCode ? REGION_BY_CODE[regionCode]?.name : undefined;
         const [m, o] = await Promise.all([
-          regionName ? fetchMetrics(regionName, signal) : Promise.resolve(null),
+          regionName ? fetchMetrics(regionName, disease, signal) : Promise.resolve(null),
           fetchOutbreakValidation(signal),
         ]);
         if (signal?.aborted) return;
-        if (m) metricsCache.set(regionCode!, m);
-        setMetrics(m ?? metricsCache.get(regionCode ?? "") ?? null);
+        if (m) metricsCache.set(`${regionCode}:${disease}`, m);
+        setMetrics(m ?? metricsCache.get(`${regionCode ?? ""}:${disease}`) ?? null);
         setOutbreak(o);
         setStatus("done");
       } catch (err) {
@@ -120,7 +133,7 @@ export function ValidationMetricsPanel({ regionCode }: { regionCode?: string }) 
         setStatus("error");
       }
     },
-    [regionCode],
+    [regionCode, disease],
   );
 
   useEffect(() => {

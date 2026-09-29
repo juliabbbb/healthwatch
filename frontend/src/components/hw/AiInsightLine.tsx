@@ -3,16 +3,18 @@ import { Sparkles } from "lucide-react";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-const DISEASE = "dengue";
+
+const ACCESSIBLE_DISEASE = (disease: string) =>
+  disease === "all" ? "Dengue" : disease;
 
 const insightCache = new Map<string, { narrative: string; model?: string }>();
 
-function cacheKey(regionShort: string, monthLabel: string): string {
-  return `${regionShort}:${DISEASE}:${monthLabel}`;
+function cacheKey(regionShort: string, disease: string, monthLabel: string): string {
+  return `${regionShort}:${disease}:${monthLabel}`;
 }
 
-async function fetchInsight(regionShort: string, signal?: AbortSignal) {
-  const path = `/ai-insight?region=${encodeURIComponent(regionShort)}&disease=${DISEASE}`;
+async function fetchInsight(regionShort: string, disease: string, signal?: AbortSignal) {
+  const path = `/ai-insight?region=${encodeURIComponent(regionShort)}&disease=${encodeURIComponent(disease)}`;
   const res = await fetch(`${API_BASE}${path}`, { signal: signal ?? null });
   if (!res.ok) {
     let detail = `request failed (HTTP ${res.status})`;
@@ -36,13 +38,16 @@ export function AiInsightLine({
   regionShort,
   regionName,
   monthLabel,
+  illness = "Dengue",
 }: {
   regionShort: string;
   regionName: string;
   monthLabel: string;
+  illness?: string;
 }) {
   const [enabled] = useAiAnalysisSetting();
-  const key = cacheKey(regionShort, monthLabel);
+  const disease = ACCESSIBLE_DISEASE(illness);
+  const key = cacheKey(regionShort, disease, monthLabel);
 
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">(
     insightCache.has(key) ? "done" : "idle",
@@ -61,7 +66,7 @@ export function AiInsightLine({
       }
       setStatus("loading");
       try {
-        const res = await fetchInsight(regionShort, signal);
+        const res = await fetchInsight(regionShort, disease, signal);
         insightCache.set(key, res);
         setText(res.narrative);
         setStatus("done");
@@ -71,7 +76,7 @@ export function AiInsightLine({
         setStatus("error");
       }
     },
-    [key, regionShort],
+    [key, regionShort, disease],
   );
 
   useEffect(() => {
