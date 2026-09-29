@@ -93,10 +93,13 @@ function Methodology() {
             <li>
               <strong>DOH FWD line-lists (2018–2026)</strong> — four food-and-waterborne disease
               line-lists (Acute Bloody Diarrhea, Cholera, Typhoid Fever and Acute Viral Hepatitis),
-              2018-01 .. 2026-08, each carrying its own Suspect / Probable / Confirmed
+              2018-01 .. 2026-09, each carrying its own Suspect / Probable / Confirmed
               classification, age group, sex, admission status and outcome. Each runs fully
               independently through the same model and tiering pipeline;{" "}
-              <em>Food and Waterborne Diseases</em> is only a dashboard grouping label.
+              <em>Food and Waterborne Diseases</em> is only a dashboard grouping label.{" "}
+              <strong>Acute Viral Hepatitis is the one shorter series</strong>: its line-list
+              ends 2025-09, so months after that carry no observation and are shown as no-data
+              rather than as zero reported cases.
             </li>
             <li>
               <strong>PSA PSGC boundaries</strong> — region-level GeoJSON used for the choropleth and

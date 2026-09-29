@@ -229,10 +229,16 @@ export function ReportedBreakdown({
     >
       <header className="mb-3">
         <p className="text-xs font-semibold text-foreground">Reported Data Breakdown</p>
+        {data && (
+          <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+            {data.region} · {data.label} · {data.total_cases.toLocaleString()} cases ·{" "}
+            {data.total_deaths.toLocaleString()} deaths
+          </p>
+        )}
+        {/* Per-disease provenance stays visible in every state — loading, error and
+            loaded — so attribution is never lost once figures arrive. */}
         <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
-          {data
-            ? `${data.region} · ${data.label} · ${data.total_cases.toLocaleString()} cases · ${data.total_deaths.toLocaleString()} deaths`
-            : REPORTED_SOURCE[disease] ?? "Source: DOH disease line-list"}
+          {REPORTED_SOURCE[disease] ?? "Source: DOH disease line-list"}
         </p>
       </header>
 

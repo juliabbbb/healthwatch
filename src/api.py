@@ -234,10 +234,20 @@ def _check_disease(disease):
 def _history(region_code, disease=None):
     source = _NATIONAL if region_code == db.NATIONAL_CODE else _REGIONAL
     out = source[source["region_code"] == region_code].sort_values("date")
-    if disease is not None:
-        out = out[out["disease"] == disease]
+    # Region validity is decided before the disease filter, so a real region with
+    # no rows for a supported disease is never mislabelled as an unknown region.
     if out.empty:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region_code}'")
+    if disease is not None:
+        out = out[out["disease"] == disease]
+        if out.empty:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"No '{disease}' data for region '{region_code}'. "
+                    f"Supported: {SUPPORTED_DISEASES}"
+                ),
+            )
     return out
 
 

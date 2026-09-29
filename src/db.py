@@ -538,10 +538,18 @@ def build_db():
         _seed_case_records(conn)
         _seed_fwbd_case_records(conn)
 
-        all_dates = pd.concat(
-            [_load_csv(name)["date"] for name in ingest.MONTHLY_FILES
-             if _load_csv(name) is not None and not _load_csv(name).empty],
-            ignore_index=True,
+        # Read each monthly CSV exactly once: the previous comprehension called
+        # _load_csv(name) three times per file, tripling disk reads, and
+        # pd.concat([]) raised when no file loaded at all.
+        frames = [
+            df
+            for df in (_load_csv(name) for name in ingest.MONTHLY_FILES)
+            if df is not None and not df.empty
+        ]
+        all_dates = (
+            pd.concat([df["date"] for df in frames], ignore_index=True)
+            if frames
+            else pd.Series(dtype="object")
         )
         latest_date = all_dates.max() if not all_dates.empty else None
         conn.execute(

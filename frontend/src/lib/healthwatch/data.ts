@@ -3,15 +3,15 @@
  *
  * Sources real DOH surveillance served by the FastAPI backend (src/api.py)
  * over the relational DB (Supabase Postgres) — the dengue case line-list
- * (2019-01 .. 2026-08) plus the four DOH FWD line-lists (2018-01 .. 2026-08,
- * 18 regions incl. NIR). Every disease runs its own independent monthly
- * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
- * presentation tag only.
+ * (2019-01 .. 2026-08) plus the four DOH FWD line-lists (2018-01 .. 2026-09,
+ * 18 regions incl. NIR; acute viral hepatitis stops at 2025-09). Every disease
+ * runs its own independent monthly series/forecast/risk; the "Food and
+ * Waterborne Diseases" grouping is a presentation tag only.
  *
  * Series, validation metrics and outbreak probes are fetched once at startup
  * via `loadHealthwatchData()` (one /dashboard call per disease); every
  * component then reads the caches synchronously, keeping render output stable
- * across renders/SSR. The shared calendar spans 2018-01 .. 2027-08 so the
+ * across renders/SSR. The shared calendar spans 2018-01 .. 2027-09 so the
  * "All Illnesses" view is a genuine per-month sum of the five diseases.
  */
 
@@ -430,8 +430,9 @@ export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]))
 export const MONTHS_PER_YEAR = 12;
 /**
  * Observed monthly rows per region served by the backend on the shared
- * calendar: 2018-01 through 2026-08 (105 months). Dengue joins at 2019-01
- * (its line-list starts later); FWD diseases run the full span.
+ * calendar: 2018-01 through 2026-09 (105 months). Dengue joins at 2019-01
+ * (its line-list starts later); ABD, cholera and typhoid run the full span,
+ * acute viral hepatitis stops at 2025-09.
  */
 export const HIST_MONTHS = 105;
 export const FORECAST_MONTHS = 12;

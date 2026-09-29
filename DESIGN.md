@@ -1,6 +1,6 @@
 ﻿---
 name: HEALTHWATCH
-description: Regional Outbreak Hotspot Map & Forecasts — DOH · LGU dengue risk decision support in the Philippines
+description: Regional Outbreak Hotspot Map & Forecasts — DOH · LGU disease risk decision support in the Philippines
 colors:
   primary: "oklch(0.63 0.19 45)"
   secondary: "oklch(0.96 0.005 260)"
@@ -103,7 +103,7 @@ components:
 
 **Creative North Star: "The Notion-Polished Operations Console"**
 
-HEALTHWATCH is a calm command center for Philippine dengue surveillance: one glanceable
+HEALTHWATCH is a calm command center for Philippine disease surveillance: one glanceable
 map of eighteen regions, colored by risk tier, with decision glass floating above the data.
 It is a room where epidemics are watched — not a marketing page, not a toy. The aesthetic is
 **clean, precise, and quietly official**: cool-white surfaces, near-ink text, and one blue
