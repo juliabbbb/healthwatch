@@ -16,7 +16,7 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from . import db
+from . import config, db
 
 SUPPORTED_DISEASES = [
     "Dengue",
@@ -113,6 +113,8 @@ def _load_repo_tables():
     DATABASE_URL and on the schema being built (auto-created via
     `db.ensure_tables()` at startup)."""
     obs = db.read_table("monthly_observations")
+    obs = obs[obs["year"] >= config.DATA_START_YEAR]
+    obs = config.at_or_before_data_end(obs)
     obs = _dedupe_latest(obs, ["region_code", "year", "month", "disease"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
     _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
@@ -807,8 +809,8 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
         try:
             from groq import Groq
 
-            GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-            fallback_groq_models = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"]
+            GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")  # production-tier on free/dev keys
+            fallback_groq_models = ["openai/gpt-oss-20b"]  # Llama 3.1/3.3 IDs moved to Enterprise tier
             _gpt_oss = {"openai/gpt-oss-120b", "openai/gpt-oss-20b"}
 
             client = Groq(api_key=groq_key, timeout=25.0, max_retries=0)
@@ -1143,7 +1145,7 @@ _SEX_LABELS = {"F": "Female", "M": "Male"}
 @app.get("/reported/{region}", tags=["objective_3_api"])
 def reported_breakdown(
     region: str,
-    year: int = Query(ge=2018, le=2026),
+    year: int = Query(ge=config.DATA_START_YEAR, le=config.DATA_END_YEAR),
     month: int = Query(ge=1, le=12),
     disease: str = Query(default=DISEASE_DEFAULT),
 ):
@@ -1157,6 +1159,14 @@ def reported_breakdown(
     Accepts region names or codes; "National" spans all 18 regions.
     """
     _check_disease(disease)
+    if (year * 100 + month) > (config.DATA_END_YEAR * 100 + config.DATA_END_MONTH):
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Reported data ends at {config.DATA_END_YEAR}-{config.DATA_END_MONTH:02d} "
+                f"(the current month, {year}-{month:02d}, is still in progress)."
+            ),
+        )
     code = _resolve_region(region)
     if code is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")

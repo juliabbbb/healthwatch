@@ -3,15 +3,18 @@
  *
  * Sources real DOH surveillance served by the FastAPI backend (src/api.py)
  * over the relational DB (Supabase Postgres) — the dengue case line-list
- * (2019-01 .. 2026-08) plus the four DOH FWD line-lists (2018-01 .. 2026-09,
- * 18 regions incl. NIR; acute viral hepatitis stops at 2025-09). Every disease
- * runs its own independent monthly series/forecast/risk; the "Food and
- * Waterborne Diseases" grouping is a presentation tag only.
+ * (2019-01 .. 2026-08) plus the four DOH FWD line-lists (raw files run to a
+ * partial 2026-09; the reported window ends at the last complete month,
+ * 2026-08, and the API trims the in-progress month at hot-load). Dengue and
+ * FWD both cover 18 regions incl. NIR; acute viral hepatitis stops at
+ * 2025-09. Every disease runs its own independent monthly
+ * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
+ * presentation tag only.
  *
  * Series, validation metrics and outbreak probes are fetched once at startup
  * via `loadHealthwatchData()` (one /dashboard call per disease); every
  * component then reads the caches synchronously, keeping render output stable
- * across renders/SSR. The shared calendar spans 2018-01 .. 2027-09 so the
+ * across renders/SSR. The shared calendar spans 2019-01 .. 2027-08 so the
  * "All Illnesses" view is a genuine per-month sum of the five diseases.
  */
 
@@ -258,6 +261,8 @@ export interface Illness {
   name: string;
   shortName: string;
   group: "Dengue" | "Food and Waterborne Diseases";
+  /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
+  transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
   peakMonth: number; // month-of-year of climatological peak
   season: Season;
@@ -293,6 +298,7 @@ export const ILLNESSES: Illness[] = [
     name: "Acute Bloody Diarrhea",
     shortName: "ABD",
     group: "Food and Waterborne Diseases",
+    transmission: "Food-Borne",
     driver: "Fecal-oral contamination of water and food",
     peakMonth: 9,
     season: "wet",
@@ -305,6 +311,7 @@ export const ILLNESSES: Illness[] = [
     name: "Cholera",
     shortName: "Cholera",
     group: "Food and Waterborne Diseases",
+    transmission: "Water-Borne",
     driver: "Contaminated drinking water and poor sanitation",
     peakMonth: 9,
     season: "wet",
@@ -317,6 +324,7 @@ export const ILLNESSES: Illness[] = [
     name: "Typhoid Fever",
     shortName: "Typhoid",
     group: "Food and Waterborne Diseases",
+    transmission: "Food-Borne",
     driver: "Food and water contaminated with Salmonella Typhi",
     peakMonth: 9,
     season: "wet",
@@ -329,6 +337,7 @@ export const ILLNESSES: Illness[] = [
     name: "Acute Viral Hepatitis",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
+    transmission: "Water-Borne",
     driver: "Fecal-oral transmission linked to hygiene and sanitation",
     peakMonth: 9,
     season: "wet",
@@ -414,10 +423,10 @@ export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
 /** One-line source attribution per disease for the reported-case tables. */
 export const REPORTED_SOURCE: Record<string, string> = {
   "Dengue": "Source: DOH dengue case line-list (2019-2026)",
-  "Acute Bloody Diarrhea": "Source: DOH FWD line-list (2018-2026)",
-  "Cholera": "Source: DOH FWD line-list (2018-2026)",
-  "Typhoid Fever": "Source: DOH FWD line-list (2018-2026)",
-  "Acute Viral Hepatitis": "Source: DOH FWD line-list (2018-2026)",
+  "Acute Bloody Diarrhea": "Source: DOH FWD line-list (2019-2026)",
+  "Cholera": "Source: DOH FWD line-list (2019-2026)",
+  "Typhoid Fever": "Source: DOH FWD line-list (2019-2026)",
+  "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
 };
 
 /** Resolve display notes (and source) for any illness selection, incl. "all". */
@@ -430,16 +439,19 @@ export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]))
 export const MONTHS_PER_YEAR = 12;
 /**
  * Observed monthly rows per region served by the backend on the shared
- * calendar: 2018-01 through 2026-09 (105 months). Dengue joins at 2019-01
- * (its line-list starts later); ABD, cholera and typhoid run the full span,
- * acute viral hepatitis stops at 2025-09.
+ * calendar: 2019-01 through 2026-08 (92 months) — the last COMPLETE month.
+ * The in-progress current month (2026-09) is never served as reported (the
+ * API trims it at hot-load), so the reported window ends at the previous
+ * complete month. Dengue runs the same span; acute viral hepatitis stops at
+ * 2025-09.
  */
-export const HIST_MONTHS = 105;
+export const HIST_MONTHS = 92;
+/** Shared forecast months on the axis: 2026-09 through 2027-08 (12 months). */
 export const FORECAST_MONTHS = 12;
 export const TOTAL_MONTHS = HIST_MONTHS + FORECAST_MONTHS;
 
-/** First calendar year of the shared axis (2018-01 corresponds to index 0). */
-export const ANCHOR_YEAR = 2018;
+/** First calendar year of the shared axis (2019-01 corresponds to index 0). */
+export const ANCHOR_YEAR = 2019;
 
 export function monthMeta(index: number) {
   const y = ANCHOR_YEAR + Math.floor(index / 12);
@@ -626,8 +638,11 @@ const NO_DATA_RAW = -1;
  * Aligns a backend series (native per-disease anchor) onto the global shared
  * calendar. Months before a disease's line-list began are represented by
  * zero-case sentinel points (raw < 0) so arrays stay dense and indexable, but
- * pools/decomposition exclude them. Returns [] when the region has no real
- * data for the disease at all.
+ * pools/decomposition exclude them. Trailing months are never appended: each
+ * disease's series ends at its own last real (observed or forecast) month —
+ * "All Illnesses" still spans the widest window because it sums whatever
+ * exists per index. Returns [] when the region has no real data for the
+ * disease at all.
  */
 export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
   if (!points.length) return [];
@@ -641,7 +656,6 @@ export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
     last = gi;
   }
   if (last < 0) return [];
-  while (dest.length < TOTAL_MONTHS) dest.push(emptyMonth(dest.length));
   return dest;
 }
 
@@ -729,6 +743,48 @@ function getTotalSeries(regionCode: string): MonthPoint[] {
 
 export function seriesFor(regionCode: string, illnessId: string | "all"): MonthPoint[] {
   return illnessId === "all" ? getTotalSeries(regionCode) : getSeries(regionCode, illnessId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Forecast transmission mix (NEXT 6 MONTHS breakdown)                 */
+/* ------------------------------------------------------------------ */
+
+export interface ForecastCategoryMix {
+  /** Summed next-6-month forecast raw case counts, per transmission category. */
+  dengue: number;
+  foodBorne: number;
+  waterBorne: number;
+  total: number;
+}
+
+/**
+ * Sums each disease's own forecast window (next `months` forecast points from
+ * `monthIndex`, or fewer near a series' natural end) grouped by transmission
+ * category. Reads the per-disease series directly so the sum respects each
+ * disease's real terminal month instead of the shared calendar tail.
+ */
+export function forecastCategoryMix(
+  regionCode: string,
+  monthIndex: number,
+  months: number = FORECAST_MONTHS,
+): ForecastCategoryMix {
+  const mix: ForecastCategoryMix = { dengue: 0, foodBorne: 0, waterBorne: 0, total: 0 };
+  for (const disease of ILLNESSES) {
+    const series = getSeries(regionCode, disease.id);
+    for (let i = monthIndex + 1; i <= monthIndex + months; i++) {
+      const p = series[i];
+      if (!p || !p.forecast || p.raw < 0) continue;
+      if (disease.group === "Dengue") mix.dengue += p.cases;
+      else if (disease.transmission === "Food-Borne") mix.foodBorne += p.cases;
+      else if (disease.transmission === "Water-Borne") mix.waterBorne += p.cases;
+      mix.total += p.cases;
+    }
+  }
+  mix.total = Math.round(mix.total);
+  mix.dengue = Math.round(mix.dengue);
+  mix.foodBorne = Math.round(mix.foodBorne);
+  mix.waterBorne = Math.round(mix.waterBorne);
+  return mix;
 }
 
 /* ------------------------------------------------------------------ */
@@ -931,6 +987,48 @@ export function assessAll(
   mode: MetricMode = "percapita",
 ): RegionAssessment[] {
   return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
+}
+
+export interface NationalDominant {
+  illness: Illness;
+  /** Summed raw national cases at the month across all regions. */
+  cases: number;
+  /** National case load expressed in the active metric. */
+  metric: number;
+}
+
+/**
+ * National dominant illness at a month. When `illnessId` is "all" it ranks all
+ * five diseases by summed raw national cases (the true primary case driver);
+ * when a single illness is selected it returns that illness with its own
+ * national load, so the National Snapshot card tracks the active filter.
+ */
+export function nationalDominant(
+  illnessId: string | "all",
+  monthIndex: number,
+  mode: MetricMode = "percapita",
+): NationalDominant {
+  const pool = illnessId === "all" ? ILLNESSES : ILLNESSES.filter((i) => i.id === illnessId);
+  let best: Illness = ILLNESSES[0]!;
+  let bestCases = -1;
+  for (const ill of pool) {
+    let cases = 0;
+    for (const region of REGIONS) {
+      const p = getSeries(region.code, ill.id)[monthIndex];
+      if (p && p.raw >= 0) cases += p.cases;
+    }
+    if (cases > bestCases) {
+      bestCases = cases;
+      best = ill;
+    }
+  }
+  const cases = Math.max(0, bestCases);
+  const population = REGIONS.reduce((s, r) => s + r.population, 0);
+  return {
+    illness: best,
+    cases,
+    metric: mode === "raw" ? cases : (cases / population) * 100000,
+  };
 }
 
 /* ------------------------------------------------------------------ */

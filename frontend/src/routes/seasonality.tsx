@@ -38,7 +38,6 @@ import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 import { useChartType } from "@/hooks/useChartType";
 import {
   CURRENT_MONTH_INDEX,
-  HIST_MONTHS,
   ILLNESSES,
   REGIONS,
   REGION_BY_CODE,
@@ -308,7 +307,8 @@ function SeasonalityPage() {
   const forecastRows = useMemo(
     () =>
       forecastSeries
-        .slice(HIST_MONTHS, HIST_MONTHS + forecastHorizon)
+        .filter((p) => p.forecast && p.raw >= 0)
+        .slice(0, forecastHorizon)
         .filter((p) => seasonFilter === "all" || p.season === seasonFilter),
     [forecastSeries, forecastHorizon, seasonFilter],
   );
@@ -1008,7 +1008,7 @@ function SeasonalityPage() {
               illness={illness}
               component="observed"
               title="Observed series"
-              subtitle="Raw monthly surveillance records (shared 2018–2026 calendar)"
+              subtitle="Raw monthly surveillance records (shared 2019–2026 calendar)"
               statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
               height={220}
               endIndex={monthIndex}

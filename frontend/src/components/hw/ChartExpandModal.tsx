@@ -41,7 +41,7 @@ const COMPONENT_METADATA: Record<
     color: "var(--chart-1)",
     formula: "y_t = T_t + S_t + R_t",
     description:
-      "Recorded monthly case counts as reported by the DOH disease surveillance line-lists (shared 2018–2026 calendar).",
+      "Recorded monthly case counts as reported by the DOH disease surveillance line-lists (shared 2019–2026 calendar).",
     interpretation:
       "Shows actual reported monthly incidence across historical months. Combines underlying multi-year baseline trends, annual wet-season outbreak cycles, and random sporadic shocks.",
   },

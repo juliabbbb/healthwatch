@@ -15,6 +15,7 @@ import {
   assessAll,
   formatMetric,
   monthMeta,
+  nationalDominant,
   type MetricMode,
   type Season,
 } from "@/lib/healthwatch/data";
@@ -77,6 +78,10 @@ function MapView() {
     assessments.forEach((a) => (c[a.risk] += 1));
     return c;
   }, [assessments]);
+  const dominant = useMemo(
+    () => nationalDominant(illness, monthIndex, mode),
+    [illness, monthIndex, mode],
+  );
   const alerts = useMemo(
     () => deriveAlerts(assessments, illness, outbreakSeason),
     [assessments, illness, outbreakSeason],
@@ -126,7 +131,9 @@ function MapView() {
           illness={illness}
           onIllnessChange={setIllness}
           counts={counts}
-          dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
+          dominantIllness={dominant.illness.name}
+          dominantValue={formatMetric(dominant.metric, mode)}
+          dominantCases={dominant.cases.toLocaleString()}
           showOutbreakMarkers={showOutbreakMarkers}
           onOutbreakMarkersChange={setShowOutbreakMarkers}
           className="shrink-0"
@@ -249,7 +256,9 @@ function MapView() {
                 illness={illness}
                 onIllnessChange={setIllness}
                 counts={counts}
-                dominantIllness={assessments[0]?.dominantIllness.name ?? "—"}
+                dominantIllness={dominant.illness.name}
+                dominantValue={formatMetric(dominant.metric, mode)}
+                dominantCases={dominant.cases.toLocaleString()}
                 className="shadow-none border-none bg-transparent"
               />
 

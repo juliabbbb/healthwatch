@@ -38,7 +38,7 @@ from sqlalchemy import (
     text,
 )
 
-from . import ingest
+from . import config, ingest
 from .doh_eb_ingest import REGION_LABELS, load_case_records
 from .fwbd_ingest import load_fwbd_case_records
 
@@ -561,7 +561,7 @@ def build_db():
                     if latest_date is not None
                     else None
                 ),
-                "version": "monthly-2018-2026",
+                "version": "monthly-2019-2026",
                 "model": "prophet-monthly",
                 "notes": PROVIDENCE_NOTES,
             },
@@ -666,7 +666,7 @@ PROVIDENCE_NOTES = (
     "line-list 2019-01..2026-08, 92 months, 18 regions incl. NIR, reported "
     "cases = sum of all final classifications. Food/waterborne: four separate "
     "DOH FWD line-lists (Acute Bloody Diarrhea, Cholera, Typhoid Fever, Acute "
-    "Viral Hepatitis), 2018-01..2026-09 each on its own per-region grid "
+    "Viral Hepatitis), 2019-01..2026-09 each on its own per-region grid "
     "(hepatitis through 2025-09), reported cases = Suspect+Probable+Confirmed, "
     "deaths from Outcome. Every disease runs its own production risk tiers on "
     "the full baseline, 2025 prospective validation on the pre-2025 pool, "
@@ -716,18 +716,19 @@ _FWD_DIM_PICK = {
 def _breakdown_from(table, dim_pick, region_code, year, month, disease=None):
     region = " AND region_code = :rc" if region_code is not None else ""
     dis = " AND disease = :dis" if disease is not None else ""
-    params = {"y": year, "m": month}
+    params = {"y": year, "m": month, "ys": config.DATA_START_YEAR}
     if region_code is not None:
         params["rc"] = region_code
     if disease is not None:
         params["dis"] = disease
+    year_start = " AND year >= :ys"
 
     with engine().connect() as conn:
         total = conn.execute(
             text(
                 f"SELECT COALESCE(SUM(cases), 0) AS cases,"
                 f" COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
-                f" FROM {table} WHERE year = :y AND month = :m" + region + dis
+                f" FROM {table} WHERE year = :y AND month = :m" + year_start + region + dis
             ),
             params,
         ).fetchone()
@@ -737,7 +738,7 @@ def _breakdown_from(table, dim_pick, region_code, year, month, disease=None):
                 text(
                     "SELECT " + pick + ", SUM(cases) AS cases, SUM(deaths) AS deaths"
                     " FROM " + table + " WHERE year = :y AND month = :m"
-                    + region + dis
+                    + year_start + region + dis
                     + " GROUP BY value ORDER BY value"
                 ),
                 params,

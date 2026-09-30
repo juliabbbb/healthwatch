@@ -135,7 +135,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Timeline Scrubber Control",
     icon: "Clock",
     description:
-      "Drag the slider or click Play to animate case patterns from 2018 through the forecast horizon into 2027. Grey markers represent historical DOH surveillance data; orange markers represent forward 12-month forecasts.",
+      "Drag the slider or click Play to animate case patterns from 2019 through the forecast horizon into 2027. Grey markers represent historical DOH surveillance data; orange markers represent forward 12-month forecasts.",
   },
 
   // ── Seasonality Page ──────────────────────────────────────────────────────
@@ -186,7 +186,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Seasonality Time Scrubber",
     icon: "SlidersHorizontal",
     description:
-      "Drag to shift the focus window across past historical data (2018–2026) or into the future 12-month forecast horizon.",
+      "Drag to shift the focus window across past historical data (2019–2026) or into the future 12-month forecast horizon.",
   },
   {
     selector: "[data-explain='simple-summary']",
@@ -214,7 +214,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     title: "Observed Series Chart",
     icon: "BarChart2",
     description:
-      "Raw monthly reported cases from the DOH surveillance line-lists on the shared 2018–2026 calendar. Shows real surveillance data prior to mathematical decomposition.",
+      "Raw monthly reported cases from the DOH surveillance line-lists on the shared 2019–2026 calendar. Shows real surveillance data prior to mathematical decomposition.",
   },
   {
     selector: "[data-explain='seasonality-chart-trend']",

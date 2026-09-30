@@ -28,6 +28,8 @@ export function NationalSnapshot({
   onIllnessChange,
   counts,
   dominantIllness,
+  dominantValue,
+  dominantCases,
   showOutbreakMarkers = false,
   onOutbreakMarkersChange,
   className,
@@ -42,6 +44,8 @@ export function NationalSnapshot({
   onIllnessChange?: (i: string) => void;
   counts: Record<RiskLevel, number>;
   dominantIllness: string;
+  dominantValue: string;
+  dominantCases: string;
   showOutbreakMarkers?: boolean;
   onOutbreakMarkersChange?: (v: boolean) => void;
   className?: string;
@@ -196,11 +200,11 @@ export function NationalSnapshot({
             Dominant Illness
           </p>
           <div className="mt-2">
-            <p className="text-base sm:text-lg font-bold text-foreground truncate">
+            <p className="text-base sm:text-lg font-bold text-foreground leading-snug">
               {dominantIllness}
             </p>
-            <p className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground leading-tight truncate">
-              Primary outbreak driver
+            <p className="mt-1 text-[10px] sm:text-[11px] text-muted-foreground leading-tight">
+              {dominantValue} · {dominantCases} cases
             </p>
           </div>
         </div>

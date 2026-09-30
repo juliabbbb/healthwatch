@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from . import config
+
 RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
 
@@ -61,7 +63,13 @@ MONTHLY_FILES = (
 
 
 def load_monthly_series():
-    """Concatenate every monthly series CSV (dengue + food/waterborne)."""
+    """Concatenate every monthly series CSV (dengue + food/waterborne).
+
+    Shared chokepoint: the raw FWD line-lists open in 2018 and the shared
+    lower bound (2019-2026, src/config.py) is enforced and asserted here so
+    every consumer (Prophet, thresholds, validation, API hot-load) inherits
+    it even from stale on-disk CSVs.
+    """
     frames = []
     for name in MONTHLY_FILES:
         path = PROCESSED_DIR / name
@@ -71,7 +79,12 @@ def load_monthly_series():
         raise FileNotFoundError(
             f"No monthly series CSVs in {PROCESSED_DIR}; run the ingest first."
         )
-    return pd.concat(frames, ignore_index=True)
+    combined = pd.concat(frames, ignore_index=True)
+    return config.assert_data_window(
+        config.at_or_after_data_start(combined),
+        date_col="date",
+        context="load_monthly_series: ",
+    )
 
 
 def load_latest_processed():

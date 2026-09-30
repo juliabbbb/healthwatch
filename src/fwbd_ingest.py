@@ -48,7 +48,7 @@ Run: python -m src.fwbd_ingest
 
 import pandas as pd
 
-from . import ingest
+from . import config, ingest
 from .doh_eb_ingest import REGION_LABELS
 
 FWD_GROUP = "Food and Waterborne Diseases"
@@ -162,6 +162,10 @@ def _read_fwd_file(disease, data_dir=None):
         + df[_MONTH_COL].astype("int64").astype(str).str.zfill(2)
         + "-01"
     )
+    # Computation is restricted to 2019-2026 (src/config.py); the raw
+    # line-lists still open in 2018, so the once-at-ingest lower bound
+    # drops those rows at the file boundary.
+    df = config.at_or_after_data_start(df)
     if _CASE_COL in df.columns:
         df["cases"] = (
             pd.to_numeric(df[_CASE_COL], errors="coerce")
@@ -260,7 +264,8 @@ def build_national(regional=None):
 def load_fwbd_case_records(data_dir=None):
     """Return all four FWD line-lists as case records (region-mapped, raw dims).
 
-    No monthly aggregation and no date cut — every 2018-2026 record, for the
+    No monthly aggregation — every 2019-2026 record (pre-2019 rows are
+    dropped once at this raw-file boundary; see src/config.py), for the
     relational `fwbd_case_records` table backing the reported-data breakdown
     endpoint (`/reported/{region}?disease=...`). Carries only the dimensions
     the FWD files actually have: case_classification (Suspect/Probable/
@@ -332,7 +337,7 @@ def load_fwbd_case_records(data_dir=None):
         ["disease", "region", "province", "year", "month", "age_group", "sex",
          "case_classification", "admitted", "outcome", "laboratory_result",
          "organism", "cases", "deaths"]
-    ]
+    ][out["year"] >= config.DATA_START_YEAR].reset_index(drop=True)
 
 
 def save_all():

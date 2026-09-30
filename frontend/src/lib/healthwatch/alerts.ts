@@ -6,6 +6,7 @@
 
 import {
   METRIC_META,
+  OUTBREAK_BENCHMARK_WINDOW,
   TOTAL_MONTHS,
   classify,
   formatMetric,
@@ -29,11 +30,6 @@ export interface AlertItem {
 }
 
 const HORIZON = 12;
-
-const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Dec–May",
-  wet: "Jun–Nov",
-};
 
 /**
  * Builds the active-alert list for the selected illness/month:
@@ -74,13 +70,14 @@ export function deriveAlerts(
     if (flag?.outbreak) {
       const avg = Math.round(flag.season_avg);
       const p75 = Math.round(flag.season_p75);
+      const window = OUTBREAK_BENCHMARK_WINDOW[activeSeason] ?? activeSeason;
       pushAlert({
         id: `outbreak-${a.region.code}`,
         kind: "outbreak",
         regionCode: a.region.code,
         title: `${a.region.short} — Seasonal outbreak alert`,
-        detail: `${SEASON_WINDOW[activeSeason]} 2025 benchmark: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
-        month: SEASON_WINDOW[activeSeason],
+        detail: `${window} benchmark: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
+        month: window,
         // busiest seasons (highest avg/P75 ratio) rank first within this kind
         order: (flag.season_avg / Math.max(0.01, flag.season_p75)) * 100,
       });

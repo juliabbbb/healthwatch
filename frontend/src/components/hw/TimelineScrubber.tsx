@@ -8,7 +8,7 @@ import {
   SkipBack,
   SkipForward,
 } from "lucide-react";
-import { CURRENT_MONTH_INDEX, HIST_MONTHS, TOTAL_MONTHS, monthMeta } from "@/lib/healthwatch/data";
+import { HIST_MONTHS, TOTAL_MONTHS, monthMeta } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
 import { SeasonTag } from "./RiskBadge";
 import { cn } from "@/lib/utils";
@@ -134,7 +134,7 @@ export function TimelineScrubber({
           {modeBadge}
           {expanded && (
             <button
-              onClick={() => onChange(CURRENT_MONTH_INDEX)}
+              onClick={() => onChange(HIST_MONTHS - 1)}
               title="Jump to latest reported month"
               aria-label="Jump to latest reported month"
               className="rounded-md border border-border p-1 text-muted-foreground transition-colors hover:text-foreground"
