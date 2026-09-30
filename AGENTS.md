@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Regional time-series analysis system for seasonal illness outbreak prediction (Philippines, dengue only). Backend: FastAPI + SQLAlchemy + PostgreSQL (Postgres-only, no SQLite). Frontend: React + Vite + TanStack Router + Leaflet choropleth. LLM narration layer (Groq) for interpretability.
+Regional time-series analysis system for seasonal illness outbreak prediction (Philippines; dengue + food/waterborne diseases). Backend: FastAPI + SQLAlchemy + PostgreSQL (Postgres-only, no SQLite). Frontend: React + Vite + TanStack Router + Leaflet choropleth. LLM narration layer (Groq) for interpretability.
 
 ## Quick Commands
 
@@ -27,14 +27,15 @@ powershell -ExecutionPolicy Bypass -File update-data.ps1
 ## Data Pipeline (only if raw data changes)
 
 ```powershell
-.venv\Scripts\python -m src.doh_eb_ingest           # raw → monthly series
-.venv\Scripts\python -m src.forecast                # Prophet fits + 12-month forecasts
-.venv\Scripts\python -m src.classify                # risk + probe classification
-.venv\Scripts\python -m src.rank_escalation          # risk-tier escalation ranking (hotspot priority)
-.venv\Scripts\python -m src.outbreak                # season-level outbreak flags
-.venv\Scripts\python -m src.validate_2025           # prospective 2025 validation
+.venv\Scripts\python -m src.fwbd_ingest         # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> 4 monthly series
+.venv\Scripts\python -m src.doh_eb_ingest       # canonical DOH-EB file -> monthly series
+.venv\Scripts\python -m src.forecast            # Prophet fits + 12-month forecasts
+.venv\Scripts\python -m src.classify            # risk + probe classification
+.venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
+.venv\Scripts\python -m src.outbreak            # season-level outbreak flags
+.venv\Scripts\python -m src.validate_2025       # prospective 2025 validation
 .venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
-.venv\Scripts\python -m src.db                      # rebuild relational DB from processed CSVs
+.venv\Scripts\python -m src.db                  # rebuild relational DB from processed CSVs
 
 # LLM narrative fidelity corpus (methodology 3.5.3; live, needs GROQ_API_KEY)
 # 152 narratives: 19 series x {ai_insight, analysis, seasonality x5, explain_element}.
@@ -62,6 +63,7 @@ Create `.env` at repo root (git-ignored):
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
 GEMINI_API_KEY=      # Removed — replaced by GROQ_API_KEY
 GROQ_API_KEY=        # Primary AI-assisted analysis (free at console.groq.com)
+GROQ_MODEL=          # Optional Groq model override (default: openai/gpt-oss-120b)
 OPENAI_API_KEY=      # Fallback AI provider when Groq rate limits/quotas are reached
 OPENAI_MODEL=        # Optional fallback model override (default: gpt-4o-mini)
 ```
@@ -104,21 +106,23 @@ never body text, carrying shadow (`Glass Floor`).
 
 - `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
 - `frontend/` — React + Vite + TanStack Router dashboard
-- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows)
+- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows) plus the four DOH FWD line-lists (2018-2026, 210,140 rows)
 - `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
 - `frontend/public/geo/` — PSGC region GeoJSON for choropleth
 
 The API hot-loads the 8 modelling tables at startup; `dengue_case_records`
-(the raw 749,683-row line-list) is **not** part of that snapshot. Its reported-data
-breakdowns (`GET /reported/{region}?year=&month=`) are grouped in Postgres on
+and `fwbd_case_records` (the raw 959,823-row line-lists) are **not** part of
+that snapshot. Their reported-data breakdowns
+(`GET /reported/{region}?disease=&year=&month=`) are grouped in Postgres on
 demand by `db.case_breakdown()` — totals are guaranteed to equal the monthly
-reported series (`month` bucket = same Thursday epi-week rule).
+reported series (`month` bucket: dengue = same Thursday epi-week rule, FWD =
+the files' explicit Morbidity Month).
 
 ## Key Constraints
 
-- **Disease: dengue only** for this release. Schema is disease-agnostic; other illnesses are deferred.
+- **Disease: dengue + four FWD diseases** (Acute Bloody Diarrhea, Cholera, Typhoid Fever, Acute Viral Hepatitis), each run fully independently (own forecast/risk tiers/outbreak/escalation); `disease_group: Food and Waterborne Diseases` is a presentation tag for UI grouping only.
 - **Prediction: Prophet only** (monthly, `freq="MS"`).
-- **National series is derived** (sum of 18 regions), never raw.
+- **National series is derived** (sum of 18 regions) per disease, never raw.
 - **Data ships in repo** — the pipeline runs offline from `data/raw` and writes
   `data/processed`; a DB rebuild (`-m src.db`) pushes those artifacts to
   Postgres. The API itself is Postgres-only and requires `DATABASE_URL`.

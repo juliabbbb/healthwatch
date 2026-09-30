@@ -1,4 +1,4 @@
-"""Monthly dengue forecasting.
+"""Monthly disease forecasting (dengue + food/waterborne disease groups).
 
 Monthly Prophet (~55 observed months per region, 3 full yearly cycles) with a
 wet-season regressor only (Config B, the deployed default: yearly Fourier
@@ -52,14 +52,9 @@ FREQ = "MS"
 
 
 def load_series():
-    national = pd.read_csv(
-        ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
+    return ingest.load_monthly_series().sort_values(
+        ["disease", "region", "date"], ignore_index=True
     )
-    regional = pd.read_csv(
-        ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]
-    )
-    df = pd.concat([national, regional], ignore_index=True)
-    return df.sort_values(["disease", "region", "date"], ignore_index=True)
 
 
 def fit_prophet(train, use_year_seasonality=False, use_wet_regressor=True):
@@ -193,6 +188,12 @@ def run(probes_only=False):
     val_rows = []
     for (disease, region), group in df.groupby(["disease", "region"]):
         series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
+        if len(series) < MIN_TRAIN_MONTHS:
+            print(
+                f"SKIP {region:<32} [{disease}]: only {len(series)} months"
+                f" (< {MIN_TRAIN_MONTHS})"
+            )
+            continue
         probes = build_season_probes(series)
         probes.insert(0, "region", region)
         probes.insert(0, "disease", disease)

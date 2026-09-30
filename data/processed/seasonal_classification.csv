@@ -1,115 +1,565 @@
 disease,region,season,date,yhat,p50,p75,risk_level
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,2023-06-01,0.523663008491381,0.0,1.0,Moderate
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,2023-07-01,0.5244750576271422,1.0,1.0,Low
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,2023-08-01,0.5253141750674288,0.0,0.0,High
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,2025-01-01,23.54257893166821,22.0,26.0,Moderate
+Cholera,Bangsamoro (BARMM),dry,2025-01-01,0.0,0.0,0.25,Moderate
 Dengue,Bangsamoro (BARMM),dry,2025-01-01,630.7055135867763,385.0,518.5,High
+Typhoid Fever,Bangsamoro (BARMM),dry,2025-01-01,159.53307444657332,168.0,205.0,Low
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,2025-02-01,23.68123269758133,16.0,36.0,Moderate
+Cholera,Bangsamoro (BARMM),dry,2025-02-01,0.0,0.0,0.0,Moderate
 Dengue,Bangsamoro (BARMM),dry,2025-02-01,643.1671733383295,333.0,417.5,High
+Typhoid Fever,Bangsamoro (BARMM),dry,2025-02-01,160.4697901770319,114.0,134.0,High
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,2025-03-01,23.806468357115754,23.0,41.0,Moderate
+Cholera,Bangsamoro (BARMM),dry,2025-03-01,0.0,0.0,1.0,Moderate
 Dengue,Bangsamoro (BARMM),dry,2025-03-01,654.4228660171518,321.0,409.0,High
+Typhoid Fever,Bangsamoro (BARMM),dry,2025-03-01,161.31585599809134,152.0,179.0,Moderate
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,2023-12-01,0.7198810392463243,0.0,0.0,High
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,2024-01-01,0.721023766962108,1.0,2.0,Low
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,2024-02-01,0.7221664946778916,1.0,1.0,Low
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,2025-07-01,24.160734317476425,19.0,27.0,Moderate
+Cholera,Bangsamoro (BARMM),wet,2025-07-01,7.664879910839468,0.0,1.0,High
 Dengue,Bangsamoro (BARMM),wet,2025-07-01,1495.6707680482916,820.0,1071.75,High
+Typhoid Fever,Bangsamoro (BARMM),wet,2025-07-01,191.05449652779672,186.0,219.0,Moderate
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,2025-08-01,24.298298288166485,15.0,26.0,Moderate
+Cholera,Bangsamoro (BARMM),wet,2025-08-01,7.93694285792979,3.0,5.0,High
 Dengue,Bangsamoro (BARMM),wet,2025-08-01,1522.1660823132472,842.5,1177.0,High
+Typhoid Fever,Bangsamoro (BARMM),wet,2025-08-01,192.1391103049375,180.0,192.0,High
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,2025-09-01,24.43586225885656,13.5,22.75,High
+Cholera,Bangsamoro (BARMM),wet,2025-09-01,8.20900580502011,0.0,0.25,High
 Dengue,Bangsamoro (BARMM),wet,2025-09-01,1548.6613965782028,609.0,836.0,High
+Typhoid Fever,Bangsamoro (BARMM),wet,2025-09-01,193.22372408207823,177.0,215.75,Moderate
+Acute Viral Hepatitis,Bicol Region,dry,2024-03-01,0.1299365662629905,0.0,0.75,Moderate
+Acute Viral Hepatitis,Bicol Region,dry,2024-04-01,0.1285175731571223,0.0,0.0,High
+Acute Viral Hepatitis,Bicol Region,dry,2024-05-01,0.1271443540224112,0.0,0.0,High
+Acute Bloody Diarrhea,Bicol Region,dry,2025-01-01,8.99971313233193,10.0,11.0,Low
+Cholera,Bicol Region,dry,2025-01-01,2.027126582278856,22.0,55.0,Low
 Dengue,Bicol Region,dry,2025-01-01,15.601319149582814,152.0,301.5,Low
+Typhoid Fever,Bicol Region,dry,2025-01-01,10.808168295722854,24.0,31.0,Low
+Acute Bloody Diarrhea,Bicol Region,dry,2025-02-01,8.972044628373602,5.0,15.0,Moderate
+Cholera,Bicol Region,dry,2025-02-01,1.3911535717823509,17.0,36.0,Low
 Dengue,Bicol Region,dry,2025-02-01,15.680383686363328,115.0,267.25,Low
+Typhoid Fever,Bicol Region,dry,2025-02-01,10.619504009950164,25.0,33.0,Low
+Acute Bloody Diarrhea,Bicol Region,dry,2025-03-01,8.94705372157253,8.0,8.0,High
+Cholera,Bicol Region,dry,2025-03-01,0.8167263364952069,22.0,37.0,Low
 Dengue,Bicol Region,dry,2025-03-01,15.75179681635863,117.0,162.0,Low
+Typhoid Fever,Bicol Region,dry,2025-03-01,10.449097558284508,16.0,26.0,Low
+Acute Viral Hepatitis,Bicol Region,wet,2024-09-01,0.0002155758331137,0.0,0.0,High
+Acute Viral Hepatitis,Bicol Region,wet,2024-10-01,0.0002131396325112,0.0,0.0,High
+Acute Viral Hepatitis,Bicol Region,wet,2024-11-01,0.000210622225222,0.0,0.0,High
+Acute Bloody Diarrhea,Bicol Region,wet,2025-07-01,7.025623775484895,10.0,14.0,Low
+Cholera,Bicol Region,wet,2025-07-01,0.0,14.0,34.0,Low
 Dengue,Bicol Region,wet,2025-07-01,198.84722724398029,265.5,449.5,Low
+Typhoid Fever,Bicol Region,wet,2025-07-01,11.680888617226111,27.0,31.0,Low
+Acute Bloody Diarrhea,Bicol Region,wet,2025-08-01,7.00362956013712,9.0,16.0,Low
+Cholera,Bicol Region,wet,2025-08-01,0.0,11.0,32.0,Low
 Dengue,Bicol Region,wet,2025-08-01,199.82598643653327,313.0,511.0,Low
+Typhoid Fever,Bicol Region,wet,2025-08-01,11.453850960935329,21.0,32.0,Low
+Acute Bloody Diarrhea,Bicol Region,wet,2025-09-01,6.981635344789345,7.5,10.5,Low
+Cholera,Bicol Region,wet,2025-09-01,0.0,26.5,33.75,Low
 Dengue,Bicol Region,wet,2025-09-01,200.80474562908623,179.0,236.5,Moderate
+Typhoid Fever,Bicol Region,wet,2025-09-01,11.226813304644542,21.5,29.5,Low
+Acute Bloody Diarrhea,CALABARZON,dry,2025-01-01,20.7749319878494,52.0,68.0,Low
+Acute Viral Hepatitis,CALABARZON,dry,2025-01-01,0.0,1.0,2.25,Low
+Cholera,CALABARZON,dry,2025-01-01,0.0,0.0,1.0,Moderate
 Dengue,CALABARZON,dry,2025-01-01,489.22013049859856,2373.5,3965.75,Low
+Typhoid Fever,CALABARZON,dry,2025-01-01,69.4664869223189,86.0,116.0,Low
+Acute Bloody Diarrhea,CALABARZON,dry,2025-02-01,20.83509742824601,34.0,49.0,Low
+Acute Viral Hepatitis,CALABARZON,dry,2025-02-01,0.0,0.5,1.5,Low
+Cholera,CALABARZON,dry,2025-02-01,0.0,0.0,1.0,Moderate
 Dengue,CALABARZON,dry,2025-02-01,505.1792227028472,1559.5,1938.75,Low
+Typhoid Fever,CALABARZON,dry,2025-02-01,70.10136366376734,56.0,92.0,Moderate
+Acute Bloody Diarrhea,CALABARZON,dry,2025-03-01,20.88944040666876,38.0,48.0,Low
+Acute Viral Hepatitis,CALABARZON,dry,2025-03-01,0.0,2.0,3.0,Low
+Cholera,CALABARZON,dry,2025-03-01,0.0,0.0,0.0,Moderate
 Dengue,CALABARZON,dry,2025-03-01,519.5938866292652,1015.0,1177.0,Low
+Typhoid Fever,CALABARZON,dry,2025-03-01,70.67480072055949,49.0,80.0,Moderate
+Acute Bloody Diarrhea,CALABARZON,wet,2025-07-01,27.73573650156913,41.0,82.0,Low
+Acute Viral Hepatitis,CALABARZON,wet,2025-07-01,0.0,0.0,0.75,Moderate
+Cholera,CALABARZON,wet,2025-07-01,0.0,0.0,0.0,Moderate
 Dengue,CALABARZON,wet,2025-07-01,8102.281361817518,3280.5,4915.75,High
+Typhoid Fever,CALABARZON,wet,2025-07-01,120.14270964567716,123.0,199.0,Low
+Acute Bloody Diarrhea,CALABARZON,wet,2025-08-01,27.81472520658684,31.0,88.0,Low
+Acute Viral Hepatitis,CALABARZON,wet,2025-08-01,0.0,1.0,2.0,Low
+Cholera,CALABARZON,wet,2025-08-01,0.0,0.5,2.25,Low
 Dengue,CALABARZON,wet,2025-08-01,8324.302161921945,4153.5,5739.5,High
+Typhoid Fever,CALABARZON,wet,2025-08-01,121.18510847258932,112.0,173.0,Moderate
+Acute Bloody Diarrhea,CALABARZON,wet,2025-09-01,27.89371391160454,35.0,58.75,Low
+Acute Viral Hepatitis,CALABARZON,wet,2025-09-01,0.0,0.0,1.0,Moderate
+Cholera,CALABARZON,wet,2025-09-01,0.0,0.5,1.25,Low
 Dengue,CALABARZON,wet,2025-09-01,8546.322962026372,4478.0,5216.5,High
+Typhoid Fever,CALABARZON,wet,2025-09-01,122.22750729950148,114.0,155.75,Moderate
+Acute Viral Hepatitis,Cagayan Valley,dry,2024-02-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Cagayan Valley,dry,2024-03-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Cagayan Valley,dry,2024-04-01,0.0,0.0,0.0,Moderate
+Acute Bloody Diarrhea,Cagayan Valley,dry,2025-01-01,109.62741129093769,104.0,123.0,Moderate
+Cholera,Cagayan Valley,dry,2025-01-01,0.7142998566421899,0.0,0.0,High
 Dengue,Cagayan Valley,dry,2025-01-01,623.9314483775242,543.0,738.0,Moderate
+Typhoid Fever,Cagayan Valley,dry,2025-01-01,110.7276792175788,89.0,101.0,High
+Acute Bloody Diarrhea,Cagayan Valley,dry,2025-02-01,110.01124839594118,83.0,104.0,High
+Cholera,Cagayan Valley,dry,2025-02-01,0.7324205961637044,1.0,1.0,Low
 Dengue,Cagayan Valley,dry,2025-02-01,628.9914711964249,355.0,569.25,High
+Typhoid Fever,Cagayan Valley,dry,2025-02-01,113.01023800577478,72.0,103.0,High
+Acute Bloody Diarrhea,Cagayan Valley,dry,2025-03-01,110.35793997465404,104.0,120.0,Moderate
+Cholera,Cagayan Valley,dry,2025-03-01,0.748787715731524,0.0,1.0,Moderate
 Dengue,Cagayan Valley,dry,2025-03-01,633.5618143876899,322.0,523.0,High
+Typhoid Fever,Cagayan Valley,dry,2025-03-01,115.07190400801632,64.0,86.0,High
+Acute Viral Hepatitis,Cagayan Valley,wet,2024-08-01,0.0,0.0,0.75,Moderate
+Acute Viral Hepatitis,Cagayan Valley,wet,2024-09-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Cagayan Valley,wet,2024-10-01,0.0,0.0,0.0,Moderate
+Acute Bloody Diarrhea,Cagayan Valley,wet,2025-07-01,104.09018033526476,81.0,155.0,Moderate
+Cholera,Cagayan Valley,wet,2025-07-01,0.6315000337646889,0.5,0.75,Moderate
 Dengue,Cagayan Valley,wet,2025-07-01,1871.4782197691964,1104.5,2012.25,Moderate
+Typhoid Fever,Cagayan Valley,wet,2025-07-01,229.4082424275793,93.0,112.0,High
+Acute Bloody Diarrhea,Cagayan Valley,wet,2025-08-01,104.44732881454064,88.0,141.0,Moderate
+Cholera,Cagayan Valley,wet,2025-08-01,0.645453485026719,0.0,0.0,High
 Dengue,Cagayan Valley,wet,2025-08-01,1885.969540689892,1590.5,2875.25,Moderate
+Typhoid Fever,Cagayan Valley,wet,2025-08-01,233.62925986131236,97.0,155.0,High
+Acute Bloody Diarrhea,Cagayan Valley,wet,2025-09-01,104.80447729381652,79.0,95.5,High
+Cholera,Cagayan Valley,wet,2025-09-01,0.659406936288749,0.5,0.75,Moderate
 Dengue,Cagayan Valley,wet,2025-09-01,1900.460861610587,1311.0,2302.0,Moderate
+Typhoid Fever,Cagayan Valley,wet,2025-09-01,237.85027729504532,103.5,172.25,High
+Acute Bloody Diarrhea,Caraga,dry,2025-01-01,36.85534552652394,81.0,161.0,Low
+Acute Viral Hepatitis,Caraga,dry,2025-01-01,0.0,0.0,0.5,Moderate
+Cholera,Caraga,dry,2025-01-01,0.0,13.5,95.75,Low
 Dengue,Caraga,dry,2025-01-01,0.0,788.5,1450.25,Low
+Typhoid Fever,Caraga,dry,2025-01-01,45.66682617606229,28.0,50.0,Moderate
+Acute Bloody Diarrhea,Caraga,dry,2025-02-01,36.29272863626406,71.0,107.0,Low
+Acute Viral Hepatitis,Caraga,dry,2025-02-01,0.0,0.0,1.0,Moderate
+Cholera,Caraga,dry,2025-02-01,0.0,9.5,82.5,Low
 Dengue,Caraga,dry,2025-02-01,0.0,632.0,969.0,Low
+Typhoid Fever,Caraga,dry,2025-02-01,46.6295368549194,33.0,51.0,Moderate
+Acute Bloody Diarrhea,Caraga,dry,2025-03-01,35.784558541835786,64.0,111.0,Low
+Acute Viral Hepatitis,Caraga,dry,2025-03-01,0.0,0.0,0.0,Moderate
+Cholera,Caraga,dry,2025-03-01,0.0,16.5,68.25,Low
 Dengue,Caraga,dry,2025-03-01,0.0,439.0,538.25,Low
+Typhoid Fever,Caraga,dry,2025-03-01,47.499081984209695,33.0,53.0,Moderate
+Acute Bloody Diarrhea,Caraga,wet,2025-07-01,38.35203115698592,66.0,100.0,Low
+Acute Viral Hepatitis,Caraga,wet,2025-07-01,0.0,1.0,1.5,Low
+Cholera,Caraga,wet,2025-07-01,0.0,20.5,52.0,Low
 Dengue,Caraga,wet,2025-07-01,2529.462457461861,544.5,1054.0,High
+Typhoid Fever,Caraga,wet,2025-07-01,69.63299880115704,43.0,76.0,Moderate
+Acute Bloody Diarrhea,Caraga,wet,2025-08-01,37.70927719293374,59.0,83.0,Low
+Acute Viral Hepatitis,Caraga,wet,2025-08-01,0.0,1.0,1.5,Low
+Cholera,Caraga,wet,2025-08-01,0.0,9.5,54.25,Low
 Dengue,Caraga,wet,2025-08-01,2610.7978710635257,581.5,1088.0,High
+Typhoid Fever,Caraga,wet,2025-08-01,70.94006232917418,61.0,78.0,Moderate
+Acute Bloody Diarrhea,Caraga,wet,2025-09-01,37.06652322888156,42.0,87.0,Low
+Acute Viral Hepatitis,Caraga,wet,2025-09-01,0.0,0.0,0.5,Moderate
+Cholera,Caraga,wet,2025-09-01,0.0,16.0,57.5,Low
 Dengue,Caraga,wet,2025-09-01,2692.133284665189,494.0,829.5,High
+Typhoid Fever,Caraga,wet,2025-09-01,72.24712585719132,50.5,74.25,Moderate
+Acute Bloody Diarrhea,Central Luzon,dry,2025-01-01,45.39873753185462,32.0,36.0,High
+Acute Viral Hepatitis,Central Luzon,dry,2025-01-01,0.5133623116710975,0.0,1.0,Moderate
+Cholera,Central Luzon,dry,2025-01-01,0.0001492172014627,0.0,0.25,Moderate
 Dengue,Central Luzon,dry,2025-01-01,1921.4979499720248,3089.5,4632.0,Low
+Typhoid Fever,Central Luzon,dry,2025-01-01,88.74796265527472,50.0,91.0,Moderate
+Acute Bloody Diarrhea,Central Luzon,dry,2025-02-01,45.52460934860487,27.0,36.0,High
+Acute Viral Hepatitis,Central Luzon,dry,2025-02-01,0.514191089223428,0.0,0.5,High
+Cholera,Central Luzon,dry,2025-02-01,0.0,0.0,1.0,Moderate
 Dengue,Central Luzon,dry,2025-02-01,1932.6402391931183,1559.0,2570.0,Moderate
+Typhoid Fever,Central Luzon,dry,2025-02-01,90.3433202360084,46.0,70.0,High
+Acute Bloody Diarrhea,Central Luzon,dry,2025-03-01,45.63830002179864,32.0,58.0,Moderate
+Acute Viral Hepatitis,Central Luzon,dry,2025-03-01,0.5149396624965008,0.0,1.0,Moderate
+Cholera,Central Luzon,dry,2025-03-01,0.0,0.0,1.0,Moderate
 Dengue,Central Luzon,dry,2025-03-01,1942.7042423605576,958.5,1600.5,High
+Typhoid Fever,Central Luzon,dry,2025-03-01,91.78428837344524,43.0,47.0,High
+Acute Bloody Diarrhea,Central Luzon,wet,2025-07-01,40.13625481640638,33.0,37.0,High
+Acute Viral Hepatitis,Central Luzon,wet,2025-07-01,0.4303207774980517,0.0,1.0,Moderate
+Cholera,Central Luzon,wet,2025-07-01,0.0,0.0,0.25,Moderate
 Dengue,Central Luzon,wet,2025-07-01,4964.36344619958,3687.0,5780.5,Moderate
+Typhoid Fever,Central Luzon,wet,2025-07-01,183.63335881335792,80.0,142.0,High
+Acute Bloody Diarrhea,Central Luzon,wet,2025-08-01,40.245763201316514,26.0,52.0,Moderate
+Acute Viral Hepatitis,Central Luzon,wet,2025-08-01,0.4310090046377731,0.0,0.0,High
+Cholera,Central Luzon,wet,2025-08-01,0.0,0.0,1.5,Moderate
 Dengue,Central Luzon,wet,2025-08-01,4992.2078230592,6527.0,9704.75,Low
+Typhoid Fever,Central Luzon,wet,2025-08-01,186.62084126094055,66.0,154.0,High
+Acute Bloody Diarrhea,Central Luzon,wet,2025-09-01,40.35527158622665,29.0,56.5,Moderate
+Acute Viral Hepatitis,Central Luzon,wet,2025-09-01,0.4316972317774945,1.0,1.0,Low
+Cholera,Central Luzon,wet,2025-09-01,0.0,0.0,1.5,Moderate
 Dengue,Central Luzon,wet,2025-09-01,5020.05219991882,4875.0,7023.0,Moderate
+Typhoid Fever,Central Luzon,wet,2025-09-01,189.60832370852324,80.5,121.5,High
+Acute Bloody Diarrhea,Central Visayas,dry,2025-01-01,40.01478409004932,229.0,512.0,Low
+Acute Viral Hepatitis,Central Visayas,dry,2025-01-01,0.6483743367119965,3.0,4.75,Low
+Cholera,Central Visayas,dry,2025-01-01,1.3449159101261448,1.0,4.0,Moderate
 Dengue,Central Visayas,dry,2025-01-01,396.1332735263614,1078.0,2414.5,Low
+Typhoid Fever,Central Visayas,dry,2025-01-01,133.3945611841544,74.0,126.0,High
+Acute Bloody Diarrhea,Central Visayas,dry,2025-02-01,34.78961943498343,193.0,407.0,Low
+Acute Viral Hepatitis,Central Visayas,dry,2025-02-01,0.5937122796601981,1.0,5.0,Low
+Cholera,Central Visayas,dry,2025-02-01,1.3602740185681563,0.0,1.0,High
 Dengue,Central Visayas,dry,2025-02-01,412.839354617876,1078.0,1557.0,Low
+Typhoid Fever,Central Visayas,dry,2025-02-01,135.74236966195377,57.0,102.0,High
+Acute Bloody Diarrhea,Central Visayas,dry,2025-03-01,30.070115875569204,185.0,321.0,Low
+Acute Viral Hepatitis,Central Visayas,dry,2025-03-01,0.5443400990972833,3.5,8.25,Low
+Cholera,Central Visayas,dry,2025-03-01,1.3741458584512638,0.0,1.0,High
 Dengue,Central Visayas,dry,2025-03-01,427.9287181844056,896.0,1046.75,Low
+Typhoid Fever,Central Visayas,dry,2025-03-01,137.862970867708,55.0,95.0,High
+Acute Bloody Diarrhea,Central Visayas,wet,2025-07-01,7.8083034820582,147.0,285.0,Low
+Acute Viral Hepatitis,Central Visayas,wet,2025-07-01,0.2418274064023657,2.0,3.0,Low
+Cholera,Central Visayas,wet,2025-07-01,1.345509484822499,0.0,1.0,High
 Dengue,Central Visayas,wet,2025-07-01,5961.784013427319,1501.5,2063.5,High
+Typhoid Fever,Central Visayas,wet,2025-07-01,227.70972803946097,106.0,128.0,High
+Acute Bloody Diarrhea,Central Visayas,wet,2025-08-01,3.516566891369893,213.0,238.0,Low
+Acute Viral Hepatitis,Central Visayas,wet,2025-08-01,0.2016753940348289,2.0,2.5,Low
+Cholera,Central Visayas,wet,2025-08-01,1.359913960916224,0.0,2.0,Moderate
 Dengue,Central Visayas,wet,2025-08-01,6163.53212828305,1216.0,4169.25,High
+Typhoid Fever,Central Visayas,wet,2025-08-01,231.3440509245988,112.0,140.0,High
+Acute Bloody Diarrhea,Central Visayas,wet,2025-09-01,0.0,123.0,205.75,Low
+Acute Viral Hepatitis,Central Visayas,wet,2025-09-01,0.1615233816672914,3.0,4.25,Low
+Cholera,Central Visayas,wet,2025-09-01,1.3743184370099486,0.0,2.25,Moderate
 Dengue,Central Visayas,wet,2025-09-01,6365.280243138778,759.0,2330.5,High
+Typhoid Fever,Central Visayas,wet,2025-09-01,234.97837380973655,102.5,105.5,High
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,2025-01-01,47.583361146050684,61.0,96.0,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,2025-01-01,0.0,0.0,0.0,Moderate
+Cholera,Cordillera Administrative Region,dry,2025-01-01,1.27377471987987,0.0,1.5,Moderate
 Dengue,Cordillera Administrative Region,dry,2025-01-01,310.0216184982049,410.5,511.75,Low
+Typhoid Fever,Cordillera Administrative Region,dry,2025-01-01,216.4287534194156,248.0,315.0,Low
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,2025-02-01,46.68776472631927,66.0,94.0,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,2025-02-01,0.0,0.0,0.25,Moderate
+Cholera,Cordillera Administrative Region,dry,2025-02-01,1.294683416241558,0.0,1.25,High
 Dengue,Cordillera Administrative Region,dry,2025-02-01,322.47988521734817,318.0,396.25,Moderate
+Typhoid Fever,Cordillera Administrative Region,dry,2025-02-01,217.15178276824125,178.0,190.0,High
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,2025-03-01,45.8788389278522,73.0,128.0,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,2025-03-01,0.0,0.0,0.0,Moderate
+Cholera,Cordillera Administrative Region,dry,2025-03-01,1.3135686903746957,0.0,1.0,High
 Dengue,Cordillera Administrative Region,dry,2025-03-01,333.73251322173564,240.5,271.75,High
+Typhoid Fever,Cordillera Administrative Region,dry,2025-03-01,217.80484153492245,170.0,223.0,Moderate
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,2025-07-01,43.9518428959286,93.0,133.0,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,2025-07-01,0.0,0.0,0.0,Moderate
+Cholera,Cordillera Administrative Region,wet,2025-07-01,1.5202261445784198,0.0,2.0,Moderate
 Dengue,Cordillera Administrative Region,wet,2025-07-01,6328.172478714731,1489.0,2722.75,High
+Typhoid Fever,Cordillera Administrative Region,wet,2025-07-01,370.58799527853154,324.0,347.0,High
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,2025-08-01,43.02246441982875,65.0,109.0,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,2025-08-01,0.0,0.0,0.0,Moderate
+Cholera,Cordillera Administrative Region,wet,2025-08-01,1.5429978204429302,0.0,1.0,High
 Dengue,Cordillera Administrative Region,wet,2025-08-01,6534.144068012324,1611.5,2231.5,High
+Typhoid Fever,Cordillera Administrative Region,wet,2025-08-01,371.8023420638652,297.0,434.0,Moderate
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,2025-09-01,42.0930859437289,73.0,106.75,Low
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,2025-09-01,0.0,0.0,0.0,Moderate
+Cholera,Cordillera Administrative Region,wet,2025-09-01,1.565769496307441,0.0,0.25,High
 Dengue,Cordillera Administrative Region,wet,2025-09-01,6740.115657309916,1054.0,2083.5,High
+Typhoid Fever,Cordillera Administrative Region,wet,2025-09-01,373.0166888491989,368.0,438.0,Moderate
+Acute Bloody Diarrhea,Davao Region,dry,2025-01-01,39.0192083873106,24.0,34.0,High
+Acute Viral Hepatitis,Davao Region,dry,2025-01-01,0.3754112228339054,0.0,0.0,High
+Cholera,Davao Region,dry,2025-01-01,30.08772547098758,1.0,7.0,High
 Dengue,Davao Region,dry,2025-01-01,1848.3612426944744,942.0,1261.5,High
+Typhoid Fever,Davao Region,dry,2025-01-01,75.64409273200806,24.0,43.0,High
+Acute Bloody Diarrhea,Davao Region,dry,2025-02-01,39.33291873675213,18.0,20.0,High
+Acute Viral Hepatitis,Davao Region,dry,2025-02-01,0.378215790727041,0.0,0.0,High
+Cholera,Davao Region,dry,2025-02-01,30.36835067238744,3.0,4.0,High
 Dengue,Davao Region,dry,2025-02-01,1887.8179690690415,754.5,1178.75,High
+Typhoid Fever,Davao Region,dry,2025-02-01,76.82822077248058,28.0,41.0,High
+Acute Bloody Diarrhea,Davao Region,dry,2025-03-01,39.61627002011869,29.0,51.0,Moderate
+Acute Viral Hepatitis,Davao Region,dry,2025-03-01,0.3807489488240667,0.0,0.0,High
+Cholera,Davao Region,dry,2025-03-01,30.621818596232465,1.0,6.0,High
 Dengue,Davao Region,dry,2025-03-01,1923.456302568651,655.0,1280.25,High
+Typhoid Fever,Davao Region,dry,2025-03-01,77.89775577677833,42.0,54.0,High
+Acute Bloody Diarrhea,Davao Region,wet,2025-07-01,37.19607699841587,25.0,38.0,Moderate
+Acute Viral Hepatitis,Davao Region,wet,2025-07-01,0.2982798086452259,0.0,0.5,Moderate
+Cholera,Davao Region,wet,2025-07-01,15.08156148500145,0.0,9.0,High
 Dengue,Davao Region,wet,2025-07-01,3732.193323560807,1331.0,2233.0,High
+Typhoid Fever,Davao Region,wet,2025-07-01,107.3657157828256,32.0,88.0,High
+Acute Bloody Diarrhea,Davao Region,wet,2025-08-01,37.48172070025553,23.0,37.0,High
+Acute Viral Hepatitis,Davao Region,wet,2025-08-01,0.3004150186208277,0.0,0.25,High
+Cholera,Davao Region,wet,2025-08-01,15.214961144846333,0.0,1.0,High
 Dengue,Davao Region,wet,2025-08-01,3803.034458024704,1187.0,2613.75,High
+Typhoid Fever,Davao Region,wet,2025-08-01,108.90566286078324,42.0,93.0,High
+Acute Bloody Diarrhea,Davao Region,wet,2025-09-01,37.7673644020952,18.0,26.5,High
+Acute Viral Hepatitis,Davao Region,wet,2025-09-01,0.3025502285964297,0.0,0.0,High
+Cholera,Davao Region,wet,2025-09-01,15.348360804691213,0.0,0.0,High
 Dengue,Davao Region,wet,2025-09-01,3873.875592488601,955.0,1674.0,High
+Typhoid Fever,Davao Region,wet,2025-09-01,110.44560993874089,30.5,62.75,High
+Acute Bloody Diarrhea,Eastern Visayas,dry,2025-01-01,28.84150491418194,40.0,42.0,Low
+Acute Viral Hepatitis,Eastern Visayas,dry,2025-01-01,0.7606291824954242,0.0,0.0,High
+Cholera,Eastern Visayas,dry,2025-01-01,260.4708993410292,129.0,243.0,High
 Dengue,Eastern Visayas,dry,2025-01-01,66.39966094551556,408.0,862.5,Low
+Typhoid Fever,Eastern Visayas,dry,2025-01-01,29.521628176063565,23.0,50.0,Moderate
+Acute Bloody Diarrhea,Eastern Visayas,dry,2025-02-01,28.824225494518824,36.0,45.0,Low
+Acute Viral Hepatitis,Eastern Visayas,dry,2025-02-01,0.7709096724133501,0.0,0.0,High
+Cholera,Eastern Visayas,dry,2025-02-01,263.05948274016845,115.0,203.0,High
 Dengue,Eastern Visayas,dry,2025-02-01,67.51527706559133,373.5,625.0,Low
+Typhoid Fever,Eastern Visayas,dry,2025-02-01,29.83211005235975,18.0,39.0,Moderate
+Acute Bloody Diarrhea,Eastern Visayas,dry,2025-03-01,28.80861827675859,41.0,54.0,Low
+Acute Viral Hepatitis,Eastern Visayas,dry,2025-03-01,0.7801952762101861,1.0,1.0,Low
+Cholera,Eastern Visayas,dry,2025-03-01,265.39755806842334,126.0,198.0,High
 Dengue,Eastern Visayas,dry,2025-03-01,68.5229303353372,341.0,454.25,Low
+Typhoid Fever,Eastern Visayas,dry,2025-03-01,30.112545295465974,22.0,44.0,Moderate
+Acute Bloody Diarrhea,Eastern Visayas,wet,2025-07-01,22.1735359562546,24.0,37.0,Low
+Acute Viral Hepatitis,Eastern Visayas,wet,2025-07-01,0.2685940399653984,0.0,0.0,High
+Cholera,Eastern Visayas,wet,2025-07-01,301.78024498044334,81.0,128.0,High
 Dengue,Eastern Visayas,wet,2025-07-01,988.8433384155924,501.0,888.75,High
+Typhoid Fever,Eastern Visayas,wet,2025-07-01,28.013500701767192,39.0,43.0,Low
+Acute Bloody Diarrhea,Eastern Visayas,wet,2025-08-01,22.16020479309476,21.0,37.0,Moderate
+Acute Viral Hepatitis,Eastern Visayas,wet,2025-08-01,0.2719587690623493,0.0,0.25,High
+Cholera,Eastern Visayas,wet,2025-08-01,304.61488276801214,46.0,184.0,High
 Dengue,Eastern Visayas,wet,2025-08-01,1003.9731948245902,414.5,1090.5,Moderate
+Typhoid Fever,Eastern Visayas,wet,2025-08-01,28.291076550716117,28.0,31.0,Moderate
+Acute Bloody Diarrhea,Eastern Visayas,wet,2025-09-01,22.14687362993492,28.0,43.25,Low
+Acute Viral Hepatitis,Eastern Visayas,wet,2025-09-01,0.2753234981593002,0.5,1.0,Low
+Cholera,Eastern Visayas,wet,2025-09-01,307.4495205555809,34.5,159.25,High
 Dengue,Eastern Visayas,wet,2025-09-01,1019.1030512335878,404.0,767.0,High
+Typhoid Fever,Eastern Visayas,wet,2025-09-01,28.56865239966504,24.0,35.0,Moderate
+Acute Viral Hepatitis,Ilocos Region,dry,2024-03-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Ilocos Region,dry,2024-04-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Ilocos Region,dry,2024-05-01,0.0,0.0,1.0,Moderate
+Acute Bloody Diarrhea,Ilocos Region,dry,2025-01-01,5.099973795977357,5.0,6.0,Moderate
+Cholera,Ilocos Region,dry,2025-01-01,0.0,1.0,2.0,Low
 Dengue,Ilocos Region,dry,2025-01-01,150.96322054805722,699.5,804.0,Low
+Typhoid Fever,Ilocos Region,dry,2025-01-01,68.90896253987991,85.0,109.0,Low
+Acute Bloody Diarrhea,Ilocos Region,dry,2025-02-01,5.177177265998221,2.0,4.0,High
+Cholera,Ilocos Region,dry,2025-02-01,0.0,0.0,0.0,Moderate
 Dengue,Ilocos Region,dry,2025-02-01,154.03379475368115,408.0,483.75,Low
+Typhoid Fever,Ilocos Region,dry,2025-02-01,68.85092283995381,75.0,90.0,Low
+Acute Bloody Diarrhea,Ilocos Region,dry,2025-03-01,5.246909432468679,3.0,4.0,High
+Cholera,Ilocos Region,dry,2025-03-01,0.0,0.0,0.0,Moderate
 Dengue,Ilocos Region,dry,2025-03-01,156.80721661682531,200.5,361.5,Low
+Typhoid Fever,Ilocos Region,dry,2025-03-01,68.79849988518185,72.0,80.0,Low
+Acute Viral Hepatitis,Ilocos Region,wet,2024-09-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Ilocos Region,wet,2024-10-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Ilocos Region,wet,2024-11-01,0.0,0.0,0.0,Moderate
+Acute Bloody Diarrhea,Ilocos Region,wet,2025-07-01,17.12006943711058,11.0,15.0,High
+Cholera,Ilocos Region,wet,2025-07-01,0.0,0.0,0.25,Moderate
 Dengue,Ilocos Region,wet,2025-07-01,2225.7988057093,1649.0,2674.5,Moderate
+Typhoid Fever,Ilocos Region,wet,2025-07-01,128.45985180269687,127.0,141.0,Moderate
+Acute Bloody Diarrhea,Ilocos Region,wet,2025-08-01,17.358186910762488,5.0,10.0,High
+Cholera,Ilocos Region,wet,2025-08-01,0.0,0.0,0.25,Moderate
 Dengue,Ilocos Region,wet,2025-08-01,2266.2655193434416,2235.0,3206.75,Moderate
+Typhoid Fever,Ilocos Region,wet,2025-08-01,128.35111967573698,139.0,206.0,Low
+Acute Bloody Diarrhea,Ilocos Region,wet,2025-09-01,17.596304384414402,5.5,19.5,Moderate
+Cholera,Ilocos Region,wet,2025-09-01,0.0,0.0,1.0,Moderate
 Dengue,Ilocos Region,wet,2025-09-01,2306.732232977583,1251.0,2196.0,High
+Typhoid Fever,Ilocos Region,wet,2025-09-01,128.2423875487771,143.0,190.0,Low
+Acute Viral Hepatitis,MIMAROPA,dry,2023-12-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,MIMAROPA,dry,2024-01-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,MIMAROPA,dry,2024-02-01,0.0,0.0,0.0,Moderate
+Cholera,MIMAROPA,dry,2024-09-01,1.5571201460135993,0.0,1.5,High
+Cholera,MIMAROPA,dry,2024-10-01,1.587465136463255,0.0,0.0,High
+Cholera,MIMAROPA,dry,2024-11-01,1.6188216265945663,0.0,0.0,High
+Acute Bloody Diarrhea,MIMAROPA,dry,2025-01-01,12.78425661256288,7.0,8.0,High
 Dengue,MIMAROPA,dry,2025-01-01,665.9655250093966,689.5,844.25,Low
+Typhoid Fever,MIMAROPA,dry,2025-01-01,156.1087832082699,54.0,151.0,High
+Acute Bloody Diarrhea,MIMAROPA,dry,2025-02-01,12.903795219468568,9.0,14.0,Moderate
 Dengue,MIMAROPA,dry,2025-02-01,678.9417385363499,630.5,746.25,Moderate
+Typhoid Fever,MIMAROPA,dry,2025-02-01,158.94267133248377,34.0,141.0,High
+Acute Bloody Diarrhea,MIMAROPA,dry,2025-03-01,13.011765574093054,9.0,11.0,High
 Dengue,MIMAROPA,dry,2025-03-01,690.6621894639206,467.0,619.25,High
+Typhoid Fever,MIMAROPA,dry,2025-03-01,161.50231221887046,37.0,58.0,High
+Acute Viral Hepatitis,MIMAROPA,wet,2024-06-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,MIMAROPA,wet,2024-07-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,MIMAROPA,wet,2024-08-01,0.0,0.0,0.75,Moderate
+Cholera,MIMAROPA,wet,2025-03-01,0.1612552721255006,0.0,0.0,High
+Cholera,MIMAROPA,wet,2025-04-01,0.1641609121287912,0.0,0.0,High
+Cholera,MIMAROPA,wet,2025-05-01,0.166972821809395,0.0,0.0,High
+Acute Bloody Diarrhea,MIMAROPA,wet,2025-07-01,17.30152640470399,12.0,19.0,Moderate
 Dengue,MIMAROPA,wet,2025-07-01,2773.9898239036525,2143.0,2305.0,High
+Typhoid Fever,MIMAROPA,wet,2025-07-01,263.6274830149318,65.0,165.0,High
+Acute Bloody Diarrhea,MIMAROPA,wet,2025-08-01,17.45492860627938,10.0,24.0,Moderate
 Dengue,MIMAROPA,wet,2025-08-01,2822.519464956261,1433.5,2217.0,High
+Typhoid Fever,MIMAROPA,wet,2025-08-01,267.95455520844166,123.0,151.0,High
+Acute Bloody Diarrhea,MIMAROPA,wet,2025-09-01,17.60833080785477,12.0,18.25,Moderate
 Dengue,MIMAROPA,wet,2025-09-01,2871.0491060088693,1007.0,1245.0,High
+Typhoid Fever,MIMAROPA,wet,2025-09-01,272.28162740195154,88.5,119.75,High
+Acute Bloody Diarrhea,National,dry,2025-01-01,793.8207421391338,1294.0,1624.0,Low
+Acute Viral Hepatitis,National,dry,2025-01-01,8.665148770502615,19.5,22.0,Low
+Cholera,National,dry,2025-01-01,328.0269464989199,356.0,432.0,Low
 Dengue,National,dry,2025-01-01,7898.888088777591,18632.5,28281.25,Low
+Typhoid Fever,National,dry,2025-01-01,2089.6999652338627,1759.0,2242.0,Moderate
+Acute Bloody Diarrhea,National,dry,2025-02-01,792.7144308040622,1153.0,1176.0,Low
+Acute Viral Hepatitis,National,dry,2025-02-01,8.707827444186849,14.0,17.0,Low
+Cholera,National,dry,2025-02-01,329.41609903703994,241.0,368.0,Moderate
 Dengue,National,dry,2025-02-01,8046.713755625748,12562.5,19091.0,Low
+Typhoid Fever,National,dry,2025-02-01,2125.1340828574816,1383.0,1865.0,High
+Acute Bloody Diarrhea,National,dry,2025-03-01,791.7151818562555,900.0,1387.0,Low
+Acute Viral Hepatitis,National,dry,2025-03-01,8.746375923643576,13.5,20.0,Low
+Cholera,National,dry,2025-03-01,330.6708174585677,189.0,397.0,Moderate
 Dengue,National,dry,2025-03-01,8180.2337127789215,10478.5,12394.0,Low
+Typhoid Fever,National,dry,2025-03-01,2157.139092323975,1478.0,1845.0,High
+Acute Bloody Diarrhea,National,wet,2025-07-01,770.623782309893,1158.0,1417.0,Low
+Acute Viral Hepatitis,National,wet,2025-07-01,13.124232004705584,11.5,19.25,Moderate
+Cholera,National,wet,2025-07-01,361.6859452800306,162.0,299.0,High
 Dengue,National,wet,2025-07-01,56397.96096335573,36854.0,45519.0,High
+Typhoid Fever,National,wet,2025-07-01,3548.3072855144974,2550.0,2708.0,High
+Acute Bloody Diarrhea,National,wet,2025-08-01,769.5409886634982,996.0,1093.0,Low
+Acute Viral Hepatitis,National,wet,2025-08-01,13.187066156624049,11.0,19.25,Moderate
+Cholera,National,wet,2025-08-01,363.1806803012443,137.0,293.0,High
 Dengue,National,wet,2025-08-01,57349.46369230685,35625.5,52643.0,High
+Typhoid Fever,National,wet,2025-08-01,3603.054177907787,2287.0,2714.0,High
+Acute Bloody Diarrhea,National,wet,2025-09-01,768.4581950171034,848.5,1073.25,Low
+Acute Viral Hepatitis,National,wet,2025-09-01,13.249900308542514,9.5,15.5,Moderate
+Cholera,National,wet,2025-09-01,364.6754153224581,131.0,257.0,High
 Dengue,National,wet,2025-09-01,58300.96642125797,30456.0,44652.0,High
+Typhoid Fever,National,wet,2025-09-01,3657.801070301077,2392.0,2715.25,High
+Acute Bloody Diarrhea,National Capital Region,dry,2025-01-01,21.85466649387268,10.0,23.0,Moderate
+Acute Viral Hepatitis,National Capital Region,dry,2025-01-01,0.1090345669519016,1.5,2.25,Low
+Cholera,National Capital Region,dry,2025-01-01,0.0250998938039092,0.0,1.5,Moderate
 Dengue,National Capital Region,dry,2025-01-01,862.6777920545491,2460.5,3511.5,Low
+Typhoid Fever,National Capital Region,dry,2025-01-01,27.803853833184288,35.0,49.0,Low
+Acute Bloody Diarrhea,National Capital Region,dry,2025-02-01,22.211966749076357,13.0,16.0,High
+Acute Viral Hepatitis,National Capital Region,dry,2025-02-01,0.0853658006038896,1.0,1.25,Low
+Cholera,National Capital Region,dry,2025-02-01,0.0167084416345618,0.0,0.0,High
 Dengue,National Capital Region,dry,2025-02-01,877.1317536714118,1550.0,1834.25,Low
+Typhoid Fever,National Capital Region,dry,2025-02-01,28.31281431645154,22.0,45.0,Moderate
+Acute Bloody Diarrhea,National Capital Region,dry,2025-03-01,22.534689560228056,8.0,25.0,Moderate
+Acute Viral Hepatitis,National Capital Region,dry,2025-03-01,0.063987560031492,0.5,1.25,Low
+Cholera,National Capital Region,dry,2025-03-01,0.0091290654816029,0.0,1.0,Moderate
 Dengue,National Capital Region,dry,2025-03-01,890.1869448092236,921.5,1177.0,Low
+Typhoid Fever,National Capital Region,dry,2025-03-01,28.772520559402604,28.0,34.0,Moderate
+Acute Bloody Diarrhea,National Capital Region,wet,2025-07-01,33.83657357415,18.0,22.0,High
+Acute Viral Hepatitis,National Capital Region,wet,2025-07-01,0.0,0.5,1.25,Low
+Cholera,National Capital Region,wet,2025-07-01,0.0,0.5,1.5,Low
 Dengue,National Capital Region,wet,2025-07-01,5612.739549462244,2067.0,3225.0,High
+Typhoid Fever,National Capital Region,wet,2025-07-01,49.4641355016974,34.0,54.0,Moderate
+Acute Bloody Diarrhea,National Capital Region,wet,2025-08-01,34.341560738453865,13.0,50.0,Moderate
+Acute Viral Hepatitis,National Capital Region,wet,2025-08-01,0.0,1.0,1.25,Low
+Cholera,National Capital Region,wet,2025-08-01,0.0,1.0,2.25,Low
 Dengue,National Capital Region,wet,2025-08-01,5698.399847256519,3796.0,4869.5,High
+Typhoid Fever,National Capital Region,wet,2025-08-01,50.28216506315937,39.0,41.0,High
+Acute Bloody Diarrhea,National Capital Region,wet,2025-09-01,34.84654790275773,13.5,24.5,High
+Acute Viral Hepatitis,National Capital Region,wet,2025-09-01,0.0,1.0,1.0,Low
+Cholera,National Capital Region,wet,2025-09-01,0.0,0.0,1.5,Moderate
 Dengue,National Capital Region,wet,2025-09-01,5784.060145050793,4724.0,5834.0,Moderate
+Typhoid Fever,National Capital Region,wet,2025-09-01,51.10019462462135,34.5,43.0,High
+Acute Bloody Diarrhea,Negros Island Region,dry,2025-01-01,39.414560289651135,68.0,88.0,Low
+Cholera,Negros Island Region,dry,2025-01-01,0.3688624976929935,1.0,8.0,Low
 Dengue,Negros Island Region,dry,2025-01-01,146.60290829016674,413.5,1168.5,Low
+Typhoid Fever,Negros Island Region,dry,2025-01-01,144.63818413075268,124.0,149.0,Moderate
+Acute Bloody Diarrhea,Negros Island Region,dry,2025-02-01,38.9739773844004,49.0,57.0,Low
+Cholera,Negros Island Region,dry,2025-02-01,0.38987975823533,0.0,11.0,Moderate
 Dengue,Negros Island Region,dry,2025-02-01,153.7549462841596,434.0,681.75,Low
+Typhoid Fever,Negros Island Region,dry,2025-02-01,147.31794119164468,113.0,140.0,High
+Acute Bloody Diarrhea,Negros Island Region,dry,2025-03-01,38.57603153449652,53.0,70.0,Low
+Cholera,Negros Island Region,dry,2025-03-01,0.4088630903380852,0.0,10.0,Moderate
 Dengue,Negros Island Region,dry,2025-03-01,160.2148515690565,277.5,437.0,Low
+Typhoid Fever,Negros Island Region,dry,2025-03-01,149.7383669240632,110.0,130.0,High
+Acute Bloody Diarrhea,Negros Island Region,wet,2025-07-01,41.77945047389143,69.0,90.0,Low
+Cholera,Negros Island Region,wet,2025-07-01,22.023526222146888,0.0,4.0,High
 Dengue,Negros Island Region,wet,2025-07-01,3507.481390284413,1300.0,1883.75,High
+Typhoid Fever,Negros Island Region,wet,2025-07-01,284.44462184316654,174.0,197.0,High
+Acute Bloody Diarrhea,Negros Island Region,wet,2025-08-01,41.279823705324354,44.0,70.0,Low
+Cholera,Negros Island Region,wet,2025-08-01,22.96513854451365,1.0,8.0,High
 Dengue,Negros Island Region,wet,2025-08-01,3640.659504074632,1077.5,2361.5,High
+Typhoid Fever,Negros Island Region,wet,2025-08-01,289.20018116176504,175.0,214.0,High
+Acute Bloody Diarrhea,Negros Island Region,wet,2025-09-01,40.78019693675728,50.0,74.75,Low
+Cholera,Negros Island Region,wet,2025-09-01,23.9067508668804,2.0,16.5,High
 Dengue,Negros Island Region,wet,2025-09-01,3773.8376178648496,599.0,1845.5,High
+Typhoid Fever,Negros Island Region,wet,2025-09-01,293.9557404803635,153.5,197.75,High
+Acute Bloody Diarrhea,Northern Mindanao,dry,2025-01-01,53.72034881120145,93.0,117.0,Low
+Acute Viral Hepatitis,Northern Mindanao,dry,2025-01-01,0.0,1.0,1.25,Low
+Cholera,Northern Mindanao,dry,2025-01-01,0.0,1.0,2.0,Low
 Dengue,Northern Mindanao,dry,2025-01-01,899.7427442841906,1241.0,1504.75,Low
+Typhoid Fever,Northern Mindanao,dry,2025-01-01,202.70280681288216,229.0,251.0,Low
+Acute Bloody Diarrhea,Northern Mindanao,dry,2025-02-01,53.04683873744713,70.0,102.0,Low
+Acute Viral Hepatitis,Northern Mindanao,dry,2025-02-01,0.0,0.5,3.0,Low
+Cholera,Northern Mindanao,dry,2025-02-01,0.0,3.0,4.0,Low
 Dengue,Northern Mindanao,dry,2025-02-01,915.837906918876,943.5,1448.0,Low
+Typhoid Fever,Northern Mindanao,dry,2025-02-01,205.658623936732,176.0,229.0,Moderate
+Acute Bloody Diarrhea,Northern Mindanao,dry,2025-03-01,52.438507057927104,90.0,107.0,Low
+Acute Viral Hepatitis,Northern Mindanao,dry,2025-03-01,0.0,1.0,1.0,Low
+Cholera,Northern Mindanao,dry,2025-03-01,0.0,3.0,4.0,Low
 Dengue,Northern Mindanao,dry,2025-03-01,930.37547316956,894.5,1197.25,Moderate
+Typhoid Fever,Northern Mindanao,dry,2025-03-01,208.32839424214464,166.0,289.0,Moderate
+Acute Bloody Diarrhea,Northern Mindanao,wet,2025-07-01,40.62743880842975,83.0,108.0,Low
+Acute Viral Hepatitis,Northern Mindanao,wet,2025-07-01,0.0,0.5,2.0,Low
+Cholera,Northern Mindanao,wet,2025-07-01,0.0,0.0,1.0,Moderate
 Dengue,Northern Mindanao,wet,2025-07-01,3030.2710556106026,1432.5,2037.0,High
+Typhoid Fever,Northern Mindanao,wet,2025-07-01,339.90171749899554,259.0,359.0,Moderate
+Acute Bloody Diarrhea,Northern Mindanao,wet,2025-08-01,40.07784786661569,82.0,94.0,Low
+Acute Viral Hepatitis,Northern Mindanao,wet,2025-08-01,0.0,1.5,2.0,Low
+Cholera,Northern Mindanao,wet,2025-08-01,0.0,0.5,3.5,Low
 Dengue,Northern Mindanao,wet,2025-08-01,3079.3521016514314,1198.5,2977.75,High
+Typhoid Fever,Northern Mindanao,wet,2025-08-01,344.4692884662142,255.0,382.0,Moderate
+Acute Bloody Diarrhea,Northern Mindanao,wet,2025-09-01,39.52825692480163,44.5,90.75,Low
+Acute Viral Hepatitis,Northern Mindanao,wet,2025-09-01,0.0,1.0,1.5,Low
+Cholera,Northern Mindanao,wet,2025-09-01,0.0,0.5,2.0,Low
 Dengue,Northern Mindanao,wet,2025-09-01,3128.4331476922607,1325.0,2058.5,High
+Typhoid Fever,Northern Mindanao,wet,2025-09-01,349.0368594334329,253.0,305.75,High
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,2025-01-01,8.920466059382337,19.0,22.0,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,2025-01-01,0.0,0.0,0.5,Moderate
+Cholera,SOCCSKSARGEN,dry,2025-01-01,1.03908390044997,0.0,0.0,High
 Dengue,SOCCSKSARGEN,dry,2025-01-01,1142.671332855846,694.5,1321.75,Moderate
+Typhoid Fever,SOCCSKSARGEN,dry,2025-01-01,88.30488226672063,107.0,206.0,Low
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,2025-02-01,8.855872329310827,12.0,18.0,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,2025-02-01,0.0,0.0,0.0,Moderate
+Cholera,SOCCSKSARGEN,dry,2025-02-01,1.013133673227394,0.0,4.0,Moderate
 Dengue,SOCCSKSARGEN,dry,2025-02-01,1150.9745167588844,639.0,1186.5,Moderate
+Typhoid Fever,SOCCSKSARGEN,dry,2025-02-01,87.93680878810459,96.0,124.0,Low
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,2025-03-01,8.79752960537527,18.0,23.0,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,2025-03-01,0.0,0.0,0.0,Moderate
+Cholera,SOCCSKSARGEN,dry,2025-03-01,0.9896947583166796,0.0,14.5,Moderate
 Dengue,SOCCSKSARGEN,dry,2025-03-01,1158.4741667358223,747.5,1043.25,High
+Typhoid Fever,SOCCSKSARGEN,dry,2025-03-01,87.60435532354816,58.0,141.0,Moderate
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,2025-07-01,7.767741692782695,14.0,23.0,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,2025-07-01,0.0,0.0,0.0,Moderate
+Cholera,SOCCSKSARGEN,wet,2025-07-01,6.624607658071682,0.0,4.25,High
 Dengue,SOCCSKSARGEN,wet,2025-07-01,1633.8219663946363,1497.0,2170.5,Moderate
+Typhoid Fever,SOCCSKSARGEN,wet,2025-07-01,92.26671703904243,119.0,175.0,Low
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,2025-08-01,7.709011914267193,17.0,18.0,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,2025-08-01,0.0,0.0,0.25,Moderate
+Cholera,SOCCSKSARGEN,wet,2025-08-01,6.430921019048657,0.0,0.75,High
 Dengue,SOCCSKSARGEN,wet,2025-08-01,1645.2108850331892,1318.5,2227.5,Moderate
+Typhoid Fever,SOCCSKSARGEN,wet,2025-08-01,91.87253663198864,100.0,168.0,Low
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,2025-09-01,7.650282135751689,11.5,18.5,Low
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,2025-09-01,0.0,0.0,1.0,Moderate
+Cholera,SOCCSKSARGEN,wet,2025-09-01,6.237234380025635,0.0,3.25,High
 Dengue,SOCCSKSARGEN,wet,2025-09-01,1656.5998036717422,811.0,1352.5,High
+Typhoid Fever,SOCCSKSARGEN,wet,2025-09-01,91.47835622493484,110.5,180.5,Low
+Acute Bloody Diarrhea,Western Visayas,dry,2025-01-01,0.0,1.0,2.0,Low
+Acute Viral Hepatitis,Western Visayas,dry,2025-01-01,0.0577622416912241,1.0,1.0,Low
+Cholera,Western Visayas,dry,2025-01-01,0.0,1.5,3.75,Low
 Dengue,Western Visayas,dry,2025-01-01,169.8436679474174,499.5,752.5,Low
+Typhoid Fever,Western Visayas,dry,2025-01-01,91.98307796781472,64.0,105.0,Moderate
+Acute Bloody Diarrhea,Western Visayas,dry,2025-02-01,0.0,1.0,1.0,Low
+Acute Viral Hepatitis,Western Visayas,dry,2025-02-01,0.0579096044675777,1.0,1.0,Low
+Cholera,Western Visayas,dry,2025-02-01,0.0,2.0,3.25,Low
 Dengue,Western Visayas,dry,2025-02-01,178.05351557114216,398.5,830.0,Low
+Typhoid Fever,Western Visayas,dry,2025-02-01,94.2973210301224,72.0,113.0,Moderate
+Acute Bloody Diarrhea,Western Visayas,dry,2025-03-01,0.0,0.0,1.0,Moderate
+Acute Viral Hepatitis,Western Visayas,dry,2025-03-01,0.0580427063300906,1.0,2.0,Low
+Cholera,Western Visayas,dry,2025-03-01,0.0,0.5,2.75,Low
 Dengue,Western Visayas,dry,2025-03-01,185.46886181192576,347.5,639.25,Low
+Typhoid Fever,Western Visayas,dry,2025-03-01,96.38760508640031,69.0,98.0,Moderate
+Acute Bloody Diarrhea,Western Visayas,wet,2025-07-01,0.0,1.0,2.0,Low
+Acute Viral Hepatitis,Western Visayas,wet,2025-07-01,1.3733793813497337,1.5,2.75,Low
+Cholera,Western Visayas,wet,2025-07-01,0.0,0.0,2.0,Moderate
 Dengue,Western Visayas,wet,2025-07-01,5416.803688795536,2130.0,3187.0,High
+Typhoid Fever,Western Visayas,wet,2025-07-01,204.447925321299,98.0,154.0,High
+Acute Bloody Diarrhea,Western Visayas,wet,2025-08-01,0.0,0.0,0.75,Moderate
+Acute Viral Hepatitis,Western Visayas,wet,2025-08-01,1.3768317158667065,3.0,5.25,Low
+Cholera,Western Visayas,wet,2025-08-01,0.0,1.0,11.0,Low
 Dengue,Western Visayas,wet,2025-08-01,5621.007113802572,1346.5,3978.25,High
+Typhoid Fever,Western Visayas,wet,2025-08-01,208.93288646510956,83.0,109.0,High
+Acute Bloody Diarrhea,Western Visayas,wet,2025-09-01,0.0,0.0,0.0,Moderate
+Acute Viral Hepatitis,Western Visayas,wet,2025-09-01,1.3802840503836793,0.0,2.0,Moderate
+Cholera,Western Visayas,wet,2025-09-01,0.0,4.0,14.25,Low
 Dengue,Western Visayas,wet,2025-09-01,5825.210538809612,980.0,2229.5,High
+Typhoid Fever,Western Visayas,wet,2025-09-01,213.41784760892,98.0,145.0,High
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,2025-01-01,125.82522573216276,220.0,260.0,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,2025-01-01,6.306520758721124,2.5,4.25,High
+Cholera,Zamboanga Peninsula,dry,2025-01-01,10.36594306821201,1.0,7.75,High
 Dengue,Zamboanga Peninsula,dry,2025-01-01,328.70186936862314,775.5,929.5,Low
+Typhoid Fever,Zamboanga Peninsula,dry,2025-01-01,134.66456418598506,117.0,136.0,Moderate
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,2025-02-01,125.1694079915273,157.0,233.0,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,2025-02-01,6.380423752545141,1.5,2.5,High
+Cholera,Zamboanga Peninsula,dry,2025-02-01,10.531183070325822,1.5,15.0,Moderate
 Dengue,Zamboanga Peninsula,dry,2025-02-01,335.0326637540193,633.0,830.5,Low
+Typhoid Fever,Zamboanga Peninsula,dry,2025-02-01,137.09713545684312,88.0,94.0,High
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,2025-03-01,124.57705648385652,204.0,240.0,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,2025-03-01,6.447174843741026,2.0,3.0,High
+Cholera,Zamboanga Peninsula,dry,2025-03-01,10.680432104493134,5.5,8.0,High
 Dengue,Zamboanga Peninsula,dry,2025-03-01,340.75080061824826,775.0,856.5,Low
+Typhoid Fever,Zamboanga Peninsula,dry,2025-03-01,139.2942966047149,90.0,121.0,High
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,2025-07-01,111.35187496332205,146.0,237.0,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,2025-07-01,5.561282641394182,1.5,2.25,High
+Cholera,Zamboanga Peninsula,wet,2025-07-01,8.78873896976987,3.5,6.25,High
 Dengue,Zamboanga Peninsula,wet,2025-07-01,2314.447343743252,1228.5,2582.25,Moderate
+Typhoid Fever,Zamboanga Peninsula,wet,2025-07-01,222.1134703443653,130.0,159.0,High
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,2025-08-01,110.7532776537124,160.0,230.0,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,2025-08-01,5.62227912178094,1.0,4.25,High
+Cholera,Zamboanga Peninsula,wet,2025-08-01,8.916908210219058,2.0,6.25,High
 Dengue,Zamboanga Peninsula,wet,2025-08-01,2354.517540832599,1242.0,2120.25,High
+Typhoid Fever,Zamboanga Peninsula,wet,2025-08-01,225.7429148697224,120.0,159.0,High
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,2025-09-01,110.1546803441028,171.5,200.5,Low
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,2025-09-01,5.683275602167697,1.0,2.25,High
+Cholera,Zamboanga Peninsula,wet,2025-09-01,9.045077450668243,1.0,6.5,High
 Dengue,Zamboanga Peninsula,wet,2025-09-01,2394.587737921946,1048.0,1390.5,High
+Typhoid Fever,Zamboanga Peninsula,wet,2025-09-01,229.37235939507949,118.0,149.75,High

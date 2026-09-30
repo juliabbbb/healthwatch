@@ -293,7 +293,10 @@ export function ForecastChart({
             ]}
 
         <ReferenceLine
-          x={monthMeta(HIST_MONTHS - 1).label}
+          x={
+            series.find((p) => p.forecast)?.label ??
+            monthMeta(HIST_MONTHS - 1).label
+          }
           stroke="var(--color-muted-foreground)"
           strokeDasharray="3 3"
           label={{

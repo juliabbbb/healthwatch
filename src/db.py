@@ -38,8 +38,9 @@ from sqlalchemy import (
     text,
 )
 
-from . import ingest
+from . import config, ingest
 from .doh_eb_ingest import REGION_LABELS, load_case_records
+from .fwbd_ingest import load_fwbd_case_records
 
 
 def _load_env():
@@ -316,6 +317,27 @@ dengue_case_records = Table(
     Index("ix_dengue_case_records_region_year_month", "region_code", "year", "month"),
 )
 
+fwbd_case_records = Table(
+    "fwbd_case_records",
+    metadata,
+    Column("id", BigInteger, primary_key=True, autoincrement=True),
+    Column("region_code", String(9), nullable=False),
+    Column("disease", String(48), nullable=False),
+    Column("province", String(160), nullable=False),
+    Column("year", Integer, nullable=False),
+    Column("month", Integer, nullable=False),
+    Column("age_group", String(16), nullable=False),
+    Column("sex", String(8), nullable=False),
+    Column("case_classification", String(16), nullable=False),
+    Column("admitted", Boolean, nullable=False),
+    Column("outcome", String(8), nullable=False),
+    Column("laboratory_result", String(24), nullable=False),
+    Column("organism", String(160), nullable=False),
+    Column("cases", Integer, nullable=False),
+    Column("deaths", Integer, nullable=False),
+    Index("ix_fwbd_case_records_region_year_month", "region_code", "year", "month"),
+)
+
 
 def _require_ssl(url):
     """Ensure the Postgres URL carries sslmode=require (Supabase requires SSL).
@@ -438,15 +460,11 @@ def build_db():
             },
         )
 
-        regional = _load_csv("regional_dengue_monthly.csv")
-        if regional is not None:
-            rows = _monthly_observation_rows(regional)
-            if rows:
-                conn.execute(monthly_observations.insert(), rows)
-
-        national = _load_csv("national_monthly.csv")
-        if national is not None:
-            rows = _monthly_observation_rows(national)
+        for name in ingest.MONTHLY_FILES:
+            monthly = _load_csv(name)
+            if monthly is None:
+                continue
+            rows = _monthly_observation_rows(monthly)
             if rows:
                 conn.execute(monthly_observations.insert(), rows)
 
@@ -518,17 +536,29 @@ def build_db():
             conn.execute(outbreak_validation.insert(), ov.to_dict(orient="records"))
 
         _seed_case_records(conn)
+        _seed_fwbd_case_records(conn)
 
-        regional_dates = (
-            regional["date"].max() if regional is not None and not regional.empty else None
+        # Read each monthly CSV exactly once: the previous comprehension called
+        # _load_csv(name) three times per file, tripling disk reads, and
+        # pd.concat([]) raised when no file loaded at all.
+        frames = [
+            df
+            for df in (_load_csv(name) for name in ingest.MONTHLY_FILES)
+            if df is not None and not df.empty
+        ]
+        all_dates = (
+            pd.concat([df["date"] for df in frames], ignore_index=True)
+            if frames
+            else pd.Series(dtype="object")
         )
+        latest_date = all_dates.max() if not all_dates.empty else None
         conn.execute(
             pipeline_runs.insert(),
             {
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "data_through": (
-                    pd.to_datetime(regional_dates).date()
-                    if regional_dates is not None
+                    pd.to_datetime(latest_date).date()
+                    if latest_date is not None
                     else None
                 ),
                 "version": "monthly-2019-2026",
@@ -589,14 +619,61 @@ def _seed_case_records(conn):
     print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records")
 
 
+def _seed_fwbd_case_records(conn):
+    """Load the four FWD line-lists (2018-2026) into fwbd_case_records.
+
+    Same on-demand consumption pattern as dengue_case_records (queried by
+    case_breakdown for /reported/{region}?disease=...), same chunked COPY so
+    every Supabase statement stays under the pooler's 2-minute timeout."""
+    recs = load_fwbd_case_records()
+    if recs is None or recs.empty:
+        print("[db] no FWD line-list rows to seed into fwbd_case_records.", file=sys.stderr)
+        return
+    recs["region_code"] = recs["region"].map(REGION_CODE_BY_NAME)
+    missing = recs["region_code"].isna().any()
+    if missing:
+        unknown = sorted(recs.loc[recs["region_code"].isna(), "region"].unique())
+        raise ValueError(f"Unmapped FWD case-record regions: {unknown}")
+    cols = [
+        "region_code", "disease", "province", "year", "month", "age_group", "sex",
+        "case_classification", "admitted", "outcome", "laboratory_result",
+        "organism", "cases", "deaths",
+    ]
+    payload = recs[cols]
+    stmt = (
+        "COPY fwbd_case_records (" + ", ".join(cols) + ") "
+        "FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '\\N', QUOTE E'\"')"
+    )
+    chunk = 50000
+    done = 0
+    for start in range(0, len(payload), chunk):
+        sub = payload.iloc[start : start + chunk]
+        buf = io.StringIO()
+        sub.to_csv(buf, index=False, header=False, sep="\t", na_rep="\\N", lineterminator="\n")
+        buf.seek(0)
+        cur = conn.connection.cursor()
+        try:
+            cur.copy_expert(stmt, buf)
+        finally:
+            cur.close()
+        done += len(sub)
+        print(f"[db] COPY {done}/{len(payload)} case records -> fwbd_case_records")
+    print(f"[db] seeded {len(payload)} FWD case records -> fwbd_case_records")
+
+
 PROVIDENCE_NOTES = (
-    "Monthly pipeline v3: real DOH dengue case line-list (2019-01..2026-08, "
-    "92 months, 18 regions incl. NIR), reported cases = sum of all final "
-    "classifications; production risk tiers on the full 2019-2026 baseline, "
-    "2025 prospective validation on the pre-2025 pool; walk-forward validation "
-    "refits every month; 2025 probes fit through 2024-12-31 as true prospective "
-    "holdouts. Reported-data demographics served on demand from "
-    "dengue_case_records via /reported/{region}."
+    "Monthly pipeline v3: real DOH case line-lists. Dengue: DOH-EB dengue "
+    "line-list 2019-01..2026-08, 92 months, 18 regions incl. NIR, reported "
+    "cases = sum of all final classifications. Food/waterborne: four separate "
+    "DOH FWD line-lists (Acute Bloody Diarrhea, Cholera, Typhoid Fever, Acute "
+    "Viral Hepatitis), 2019-01..2026-09 each on its own per-region grid "
+    "(hepatitis through 2025-09), reported cases = Suspect+Probable+Confirmed, "
+    "deaths from Outcome. Every disease runs its own production risk tiers on "
+    "the full baseline, 2025 prospective validation on the pre-2025 pool, "
+    "walk-forward validation refits every month, 2025 probes fit through "
+    "2024-12-31 as true prospective holdouts. Reported-data demographics "
+    "served on demand from dengue_case_records / fwbd_case_records via "
+    "/reported/{region}."
 )
 
 
@@ -625,36 +702,43 @@ _CASE_DIM_PICK = {
     "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
 }
 
+# The FWD line-lists carry no clinical/final split — a single Suspect/Probable/
+# Confirmed classification plus the admission outcome dimension.
+_FWD_DIM_PICK = {
+    "final_classification": "case_classification AS value",
+    "age_group": "age_group AS value",
+    "sex": "sex AS value",
+    "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
+    "outcome": "outcome AS value",
+}
 
-def case_breakdown(region_code, year, month):
-    """Per-dimension reported-case counts for one (region, year, month).
 
-    Aggregates `dengue_case_records` (the raw DOH line-list) by each
-    demographic/clinical dimension, weighting every record by its `cases` and
-    `deaths`. When `region_code` is None the query spans all regions (use for
-    National, which is never a row in the line-list itself).
-    """
+def _breakdown_from(table, dim_pick, region_code, year, month, disease=None):
     region = " AND region_code = :rc" if region_code is not None else ""
-    params = {"y": year, "m": month}
+    dis = " AND disease = :dis" if disease is not None else ""
+    params = {"y": year, "m": month, "ys": config.DATA_START_YEAR}
     if region_code is not None:
         params["rc"] = region_code
+    if disease is not None:
+        params["dis"] = disease
+    year_start = " AND year >= :ys"
 
     with engine().connect() as conn:
         total = conn.execute(
             text(
-                "SELECT COALESCE(SUM(cases), 0) AS cases,"
-                " COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
-                " FROM dengue_case_records WHERE year = :y AND month = :m" + region
+                f"SELECT COALESCE(SUM(cases), 0) AS cases,"
+                f" COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
+                f" FROM {table} WHERE year = :y AND month = :m" + year_start + region + dis
             ),
             params,
         ).fetchone()
         dims = {}
-        for name, pick in _CASE_DIM_PICK.items():
+        for name, pick in dim_pick.items():
             rows = conn.execute(
                 text(
                     "SELECT " + pick + ", SUM(cases) AS cases, SUM(deaths) AS deaths"
-                    " FROM dengue_case_records WHERE year = :y AND month = :m"
-                    + region
+                    " FROM " + table + " WHERE year = :y AND month = :m"
+                    + year_start + region + dis
                     + " GROUP BY value ORDER BY value"
                 ),
                 params,
@@ -670,6 +754,25 @@ def case_breakdown(region_code, year, month):
         "records": int(total.records),
         "dims": dims,
     }
+
+
+def case_breakdown(region_code, year, month, disease="Dengue"):
+    """Per-dimension reported-case counts for one (region, disease, year, month).
+
+    Aggregates the raw line-list matching `disease` (`dengue_case_records` or
+    `fwbd_case_records`) by each demographic/clinical dimension, weighing every
+    record by its `cases` and `deaths`. When `region_code` is None the query
+    spans all regions (use for National, which is never a row in the line-list
+    itself). The `month` bucket matches the monthly modelling grid, so the
+    dimension totals exactly equal the reported monthly series.
+    """
+    if disease == "Dengue":
+        return _breakdown_from(
+            "dengue_case_records", _CASE_DIM_PICK, region_code, year, month
+        )
+    return _breakdown_from(
+        "fwbd_case_records", _FWD_DIM_PICK, region_code, year, month, disease=disease
+    )
 
 
 def region_label_to_code(label):

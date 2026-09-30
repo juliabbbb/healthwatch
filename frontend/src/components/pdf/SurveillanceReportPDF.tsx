@@ -181,15 +181,19 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
         <PDFFooter />
       </Page>
 
-      {/* ── Main Content Page ── */}
-      <Page size="A4" style={pdfStyles.page}>
-        <PDFHeader />
-
-        {sections.comparative && options.regions.length > 0 && (
+      {/* ── Comparative Matrix Page ── */}
+      {sections.comparative && options.regions.length > 0 && (
+        <Page size="A4" style={pdfStyles.page}>
+          <PDFHeader />
           <PDFComparativeTable rows={comparativeRows} status="predicted" />
-        )}
+          <PDFFooter />
+        </Page>
+      )}
 
-        {sections.recommendations && (
+      {/* ── Recommendations Page ── */}
+      {sections.recommendations && (
+        <Page size="A4" style={pdfStyles.page}>
+          <PDFHeader />
           <View style={pdfStyles.section}>
             <Text style={pdfStyles.sectionTitle}>Recommendations</Text>
             {options.regions.map((r) => (
@@ -210,119 +214,133 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
               </View>
             ))}
           </View>
-        )}
+          <PDFFooter />
+        </Page>
+      )}
 
-        {/* ── Per-Region Pages ── */}
-        {options.regions.map((r, index) => (
-          <View key={r.profile.code} break={index > 0}>
-            <View style={[pdfStyles.section, { marginBottom: 10, marginTop: index > 0 ? 10 : 0 }]}>
-              <View style={pdfStyles.metaRow}>
-                <Text style={pdfStyles.title}>{r.profile.name}</Text>
-                <RiskBadge risk={r.risk} />
+      {/* ── Per-Region Pages ── */}
+      {options.regions.map((r) => (
+        <Page key={r.profile.code} size="A4" style={pdfStyles.page}>
+          <PDFHeader />
+          <View style={pdfStyles.section}>
+            <View style={pdfStyles.metaRow}>
+              <Text style={pdfStyles.title}>{r.profile.name}</Text>
+              <RiskBadge risk={r.risk} />
+            </View>
+
+            <Text style={pdfStyles.sectionTitle}>12-Month Forecast</Text>
+            <View style={pdfStyles.table} wrap={false}>
+              <View style={pdfStyles.tableHeader}>
+                {FORECAST_COLS.map((c) => (
+                  <Cell key={c.key} fl={c.flex} align={FORECAST_ALIGNS[c.key]}>
+                    <Text style={pdfStyles.th}>{c.label}</Text>
+                  </Cell>
+                ))}
               </View>
-
-              <Text style={pdfStyles.sectionTitle}>12-Month Forecast</Text>
-              <View style={pdfStyles.table} wrap={false}>
-                <View style={pdfStyles.tableHeader}>
-                  {FORECAST_COLS.map((c) => (
-                    <Cell key={c.key} fl={c.flex} align={FORECAST_ALIGNS[c.key]}>
-                      <Text style={pdfStyles.th}>{c.label}</Text>
+              {r.forecastWindow.map((fp, fi) => {
+                const fpValue = r.unit.includes("100k")
+                  ? ((fp.cases / r.profile.population) * 100000).toFixed(2)
+                  : Math.round(fp.cases).toLocaleString();
+                const fpLower = r.unit.includes("100k")
+                  ? ((fp.lower / r.profile.population) * 100000).toFixed(2)
+                  : Math.round(fp.lower).toLocaleString();
+                const fpUpper = r.unit.includes("100k")
+                  ? ((fp.upper / r.profile.population) * 100000).toFixed(2)
+                  : Math.round(fp.upper).toLocaleString();
+                return (
+                  <View
+                    key={fp.index}
+                    style={[
+                      pdfStyles.tableRow,
+                      fi % 2 === 1 ? { backgroundColor: COLORS.card } : {},
+                    ]}
+                  >
+                    <Cell fl={FORECAST_COLS[0]!.flex} align={FORECAST_ALIGNS.month}>
+                      <Text style={pdfStyles.td}>{formatMonthYear(fp.label)}</Text>
                     </Cell>
-                  ))}
-                </View>
-                {r.forecastWindow.map((fp, fi) => {
-                  const fpValue = r.unit.includes("100k")
-                    ? ((fp.cases / r.profile.population) * 100000).toFixed(2)
-                    : Math.round(fp.cases).toLocaleString();
-                  const fpLower = r.unit.includes("100k")
-                    ? ((fp.lower / r.profile.population) * 100000).toFixed(2)
-                    : Math.round(fp.lower).toLocaleString();
-                  const fpUpper = r.unit.includes("100k")
-                    ? ((fp.upper / r.profile.population) * 100000).toFixed(2)
-                    : Math.round(fp.upper).toLocaleString();
-                  return (
-                    <View
-                      key={fp.index}
-                      style={[
-                        pdfStyles.tableRow,
-                        fi % 2 === 1 ? { backgroundColor: COLORS.card } : {},
-                      ]}
-                    >
-                      <Cell fl={FORECAST_COLS[0]!.flex} align={FORECAST_ALIGNS.month}>
-                        <Text style={pdfStyles.td}>{formatMonthYear(fp.label)}</Text>
-                      </Cell>
-                      <Cell fl={FORECAST_COLS[1]!.flex} align={FORECAST_ALIGNS.predicted}>
-                        <Text style={pdfStyles.td}>{fpValue}</Text>
-                      </Cell>
-                      <Cell fl={FORECAST_COLS[2]!.flex} align={FORECAST_ALIGNS.lower}>
-                        <Text style={pdfStyles.td}>{fpLower}</Text>
-                      </Cell>
-                      <Cell fl={FORECAST_COLS[3]!.flex} align={FORECAST_ALIGNS.upper}>
-                        <Text style={pdfStyles.td}>{fpUpper}</Text>
-                      </Cell>
-                      <Cell fl={FORECAST_COLS[4]!.flex} align={FORECAST_ALIGNS.risk}>
-                        <RiskBadge risk={r.risk} />
-                      </Cell>
-                    </View>
-                  );
-                })}
-              </View>
+                    <Cell fl={FORECAST_COLS[1]!.flex} align={FORECAST_ALIGNS.predicted}>
+                      <Text style={pdfStyles.td}>{fpValue}</Text>
+                    </Cell>
+                    <Cell fl={FORECAST_COLS[2]!.flex} align={FORECAST_ALIGNS.lower}>
+                      <Text style={pdfStyles.td}>{fpLower}</Text>
+                    </Cell>
+                    <Cell fl={FORECAST_COLS[3]!.flex} align={FORECAST_ALIGNS.upper}>
+                      <Text style={pdfStyles.td}>{fpUpper}</Text>
+                    </Cell>
+                    <Cell fl={FORECAST_COLS[4]!.flex} align={FORECAST_ALIGNS.risk}>
+                      <RiskBadge risk={r.risk} />
+                    </Cell>
+                  </View>
+                );
+              })}
+            </View>
 
-              {sections.trajectory && r.trajectoryImage && (
-                <View style={{ marginTop: 10 }}>
-                  <Text style={pdfStyles.sectionTitle}>Trajectory — Reported vs Forecast</Text>
-                  <Image
-                    src={r.trajectoryImage}
-                    style={{ width: "100%", height: 170, borderRadius: 4 }}
-                  />
-                </View>
-              )}
-
-              {sections.seasonality && r.seasonalityImage && (
-                <View style={{ marginTop: 10 }}>
-                  <Text style={pdfStyles.sectionTitle}>Seasonality — Wet vs Dry Drivers</Text>
-                  <Image
-                    src={r.seasonalityImage}
-                    style={{ width: "100%", height: 140, borderRadius: 4 }}
-                  />
-                </View>
-              )}
-
-              <View style={{ marginTop: 10 }}>
-                <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>
-                <View style={pdfStyles.card}>
-                  <Text style={[pdfStyles.body, { fontSize: 9 }]}>
-                    Rule A (P75 exceedance):{" "}
-                    <Text
-                      style={{
-                        color: r.risk === "high" ? COLORS.high : COLORS.slate,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {r.percentile >= 75 ? "Fired — outbreak threshold breached" : "Not fired"}
-                    </Text>
+            <View style={{ marginTop: 10 }}>
+              <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>
+              <View style={pdfStyles.card}>
+                <Text style={[pdfStyles.body, { fontSize: 9 }]}>
+                  Rule A (P75 exceedance):{" "}
+                  <Text
+                    style={{
+                      color: r.risk === "high" ? COLORS.high : COLORS.slate,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {r.percentile >= 75 ? "Fired — outbreak threshold breached" : "Not fired"}
                   </Text>
-                  <Text style={[pdfStyles.body, { fontSize: 9, marginTop: 4 }]}>
-                    Rule B (trajectory acceleration):{" "}
-                    <Text
-                      style={{
-                        color: r.changePct >= 10 ? COLORS.moderate : COLORS.slate,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      {r.changePct >= 10
-                        ? `Fired — ${r.changePct >= 0 ? "+" : ""}${r.changePct}% change`
-                        : "Not fired"}
-                    </Text>
+                </Text>
+                <Text style={[pdfStyles.body, { fontSize: 9, marginTop: 4 }]}>
+                  Rule B (trajectory acceleration):{" "}
+                  <Text
+                    style={{
+                      color: r.changePct >= 10 ? COLORS.moderate : COLORS.slate,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    {r.changePct >= 10
+                      ? `Fired — ${r.changePct >= 0 ? "+" : ""}${r.changePct}% change`
+                      : "Not fired"}
                   </Text>
-                </View>
+                </Text>
               </View>
             </View>
           </View>
-        ))}
+          <PDFFooter />
+        </Page>
+      ))}
 
-        <PDFFooter />
-      </Page>
+      {/* ── Per-Region Figures Pages (charts, aspect-preserving) ── */}
+      {options.regions.map((r) => {
+        const showTrajectory = sections.trajectory && r.trajectoryImage;
+        const showSeasonality = sections.seasonality && r.seasonalityImage;
+        if (!showTrajectory && !showSeasonality) return null;
+        return (
+          <Page key={`${r.profile.code}-figures`} size="A4" style={pdfStyles.page}>
+            <PDFHeader />
+            <View style={pdfStyles.section}>
+              {showTrajectory && (
+                <View wrap={false}>
+                  <Text style={pdfStyles.sectionTitle}>Trajectory — Reported vs Forecast</Text>
+                  <Image
+                    src={r.trajectoryImage!}
+                    style={{ width: "100%", maxHeight: 170, objectFit: "contain" }}
+                  />
+                </View>
+              )}
+              {showSeasonality && (
+                <View wrap={false} style={{ marginTop: showTrajectory ? 14 : 0 }}>
+                  <Text style={pdfStyles.sectionTitle}>Seasonality — Wet vs Dry Drivers</Text>
+                  <Image
+                    src={r.seasonalityImage!}
+                    style={{ width: "100%", maxHeight: 130, objectFit: "contain" }}
+                  />
+                </View>
+              )}
+            </View>
+            <PDFFooter />
+          </Page>
+        );
+      })}
 
       {/* ── Summary Page ── */}
       <Page size="A4" style={pdfStyles.page}>

@@ -826,6 +826,7 @@ export default function ComparePage() {
               {detailedCardRegionCode && !currentMonth.forecast && (
                 <ReportedBreakdown
                   regionCode={detailedCardRegionCode}
+                  illness={illness}
                   year={currentMonth.year}
                   month={currentMonth.month}
                 />

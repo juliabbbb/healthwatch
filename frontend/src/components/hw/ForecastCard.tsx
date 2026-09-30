@@ -6,6 +6,7 @@ import {
   METRIC_META,
   assessRegion,
   classify,
+  forecastCategoryMix,
   formatMetric,
   getOutbreak,
   metricValue,
@@ -14,11 +15,14 @@ import {
   seriesFor,
   OUTBREAK_BENCHMARK_SEASON,
   OUTBREAK_TRIGGER_LABEL,
+  REGION_BY_CODE,
   upcomingSeasonForMonth,
+  type ForecastCategoryMix,
   type MetricMode,
   type Season,
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
+import { groupForIllness, illnessDisplayName } from "@/lib/illnessGroups";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
 import { StatusChip } from "./StatusChip";
 import { OutbreakBanner } from "./OutbreakBanner";
@@ -74,10 +78,10 @@ export function ForecastCard({
   onOutbreakSeasonChange: _onOutbreakSeasonChange,
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
-  const meta = monthMeta(monthIndex);
+  const meta = monthMeta(a.monthIndex);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
-  const outlookData = getOutbreak(regionCode);
+  const outlookData = getOutbreak(regionCode, illness);
   const upcoming = upcomingSeasonForMonth(meta.month);
   const upcomingInd = outlookData[upcoming];
   const [aiEnabled] = useAiAnalysisSetting();
@@ -138,6 +142,8 @@ export function ForecastCard({
   const riskCounts = riskCountsFor(
     a.forecastWindow.slice(0, 6).map((p) => classify(metricValue(p.cases, a.region, mode), a.thresholds)),
   );
+
+  const mix = forecastCategoryMix(regionCode, a.monthIndex, 6);
 
   return (
     <div
@@ -322,6 +328,14 @@ export function ForecastCard({
         <div className="mt-2">
           <RiskDistributionRow counts={riskCounts} />
         </div>
+        {mix.total > 0 && (
+          <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
+            <p className="label-caps text-[9px] text-muted-foreground tracking-wider mb-2">
+              TRANSMISSION SPLIT · NEXT 6 MONTHS
+            </p>
+            <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
+          </div>
+        )}
       </section>
 
       {/* 5. Compact AI Insight (gated) */}
@@ -331,6 +345,7 @@ export function ForecastCard({
             regionShort={a.region.short}
             regionName={a.region.name}
             monthLabel={meta.label}
+            illness={illness}
           />
         </section>
       )}
@@ -367,7 +382,24 @@ export function ForecastCard({
         </div>
       </section>
 
-      {/* 7. Pinned CTA */}
+      {/* 7. Illness Information (classification of the active illness only) */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-1.5">
+          INFORMATION
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-foreground">
+            {illnessDisplayName(illness)}
+          </span>
+          {groupForIllness(illness) && (
+            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-muted-foreground">
+              {groupForIllness(illness)}
+            </span>
+          )}
+        </div>
+      </section>
+
+      {/* 8. Pinned CTA */}
       <div
         className={cn(
           "px-5 py-3",
@@ -383,6 +415,77 @@ export function ForecastCard({
         >
           Open region analysis <ArrowUpRight className="size-3.5" />
         </Link>
+      </div>
+    </div>
+  );
+}
+
+interface CategoryMixBarProps {
+  mix: ForecastCategoryMix;
+  regionCode: string;
+  mode: MetricMode;
+  illness: string;
+}
+
+function CategoryMixBar({ mix, regionCode, mode, illness }: CategoryMixBarProps) {
+  const region = REGION_BY_CODE[regionCode]!;
+  const conv = (v: number) => formatMetric(metricValue(v, region, mode), mode);
+  const isDengue = illness === "Dengue";
+  const segs = [
+    { key: "Dengue", value: mix.dengue, color: "var(--chart-1)", show: true },
+    {
+      key: "Food-Borne",
+      value: mix.foodBorne,
+      color: "var(--chart-2)",
+      show: !isDengue,
+    },
+    {
+      key: "Water-Borne",
+      value: mix.waterBorne,
+      color: "var(--chart-3)",
+      show: !isDengue,
+    },
+  ].filter((s) => s.show && s.value > 0);
+  if (!segs.length) return null;
+  const shares = segs.map((s) => s.value);
+  const denominator = shares.reduce((a, b) => a + b, 0);
+  if (!denominator) return null;
+  const pct = (v: number) => ((v / denominator) * 100).toFixed(0);
+
+  return (
+    <div>
+      <div
+        className="flex h-2 w-full overflow-hidden rounded-full bg-secondary"
+        role="figure"
+        aria-label={`Forecast split: ${segs
+          .map((s) => `${s.key} ${pct(s.value)}%`)
+          .join(", ")}`}
+      >
+        {segs.map((s) => (
+          <div
+            key={s.key}
+            className="h-full shrink-0 transition-[width] duration-500"
+            style={{ width: `${pct(s.value)}%`, background: s.color }}
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex flex-col gap-1">
+        {segs.map((s) => (
+          <div key={s.key} className="flex items-center justify-between gap-2 text-[10px]">
+            <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+              <span
+                className="size-1.5 shrink-0 rounded-full"
+                style={{ background: s.color }}
+                aria-hidden="true"
+              />
+              <span className="truncate">{s.key}</span>
+            </span>
+            <span className="font-mono tabular-nums text-foreground">
+              {conv(s.value)}
+              <span className="ml-1 text-muted-foreground">({pct(s.value)}%)</span>
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );

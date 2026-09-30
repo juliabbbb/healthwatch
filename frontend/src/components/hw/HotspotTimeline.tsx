@@ -39,7 +39,7 @@ export function HotspotTimeline({
 
   const monthIndex = CURRENT_MONTH_INDEX;
   const a = assessRegion(regionCode, illness, monthIndex, mode);
-  const upcoming = getOutbreak(regionCode)[upcomingSeasonForMonth(monthMeta(monthIndex).month)];
+  const upcoming = getOutbreak(regionCode, illness)[upcomingSeasonForMonth(monthMeta(monthIndex).month)];
   const upcomingSeasonName = upcomingSeasonForMonth(monthMeta(monthIndex).month);
   const meta = RISK_META;
 

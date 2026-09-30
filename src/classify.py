@@ -51,13 +51,7 @@ def season_of(date, region=None):
 
 
 def load_history(end=HISTORY_END):
-    national = pd.read_csv(
-        ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
-    )
-    regional = pd.read_csv(
-        ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]
-    )
-    df = pd.concat([national, regional], ignore_index=True)
+    df = ingest.load_monthly_series()
     return df[df["date"] <= end].copy()
 
 

@@ -34,7 +34,7 @@ database (ERD): raw CSV -> monthly aggregations -> SQLAlchemy tables -> API.
 
 import pandas as pd
 
-from . import ingest
+from . import config, ingest
 
 DOH_FILE = "DOH-Epi-Dengue-2019-2026-line-list.csv"
 DISEASE = "Dengue"
@@ -117,6 +117,9 @@ def load_regional_raw(data_dir=None):
 
     df["date"] = _epi_week_month(df["Year"], df[_WEEK_COL])
     df = df[df["date"] <= DATA_END].copy()
+    # Lower bound from src/config.py: computation is restricted to 2019-2026;
+    # the dengue file itself starts in 2019, so this is a defensive no-op.
+    df = config.at_or_after_data_start(df)
 
     df["cases"] = pd.to_numeric(df[_CASE_COL], errors="coerce").clip(lower=0)
     df["deaths"] = pd.to_numeric(df[_DEATH_COL], errors="coerce").clip(lower=0)

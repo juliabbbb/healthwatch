@@ -16,10 +16,25 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from . import db
+from . import config, db
 
-SUPPORTED_DISEASES = ["Dengue"]
+SUPPORTED_DISEASES = [
+    "Dengue",
+    "Acute Bloody Diarrhea",
+    "Cholera",
+    "Typhoid Fever",
+    "Acute Viral Hepatitis",
+]
 DISEASE_DEFAULT = "Dengue"
+
+# Presentation grouping only — the pipeline runs each disease independently.
+DISEASE_GROUPS = {
+    "Dengue": "Dengue",
+    "Acute Bloody Diarrhea": "Food and Waterborne Diseases",
+    "Cholera": "Food and Waterborne Diseases",
+    "Typhoid Fever": "Food and Waterborne Diseases",
+    "Acute Viral Hepatitis": "Food and Waterborne Diseases",
+}
 PRIMARY_WINDOW = "last_12m"
 
 WET_MONTHS = (6, 7, 8, 9, 10, 11)
@@ -98,7 +113,9 @@ def _load_repo_tables():
     DATABASE_URL and on the schema being built (auto-created via
     `db.ensure_tables()` at startup)."""
     obs = db.read_table("monthly_observations")
-    obs = _dedupe_latest(obs, ["region_code", "year", "month"])
+    obs = obs[obs["year"] >= config.DATA_START_YEAR]
+    obs = config.at_or_before_data_end(obs)
+    obs = _dedupe_latest(obs, ["region_code", "year", "month", "disease"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
     _REGIONAL = obs[obs["region_code"] != db.NATIONAL_CODE]
     _normalize_dates(_NATIONAL, "date")
@@ -106,23 +123,23 @@ def _load_repo_tables():
 
     _FORECASTS = db.read_table("forecasts")
     _normalize_dates(_FORECASTS, "target_date")
-    _FORECASTS = _dedupe_latest(_FORECASTS, ["region_code", "target_date"])
+    _FORECASTS = _dedupe_latest(_FORECASTS, ["region_code", "target_date", "disease"])
 
     _CLASSIFICATION = db.read_table("risk_classifications")
     _normalize_dates(_CLASSIFICATION, "date")
-    _CLASSIFICATION = _dedupe_latest(_CLASSIFICATION, ["region_code", "date"])
+    _CLASSIFICATION = _dedupe_latest(_CLASSIFICATION, ["region_code", "date", "disease"])
 
     _THRESHOLDS = db.read_table("risk_thresholds")
-    _THRESHOLDS = _dedupe_latest(_THRESHOLDS, ["region_code", "month"])
+    _THRESHOLDS = _dedupe_latest(_THRESHOLDS, ["region_code", "month", "disease"])
 
     _METRICS = db.read_table("validation_metrics")
-    _METRICS = _dedupe_latest(_METRICS, ["region_code"])
+    _METRICS = _dedupe_latest(_METRICS, ["region_code", "disease"])
 
     _OUTBREAKS = db.read_table("outbreak_signals")
-    _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season"])
+    _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season", "disease"])
 
     ov = db.read_table("outbreak_validation")
-    ov = _dedupe_latest(ov, ["region_code", "season"])
+    ov = _dedupe_latest(ov, ["region_code", "season", "disease"])
     _OUTBREAK_VALIDATION = ov.assign(region=ov["region_code"].map(_label))
 
     esc = db.read_table("risk_escalation")
@@ -216,11 +233,23 @@ def _check_disease(disease):
         )
 
 
-def _history(region_code):
+def _history(region_code, disease=None):
     source = _NATIONAL if region_code == db.NATIONAL_CODE else _REGIONAL
     out = source[source["region_code"] == region_code].sort_values("date")
+    # Region validity is decided before the disease filter, so a real region with
+    # no rows for a supported disease is never mislabelled as an unknown region.
     if out.empty:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region_code}'")
+    if disease is not None:
+        out = out[out["disease"] == disease]
+        if out.empty:
+            raise HTTPException(
+                status_code=404,
+                detail=(
+                    f"No '{disease}' data for region '{region_code}'. "
+                    f"Supported: {SUPPORTED_DISEASES}"
+                ),
+            )
     return out
 
 
@@ -275,10 +304,10 @@ _PLAIN_LANGUAGE_RULES = (
     "rhythm'\n"
     "- forecast accuracy/confidence -> 'this outlook is usually close to "
     "what really happens' or 'this outlook is less certain than usual'\n"
-    "- risk tier -> 'the alert level for dengue is high/low'\n"
+    "- risk tier -> 'the alert level for {disease} is high/low'\n"
     "SEASON WORDING RULE (hard constraint, applies to every response): never "
     "blame weather, rainfall, the monsoon, typhoons, storms, or 'the rainy "
-    "season' for dengue levels. The figures are case counts compared with "
+    "season' for {disease} levels. The figures are case counts compared with "
     "historical baselines; season labels in the figures are probe windows, "
     "not weather claims. Talk about which calendar months the numbers rise "
     "and fall in, and which season label applies, without ever saying weather "
@@ -292,14 +321,14 @@ _PLAIN_LANGUAGE_RULES = (
     "FORMAT RULES: plain sentences only. No markdown, no bullet points, no "
     "headings, no asterisks, no quotes around terms, no parenthesised field "
     "names. Do not mention HEALTHWATCH systems, pipelines, models, or where "
-    "the numbers came from — just talk about dengue in the region.\n"
+    "the numbers came from — just talk about {disease} in the region.\n"
     "TRUTH RULES: use ONLY the numbers provided below. Never invent, round-"
     "up, or recompute any figure. If something is missing, simply do not "
     "mention it."
 )
 
 _ANALYSIS_SYSTEM_PROMPT = (
-    "You write short plain-language explanations of dengue numbers for "
+    "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
     + "\nTASK: using the JSON figures, write the whole explanation as EXACTLY "
@@ -309,7 +338,7 @@ _ANALYSIS_SYSTEM_PROMPT = (
     "Current Situation:\n"
     "Seasonal Outlook:\n"
     "Recommended Actions:\n"
-    "Cover in Current Situation: how many dengue cases are happening now, in "
+    "Cover in Current Situation: how many {disease} cases are happening now, in "
     "everyday terms, and the current alert level in plain words. In Seasonal "
     "Outlook: what is expected in the coming months, including the honest "
     "range if one is given, with a caution note only if the outlook is flagged "
@@ -322,7 +351,7 @@ def _build_grounding(db_region, disease, window):
     """Assembles the structured payload the LLM narrates, from the same
     DataFrames /series, /risk-classification, /thresholds and /metrics read.
     Raises 404 when any required pipeline output is missing."""
-    hist = _history(db_region)
+    hist = _history(db_region, disease)
     last_obs = hist.iloc[-1]
 
     fcst = _FORECASTS[
@@ -471,13 +500,14 @@ def _safe_season_narrative(grounding):
     """Strictly-weather-free fallback narration built from the same grounding
     payload, used only when the model violates the SEASON WORDING RULE."""
     region = grounding.get("region", "this region")
+    disease = grounding.get("disease", "dengue")
     fore = grounding.get("forecast", grounding.get("next_month_forecast"))
     if fore and fore.get("yhat") is not None:
         v = int(round(float(fore["yhat"])))
         month = fore.get("month", fore.get("target_date", "")) or ""
         if isinstance(month, str) and len(month) == 10:
             month = _month_label(pd.Timestamp(month).month)
-        lead = f"In {region}, around {v:,} dengue cases are expected"
+        lead = f"In {region}, around {v:,} {disease} cases are expected"
         if month:
             lead += f" in {month}"
         lead += "."
@@ -486,7 +516,7 @@ def _safe_season_narrative(grounding):
         if seas:
             lead = f"Across {region}, case counts move in a steady yearly rhythm"
         else:
-            lead = f"Dengue numbers in {region} are tracked against historical levels."
+            lead = f"{disease} numbers in {region} are tracked against historical levels."
     climate = grounding.get("climate", {}).get("climate_type", "")
     if "Type II" in climate:
         climate_suffix = (
@@ -512,7 +542,8 @@ def _safe_season_narrative(grounding):
 # baseline.
 _METHOD_CONSTANTS = {
     3.0, 6.0, 10.0, 12.0, 18.0, 24.0, 36.0, 48.0, 50.0, 75.0, 80.0, 95.0,
-    100.0, 0.5, 2019.0, 2020.0, 2021.0, 2022.0, 2023.0, 2024.0, 2025.0, 2026.0,
+    100.0, 0.5, 2017.0, 2018.0, 2019.0, 2020.0, 2021.0, 2022.0, 2023.0,
+    2024.0, 2025.0, 2026.0, 2027.0,
 }
 
 
@@ -578,7 +609,10 @@ def _safe_element_narrative(g):
     if g.get("month"):
         parts.append(f"For {g['month']}.")
     text = " ".join(parts).strip()
-    return text or "This element explains a dengue surveillance dashboard reading."
+    return text or (
+        f"This element explains a {g.get('illness', 'dengue')} surveillance "
+        "dashboard reading."
+    )
 
 
 def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn):
@@ -598,14 +632,14 @@ def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn):
     return narrative, model, used_safe_fallback, weather, numbers
 
 
-def _seasonality_grounding(db_region):
+def _seasonality_grounding(db_region, disease):
     """Deterministic server-side port of the Seasonality page's decomposition
     (frontend data.ts `decompose()`/`acf()`): centred ±6-month moving-average
     trend, month-of-year seasonal index, residual noise and autocorrelation.
     Computed from the already-loaded history tables only — the LLM narrates
     these numbers, it never derives its own."""
 
-    hist = _history(db_region)
+    hist = _history(db_region, disease)
     dates = list(hist["date"])
     values = [float(c) for c in hist["cases"]]
     n = len(values)
@@ -680,11 +714,11 @@ def _seasonality_grounding(db_region):
 # Objective 1/5 interpretability for the Seasonality page: same rules as the
 # region forecast narration — pipeline numbers in, prose out, nothing invented.
 _SEASONALITY_SYSTEM_PROMPT = (
-    "You write short plain-language explanations of dengue numbers for "
+    "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
     + "\nTASK: using the JSON figures, write 2-3 sentences about the yearly "
-    "dengue pattern the user is looking at. Name months instead of month "
+    "{disease} pattern the user is looking at. Name months instead of month "
     "numbers whenever a number appears in the figures."
 )
 
@@ -695,7 +729,7 @@ _SEASONALITY_FOCUS = {
     ),
     "trend": (
         "Focus on the long-term direction across the years shown — whether "
-        "dengue is rising, falling, or steady — and how big that change is."
+        "{disease} is rising, falling, or steady — and how big that change is."
     ),
     "seasonal": (
         "Focus on the yearly rhythm: which months cases usually rise to a "
@@ -775,8 +809,8 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
         try:
             from groq import Groq
 
-            GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-            fallback_groq_models = ["llama-3.1-70b-versatile", "llama-3.1-8b-instant", "openai/gpt-oss-20b"]
+            GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")  # production-tier on free/dev keys
+            fallback_groq_models = ["openai/gpt-oss-20b"]  # Llama 3.1/3.3 IDs moved to Enterprise tier
             _gpt_oss = {"openai/gpt-oss-120b", "openai/gpt-oss-20b"}
 
             client = Groq(api_key=groq_key, timeout=25.0, max_retries=0)
@@ -908,7 +942,7 @@ async def _rate_limit_handler(request: Request, exc: RateLimitExceeded):
 def root():
     return {
         "system": "HEALTHWATCH",
-        "description": "Seasonal illness outbreak forecasting and hotspot classification (Dengue pilot)",
+        "description": "Seasonal illness outbreak forecasting and hotspot classification",
         "objectives_endpoints": {
             "objective_1_patterns": "/series/{region} and /analysis/seasonality",
             "objective_2_forecast": "/series/{region}, /forecast/{disease}, /outbreak and /outbreak/{region}",
@@ -923,6 +957,7 @@ def root():
             "prospective_validation_2025": "/validation/outbreak",
         },
         "supported_diseases": SUPPORTED_DISEASES,
+        "disease_groups": DISEASE_GROUPS,
     }
 
 
@@ -950,7 +985,9 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
         code = region["code"]
         label = region["short"]
         # --- series ---
-        hist = _REGIONAL[_REGIONAL["region_code"] == code].sort_values("date")
+        hist = _REGIONAL[
+            (_REGIONAL["region_code"] == code) & (_REGIONAL["disease"] == disease)
+        ].sort_values("date")
         points = [
             _month_point(i, dt, cases, False)
             for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
@@ -1051,7 +1088,7 @@ def series(
     db_region = _resolve_region(region)
     if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    hist = _history(db_region)
+    hist = _history(db_region, disease)
     points = [
         _month_point(i, dt, cases, False)
         for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
@@ -1075,7 +1112,10 @@ def series(
 
 
 # Canonical presentation orders for the reported-data breakdown dimensions.
-_REPORT_ORDER = {
+# Dengue and the FWD diseases carry different raw levels (FWD uses the
+# 0-4/5-14/... age buckets and gains an outcome dimension but loses the
+# clinical/final split).
+_REPORT_ORDER_DENGUE = {
     "final_classification": ["SUSPECT", "PROBABLE", "CONFIRMED"],
     "age_group": ["Below 5", "5 to 14", "15 to 24", "25 to 64", "65 and above", "Unspecified"],
     "sex": ["F", "M"],
@@ -1088,30 +1128,51 @@ _REPORT_ORDER = {
     ],
     "admitted": ["Admitted", "Not admitted"],
 }
+_REPORT_ORDER_FWBD = {
+    "final_classification": ["Suspect", "Probable", "Confirmed"],
+    "age_group": ["0-4", "5-14", "15-24", "25-64", "65+", "Unknown"],
+    "sex": ["F", "M"],
+    "admitted": ["Admitted", "Not admitted"],
+    "outcome": ["Alive", "Died"],
+}
+_REPORT_ORDER = {d: dict(_REPORT_ORDER_DENGUE) for d in SUPPORTED_DISEASES}
+for _d in DISEASE_GROUPS:
+    if DISEASE_GROUPS[_d] != "Dengue":
+        _REPORT_ORDER[_d] = dict(_REPORT_ORDER_FWBD)
 _SEX_LABELS = {"F": "Female", "M": "Male"}
 
 
 @app.get("/reported/{region}", tags=["objective_3_api"])
 def reported_breakdown(
     region: str,
-    year: int = Query(ge=2019, le=2026),
+    year: int = Query(ge=config.DATA_START_YEAR, le=config.DATA_END_YEAR),
     month: int = Query(ge=1, le=12),
     disease: str = Query(default=DISEASE_DEFAULT),
 ):
     """Demographic/clinical breakdown of reported cases for one region-month.
 
-    Aggregated from the raw DOH dengue case line-list (`dengue_case_records`,
-    grouped in Postgres on demand, not part of the startup hot-load). Every
-    record is weighted by its case/death count; the `month` bucket is the same
-    Thursday epi-week convention as the monthly modelling grid, so the
-    dimension totals exactly equal the reported monthly series. Accepts
-    region names or codes; "National" spans all 18 regions.
+    Aggregated from the raw DOH line-list matching `disease`
+    (`dengue_case_records` or `fwbd_case_records`, grouped in Postgres on
+    demand, not part of the startup hot-load). Every record is weighted by its
+    case/death count; the `month` bucket matches the monthly modelling grid,
+    so the dimension totals exactly equal the reported monthly series.
+    Accepts region names or codes; "National" spans all 18 regions.
     """
     _check_disease(disease)
+    if (year * 100 + month) > (config.DATA_END_YEAR * 100 + config.DATA_END_MONTH):
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"Reported data ends at {config.DATA_END_YEAR}-{config.DATA_END_MONTH:02d} "
+                f"(the current month, {year}-{month:02d}, is still in progress)."
+            ),
+        )
     code = _resolve_region(region)
     if code is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
-    bd = db.case_breakdown(None if code == db.NATIONAL_CODE else code, year, month)
+    bd = db.case_breakdown(
+        None if code == db.NATIONAL_CODE else code, year, month, disease=disease
+    )
     if bd["records"] == 0:
         raise HTTPException(
             status_code=404,
@@ -1121,7 +1182,7 @@ def reported_breakdown(
     for dim, rows in bd["dims"].items():
         by_value = {r["value"]: r for r in rows}
         ordered = []
-        for value in _REPORT_ORDER[dim]:
+        for value in _REPORT_ORDER[disease][dim]:
             r = by_value.get(value)
             if r is None:
                 continue
@@ -1389,7 +1450,7 @@ def _ai_insight_grounding(db_region, disease):
     the latest reported month, the next-month forecast (with range), the
     next-month risk tier, and the upcoming season's outbreak probe. The LLM
     narrates these — it never derives numbers of its own."""
-    hist = _history(db_region)
+    hist = _history(db_region, disease)
     last_obs = hist.iloc[-1]
 
     fcst = _FORECASTS[
@@ -1461,7 +1522,7 @@ def _ai_insight_grounding(db_region, disease):
 
 _AI_INSIGHT_SYSTEM_PROMPT = (
     "You write ONE short plain-language sentence for a Philippine regional "
-    "dengue map panel. Base it strictly on the JSON figures.\n"
+    "{disease} map panel. Base it strictly on the JSON figures.\n"
     + _PLAIN_LANGUAGE_RULES
     + "\nTASK: in ONE sentence of at most 20 words, say the single most "
     "actionable outlook for this region right now: roughly how cases are "
@@ -1492,7 +1553,12 @@ def ai_insight(
         "may use:\n" + json.dumps(grounding)
     )
     narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(_AI_INSIGHT_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+        _guarded_narrative(
+            _AI_INSIGHT_SYSTEM_PROMPT.format(disease=disease),
+            user_prompt,
+            grounding,
+            _safe_season_narrative,
+        )
     )
 
     return {
@@ -1530,16 +1596,21 @@ def analysis_seasonality(
             status_code=404,
             detail=f"Unknown component '{component}'. Allowed: {list(allowed_components)}",
         )
-    grounding = _seasonality_grounding(db_region)
+    grounding = _seasonality_grounding(db_region, disease)
     grounding["disease"] = disease
 
     user_prompt = (
         f"The user is looking at the '{component}' chart for this region. "
-        f"{_SEASONALITY_FOCUS[component]} Figures you may use:\n"
+        f"{_SEASONALITY_FOCUS[component].format(disease=disease)} Figures you may use:\n"
         + json.dumps(grounding)
     )
     narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(_SEASONALITY_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+        _guarded_narrative(
+            _SEASONALITY_SYSTEM_PROMPT.format(disease=disease),
+            user_prompt,
+            grounding,
+            _safe_season_narrative,
+        )
     )
 
     return {
@@ -1575,11 +1646,16 @@ def analysis(
     grounding = _build_grounding(db_region, disease, window)
 
     user_prompt = (
-        "Explain the current dengue situation for this region. Figures you "
+        f"Explain the current {disease} situation for this region. Figures you "
         "may use:\n" + json.dumps(grounding)
     )
     narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(_ANALYSIS_SYSTEM_PROMPT, user_prompt, grounding, _safe_season_narrative)
+        _guarded_narrative(
+            _ANALYSIS_SYSTEM_PROMPT.format(disease=disease),
+            user_prompt,
+            grounding,
+            _safe_season_narrative,
+        )
     )
 
     return {
