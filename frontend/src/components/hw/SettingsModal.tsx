@@ -79,9 +79,10 @@ export function SettingsModal({
               <Sparkles className="size-4 text-primary" /> AI-assisted analysis
             </p>
             <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">
-              When enabled, right-clicking Seasonality charts and regional forecast panels sends
-              calculated surveillance metrics to the configured AI model for plain-language outbreak
-              interpretation. Off by default.
+              Adds a written interpretation to charts, forecast panels and data tables across
+              the dashboard. Turn this off to show only the model's own figures. Explanations
+              are pre-generated from the same pipeline numbers you see on screen, so enabling
+              this sends nothing to an external service at page load.
             </p>
           </div>
           <ToggleSwitch checked={aiEnabled} onChange={setAiEnabled} label="AI-assisted analysis" />

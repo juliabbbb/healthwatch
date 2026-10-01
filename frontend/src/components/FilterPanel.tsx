@@ -39,7 +39,7 @@ export function FilterPanel({
   return (
     <div className="rounded-lg border border-border bg-card/60 px-6 py-5">
       {/* Region (full-width top row) */}
-      <div className="min-w-0">
+      <div className="min-w-0" data-explain="region-select">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
             {!regionDropdown && (
@@ -125,7 +125,7 @@ export function FilterPanel({
 
       {/* Illness + Period */}
       <div className="mt-4 md:mt-5 flex flex-col md:flex-row md:items-start gap-4 md:gap-6 border-t border-border/60 pt-4 md:pt-5">
-        <div className="min-w-0 md:flex-1">
+        <div className="min-w-0 md:flex-1" data-explain="illness-filter">
           <span className="text-sm font-medium text-foreground mb-2 block">Illness</span>
           <div className="flex flex-wrap gap-1.5">
             <Chip active={selectedIllness === "all"} onClick={() => onIllnessChange("all")}>

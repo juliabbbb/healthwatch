@@ -12,6 +12,7 @@ import {
 import { formatMonthYear } from "@/utils/formatDate";
 import { cn } from "@/lib/utils";
 import { LiveClock } from "./LiveClock";
+import { AiNarrativeLine } from "./AiNarrative";
 
 /**
  * National snapshot readout containing headline stats, unified hotspot legend,
@@ -89,7 +90,7 @@ export function NationalSnapshot({
             {formatMonthYear(monthLabel)}
           </span>
           <span
-            className="rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wider"
+            className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider"
             style={{
               color: isForecast ? "var(--risk-moderate)" : "var(--muted-foreground)",
               backgroundColor: isForecast
@@ -107,7 +108,7 @@ export function NationalSnapshot({
       <div className="grid grid-cols-3 gap-3">
         {/* Card A: National Incidence */}
         <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
+          <p className="label-caps leading-tight">
             National Incidence
           </p>
           <div className="mt-2">
@@ -123,7 +124,7 @@ export function NationalSnapshot({
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
         <div className="relative rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <div className="flex items-start justify-between gap-1 min-w-0">
-            <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
+            <p className="label-caps leading-tight">
               Risk Distribution
             </p>
             <div
@@ -196,7 +197,7 @@ export function NationalSnapshot({
 
         {/* Card C: Dominant Illness */}
         <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps text-[9px] sm:text-[10px] leading-tight">
+          <p className="label-caps leading-tight">
             Dominant Illness
           </p>
           <div className="mt-2">
@@ -209,6 +210,17 @@ export function NationalSnapshot({
           </div>
         </div>
       </div>
+
+      {/* National picture in plain words: overall load, heaviest regions,
+          direction. Pre-generated; renders nothing without a corpus row. */}
+      {onIllnessChange && (
+        <AiNarrativeLine
+          regionShort={null}
+          illness={illness === "all" ? "Dengue" : illness}
+          surface="national"
+          className="mt-3 border-t border-border/70 pt-3"
+        />
+      )}
 
       {/* 3. Controls Section: Structured Clean Rows */}
       <div className="flex flex-col gap-2.5 border-t border-border/70 pt-3">

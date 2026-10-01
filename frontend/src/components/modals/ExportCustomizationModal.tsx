@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { formatMonthYear } from "@/utils/formatDate";
 import type { ExportOptions } from "@/components/pdf/SurveillanceReportPDF";
+import { loadNarrative } from "@/components/hw/AiNarrative";
 import {
   renderSeasonalitySVG,
   renderTrajectorySVG,
@@ -174,6 +175,7 @@ export function ExportCustomizationModal({
 
       let trajectoryImage: string | null = null;
       let seasonalityImage: string | null = null;
+      let narrative: string | null = null;
 
       const series = seriesFor(code, illness);
       const windowSlice = series.slice(Math.max(0, exportMonthIndex - 17), exportMonthIndex + 1);
@@ -198,8 +200,13 @@ export function ExportCustomizationModal({
       const riskColor =
         a.risk === "high" ? "#b82d2a" : a.risk === "moderate" ? "#a06315" : "#007a54";
 
-      trajectoryImage = await svgToPngDataUri(renderTrajectorySVG(trajPoints, riskColor));
-      seasonalityImage = await svgToPngDataUri(renderSeasonalitySVG(seasonality));
+      // Both rasterizations and the corpus read run concurrently: they are
+      // independent and each one is a round trip the export pays for.
+      [trajectoryImage, seasonalityImage, narrative] = await Promise.all([
+        svgToPngDataUri(renderTrajectorySVG(trajPoints, riskColor)),
+        svgToPngDataUri(renderSeasonalitySVG(seasonality)),
+        loadNarrative(region.short, illness, "report_summary"),
+      ]);
       setProgress(Math.round(((i + 1) / codes.length) * 50));
 
       regions.push({
@@ -221,6 +228,7 @@ export function ExportCustomizationModal({
         season: monthMeta(exportMonthIndex).season,
         driver: a.dominantIllness.driver,
         forecastWindow: a.forecastWindow,
+        narrative,
       });
     }
 

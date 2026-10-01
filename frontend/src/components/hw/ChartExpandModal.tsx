@@ -228,7 +228,7 @@ export function ChartExpandModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         overlayClassName="z-[600] bg-black/50 backdrop-blur-sm"
-        className="z-[600] glass-panel max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border-border/80 p-6 shadow-2xl"
+        className="z-[600] glass-panel max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl border-border/80 p-4 sm:p-6 shadow-2xl"
       >
         <DialogHeader className="space-y-1 pr-6">
           <div className="flex flex-wrap items-center justify-between gap-3">

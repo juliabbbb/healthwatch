@@ -62,6 +62,11 @@ export interface SeasonalityPdfDocumentProps {
     riskLevel: RiskLevel;
     recommendations: string[];
   };
+  /**
+   * Pre-generated narrative for the report's summary block. Reuses the same
+   * corpus rows the dashboard shows; absent when the corpus has no row.
+   */
+  narrative?: string | null;
 }
 
 function RiskBadgeInline({ level }: { level: RiskLevel }) {
@@ -125,6 +130,7 @@ export function SeasonalityPdfDocument({
   outbreak,
   forecast,
   intervention,
+  narrative,
 }: SeasonalityPdfDocumentProps) {
   return (
     <Document title={`HEALTHWATCH Seasonal Pattern Analysis Report — ${regionName}`}>
@@ -140,6 +146,15 @@ export function SeasonalityPdfDocument({
             `Forecast Period: ${forecastPeriod.start} – ${forecastPeriod.end}`,
           ]}
         />
+
+        {narrative && (
+          <View style={[pdfStyles.card, { marginTop: 8 }]}>
+            <Text style={[pdfStyles.body, { fontSize: 9.5 }]}>{narrative}</Text>
+            <Text style={[pdfStyles.metaLabel, { marginTop: 4 }]}>
+              AI-generated from this report&apos;s figures — not a separate forecast.
+            </Text>
+          </View>
+        )}
 
         {/* ---- Seasonal Decomposition Summary Table ---- */}
         <Text style={pdfStyles.sectionTitle}>Seasonal Decomposition Summary</Text>

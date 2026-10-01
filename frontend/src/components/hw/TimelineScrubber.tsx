@@ -54,7 +54,7 @@ export function TimelineScrubber({
 
   const modeBadge = (
     <span
-      className="rounded px-1 py-px text-[9px] font-semibold uppercase tracking-wider shrink-0 font-mono"
+      className="rounded px-1 py-px text-[10px] font-semibold uppercase tracking-wider shrink-0 font-mono"
       style={{
         color: meta.forecast ? "var(--risk-moderate)" : "var(--muted-foreground)",
         backgroundColor: meta.forecast
@@ -79,21 +79,21 @@ export function TimelineScrubber({
           <button
             onClick={() => onChange(Math.max(0, monthIndex - 1))}
             aria-label="Previous month"
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95"
+            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95 touch-manipulation"
           >
             <SkipBack className="size-3.5" />
           </button>
           <button
             onClick={() => onPlayingChange(!playing)}
             aria-label={playing ? "Pause animation" : "Play animation"}
-            className="rounded-full bg-primary p-1.5 text-primary-foreground shadow-xs transition-transform hover:scale-105 active:scale-95"
+            className="rounded-full bg-primary p-2.5 text-primary-foreground shadow-xs transition-transform hover:scale-105 active:scale-95 touch-manipulation"
           >
             {playing ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
           </button>
           <button
             onClick={() => onChange(Math.min(TOTAL_MONTHS - 1, monthIndex + 1))}
             aria-label="Next month"
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95"
+            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95 touch-manipulation"
           >
             <SkipForward className="size-3.5" />
           </button>
@@ -137,7 +137,7 @@ export function TimelineScrubber({
               onClick={() => onChange(HIST_MONTHS - 1)}
               title="Jump to latest reported month"
               aria-label="Jump to latest reported month"
-              className="rounded-md border border-border p-1 text-muted-foreground transition-colors hover:text-foreground"
+              className="rounded-md border border-border p-2 text-muted-foreground transition-colors hover:text-foreground touch-manipulation"
             >
               <History className="size-3.5" />
             </button>
@@ -147,7 +147,7 @@ export function TimelineScrubber({
             aria-expanded={expanded}
             aria-label={expanded ? "Collapse timeline controls" : "Expand timeline controls"}
             title={expanded ? "Collapse controls" : "Expand controls"}
-            className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground touch-manipulation"
           >
             {expanded ? (
               <ChevronsDownUp className="size-3.5" />
@@ -159,7 +159,7 @@ export function TimelineScrubber({
       </div>
 
       {expanded && (
-        <div className="mt-1.5 flex justify-between items-baseline text-[9px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
+        <div className="mt-1.5 flex justify-between items-baseline text-[10px] sm:text-[10px] text-muted-foreground border-t border-border/40 pt-1">
           <span>{formatMonthYear(monthMeta(0).label)}</span>
           <span className="hidden sm:inline">
             Reported → Forecast ({monthMeta(0).year}–{monthMeta(TOTAL_MONTHS - 1).year})

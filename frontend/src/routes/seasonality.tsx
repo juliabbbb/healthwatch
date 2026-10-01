@@ -35,6 +35,7 @@ import { AIAnalysisPanel } from "@/components/hw/AIAnalysisPanel";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { AiNarrativeLine, loadNarrative } from "@/components/hw/AiNarrative";
 import { useChartType } from "@/hooks/useChartType";
 import {
   CURRENT_MONTH_INDEX,
@@ -127,7 +128,11 @@ function getSeasonalSummary(
   const strengthDescriptor =
     strengthPct >= 60 ? "a pronounced" : strengthPct >= 40 ? "a distinct" : "a moderate";
 
-  return `${regionName} ${illnessLabel} cases follow ${strengthDescriptor} seasonal pattern, typically rising with the onset of the wet season in June and reaching peak transmission in ${peakFull}. Cases subsequently taper off to lower baseline levels during the dry months from December to May. Historical surveillance indicates that approximately ${strengthPct}% of the month-to-month case variation is driven by this recurring annual cycle rather than random noise.`;
+  // Wording deliberately avoids "wet/dry season" and any rainfall causal claim:
+  // the pipeline compares counts against historical percentiles, and the SEASON
+  // WORDING RULE (api._SAFE_SEASON_CLAUSE) forbids attributing case levels to
+  // weather. Say what the numbers repeat, not why.
+  return `${regionName} ${illnessLabel} cases follow ${strengthDescriptor} seasonal pattern, typically rising from around June and reaching peak transmission in ${peakFull}. Cases subsequently taper off to lower baseline levels from December to May. Historical surveillance indicates that approximately ${strengthPct}% of the month-to-month case variation is driven by this recurring annual cycle rather than random noise.`;
 }
 
 export const Route = createFileRoute("/seasonality")({
@@ -207,7 +212,7 @@ function SeasonalityPage() {
   // Active decomposition chart tab
   const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">("observed");
 
-  // Right-click or CTA button tap → AI explanation workflow. Opt-in: when the setting is off,
+  // Right-click or CTA button tap -> AI explanation workflow. When the setting is off,
   // choosing an AI action opens Settings instead and makes zero requests.
   const [aiEnabled] = useAiAnalysisSetting();
   const [menu, setMenu] = useState<ContextMenuAnchor | null>(null);
@@ -420,6 +425,14 @@ function SeasonalityPage() {
       // Intervention recommendations
       const recs = recommendations(assessment);
 
+      // The summary sentence is the corpus row for this region's headline
+      // figure, so the exported report reads the same as the screen.
+      const narrative = await loadNarrative(
+        region.short,
+        illness,
+        "report_summary",
+      );
+
       const [{ pdf }, { SeasonalityPdfDocument }] = await Promise.all([
         import("@react-pdf/renderer"),
         import("@/components/pdf/SeasonalityPdfDocument"),
@@ -481,6 +494,7 @@ function SeasonalityPage() {
             riskLevel: assessment.risk,
             recommendations: recs.map((r) => `${r.title}. ${r.detail}`),
           }}
+          narrative={narrative}
         />,
       ).toBlob();
 
@@ -784,6 +798,7 @@ function SeasonalityPage() {
                     onChange={(e) => setHorizon(Number(e.target.value))}
                     className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
                     aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
+                    data-explain="time-scrubber"
                   />
 
                   {/* Quick Jump Buttons covering both Past and Future */}
@@ -935,9 +950,22 @@ function SeasonalityPage() {
                 <p className="label-caps text-[10px] text-primary font-semibold">
                   Regional Seasonal Summary · {region.name}
                 </p>
-                <p className="text-sm leading-relaxed text-foreground/90 font-normal">
-                  {getSeasonalSummary(region.name, stats.peakMonth, stats.strength, illness)}
-                </p>
+                {/* Generated reading of the decomposition. The deterministic
+                    sentence is passed as `fallback`, so it renders only when
+                    there is no corpus row (or AI is switched off) instead of
+                    printing both. */}
+                <AiNarrativeLine
+                  regionShort={code}
+                  illness={illness}
+                  surface="chart_takeaway"
+                  component="seasonal"
+                  className="text-sm leading-relaxed text-foreground/90 font-normal"
+                  fallback={
+                    <span className="text-sm leading-relaxed text-foreground/90 font-normal">
+                      {getSeasonalSummary(region.name, stats.peakMonth, stats.strength, illness)}
+                    </span>
+                  }
+                />
               </div>
             </div>
           </div>
@@ -986,9 +1014,20 @@ function SeasonalityPage() {
                 aria-hidden="true"
               />
               <span className="font-semibold text-foreground/90">Takeaway:</span>
-              <span className="text-foreground/80">
-                {DECOMP_TABS.find((t) => t.id === decompTab)?.takeaway}
-              </span>
+              {/* Generated reading of the active chart; the static sentence is
+                  passed as `fallback` so only one of the two ever renders. */}
+              <AiNarrativeLine
+                regionShort={code}
+                illness={illness}
+                surface="chart_takeaway"
+                component={decompTab}
+                className="text-foreground/80"
+                fallback={
+                  <span className="text-foreground/80">
+                    {DECOMP_TABS.find((t) => t.id === decompTab)?.takeaway}
+                  </span>
+                }
+              />
             </div>
           </div>
         )}
@@ -1156,6 +1195,17 @@ function SeasonalityPage() {
           chartRef={chartRefs.acf}
         />
 
+        {/* The ACF reading comes from the corpus; the deterministic lag values and
+            the 0.4 rule below stay regardless, since they are the figures the
+            chart itself plots rather than a prose interpretation. */}
+        <AiNarrativeLine
+          regionShort={code}
+          illness={illness}
+          surface="chart_takeaway"
+          component="acf"
+          className="mt-3"
+        />
+
         <div className="mt-3 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
           <SeasonTag season="wet" />
           <span>
@@ -1232,7 +1282,7 @@ function SeasonalityPage() {
             chartType={forecastChartType}
           />
         </Suspense>
-        <div className="mt-3 overflow-x-auto">
+        <div className="mt-3 overflow-x-auto" data-explain="forecast-table">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="label-caps">
               <tr>

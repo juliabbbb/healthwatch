@@ -41,7 +41,7 @@ export function LiveClock() {
           <span className="font-mono text-base tabular-nums" style={{ color: "var(--dry)" }}>
             {timeFmt.format(now)}
           </span>
-          <span className="text-[9px] tracking-widest text-muted-foreground">PHT</span>
+          <span className="text-[10px] tracking-widest text-muted-foreground">PHT</span>
         </p>
         <p className="mt-0.5 text-[10px] text-muted-foreground">{dateFmt.format(now)}</p>
       </div>

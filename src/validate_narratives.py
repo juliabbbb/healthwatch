@@ -1,9 +1,12 @@
 """Deterministic narrative-fidelity corpus (methodology 3.5.3).
 
-Generates one narrative per (endpoint, region[, seasonality component])
-through the exact constrained path the API uses, then applies the weather-
-lexicon and numeric-fidelity guards and records both the pre-guard model
-output and the post-guard dispatched output.
+Audits every narrative surface through the exact constrained path the API uses,
+applies the weather-lexicon and numeric-fidelity guards, and records both the
+pre-guard model output and the post-guard dispatched output.
+
+Scenarios come from `narrative_surfaces` - the same registry
+`generate_narratives.py` iterates to produce the shipped corpus - so what is
+audited is by construction what is dispatched.
 
 The claim verified here is structural, not sampled: production dispatch only
 happens after the guards pass, or after a deterministic templated fallback
@@ -11,106 +14,76 @@ built from the same grounding payload, so no unverified figure is dispatched.
 The report documents violations intercepted and fallbacks fired.
 
 Run (live; needs GROQ_API_KEY set in the environment or .env):
-    python -m src.validate_narratives            # full corpus: 19 x (1+1+5+1) = 152 narratives
-    python -m src.validate_narratives --limit 8  # small slice (first N scenarios)
-    python -m src.validate_narratives --skip-live  # dry run: no API calls, reports plan only
+    python -m src.validate_narratives                    # full corpus
+    python -m src.validate_narratives --limit 8          # small slice
+    python -m src.validate_narratives --disease Dengue    # one disease
+    python -m src.validate_narratives --skip-live        # dry run, no API calls
 
 Output:
     data/processed/narrative_fidelity_corpus.csv
 """
 
+from __future__ import annotations
+
 import argparse
-import json
-import math
 import time
 
 import pandas as pd
 
-from . import db, ingest
-from . import api
+from . import api, db, ingest, narrative_surfaces
 
-SEASONALITY_COMPONENTS = ("observed", "trend", "seasonal", "residual", "acf")
+SEASONALITY_COMPONENTS = narrative_surfaces.SEASONALITY_COMPONENTS
 
 
-def _scenarios():
-    codes = [m["code"] for m in db.REGION_META] + [db.NATIONAL_CODE]
-    disease = api.DISEASE_DEFAULT
-    for code in codes:
+def _explain_element_scenarios(diseases):
+    """explain_element is on-demand and keyed off a client-supplied payload, so
+    it has no registry entry. Audit it against a representative payload instead
+    of skipping it - the guards are what make the endpoint safe at runtime."""
+    for code in [m["code"] for m in db.REGION_META] + [db.NATIONAL_CODE]:
         label = api._label(code)
-        db_region = api._resolve_region(label)  # National resolves by name, not code
-
-        # 1. ai-insight (one-line map panel)
-        grounding = api._ai_insight_grounding(db_region, disease)
-        yield {
-            "endpoint": "ai_insight",
-            "region": label,
-            "component": "",
-            "system": api._AI_INSIGHT_SYSTEM_PROMPT,
-            "user": "Give the one-line insight for this region's next month. "
-            "Figures you may use:\n" + json.dumps(grounding),
-            "grounding": grounding,
-            "safe_fn": api._safe_season_narrative,
-        }
-
-        # 2. full analysis narrative
-        grounding = api._build_grounding(db_region, disease, api.PRIMARY_WINDOW)
-        yield {
-            "endpoint": "analysis",
-            "region": label,
-            "component": "",
-            "system": api._ANALYSIS_SYSTEM_PROMPT,
-            "user": "Explain the current dengue situation for this region. "
-            "Figures you may use:\n" + json.dumps(grounding),
-            "grounding": grounding,
-            "safe_fn": api._safe_season_narrative,
-        }
-
-        # 3. seasonality, one scenario per component
-        grounding = api._seasonality_grounding(db_region)
-        grounding["disease"] = disease
-        for component in SEASONALITY_COMPONENTS:
-            yield {
-                "endpoint": "seasonality",
-                "region": label,
-                "component": component,
-                "system": api._SEASONALITY_SYSTEM_PROMPT,
-                "user": (
-                    f"The user is looking at the '{component}' chart for this region. "
-                    f"{api._SEASONALITY_FOCUS[component]} Figures you may use:\n"
-                    + json.dumps(grounding)
+        db_region = api._resolve_region(label)
+        if db_region is None:
+            continue
+        for disease in diseases:
+            insight = api._ai_insight_grounding(db_region, disease)
+            element = {
+                "title": f"{label} forecast element",
+                "description": (
+                    f"Shows the predicted {disease} case count for this region "
+                    "compared with its historical alert levels."
                 ),
-                "grounding": grounding,
-                "safe_fn": api._safe_season_narrative,
+                "region": label,
+                "month": None,
+                "illness": disease,
+                "metric_value": (
+                    f"{int(round(float(insight['next_month_forecast']['yhat'])))} cases"
+                ),
             }
-
-        # 4. click-to-explain element (on the same forecast the insight used)
-        insight = api._ai_insight_grounding(db_region, disease)
-        element = {
-            "title": f"{label} forecast element",
-            "description": "Shows the predicted dengue case count for this region "
-            "compared with its historical alert levels.",
-            "region": label,
-            "month": None,
-            "illness": "Dengue",
-            "metric_value": f"{int(round(float(insight['forecast']['yhat'])))} cases",
-        }
-        yield {
-            "endpoint": "explain_element",
-            "region": label,
-            "component": "",
-            "system": api._EXPLAIN_ELEMENT_SYSTEM_PROMPT,
-            "user": (
-                f"Element Title: {element['title']}\n"
-                f"Static Description: {element['description']}\n"
-                f"Region: {element['region']}\n"
-                f"Current Metric/Value: {element['metric_value']}\n"
-            ),
-            "grounding": element,
-            "safe_fn": api._safe_element_narrative,
-        }
+            yield narrative_surfaces.Scenario(
+                surface="explain_element",
+                region=label,
+                disease=disease,
+                component="",
+                system=api._EXPLAIN_ELEMENT_SYSTEM_PROMPT,
+                user=(
+                    f"Element Title: {element['title']}\n"
+                    f"Static Description: {element['description']}\n"
+                    f"Region: {element['region']}\n"
+                    f"Current Metric/Value: {element['metric_value']}\n"
+                ),
+                grounding=element,
+                safe_fn=api._safe_element_narrative,
+            )
 
 
-def run(limit=None, sleep_s=0.2, skip_live=False):
+def _scenarios(diseases=(api.DISEASE_DEFAULT,), surfaces=None):
+    """Every audited scenario: the registry's pre-generated surfaces plus the
+    on-demand explain-element endpoint."""
+    yield from narrative_surfaces.all_scenarios(diseases, surfaces)
+    yield from _explain_element_scenarios(diseases)
+
+
+def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
     """Generate the corpus, apply both guards, and audit the dispatched text."""
     rows = []
     weather_hits = 0
@@ -120,19 +93,56 @@ def run(limit=None, sleep_s=0.2, skip_live=False):
     errors = 0
     dispatched_unverified = 0
 
-    for i, s in enumerate(_scenarios()):
-        if limit is not None and i >= limit:
+    wanted = tuple(diseases) if diseases else (api.DISEASE_DEFAULT,)
+
+    # Materialise the scenario list up front. A grounding builder that raises
+    # (a region with no forecast rows, say) must be reported as one error row,
+    # not escape `run()` and kill the whole corpus: previously the generator
+    # was advanced by the `for` below, outside the `try`, so a single TypeError
+    # aborted the run before the CSV was ever written.
+    planned = []
+    iterator = enumerate(_scenarios(wanted, surfaces))
+    while True:
+        if limit is not None and len(planned) >= limit:
             break
         try:
+            i, s = next(iterator)
+        except StopIteration:
+            break
+        except Exception as exc:  # noqa: PERF203 - scenario builder failure
+            planned.append((len(planned), None, f"{type(exc).__name__}: {exc}"))
+            break
+        planned.append((i, s, ""))
+
+    for i, s, build_error in planned:
+        if build_error:
+            errors += 1
+            rows.append(
+                {
+                    "scenario": i,
+                    "endpoint": "scenario_build",
+                    "region": "",
+                    "disease": "",
+                    "component": "",
+                    "model": "error",
+                    "error": build_error,
+                    "weather_violations": "",
+                    "numeric_violations": "",
+                    "fallback_fired": "",
+                    "dispatched_unverified": "",
+                }
+            )
+            continue
+        try:
             if skip_live:
-                narrative = api._safe_season_narrative(s["grounding"])
+                narrative = s.safe_fn(s.grounding)
                 model = "skip-live"
                 weather = api._weather_violation(narrative)
-                numbers = api._numeric_violation(narrative, s["grounding"])
+                numbers = api._numeric_violation(narrative, s.grounding)
                 fallback = False
             else:
                 narrative, model, fallback, weather, numbers = api._guarded_narrative(
-                    s["system"], s["user"], s["grounding"], s["safe_fn"]
+                    s.system, s.user, s.grounding, s.safe_fn
                 )
             generated += 0 if skip_live else 1
         except Exception as exc:
@@ -140,9 +150,10 @@ def run(limit=None, sleep_s=0.2, skip_live=False):
             rows.append(
                 {
                     "scenario": i,
-                    "endpoint": s["endpoint"],
-                    "region": s["region"],
-                    "component": s["component"],
+                    "endpoint": s.surface,
+                    "region": s.region,
+                    "disease": s.disease,
+                    "component": s.component,
                     "model": "error",
                     "error": f"{type(exc).__name__}: {exc}",
                     "weather_violations": "",
@@ -160,16 +171,17 @@ def run(limit=None, sleep_s=0.2, skip_live=False):
 
         # Structural guarantee audit: re-check the DISPATCHED text independently.
         post_weather = api._weather_violation(narrative)
-        post_numbers = api._numeric_violation(narrative, s["grounding"])
+        post_numbers = api._numeric_violation(narrative, s.grounding)
         unverified = len(post_weather) + len(post_numbers)
         dispatched_unverified += unverified
 
         rows.append(
             {
                 "scenario": i,
-                "endpoint": s["endpoint"],
-                "region": s["region"],
-                "component": s["component"],
+                "endpoint": s.surface,
+                "region": s.region,
+                "disease": s.disease,
+                "component": s.component,
                 "model": model,
                 "error": "",
                 "weather_violations": ",".join(map(str, weather)),
@@ -195,23 +207,43 @@ def run(limit=None, sleep_s=0.2, skip_live=False):
         f"\nfallbacks fired      : {fallbacks}"
         f"\nunverified numbers   : {dispatched_unverified}   (dispatched output, structural guarantee)"
     )
-    if df["numeric_violations"].notna().any():
+    if not df.empty and df["numeric_violations"].notna().any():
         flagged = df[df["numeric_violations"].astype(str) != ""]
         if not flagged.empty:
             print("\nNumeric violations by scenario:")
-            print(flagged[["endpoint", "region", "component", "numeric_violations"]].to_string(index=False))
+            print(
+                flagged[
+                    ["endpoint", "region", "disease", "component", "numeric_violations"]
+                ].to_string(index=False)
+            )
     return df
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--limit", type=int, default=None, help="only the first N scenarios")
-    parser.add_argument("--sleep", type=float, default=0.2, help="seconds between LLM calls")
-    parser.add_argument("--skip-live", action="store_true", help="dry run, no API calls")
+    parser = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--limit", type=int, default=None,
+                        help="only the first N scenarios")
+    parser.add_argument("--sleep", type=float, default=0.2,
+                        help="seconds between LLM calls")
+    parser.add_argument("--skip-live", action="store_true",
+                        help="dry run, no API calls")
+    parser.add_argument("--disease", action="append", default=None,
+                        help="disease to audit (repeatable); defaults to Dengue only")
+    parser.add_argument("--surface", default=None,
+                        help="comma-separated surface subset")
     args = parser.parse_args()
 
     api._load_all_data()
-    run(limit=args.limit, sleep_s=args.sleep, skip_live=args.skip_live)
+    run(
+        limit=args.limit,
+        sleep_s=args.sleep,
+        skip_live=args.skip_live,
+        diseases=args.disease,
+        surfaces=args.surface.split(",") if args.surface else None,
+    )
 
 
 if __name__ == "__main__":

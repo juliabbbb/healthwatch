@@ -101,7 +101,9 @@ function MapView() {
   }, []);
 
   return (
-    <main className="relative h-screen w-full overflow-hidden bg-background">
+    // h-dvh, not h-screen: on mobile browsers `100vh` excludes the collapsing
+    // URL bar, which leaves the map short of the visible viewport.
+    <main className="relative h-dvh w-full overflow-hidden bg-background">
       {/* 1. Interactive Map Layer */}
       <div id="hw-map" className="absolute inset-0 z-0">
         {mounted && (

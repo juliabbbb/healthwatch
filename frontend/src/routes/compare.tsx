@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { ReportedBreakdown } from "@/components/hw/ReportedBreakdown";
+import { AiNarrativeLine } from "@/components/hw/AiNarrative";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import { ExportCustomizationModal } from "@/components/modals/ExportCustomizationModal";
@@ -457,7 +458,10 @@ export default function ComparePage() {
             </div>
 
             {/* Spec #1 & #5: Responsive Card Grid (stacks on mobile, multi-column on tablet/desktop) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+              data-explain="compare-card-grid"
+            >
               {rows.map((a) => (
                 <RegionalOverviewCard
                   key={a.region.code}
@@ -470,6 +474,20 @@ export default function ComparePage() {
                   globalMax={globalMax}
                   onOpenModal={handleOpenDetailedCard}
                   onToggle={toggle}
+                />
+              ))}
+            </div>
+
+            {/* Generated read of each selected region against the national picture.
+                Pre-generated per (region, disease); renders nothing when absent. */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {rows.map((a) => (
+                <AiNarrativeLine
+                  key={a.region.code}
+                  regionShort={a.region.code}
+                  illness={illness}
+                  surface="compare"
+                  className="rounded-xl border border-border/60 bg-secondary/20 px-3 py-2"
                 />
               ))}
             </div>
@@ -540,7 +558,10 @@ export default function ComparePage() {
 
             {/* Modal Body: Upgraded Table with clear divisions & On-click Interventions */}
             <div className="overflow-y-auto p-3 sm:p-5 hw-scroll space-y-4 max-h-[calc(90vh-4.5rem)]">
-              <div className="overflow-x-auto rounded-xl border border-border/80 shadow-xs">
+              <div
+                  className="overflow-x-auto rounded-xl border border-border/80 shadow-xs"
+                  data-explain="compare-table"
+                >
                 <table className="w-full min-w-[720px] text-left text-sm border-collapse">
                   <thead className="label-caps">
                     <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
@@ -573,7 +594,7 @@ export default function ComparePage() {
                           <td className="px-4 py-3 font-medium border-r border-border/40">
                             <div className="flex items-center gap-1.5">
                               <span className="font-semibold text-foreground">{a.region.name}</span>
-                              <span className="label-caps text-[9px] text-muted-foreground">
+                              <span className="label-caps text-muted-foreground">
                                 ({a.region.short})
                               </span>
                             </div>
@@ -733,7 +754,7 @@ export default function ComparePage() {
                   <span className="text-xs text-muted-foreground">
                     {detailedAssessment.region.classification}
                   </span>
-                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground uppercase">
+                  <span className="rounded bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground uppercase">
                     {detailedAssessment.region.island}
                   </span>
                 </div>
@@ -871,13 +892,13 @@ export default function ComparePage() {
 
                   <div className="grid grid-cols-3 gap-2 pt-1 font-mono text-xs">
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">
                         MAPE
                       </span>
                       <span className="font-bold text-foreground">{detailedMetrics.mape}%</span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">
                         MAE
                       </span>
                       <span className="font-bold text-foreground">
@@ -885,7 +906,7 @@ export default function ComparePage() {
                       </span>
                     </div>
                     <div className="rounded bg-card/60 p-2 border border-border/40">
-                      <span className="text-[9px] uppercase font-mono text-muted-foreground block">
+                      <span className="text-[10px] uppercase font-mono text-muted-foreground block">
                         RMSE
                       </span>
                       <span className="font-bold text-foreground">
@@ -1071,7 +1092,7 @@ function RegionalOverviewCard({
         {/* Primary Key Metric & Stats */}
         <div className="mt-3 flex items-baseline justify-between gap-2">
           <div>
-            <p className="label-caps text-[9px] font-semibold">
+            <p className="label-caps font-semibold">
               {currentMonth.forecast ? "Predicted" : "Reported"} · {meta.unit}
             </p>
             <p className="font-mono text-2xl font-bold tabular-nums text-foreground leading-tight">
@@ -1079,7 +1100,7 @@ function RegionalOverviewCard({
             </p>
           </div>
           <div className="text-right">
-            <p className="label-caps text-[9px] font-medium">3-Mo Trend</p>
+            <p className="label-caps font-medium">3-Mo Trend</p>
             <span
               className="inline-flex items-center gap-1 font-mono text-xs font-semibold"
               style={{
@@ -1100,13 +1121,13 @@ function RegionalOverviewCard({
         {/* Stat badges */}
         <div className="mt-2.5 grid grid-cols-2 gap-1.5">
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="label-caps text-[8px] font-medium block">Nat'l Percentile</span>
+            <span className="label-caps font-medium block">Nat'l Percentile</span>
             <span className="font-mono text-xs font-semibold text-foreground block">
               {a.percentileRank}th %ile
             </span>
           </div>
           <div className="rounded-md bg-secondary/40 border border-border/40 px-2 py-1">
-            <span className="label-caps text-[8px] font-medium block">Dominant Illness</span>
+            <span className="label-caps font-medium block">Dominant Illness</span>
             <span className="text-xs font-semibold text-foreground truncate block">
               {a.dominantIllness.shortName}
             </span>
@@ -1200,7 +1221,7 @@ function RegionSparkline({
   return (
     <div className="w-full" onMouseLeave={() => setHoveredIdx(null)}>
       {/* Visual mini-chart legend showing Actual vs Predicted & active readout */}
-      <div className="flex items-center justify-between text-[9px] text-muted-foreground mb-1 font-mono">
+      <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-1 font-mono">
         <div className="flex items-center gap-2.5">
           <span className="inline-flex items-center gap-1">
             <span className="inline-block w-2.5 h-0.5 bg-foreground/75 rounded-full" />
@@ -1322,7 +1343,7 @@ function RegionSparkline({
           />
         </svg>
       </div>
-      <div className="flex items-center justify-between text-[8px] text-muted-foreground mt-0.5 font-mono">
+      <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-0.5 font-mono">
         <span>{formatMonthYear(firstPoint.label)}</span>
         <span className="font-semibold text-foreground/85">
           Target: {formatMonthYear(lastPoint.label)}
@@ -1445,7 +1466,7 @@ function DetailedChart({
                 {formatMonthYear(hoveredPoint.label)}
               </span>
               <span
-                className="rounded px-1.5 py-0.2 font-semibold uppercase text-[9px] font-mono"
+                className="rounded px-1.5 py-0.2 font-semibold uppercase text-[10px] font-mono"
                 style={{
                   color: hoveredPoint.forecast ? riskColor : "var(--foreground)",
                   backgroundColor: hoveredPoint.forecast

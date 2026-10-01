@@ -281,8 +281,8 @@ function Methodology() {
             2019–2024 (the pre-2025 validation pool), then each 2019 month is labelled against them.
             The Jul–Oct 2019 epidemic peak all classify High:
           </p>
-          <div className="mt-3 overflow-hidden rounded-xl border border-border/80 shadow-xs">
-            <table className="w-full text-sm border-collapse">
+          <div className="mt-3 overflow-x-auto rounded-xl border border-border/80 shadow-xs hw-scroll">
+            <table className="w-full min-w-[420px] text-sm border-collapse">
               <thead className="label-caps">
                 <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
                   <th className="px-4 py-3 text-left">Month</th>

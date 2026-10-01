@@ -42,6 +42,8 @@ export interface ExportOptions {
     season: "wet" | "dry";
     driver: string;
     forecastWindow: MonthPoint[];
+    /** Pre-generated `report_summary` narrative; absent when the corpus has no row. */
+    narrative?: string | null;
   }[];
 }
 
@@ -227,6 +229,17 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
               <Text style={pdfStyles.title}>{r.profile.name}</Text>
               <RiskBadge risk={r.risk} />
             </View>
+
+            {/* Plain-language reading of this region's figures. Same text the
+                dashboard shows, pre-generated from the same pipeline numbers. */}
+            {r.narrative && (
+              <View style={[pdfStyles.card, { marginTop: 6 }]}>
+                <Text style={[pdfStyles.body, { fontSize: 9.5 }]}>{r.narrative}</Text>
+                <Text style={[pdfStyles.metaLabel, { marginTop: 4 }]}>
+                  AI-generated from this report&apos;s figures — not a separate forecast.
+                </Text>
+              </View>
+            )}
 
             <Text style={pdfStyles.sectionTitle}>12-Month Forecast</Text>
             <View style={pdfStyles.table} wrap={false}>

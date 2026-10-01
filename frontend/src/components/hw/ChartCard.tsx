@@ -70,7 +70,7 @@ export function ChartCard({
                 type="button"
                 onClick={() => setExpanded(true)}
                 aria-label={expandLabel ?? `Expand ${title}`}
-                className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer"
+                className="-m-1 rounded-lg p-2.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground cursor-pointer touch-manipulation"
               >
                 <Maximize2 className="size-3.5" />
               </button>
@@ -83,7 +83,7 @@ export function ChartCard({
       <Dialog open={expanded} onOpenChange={setExpanded}>
         <DialogContent
           overlayClassName="z-[600] bg-black/50 backdrop-blur-sm"
-          className="z-[600] glass-panel max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border-border/80 p-6 shadow-2xl"
+          className="z-[600] glass-panel max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border-border/80 p-4 sm:p-6 shadow-2xl"
         >
           <DialogHeader className="space-y-1 pr-8">
             <DialogTitle className="text-lg font-bold tracking-tight text-foreground">

@@ -30,6 +30,7 @@ import { KpiStrip, type KpiStripData } from "./KpiStrip";
 import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
 import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
 import { AiInsightLine } from "./AiInsightLine";
+import { AiNarrativeLine } from "./AiNarrative";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -249,7 +250,7 @@ export function ForecastCard({
                     type="button"
                     onClick={() => onLayerChange(l)}
                     className={cn(
-                      "rounded-md px-1.5 py-0.5 text-[9px] font-medium capitalize transition-colors text-center",
+                      "rounded-md px-1.5 py-0.5 text-[10px] font-medium capitalize transition-colors text-center",
                       layer === l
                         ? "bg-primary/20 text-primary font-semibold shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
@@ -266,19 +267,25 @@ export function ForecastCard({
         {/* Stat Chips */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Period</span>
+            <span className="label-caps block">Period</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {formatMonthYear(meta.label)}
             </span>
           </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Cases</span>
+          <div
+            className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5"
+            data-explain="forecast-metric-predicted"
+          >
+            <span className="label-caps block">Cases</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.point.cases.toLocaleString()}
             </span>
           </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">3-Mo Trend</span>
+          <div
+            className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5"
+            data-explain="forecast-metric-change"
+          >
+            <span className="label-caps block">3-Mo Trend</span>
             <span
               className="inline-flex min-w-0 items-center gap-1 font-mono text-xs font-semibold"
               style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
@@ -294,14 +301,17 @@ export function ForecastCard({
               </span>
             </span>
           </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Nat'l Rank</span>
+          <div
+            className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5"
+            data-explain="forecast-metric-percentile"
+          >
+            <span className="label-caps block">Nat'l Rank</span>
             <span className="font-mono text-xs font-semibold text-foreground truncate block">
               {a.percentileRank}th %ile
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="label-caps text-[9px] block">Data Source</span>
+            <span className="label-caps block">Data Source</span>
             <span className="text-[11px] font-medium text-muted-foreground truncate block">
               {meta.forecast
                 ? `Prophet Forecast · 95% CI ${formatMetric(
@@ -317,6 +327,14 @@ export function ForecastCard({
       {/* 3. Epicentra-style KPI Strip */}
       <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
         <KpiStrip data={kpi} />
+        {/* Plain-language reading of the headline figure, its thresholds and
+            direction. Renders nothing without a corpus row. */}
+        <AiNarrativeLine
+          regionShort={a.region.short}
+          illness={illness}
+          surface="kpi_takeaway"
+          className="mt-2.5"
+        />
       </section>
 
       {/* 4. Compact 6-Month Forecast + Risk Pills */}
@@ -330,7 +348,7 @@ export function ForecastCard({
         </div>
         {mix.total > 0 && (
           <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
-            <p className="label-caps text-[9px] text-muted-foreground tracking-wider mb-2">
+            <p className="label-caps text-muted-foreground tracking-wider mb-2">
               TRANSMISSION SPLIT · NEXT 6 MONTHS
             </p>
             <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
@@ -371,7 +389,7 @@ export function ForecastCard({
                 key={m.k}
                 className="rounded-lg bg-secondary/40 px-2 py-1 border border-border/40"
               >
-                <p className="label-caps text-[9px] text-muted-foreground">{m.k}</p>
+                <p className="label-caps text-muted-foreground">{m.k}</p>
                 <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
                   {m.v}
                 </p>

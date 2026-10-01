@@ -42,19 +42,25 @@ WET_MONTHS = (6, 7, 8, 9, 10, 11)
 # PAGASA Modified Corona Climate Classification. The production pipeline labels
 # seasons with the national monsoon calendar (wet = Jun-Nov, dry = Dec-May), a
 # Type I generalisation. Three eastern regions are Type II: their maximum
-# rainfall falls Dec-Feb, so their local wet window is inverted relative to that
-# labelling. The dashboard never reasons about weather, but when an AI narrative
-# mentions "wet"/"dry season" the annotation below keeps the wording honest and
-# forbids monsoon-based causal claims. Matches classify.SEASON_RULES.
+# rainfall falls Dec-Feb, so their local high window is inverted relative to
+# that labelling. The dashboard never reasons about weather, but when an AI
+# narrative echoes the annotation below it must stay honest about which months
+# that labelling uses, and must never make a rainfall-based causal claim.
+# Matches classify.SEASON_RULES.
+#
+# Wording note: these strings are deliberately kept free of every term in
+# `_WEATHER_LEXICON` (no "wet/dry season", no "rainfall"). The prompts instruct
+# the model to echo this annotation verbatim, so a lexicon-clean payload is what
+# lets a compliant model pass `_weather_violation` instead of tripping it.
 CLIMATE_TYPES = {
-    "Bicol Region": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "Bicol Region": "Type II (local high window Dec-Feb; the Jan-Mar probe sits "
     "inside its observed high case months)",
-    "Eastern Visayas": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "Eastern Visayas": "Type II (local high window Dec-Feb; the Jan-Mar probe sits "
     "inside its observed high case months)",
-    "Caraga": "Type II (local peak rainfall Dec-Feb; the Jan-Mar probe sits "
+    "Caraga": "Type II (local high window Dec-Feb; the Jan-Mar probe sits "
     "inside its observed high case months)",
 }
-_CLIMATE_TYPE_DEFAULT = "Type I (national wet season Jun-Nov)"
+_CLIMATE_TYPE_DEFAULT = "Type I (national calendar Jun-Nov)"
 
 REGION_META = db.REGION_META
 NAME_BY_CODE = {
@@ -72,6 +78,10 @@ _METRICS: pd.DataFrame = pd.DataFrame()
 _OUTBREAKS: pd.DataFrame = pd.DataFrame()
 _OUTBREAK_VALIDATION: pd.DataFrame = pd.DataFrame()
 _ESCALATION: pd.DataFrame | None = None
+# Pre-generated AI narrative corpus (mirrored from data/processed/narratives.csv
+# by src.db). Read at startup like every other modelling table: serving stored
+# text is what keeps these surfaces working without a live provider call.
+_NARRATIVES: pd.DataFrame = pd.DataFrame()
 _data_ready = False
 
 
@@ -147,6 +157,22 @@ def _load_repo_tables():
         esc.assign(region=esc["region_code"].map(_label)) if not esc.empty else None
     )
 
+    # The narrative corpus is optional: a database provisioned before the first
+    # generation run has no rows, and that must not block API startup.
+    try:
+        nar = db.read_table("narratives")
+    except Exception:
+        nar = pd.DataFrame()
+    if nar.empty:
+        _NARRATIVES = pd.DataFrame()
+    else:
+        for col in ("component", "region", "model", "narrative"):
+            if col in nar.columns:
+                nar[col] = nar[col].fillna("").astype(str)
+        _NARRATIVES = _dedupe_latest(
+            nar, ["region_code", "disease", "surface", "component"], "generated_at"
+        )
+
     return (
         _NATIONAL,
         _REGIONAL,
@@ -177,10 +203,40 @@ def _load_all_data() -> None:
         _OUTBREAKS,
         _OUTBREAK_VALIDATION,
         _ESCALATION,
+        _NARRATIVES,
     ) = _load_repo_tables()
 
     _data_ready = True
-    print(f"Backend data loaded in {time.monotonic() - t0:.1f}s")
+    print(
+        f"Backend data loaded in {time.monotonic() - t0:.1f}s "
+        f"({len(_NARRATIVES)} stored AI narratives)"
+    )
+
+
+def _stored_narrative(region, disease, surface, component=""):
+    """Look up one pre-generated narrative. Returns None when the corpus has no
+    row for that key, which is the caller's cue to fall back."""
+    if _NARRATIVES.empty:
+        return None
+    mask = (
+        (_NARRATIVES["region_code"] == region)
+        & (_NARRATIVES["disease"] == disease)
+        & (_NARRATIVES["surface"] == surface)
+    )
+    if "component" in _NARRATIVES.columns:
+        mask &= _NARRATIVES["component"].fillna("").astype(str) == (component or "")
+    rows = _NARRATIVES[mask]
+    if rows.empty:
+        return None
+    row = rows.iloc[-1]
+    return {
+        "narrative": str(row["narrative"]),
+        "model": str(row.get("model") or ""),
+        "safe_season_fallback": bool(row.get("fallback_fired") or False),
+        "weather_violations": [],
+        "numeric_violations": [],
+        "source": "corpus",
+    }
 
 
 def _region_code_or_none(label):
@@ -458,13 +514,13 @@ def _climate_annotation(db_region):
     if typ is None:
         return {
             "climate_type": _CLIMATE_TYPE_DEFAULT,
-            "effective_wet_months": "June to November",
-            "effective_dry_months": "December to May, January to March probe is dry season",
+            "effective_high_window": "June to November",
+            "effective_low_window": "December to May, January to March probe window",
         }
     return {
         "climate_type": typ,
-        "effective_wet_months": "December to May (inverted from the national calendar)",
-        "effective_dry_months": "June to November (inverted from the national calendar)",
+        "effective_high_window": "December to May (inverted from the national calendar)",
+        "effective_low_window": "June to November (inverted from the national calendar)",
     }
 
 
@@ -1548,18 +1604,34 @@ def ai_insight(
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     grounding = _ai_insight_grounding(db_region, disease)
 
-    user_prompt = (
-        "Give the one-line insight for this region's next month. Figures you "
-        "may use:\n" + json.dumps(grounding)
-    )
-    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(
+    stored = _stored_narrative(db_region, disease, "ai_insight")
+    if stored is None:
+        # No pre-generated row: generate live. This only happens before the
+        # corpus has been generated, and still needs a provider key.
+        user_prompt = (
+            "Give the one-line insight for this region's next month. Figures you "
+            "may use:\n" + json.dumps(grounding)
+        )
+        (
+            narrative,
+            model,
+            used_safe_fallback,
+            weather_violations,
+            numeric_violations,
+        ) = _guarded_narrative(
             _AI_INSIGHT_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
         )
-    )
+        source = "live"
+    else:
+        narrative = stored["narrative"]
+        model = stored["model"]
+        used_safe_fallback = stored["safe_season_fallback"]
+        weather_violations = stored["weather_violations"]
+        numeric_violations = stored["numeric_violations"]
+        source = "corpus"
 
     return {
         "region": _label(db_region),
@@ -1568,7 +1640,10 @@ def ai_insight(
         "safe_season_fallback": used_safe_fallback,
         "weather_violations": list(weather_violations),
         "numeric_violations": list(numeric_violations),
-        "models": model,
+        # `model` (not `models`) is the field name the other interpretability
+        # endpoints return and the only one the client reads.
+        "model": model,
+        "source": source,
         "grounding_data": grounding,
     }
 
@@ -1599,19 +1674,33 @@ def analysis_seasonality(
     grounding = _seasonality_grounding(db_region, disease)
     grounding["disease"] = disease
 
-    user_prompt = (
-        f"The user is looking at the '{component}' chart for this region. "
-        f"{_SEASONALITY_FOCUS[component].format(disease=disease)} Figures you may use:\n"
-        + json.dumps(grounding)
-    )
-    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(
+    stored = _stored_narrative(db_region, disease, "chart_takeaway", component)
+    if stored is None:
+        user_prompt = (
+            f"The user is looking at the '{component}' chart for this region. "
+            f"{_SEASONALITY_FOCUS[component].format(disease=disease)} Figures you may use:\n"
+            + json.dumps(grounding)
+        )
+        (
+            narrative,
+            model,
+            used_safe_fallback,
+            weather_violations,
+            numeric_violations,
+        ) = _guarded_narrative(
             _SEASONALITY_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
         )
-    )
+        source = "live"
+    else:
+        narrative = stored["narrative"]
+        model = stored["model"]
+        used_safe_fallback = stored["safe_season_fallback"]
+        weather_violations = stored["weather_violations"]
+        numeric_violations = stored["numeric_violations"]
+        source = "corpus"
 
     return {
         "region": _label(db_region),
@@ -1623,6 +1712,7 @@ def analysis_seasonality(
         "numeric_violations": list(numeric_violations),
         "grounding_data": grounding,
         "model": model,
+        "source": source,
     }
 
 
@@ -1645,18 +1735,32 @@ def analysis(
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     grounding = _build_grounding(db_region, disease, window)
 
-    user_prompt = (
-        f"Explain the current {disease} situation for this region. Figures you "
-        "may use:\n" + json.dumps(grounding)
-    )
-    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(
+    stored = _stored_narrative(db_region, disease, "analysis")
+    if stored is None:
+        user_prompt = (
+            f"Explain the current {disease} situation for this region. Figures you "
+            "may use:\n" + json.dumps(grounding)
+        )
+        (
+            narrative,
+            model,
+            used_safe_fallback,
+            weather_violations,
+            numeric_violations,
+        ) = _guarded_narrative(
             _ANALYSIS_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
         )
-    )
+        source = "live"
+    else:
+        narrative = stored["narrative"]
+        model = stored["model"]
+        used_safe_fallback = stored["safe_season_fallback"]
+        weather_violations = stored["weather_violations"]
+        numeric_violations = stored["numeric_violations"]
+        source = "corpus"
 
     return {
         "region": _label(db_region),
@@ -1667,6 +1771,7 @@ def analysis(
         "numeric_violations": list(numeric_violations),
         "grounding_data": grounding,
         "model": model,
+        "source": source,
     }
 
 
@@ -1680,17 +1785,63 @@ class ExplainElementPayload(BaseModel):
 
 
 _EXPLAIN_ELEMENT_SYSTEM_PROMPT = (
-    "You are HealthWatch AI, a public health epidemiologist explaining dashboard elements. "
-    "Given an interface element description and optional live surveillance metrics, write a concise "
-    "2-sentence plain-language explanation of what this element represents and what the current "
-    "data means for disease surveillance. Stay strictly grounded in the provided facts."
+    "You are HealthWatch AI, a public health epidemiologist explaining dashboard elements.\n"
+    + _PLAIN_LANGUAGE_RULES
+    + "\nTASK: given the description of an interface element and any live figures, "
+    "write 2 short plain-language sentences saying what this element represents "
+    "and what the current number means for disease surveillance. Stay strictly "
+    "grounded in the facts provided. Do not mention HEALTHWATCH systems, "
+    "pipelines, or models, and do not invent any figure that was not given."
 )
+
+
+@app.get("/narratives", tags=["objective_5_interpretability"])
+def narratives(
+    region: str | None = Query(default=None),
+    disease: str | None = Query(default=None),
+    surface: str | None = Query(default=None),
+    component: str | None = Query(default=None),
+):
+    """Pre-generated AI narratives from the shipped corpus.
+
+    This is the read path behind every AI surface: the client asks for the text
+    it is about to render, so a missing row degrades to the client's static
+    copy instead of an error. No provider call happens here.
+    """
+    df = _NARRATIVES
+    if df.empty:
+        return {"count": 0, "items": []}
+    if region:
+        db_region = _resolve_region(region)
+        if db_region is None:
+            raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+        df = df[df["region_code"] == db_region]
+    if disease:
+        _check_disease(disease)
+        df = df[df["disease"] == disease]
+    if surface:
+        df = df[df["surface"] == surface]
+    if component is not None and "component" in df.columns:
+        df = df[df["component"].fillna("").astype(str) == component]
+    cols = [
+        "region_code", "region", "disease", "surface", "component",
+        "narrative", "model", "fallback_fired", "generated_at",
+    ]
+    cols = [c for c in cols if c in df.columns]
+    out = df[cols].copy()
+    if "fallback_fired" in out.columns:
+        out["fallback_fired"] = out["fallback_fired"].astype(bool)
+    return {"count": len(out), "items": out.to_dict(orient="records")}
 
 
 @app.post("/analysis/explain-element", tags=["objective_5_interpretability"])
 @limiter.limit("15/minute")
 def explain_element(request: Request, payload: ExplainElementPayload):
-    """Generate an on-demand, data-aware AI explanation for a clicked UI element in Explain Mode."""
+    """Generate an on-demand, data-aware AI explanation for a clicked UI element.
+
+    The only surface that still calls the provider live: its grounding comes
+    from whatever the user clicked, so it is unkeyed and cannot be pre-generated.
+    """
     user_prompt = (
         f"Element Title: {payload.title}\n"
         f"Static Description: {payload.description}\n"

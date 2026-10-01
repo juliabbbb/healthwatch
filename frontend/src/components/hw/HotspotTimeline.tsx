@@ -18,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { formatMonthYear } from "@/utils/formatDate";
+import { AiNarrativeLine } from "./AiNarrative";
 
 /**
  * Compact 12-cell risk strip, one cell per forecast month, colored by the
@@ -56,7 +57,7 @@ export function HotspotTimeline({
           <Tooltip key={c.p.index}>
             <TooltipTrigger asChild>
               <div
-                className="flex h-8 min-w-5 flex-1 flex-col items-center justify-center rounded-md border text-[9px] font-semibold transition-transform hover:-translate-y-0.5"
+                className="flex h-8 min-w-5 flex-1 flex-col items-center justify-center rounded-md border text-[10px] font-semibold transition-transform hover:-translate-y-0.5"
                 style={{
                   backgroundColor: meta[c.risk].solidColor,
                   borderColor: `color-mix(in oklab, ${meta[c.risk].color} 60%, transparent)`,
@@ -89,6 +90,15 @@ export function HotspotTimeline({
           </Tooltip>
         ))}
       </div>
+
+      {/* Where this region's 12-month trajectory sits in the national escalation
+          ordering. Renders nothing without a corpus row. */}
+      <AiNarrativeLine
+        regionShort={region.short}
+        illness={illness}
+        surface="escalation"
+        className="mt-2"
+      />
     </TooltipProvider>
   );
 }

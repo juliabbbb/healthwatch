@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Sparkles, Waves } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -33,6 +33,23 @@ export function SeasonalityContextMenu({
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Subscribe to the breakpoint instead of reading innerWidth during render:
+  // a one-shot read goes stale the moment the viewport crosses 640px (orientation
+  // flip, window resize on a desktop) and the menu keeps its mobile/desktop
+  // positioning against the wrong bounds.
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 639px)").matches : false,
+  );
+
+  useEffect(() => {
+    if (!anchor) return;
+    const mql = window.matchMedia("(max-width: 639px)");
+    const onChange = () => setIsMobile(mql.matches);
+    onChange();
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, [anchor]);
+
   useEffect(() => {
     if (!anchor) return;
     const onPointerDown = (e: PointerEvent) => {
@@ -59,7 +76,6 @@ export function SeasonalityContextMenu({
 
   if (!anchor) return null;
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth < 640;
   const estimatedHeight = actions.length * 40 + 75;
   const left = isMobile
     ? Math.max(12, (window.innerWidth - MENU_WIDTH) / 2)
@@ -93,7 +109,7 @@ export function SeasonalityContextMenu({
           <p className="label-caps text-[10px] font-semibold text-foreground truncate">
             {anchor.title ?? anchor.section}
           </p>
-          <span className="text-[9px] text-muted-foreground uppercase">Options</span>
+          <span className="text-[10px] text-muted-foreground uppercase">Options</span>
         </div>
 
         <div className="space-y-0.5 px-1">
@@ -133,7 +149,7 @@ export function SeasonalityContextMenu({
           })}
         </div>
 
-        <div className="mt-1 flex items-center gap-1.5 border-t border-border/60 px-3 pt-1.5 pb-0.5 text-[9px] text-muted-foreground">
+        <div className="mt-1 flex items-center gap-1.5 border-t border-border/60 px-3 pt-1.5 pb-0.5 text-[10px] text-muted-foreground">
           <Waves className="size-3 text-primary shrink-0" />
           <span className="truncate">HEALTHWATCH pipeline deterministic metrics</span>
         </div>

@@ -192,11 +192,15 @@ export function MobileBottomSheet({
         className={cn(
           "fixed z-[600] flex flex-col md:hidden",
           isExpanded
-            ? "inset-x-0 bottom-0 h-dvh px-0 pb-0"
-            : "inset-x-3 bottom-3 h-auto max-w-lg mx-auto",
+            ? "inset-x-0 bottom-0 h-dvh px-0"
+            : "inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] h-auto max-w-lg mx-auto",
           isVisible ? "pointer-events-auto" : "pointer-events-none",
         )}
         style={{
+          // Keeps the sheet's last row clear of the iOS home indicator when
+          // expanded. The collapsed case offsets itself via the class above,
+          // since it sizes to its own content.
+          paddingBottom: isExpanded ? "env(safe-area-inset-bottom, 0px)" : undefined,
           transform: isVisible ? `translateY(${dragOffsetY}px)` : "translateY(120%)",
           opacity: isVisible ? 1 : 0,
           transition: isDragging
@@ -217,6 +221,14 @@ export function MobileBottomSheet({
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerCancel={handlePointerCancel}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" && e.key !== " ") return;
+              // The handle is focusable (role=button + tabIndex), so it has to be
+              // operable by keyboard too — otherwise a keyboard or switch user
+              // cannot open the sheet at all.
+              e.preventDefault();
+              setIsExpanded((prev) => !prev);
+            }}
             role="button"
             tabIndex={0}
             aria-expanded={isExpanded}
@@ -251,7 +263,7 @@ export function MobileBottomSheet({
                   <span className="inline-block max-w-[7rem] truncate align-bottom font-mono text-xs font-bold tabular-nums text-foreground">
                     {formatMetric(a.value, mode)}
                   </span>
-                  <span className="hidden min-[420px]:inline-block ml-0.5 text-[9px] text-muted-foreground">
+                  <span className="hidden min-[420px]:inline-block ml-0.5 text-[10px] text-muted-foreground">
                     {unit}
                   </span>
                 </div>

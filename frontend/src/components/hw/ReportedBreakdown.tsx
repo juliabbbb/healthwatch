@@ -14,6 +14,7 @@
 import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
 import { caseNotesFor, REPORTED_SOURCE } from "@/lib/healthwatch/data";
+import { AiNarrativeLine } from "@/components/hw/AiNarrative";
 import {
   Tooltip,
   TooltipContent,
@@ -119,7 +120,7 @@ function DimensionHeader({
                     {line}
                   </p>
                 ))}
-                <p className="label-caps text-[9px] font-bold text-muted-foreground uppercase">
+                <p className="label-caps font-bold text-muted-foreground uppercase">
                   {notes.heading}
                 </p>
                 <ul className="space-y-1">
@@ -241,6 +242,17 @@ export function ReportedBreakdown({
           {REPORTED_SOURCE[disease] ?? "Source: DOH disease line-list"}
         </p>
       </header>
+
+      {/* Who is most affected, in plain words, for this region. Pre-generated;
+          renders nothing when the corpus has no row for this series. */}
+      {data && (
+        <AiNarrativeLine
+          regionShort={data.region_code}
+          illness={illness}
+          surface="reported"
+          className="mb-3 border-b border-border/60 pb-3"
+        />
+      )}
 
       {error ? (
         <p className="text-[11px] text-muted-foreground leading-snug">{error}</p>

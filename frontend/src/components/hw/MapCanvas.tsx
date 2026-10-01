@@ -86,6 +86,7 @@ export default function MapCanvas({
     let cancelled = false;
     let map: LeafletMap | null = null;
     let observer: MutationObserver | null = null;
+    let resizeObserver: ResizeObserver | null = null;
 
     (async () => {
       const L = (await import("leaflet")).default;
@@ -101,8 +102,24 @@ export default function MapCanvas({
         attributionControl: true,
         maxBounds: L.latLngBounds([3.5, 114.5], [22.0, 129.0]),
         maxBoundsViscosity: 0.85,
+        // The map fills the viewport on every tier, so Leaflet's default
+        // wheel handler would capture page scrolling across the whole map
+        // area. Zoom stays available via the scrubber, double-click and the
+        // zoom control callers render.
+        scrollWheelZoom: false,
       });
       mapRef.current = map;
+
+      // Leaflet measures the container once at init. Any resize afterwards
+      // (orientation flip, mobile URL-bar collapse, crossing the md
+      // breakpoint, drawer/sheet open) leaves the tile grid and hit-testing
+      // at the stale size: blank bands and mis-targeted taps.
+      if (containerRef.current) {
+        resizeObserver = new ResizeObserver(() => {
+          map?.invalidateSize({ animate: false });
+        });
+        resizeObserver.observe(containerRef.current);
+      }
 
       // Tap on empty map background dismisses selected region
       map.on("click", () => {
@@ -195,6 +212,7 @@ export default function MapCanvas({
     return () => {
       cancelled = true;
       observer?.disconnect();
+      resizeObserver?.disconnect();
       mapRef.current?.remove();
       mapRef.current = null;
       geoRef.current = null;

@@ -298,6 +298,28 @@ pipeline_runs = Table(
     Column("notes", Text),
 )
 
+# Pre-generated AI narrative corpus (methodology 3.5.3). One row per rendered
+# surface per (region, disease); `component` keys the decomposition chart. The
+# API serves these instead of calling the provider per request, so the AI
+# surfaces keep working without a live key or a warm quota. Produced by
+# `src.generate_narratives` from data/processed/narratives.csv.
+narratives = Table(
+    "narratives",
+    metadata,
+    Column("region_code", String(9), primary_key=True),
+    Column("disease", String(48), primary_key=True),
+    Column("surface", String(32), primary_key=True),
+    Column("component", String(16), primary_key=True, default=""),
+    Column("region", String(120), nullable=False),
+    Column("narrative", Text, nullable=False),
+    Column("model", String(64), nullable=False),
+    Column("fallback_fired", Boolean, nullable=False, default=False),
+    Column("weather_violations", String(160), nullable=False, default=""),
+    Column("numeric_violations", String(160), nullable=False, default=""),
+    Column("generated_at", String(32), nullable=False),
+    Index("ix_narratives_surface_disease", "surface", "disease"),
+)
+
 dengue_case_records = Table(
     "dengue_case_records",
     metadata,
@@ -534,6 +556,42 @@ def build_db():
         if ov is not None and not ov.empty:
             ov = _remap(ov, "region_code")
             conn.execute(outbreak_validation.insert(), ov.to_dict(orient="records"))
+
+        # Pre-generated AI narrative corpus. Absent (no provider key yet) is a
+        # normal state: the API then reports no stored narrative for a surface
+        # and the client falls back to its static copy, so a DB rebuild must
+        # not require it.
+        nar = _load_csv("narratives.csv")
+        if nar is not None and not nar.empty:
+            nar = nar[nar["narrative"].astype(str).str.strip() != ""]
+            if not nar.empty:
+                if "fallback_fired" in nar.columns:
+                    nar["fallback_fired"] = (
+                        nar["fallback_fired"]
+                        .astype(str)
+                        .str.strip()
+                        .str.lower()
+                        .isin({"true", "1", "yes"})
+                    )
+                for col in (
+                    "weather_violations", "numeric_violations", "component",
+                    "model", "region", "region_code", "generated_at",
+                ):
+                    if col in nar.columns:
+                        nar[col] = nar[col].fillna("").astype(str)
+                keep = [
+                    "region_code", "disease", "surface", "component", "region",
+                    "narrative", "model", "fallback_fired",
+                    "weather_violations", "numeric_violations", "generated_at",
+                ]
+                nar = nar[[c for c in keep if c in nar.columns]]
+                # A resumed generator run can append a key it had already
+                # written before being interrupted; the newest row wins.
+                nar = nar.drop_duplicates(
+                    subset=["region_code", "disease", "surface", "component"],
+                    keep="last",
+                )
+                conn.execute(narratives.insert(), nar.to_dict(orient="records"))
 
         _seed_case_records(conn)
         _seed_fwbd_case_records(conn)

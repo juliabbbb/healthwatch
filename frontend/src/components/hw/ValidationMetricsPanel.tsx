@@ -75,7 +75,7 @@ function MetricTile({
 
   return (
     <div className="rounded-lg border border-border/60 bg-card/50 px-3 py-2.5">
-      <p className="label-caps text-[9px] text-muted-foreground">{label}</p>
+      <p className="label-caps text-muted-foreground">{label}</p>
       <p className="mt-1 font-mono text-2xl font-bold leading-none tracking-tight tabular-nums" style={{ color }}>
         {value}{unit}
       </p>
@@ -172,7 +172,7 @@ export function ValidationMetricsPanel({
               <MetricTile label="MAPE" value={`${metrics.mape}`} unit="%" context="Mean Absolute % Error" quality={mapeQuality(metrics.mape)} />
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
-              <span className="label-caps text-[9px]">Skill vs seasonal-naive</span>
+              <span className="label-caps">Skill vs seasonal-naive</span>
               <p className="font-mono text-sm font-semibold tabular-nums">
                 {metrics.skill_vs_naive_pct == null
                   ? "—"
