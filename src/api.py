@@ -213,7 +213,7 @@ def _load_repo_tables():
 def _load_all_data() -> None:
     global _NATIONAL, _REGIONAL, _FORECASTS, _CLASSIFICATION  # noqa: PLW0603
     global _THRESHOLDS, _METRICS, _OUTBREAKS, _OUTBREAK_VALIDATION  # noqa: PLW0603
-    global _ESCALATION, _data_ready  # noqa: PLW0603
+    global _ESCALATION, _NARRATIVES, _data_ready  # noqa: PLW0603
 
     db.ensure_tables()
     t0 = time.monotonic()
