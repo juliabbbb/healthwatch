@@ -183,6 +183,7 @@ def _load_repo_tables():
         _OUTBREAKS,
         _OUTBREAK_VALIDATION,
         _ESCALATION,
+        _NARRATIVES,
     )
 
 
