@@ -261,8 +261,6 @@ export interface Illness {
   name: string;
   shortName: string;
   group: "Dengue" | "Food and Waterborne Diseases";
-  /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
-  transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
   peakMonth: number; // month-of-year of climatological peak
   season: Season;
@@ -298,7 +296,6 @@ export const ILLNESSES: Illness[] = [
     name: "Acute Bloody Diarrhea",
     shortName: "ABD",
     group: "Food and Waterborne Diseases",
-    transmission: "Food-Borne",
     driver: "Fecal-oral contamination of water and food",
     peakMonth: 9,
     season: "wet",
@@ -311,7 +308,6 @@ export const ILLNESSES: Illness[] = [
     name: "Cholera",
     shortName: "Cholera",
     group: "Food and Waterborne Diseases",
-    transmission: "Water-Borne",
     driver: "Contaminated drinking water and poor sanitation",
     peakMonth: 9,
     season: "wet",
@@ -324,7 +320,6 @@ export const ILLNESSES: Illness[] = [
     name: "Typhoid Fever",
     shortName: "Typhoid",
     group: "Food and Waterborne Diseases",
-    transmission: "Food-Borne",
     driver: "Food and water contaminated with Salmonella Typhi",
     peakMonth: 9,
     season: "wet",
@@ -337,7 +332,6 @@ export const ILLNESSES: Illness[] = [
     name: "Acute Viral Hepatitis",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
-    transmission: "Water-Borne",
     driver: "Fecal-oral transmission linked to hygiene and sanitation",
     peakMonth: 9,
     season: "wet",
@@ -746,44 +740,45 @@ export function seriesFor(regionCode: string, illnessId: string | "all"): MonthP
 }
 
 /* ------------------------------------------------------------------ */
-/* Forecast transmission mix (NEXT 6 MONTHS breakdown)                 */
+/* Forecast disease-group mix (NEXT 6 MONTHS breakdown)               */
 /* ------------------------------------------------------------------ */
 
 export interface ForecastCategoryMix {
-  /** Summed next-6-month forecast raw case counts, per transmission category. */
+  /** Summed next-6-month forecast raw case counts, per disease group. */
   dengue: number;
-  foodBorne: number;
-  waterBorne: number;
+  foodWaterBorne: number;
   total: number;
 }
 
 /**
  * Sums each disease's own forecast window (next `months` forecast points from
- * `monthIndex`, or fewer near a series' natural end) grouped by transmission
- * category. Reads the per-disease series directly so the sum respects each
- * disease's real terminal month instead of the shared calendar tail.
+ * `monthIndex`, or fewer near a series' natural end) grouped by disease group.
+ * Reads the per-disease series directly so the sum respects each disease's real
+ * terminal month instead of the shared calendar tail.
+ *
+ * The two buckets are Dengue and the food-and-waterborne group. All four FWD
+ * diseases can spread by either route depending on the source of an outbreak,
+ * so they are never split by route here.
  */
 export function forecastCategoryMix(
   regionCode: string,
   monthIndex: number,
   months: number = FORECAST_MONTHS,
 ): ForecastCategoryMix {
-  const mix: ForecastCategoryMix = { dengue: 0, foodBorne: 0, waterBorne: 0, total: 0 };
+  const mix: ForecastCategoryMix = { dengue: 0, foodWaterBorne: 0, total: 0 };
   for (const disease of ILLNESSES) {
     const series = getSeries(regionCode, disease.id);
     for (let i = monthIndex + 1; i <= monthIndex + months; i++) {
       const p = series[i];
       if (!p || !p.forecast || p.raw < 0) continue;
       if (disease.group === "Dengue") mix.dengue += p.cases;
-      else if (disease.transmission === "Food-Borne") mix.foodBorne += p.cases;
-      else if (disease.transmission === "Water-Borne") mix.waterBorne += p.cases;
+      else mix.foodWaterBorne += p.cases;
       mix.total += p.cases;
     }
   }
   mix.total = Math.round(mix.total);
   mix.dengue = Math.round(mix.dengue);
-  mix.foodBorne = Math.round(mix.foodBorne);
-  mix.waterBorne = Math.round(mix.waterBorne);
+  mix.foodWaterBorne = Math.round(mix.foodWaterBorne);
   return mix;
 }
 

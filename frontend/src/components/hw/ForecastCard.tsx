@@ -187,6 +187,19 @@ export function ForecastCard({
         className="mx-5 mt-3 shrink-0"
       />
 
+      {/* Active illness + route class. Sits above the numbers and outside the
+          showHeader conditional so the mobile bottom sheet keeps it. */}
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-5 py-2.5 shrink-0">
+        <span className="text-sm font-medium leading-none text-foreground">
+          {illnessDisplayName(illness)}
+        </span>
+        {groupForIllness(illness) && (
+          <span className="label-caps text-[10px] text-muted-foreground">
+            {groupForIllness(illness)}
+          </span>
+        )}
+      </div>
+
       {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
       <section className="border-b border-border/70 px-5 py-3.5">
         <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
@@ -349,7 +362,7 @@ export function ForecastCard({
         {mix.total > 0 && (
           <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
             <p className="label-caps text-muted-foreground tracking-wider mb-2">
-              TRANSMISSION SPLIT · NEXT 6 MONTHS
+              DISEASE GROUP MIX · NEXT 6 MONTHS
             </p>
             <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
           </div>
@@ -400,24 +413,7 @@ export function ForecastCard({
         </div>
       </section>
 
-      {/* 7. Illness Information (classification of the active illness only) */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-1.5">
-          INFORMATION
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-foreground">
-            {illnessDisplayName(illness)}
-          </span>
-          {groupForIllness(illness) && (
-            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-muted-foreground">
-              {groupForIllness(illness)}
-            </span>
-          )}
-        </div>
-      </section>
-
-      {/* 8. Pinned CTA */}
+      {/* 7. Pinned CTA */}
       <div
         className={cn(
           "px-5 py-3",
@@ -452,15 +448,9 @@ function CategoryMixBar({ mix, regionCode, mode, illness }: CategoryMixBarProps)
   const segs = [
     { key: "Dengue", value: mix.dengue, color: "var(--chart-1)", show: true },
     {
-      key: "Food-Borne",
-      value: mix.foodBorne,
+      key: "Foodborne & Waterborne",
+      value: mix.foodWaterBorne,
       color: "var(--chart-2)",
-      show: !isDengue,
-    },
-    {
-      key: "Water-Borne",
-      value: mix.waterBorne,
-      color: "var(--chart-3)",
       show: !isDengue,
     },
   ].filter((s) => s.show && s.value > 0);

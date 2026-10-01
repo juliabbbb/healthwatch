@@ -107,10 +107,11 @@ function Methodology() {
               line-lists (Acute Bloody Diarrhea, Cholera, Typhoid Fever and Acute Viral Hepatitis),
               2019-01 .. 2026-09, each carrying its own Suspect / Probable / Confirmed
               classification, age group, sex, admission status and outcome. Each runs fully
-              independently through the same model and tiering pipeline. The group is split by
-              transmission route — Acute Bloody Diarrhea and Typhoid Fever are{" "}
-              <em>Food-Borne</em>; Cholera and Acute Viral Hepatitis are <em>Water-Borne</em> —
-              and the forecast card shows that mix for the coming six months.{" "}
+              independently through the same model and tiering pipeline. All four are
+              classified together as food-and-waterborne: any of them can be acquired
+              from food or from water depending on the source of a given outbreak, so no
+              single route is attributed to an individual disease. The forecast card groups
+              them as one category against dengue for the coming six months.{" "}
               <strong>Acute Viral Hepatitis is the one shorter series</strong>: its line-list
               ends 2025-09, so months after that carry no observation and are shown as no-data
               rather than as zero reported cases.
