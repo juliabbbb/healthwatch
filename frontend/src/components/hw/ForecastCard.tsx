@@ -188,17 +188,26 @@ export function ForecastCard({
       />
 
       {/* Active illness + route class. Sits above the numbers and outside the
-          showHeader conditional so the mobile bottom sheet keeps it. */}
-      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-5 py-2.5 shrink-0">
-        <span className="text-sm font-medium leading-none text-foreground">
-          {illnessDisplayName(illness)}
-        </span>
-        {groupForIllness(illness) && (
-          <span className="label-caps text-[10px] text-muted-foreground">
-            {groupForIllness(illness)}
+          showHeader conditional so the mobile bottom sheet keeps it.
+
+          Hidden entirely for the "all" filter: that selection spans Dengue plus the
+          four food-and-waterborne diseases, so no single route class applies to it.
+          This deliberately does not follow the `illness === "all" ? "Dengue" : illness`
+          pattern the AI surfaces use — those need a concrete disease to key a corpus
+          or provider lookup, whereas this row is a label, and naming one disease for
+          the whole-panel aggregate would misdescribe what is on screen. */}
+      {illness !== "all" && (
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 border-b border-border/70 px-5 py-2.5 shrink-0">
+          <span className="text-sm font-medium leading-none text-foreground">
+            {illnessDisplayName(illness)}
           </span>
-        )}
-      </div>
+          {groupForIllness(illness) && (
+            <span className="label-caps text-[10px] text-muted-foreground">
+              {groupForIllness(illness)}
+            </span>
+          )}
+        </div>
+      )}
 
       {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
       <section className="border-b border-border/70 px-5 py-3.5">
