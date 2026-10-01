@@ -102,11 +102,15 @@ export default function MapCanvas({
         attributionControl: true,
         maxBounds: L.latLngBounds([3.5, 114.5], [22.0, 129.0]),
         maxBoundsViscosity: 0.85,
-        // The map fills the viewport on every tier, so Leaflet's default
-        // wheel handler would capture page scrolling across the whole map
-        // area. Zoom stays available via the scrubber, double-click and the
-        // zoom control callers render.
-        scrollWheelZoom: false,
+        // The map is the page: the shell is h-dvh/overflow-hidden, so there is
+        // no page scroll for the wheel to steal, and the glass panels are
+        // siblings of the map container rather than descendants, so their own
+        // scroll never reaches this handler. Wheel zoom is therefore safe to
+        // leave on and is the expected way to inspect a region.
+        scrollWheelZoom: true,
+        // Coalesce the burst of wheel events a trackpad emits per gesture so a
+        // two-finger scroll reads as one deliberate zoom step, not a lurch.
+        wheelDebounceTime: 80,
       });
       mapRef.current = map;
 
