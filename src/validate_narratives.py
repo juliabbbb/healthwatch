@@ -88,6 +88,8 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
     rows = []
     weather_hits = 0
     numeric_hits = 0
+    speculative_hits = 0
+    unanchored_hits = 0
     fallbacks = 0
     generated = 0
     errors = 0
@@ -128,6 +130,8 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
                     "error": build_error,
                     "weather_violations": "",
                     "numeric_violations": "",
+                    "speculative_violations": "",
+                    "unanchored_violations": "",
                     "fallback_fired": "",
                     "dispatched_unverified": "",
                 }
@@ -139,10 +143,27 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
                 model = "skip-live"
                 weather = api._weather_violation(narrative)
                 numbers = api._numeric_violation(narrative, s.grounding)
+                speculative = api._speculative_violation(
+                    narrative, forecast_bearing=s.forecast_bearing
+                )
+                unanchored = (
+                    api._unanchored_now_violation(narrative)
+                    if s.grounding.get("as_of")
+                    else ()
+                )
                 fallback = False
             else:
-                narrative, model, fallback, weather, numbers = api._guarded_narrative(
-                    s.system, s.user, s.grounding, s.safe_fn
+                (
+                    narrative,
+                    model,
+                    fallback,
+                    weather,
+                    numbers,
+                    speculative,
+                    unanchored,
+                ) = api._guarded_narrative(
+                    s.system, s.user, s.grounding, s.safe_fn,
+                    forecast_bearing=s.forecast_bearing,
                 )
             generated += 0 if skip_live else 1
         except Exception as exc:
@@ -158,21 +179,36 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
                     "error": f"{type(exc).__name__}: {exc}",
                     "weather_violations": "",
                     "numeric_violations": "",
+                    "speculative_violations": "",
+                    "unanchored_violations": "",
                     "fallback_fired": "",
                     "dispatched_unverified": "",
                 }
             )
             continue
 
-        if weather or numbers:
+        if weather or numbers or speculative or unanchored:
             fallbacks += 1
         weather_hits += len(weather)
         numeric_hits += len(numbers)
+        speculative_hits += len(speculative)
+        unanchored_hits += len(unanchored)
 
         # Structural guarantee audit: re-check the DISPATCHED text independently.
         post_weather = api._weather_violation(narrative)
         post_numbers = api._numeric_violation(narrative, s.grounding)
-        unverified = len(post_weather) + len(post_numbers)
+        post_speculative = api._speculative_violation(
+            narrative, forecast_bearing=s.forecast_bearing
+        )
+        post_unanchored = (
+            api._unanchored_now_violation(narrative)
+            if s.grounding.get("as_of")
+            else ()
+        )
+        unverified = (
+            len(post_weather) + len(post_numbers)
+            + len(post_speculative) + len(post_unanchored)
+        )
         dispatched_unverified += unverified
 
         rows.append(
@@ -186,6 +222,8 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
                 "error": "",
                 "weather_violations": ",".join(map(str, weather)),
                 "numeric_violations": ",".join(f"{n:g}" for n in numbers),
+                "speculative_violations": ",".join(map(str, post_speculative)),
+                "unanchored_violations": ",".join(map(str, post_unanchored)),
                 "fallback_fired": bool(fallback),
                 "dispatched_unverified": int(unverified),
             }
@@ -204,16 +242,24 @@ def run(limit=None, sleep_s=0.2, skip_live=False, diseases=None, surfaces=None):
         f"\nrun errors           : {errors}"
         f"\nweather violations   : {weather_hits}"
         f"\nnumeric violations   : {numeric_hits}"
+        f"\nspeculative phrases  : {speculative_hits}"
+        f"\nunanchored phrases  : {unanchored_hits}"
         f"\nfallbacks fired      : {fallbacks}"
         f"\nunverified numbers   : {dispatched_unverified}   (dispatched output, structural guarantee)"
     )
-    if not df.empty and df["numeric_violations"].notna().any():
-        flagged = df[df["numeric_violations"].astype(str) != ""]
+    for column, title in (
+        ("numeric_violations", "Numeric violations by scenario"),
+        ("speculative_violations", "Speculative phrases by scenario"),
+        ("unanchored_violations", "Unanchored present-tense by scenario"),
+    ):
+        if df.empty or column not in df or not df[column].notna().any():
+            continue
+        flagged = df[df[column].astype(str) != ""]
         if not flagged.empty:
-            print("\nNumeric violations by scenario:")
+            print(f"\n{title}:")
             print(
                 flagged[
-                    ["endpoint", "region", "disease", "component", "numeric_violations"]
+                    ["endpoint", "region", "disease", "component", column]
                 ].to_string(index=False)
             )
     return df

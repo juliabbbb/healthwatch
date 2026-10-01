@@ -52,6 +52,8 @@ COLUMNS = [
     "fallback_fired",
     "weather_violations",
     "numeric_violations",
+    "speculative_violations",
+    "unanchored_violations",
     "generated_at",
 ]
 
@@ -73,6 +75,32 @@ _GUARD_NUDGE = (
     "Rewrite it from scratch. Do not use the words rain, rainy, rainfall, rains, "
     "monsoon, habagat, amihan, typhoon, thunderstorm, wet season or dry season, "
     "and do not state any number that is not present in the figures above."
+)
+
+# Restated separately because the violation is surface-dependent: on a
+# history-only surface any forward-looking phrase is the problem, while on a
+# forecast-bearing surface the problem is predicting *without* attributing the
+# outlook to the pipeline.
+_SPECULATIVE_NUDGE = (
+    "\nAlso remove every forward-looking phrase: will, are expected to, "
+    "projected, forecast to, may rise, may fall, should, likely to, going to, "
+    "on track to. If the figures include a forecast you may describe it only "
+    "as the outlook or prediction and must quote the pipeline's own figure. "
+    "If they contain only recorded months, describe only the past and the "
+    "pattern that repeats."
+)
+
+# Restated only when the grounding is pinned to a window. "now"/"today" assert
+# the description is live, which contradicts the fixed window it was measured
+# over.
+_UNANCHORED_NUDGE = (
+    "\nThese figures were measured over a fixed window of recorded months that "
+    "ended in the past. Your sentence MUST contain the words 'up to "
+    "December 2024' exactly once - this is required, not optional, and the "
+    "text is discarded if it is missing. Never write now, today, currently or "
+    "this month. Example of an acceptable sentence: 'Across the recorded "
+    "months up to December 2024, dengue cases here peak in September and bottom "
+    "out in April.'"
 )
 
 
@@ -108,7 +136,7 @@ def existing_keys(df: pd.DataFrame) -> set[tuple[str, str, str, str]]:
 
 
 def _row_for(scenario: Scenario, narrative: str, model: str, fallback: bool,
-             weather, numbers) -> dict:
+             weather, numbers, speculative, unanchored) -> dict:
     return {
         "region_code": db.region_label_to_code(scenario.region) or scenario.region,
         "region": scenario.region,
@@ -120,6 +148,8 @@ def _row_for(scenario: Scenario, narrative: str, model: str, fallback: bool,
         "fallback_fired": bool(fallback),
         "weather_violations": ",".join(map(str, weather)),
         "numeric_violations": ",".join(f"{n:g}" for n in numbers),
+        "speculative_violations": ",".join(map(str, speculative)),
+        "unanchored_violations": ",".join(map(str, unanchored)),
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
 
@@ -184,6 +214,8 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
     rejected = 0
     weather_hits = 0
     numeric_hits = 0
+    speculative_hits = 0
+    unanchored_hits = 0
     errors = 0
     rate_limit_waits = 0
 
@@ -192,6 +224,8 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
         model = ""
         weather = ()
         numbers = ()
+        speculative = ()
+        unanchored = ()
         user_prompt = scenario.user
 
         for attempt in range(_MAX_GUARD_RETRIES + 1):
@@ -204,9 +238,12 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
                         used_fallback,
                         weather,
                         numbers,
+                        speculative,
+                        unanchored,
                     ) = api._guarded_narrative(
                         scenario.system, user_prompt, scenario.grounding,
                         scenario.safe_fn,
+                        forecast_bearing=scenario.forecast_bearing,
                     )
                     break
                 except Exception as exc:  # noqa: PERF203 - per-scenario resilience
@@ -232,6 +269,8 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
                     used_fallback = False
                     weather = ()
                     numbers = ()
+                    speculative = ()
+                    unanchored = ()
                     break
 
             if not narrative or not used_fallback:
@@ -242,25 +281,32 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
             # are counted once per attempt, including the ones that later pass.
             weather_hits += len(weather)
             numeric_hits += len(numbers)
+            speculative_hits += len(speculative)
+            unanchored_hits += len(unanchored)
             if attempt < _MAX_GUARD_RETRIES:
                 print(f"[{index}/{len(todo)}] guard violation "
-                      f"(weather={list(weather)} numeric={list(numbers)}) - "
+                      f"(weather={list(weather)} numeric={list(numbers)} "
+                      f"speculative={list(speculative)} unanchored={list(unanchored)}) - "
                       f"retrying {attempt + 1}/{_MAX_GUARD_RETRIES}", flush=True)
-                user_prompt = scenario.user + _GUARD_NUDGE
+                nudge = scenario.user + _GUARD_NUDGE + _SPECULATIVE_NUDGE
+                if unanchored:
+                    nudge += _UNANCHORED_NUDGE
+                user_prompt = nudge
                 continue
 
             rejected += 1
             print(f"[{index}/{len(todo)}] REJECTED {scenario.surface}/"
                   f"{scenario.disease}/{scenario.region}: model failed the "
                   f"output guard {_MAX_GUARD_RETRIES + 1}x "
-                  f"(weather={list(weather)} numeric={list(numbers)}). "
+                  f"(weather={list(weather)} numeric={list(numbers)} "
+                  f"speculative={list(speculative)} unanchored={list(unanchored)}). "
                   f"Nothing written; the client uses its static copy.", flush=True)
             narrative = ""
             break
 
         if narrative:
             _append(
-                _row_for(scenario, narrative, model, False, (), ())
+                _row_for(scenario, narrative, model, False, (), (), (), ())
             )
             written += 1
 
@@ -277,6 +323,8 @@ def run(diseases=None, surfaces=None, regions=None, limit=None,
     print(f"rejected     : {rejected}")
     print(f"weather hits : {weather_hits}")
     print(f"numeric hits : {numeric_hits}")
+    print(f"speculative  : {speculative_hits}")
+    print(f"unanchored   : {unanchored_hits}")
     print(f"rate waits   : {rate_limit_waits}")
     print(f"errors       : {errors}")
     print("\nNext: python -m src.db   (mirrors the corpus into Postgres)")

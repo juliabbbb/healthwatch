@@ -17,6 +17,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
 from . import config, db
+from . import vocabulary as vocabulary_
 
 SUPPORTED_DISEASES = [
     "Dengue",
@@ -36,6 +37,20 @@ DISEASE_GROUPS = {
     "Acute Viral Hepatitis": "Food and Waterborne Diseases",
 }
 PRIMARY_WINDOW = "last_12m"
+
+# Fixed window for the pre-generated seasonal corpus. Deliberately the pipeline's
+# own pre-2025 training cutoff (forecast.TRAIN_END == classify.HISTORY_END):
+# it is the newest slice that is simultaneously (a) long enough for a stable
+# decomposition and (b) the exact window the validated thresholds and forecasts
+# were fitted on, so a stored sentence is reproducible and traceable to the same
+# baseline the accuracy claims rest on.
+#
+# Pinned because the corpus is keyed by (region, disease, surface, component)
+# with no month. An unpinned decomposition drifts as months arrive - measured
+# across the 89 shipped series, 30% change their seasonal peak month and 6% cross
+# the 0.4 ACF threshold between the full window and this one - so an unpinned
+# sentence would eventually contradict the chart beside it.
+_CORPUS_AS_OF = pd.Timestamp("2024-12-31")
 
 WET_MONTHS = (6, 7, 8, 9, 10, 11)
 
@@ -146,7 +161,15 @@ def _load_repo_tables():
     _METRICS = _dedupe_latest(_METRICS, ["region_code", "disease"])
 
     _OUTBREAKS = db.read_table("outbreak_signals")
-    _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season", "disease"])
+    _normalize_dates(_OUTBREAKS, "probe_anchor")
+    _normalize_dates(_OUTBREAKS, "season_start")
+    _normalize_dates(_OUTBREAKS, "season_end")
+    # probe_anchor is part of the key: a season-level verdict must keep its own
+    # position in time, or every probe collapses onto the bare season name and a
+    # later re-run silently overwrites an earlier one.
+    _OUTBREAKS = _dedupe_latest(
+        _OUTBREAKS, ["region_code", "season", "disease", "probe_anchor"]
+    )
 
     ov = db.read_table("outbreak_validation")
     ov = _dedupe_latest(ov, ["region_code", "season", "disease"])
@@ -234,8 +257,10 @@ def _stored_narrative(region, disease, surface, component=""):
         "narrative": str(row["narrative"]),
         "model": str(row.get("model") or ""),
         "safe_season_fallback": bool(row.get("fallback_fired") or False),
-        "weather_violations": [],
-        "numeric_violations": [],
+    "weather_violations": [],
+    "numeric_violations": [],
+    "speculative_violations": [],
+    "unanchored_violations": [],
         "source": "corpus",
     }
 
@@ -359,8 +384,6 @@ _PLAIN_LANGUAGE_RULES = (
     "sharply'\n"
     "- seasonal strength -> 'cases rise and fall in a steady yearly "
     "rhythm'\n"
-    "- forecast accuracy/confidence -> 'this outlook is usually close to "
-    "what really happens' or 'this outlook is less certain than usual'\n"
     "- risk tier -> 'the alert level for {disease} is high/low'\n"
     "SEASON WORDING RULE (hard constraint, applies to every response): never "
     "blame weather, rainfall, the monsoon, typhoons, storms, or 'the rainy "
@@ -384,10 +407,41 @@ _PLAIN_LANGUAGE_RULES = (
     "mention it."
 )
 
+# Appended only by surfaces whose grounding actually carries a forecast. The
+# seasonal/history surfaces must NOT get this: their payload has no outlook
+# figures, so the instruction would invite prose about numbers they were never
+# given (see _HISTORY_ONLY_RULES).
+_FORECAST_RELAY_RULES = (
+    "\nFORECAST RELAY RULE (hard constraint): these figures include a pipeline "
+    "forecast, so you may describe what is expected ahead. You may ONLY relay "
+    "it, never originate it. Every forward-looking sentence must (a) name the "
+    "month it refers to, (b) carry the pipeline's own figure, and (c) attribute "
+    "it - 'the outlook is about 1,240 cases in September', never 'cases will "
+    "rise to around 1,240'. Never extrapolate beyond the given range, never "
+    "extend the horizon, and never imply a figure the payload does not "
+    "contain.\n"
+    "- forecast accuracy/confidence -> 'this outlook is usually close to "
+    "what really happens' or 'this outlook is less certain than usual'\n"
+)
+
+# Appended by the seasonal surfaces only. Their grounding is built from
+# recorded history (`_seasonality_grounding` reads `_history`, never the
+# forecast table), so anything forward-looking would be invented.
+_HISTORY_ONLY_RULES = (
+    "\nHISTORY-ONLY RULE (hard constraint): every figure you are given is a "
+    "RECORDED PAST month that was actually reported. No future month, outlook, "
+    "projection or prediction is included, and none may be produced. Describe "
+    "only what already happened and what reliably repeats. Never write that "
+    "cases 'will', 'are expected to', 'may' or 'should' rise, fall, peak or "
+    "surge. If asked what happens next, say plainly that this describes the "
+    "pattern recorded up to now.\n"
+)
+
 _ANALYSIS_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
+    + _FORECAST_RELAY_RULES
     + "\nTASK: using the JSON figures, write the whole explanation as EXACTLY "
     "three labelled paragraphs, in this order and with exactly these labels "
     "at the start of each paragraph (each followed by a colon, one paragraph "
@@ -542,6 +596,11 @@ _WEATHER_LEXICON = (
     " rain", " rainy", " monsoon", "habagat", "amihan", " typhoon", "thunderstorm",
     " wet season", " dry season", " rainy season", " north-east monsoon",
     " south-west monsoon", " rains", " rainfall",
+    # Hyphenated variants the plain terms above miss: "wet-season peak",
+    # "rainy-month clustering", "dry-season cases". Without these a compliant
+    # model can slip the banned claim past the guard by hyphenating.
+    "wet-season", "dry-season", "rainy-season", "wet-seasons", "dry-seasons",
+    "rainy-month", "rainy-months", "wet-month", "dry-month",
 )
 
 
@@ -550,7 +609,68 @@ def _weather_violation(narrative):
     the narration used, so endpoints can swap in a safe templated fallback.
     Empty tuple means the prose is clean under the constraint."""
     low = narrative.lower()
-    return tuple(w.strip() for w in _WEATHER_LEXICON if w in low)
+    hits = {w.strip() for w in _WEATHER_LEXICON if w in low}
+    # Normalise hyphens and underscores to spaces before re-checking, so
+    # "wet-season" and "wet_season" cannot dodge the spaced-only terms above.
+    flat = low.replace("-", " ").replace("_", " ")
+    hits |= {w.strip() for w in _WEATHER_LEXICON if w in flat}
+    return tuple(sorted(hits))
+
+
+# Present-tense leakage. The seasonal corpus is pinned to a fixed window, so
+# "now", "today" and "currently" assert the description is live when it is not.
+# A model that echoes the annotation verbatim must still pass the weather guard
+# (see _CLIMATE_TYPE_DEFAULT), so this is kept as its own check rather than
+# folded into the weather lexicon.
+# Matched as whole words so the leading-space forms below also catch a
+# sentence-initial "Now ..." / "Today ...", which is where the model puts them.
+_UNANCHORED_NOW_RE = re.compile(
+    r"\b(now|today|currently|presently)\b"
+    r"|\bright now\b"
+    r"|\bthis month\b"
+    r"|\bat present\b"
+    r"|\bthese days\b"
+    r"|\bat the moment\b"
+    r"|\bin the current\b",
+    # The model capitalises freely ("Now ...", "Today ..."), and this runs on
+    # raw prose, so matching must be case-insensitive.
+    re.IGNORECASE,
+)
+
+
+def _unanchored_now_violation(narrative):
+    """Report present-tense phrasing in a narrative whose grounding is pinned
+    to a historical window. Only meaningful when `as_of` was supplied; naming
+    the window's own month ("up to December 2024") is required, not banned."""
+    return tuple(dict.fromkeys(m.group(0) for m in _UNANCHORED_NOW_RE.finditer(narrative)))
+
+
+_MONTH_NAMES = (
+    "january", "february", "march", "april", "may", "june", "july", "august",
+    "september", "october", "november", "december",
+)
+
+
+def _missing_window_anchor(narrative, as_of):
+    """Return a violation when a pinned-window narrative never says which
+    window it describes.
+
+    Absence of "now" is not sufficient: a sentence that simply states "dengue
+    peaks in September" reads as a timeless claim about the present, when the
+    figures behind it stop at the cutoff. Requiring the month name makes the
+    sentence reproducible and auditable against the same `as_of`.
+    """
+    if not as_of:
+        return ()
+    cutoff = pd.Timestamp(as_of)
+    month_name = _MONTH_NAMES[cutoff.month - 1]
+    low = narrative.lower()
+    # The month name must appear with a year, otherwise "September" could be
+    # the seasonal peak month rather than the window end.
+    year = str(cutoff.year)
+    if re.search(rf"\b{month_name}\s+{year}\b", low) or re.search(rf"\b{year}\b", low):
+        return ()
+    return (f"window anchor missing ({month_name} {year})",)
 
 
 def _safe_season_narrative(grounding):
@@ -642,11 +762,26 @@ _NUMERIC_TOLERANCE = 1.0  # absolute slack; 1%-of-value slack applied per token
 def _numeric_violation(narrative, grounding):
     """Report numeric tokens with no allowed counterpart in the grounding
     payload, within a 1%-or-1-unit rounding tolerance. Empty tuple means the
-    prose cites only figures the pipeline computed."""
+    prose cites only figures the pipeline computed.
+
+    Magnitudes are matched against absolute values as well as signed ones. The
+    pipeline stores direction as a sign (`change_pct_2y: -60`) while the prose
+    carries it as a word ("down 60%"), so the sign is stated in language rather
+    than in the token. Without this the guard rejected faithful sentences: it
+    read "down 60%" against a payload of -60 as an invented 60.
+
+    Known limitation: this makes the guard magnitude-based, not direction-based.
+    "up 60%" against a true -60 would pass. Direction is therefore the model's
+    responsibility to render correctly from the signed payload.
+    """
     allowed = _numeric_allowed(grounding)
+    magnitudes = allowed | {abs(a) for a in allowed}
     bad = []
     for token in _extract_number_tokens(narrative):
-        if any(abs(token - a) <= max(_NUMERIC_TOLERANCE, 0.01 * abs(a)) for a in allowed):
+        if any(
+            abs(token - a) <= max(_NUMERIC_TOLERANCE, 0.01 * abs(a))
+            for a in magnitudes
+        ):
             continue
         bad.append(token)
     return tuple(round(b, 3) for b in bad[:8])
@@ -672,31 +807,117 @@ def _safe_element_narrative(g):
     )
 
 
-def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn):
-    """Generate, then deterministically guard: weather-lexicon check, then
-    numeric-fidelity check against the grounding payload. On either violation
-    the narration is replaced by a templated fallback built from the same
-    grounding (no LLM). Returns narrative, model, flag, and both violation
-    reports for auditability."""
+# Forward-looking phrasing. On a history-only surface ANY of these is a
+# violation. On a forecast-bearing surface the phrase is legitimate only when
+# the same sentence attributes it to the pipeline and carries a figure, so the
+# model relays the forecast instead of originating one.
+_SPECULATIVE_PHRASES = (
+    " will ", " will likely ", " are expected to ", " is expected to ",
+    " expected to ", " projected to ", " is projected to ", " forecast to ",
+    " forecasts to ", " will likely rise", " will likely fall",
+    " may rise", " may fall", " should rise", " should fall",
+    " likely to rise", " likely to fall", " on track to",
+    " anticipate", " anticipated ", " going to ",
+)
+
+# Attribution markers that let a forward-looking sentence pass on a
+# forecast-bearing surface: the prose must read as the pipeline's own outlook.
+_FORECAST_ATTRIBUTION = (
+    "outlook", "forecast", "predicted", "prediction", "projected", "expected",
+    "estimate", "estimated", "model",
+)
+
+
+def _speculative_violation(narrative, *, forecast_bearing=False):
+    """Report forward-looking phrases that are not grounded in the pipeline's
+    own forecast.
+
+    `forecast_bearing=False` (history-only surfaces): any speculative phrase is
+    a violation, because the payload contains no future months at all.
+
+    `forecast_bearing=True` (surfaces whose grounding includes yhat/CI): the
+    sentence is allowed, but only if it attributes the outlook to the pipeline
+    or names a month. An unattributed "cases will rise" is still a violation -
+    that is the model originating a prediction rather than relaying one.
+    """
+    low = narrative.lower()
+    bad = []
+    for phrase in _SPECULATIVE_PHRASES:
+        if phrase not in low:
+            continue
+        if not forecast_bearing:
+            bad.append(phrase.strip())
+            continue
+        # Look at the sentence containing the phrase, not the whole narrative.
+        sentence = next(
+            (s for s in re.split(r"(?<=[.!?])\s+", narrative) if phrase in s.lower()),
+            "",
+        ).lower()
+        if not any(marker in sentence for marker in _FORECAST_ATTRIBUTION):
+            bad.append(phrase.strip())
+            continue
+        # Attributed but still unbounded: "cases will double" relays the
+        # direction without quoting the pipeline's figure, so the magnitude is
+        # the model's own. Require a number in the same sentence. Month names
+        # do not count - "next month" is a date, not a figure.
+        if not re.search(r"\d", sentence):
+            bad.append(f"{phrase.strip()} (no figure)")
+    return tuple(dict.fromkeys(bad))
+
+
+def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn,
+                       *, forecast_bearing=False):
+    """Generate, then deterministically guard: weather-lexicon check, numeric-
+    fidelity check against the grounding payload, then the speculative-prose
+    check. On any violation the narration is replaced by a templated fallback
+    built from the same grounding (no LLM). Returns narrative, model, flag, and
+    every violation report for auditability."""
     narrative, model = _llm_narrate(system_prompt, user_prompt)
     weather = _weather_violation(narrative)
     numbers = _numeric_violation(narrative, grounding)
-    if weather or numbers:
+    speculative = _speculative_violation(narrative, forecast_bearing=forecast_bearing)
+    # Window anchoring only matters where the figures are a pinned window.
+    as_of = grounding.get("as_of") if isinstance(grounding, dict) else None
+    unanchored = (
+        _unanchored_now_violation(narrative) + _missing_window_anchor(narrative, as_of)
+        if as_of
+        else ()
+    )
+    if weather or numbers or speculative or unanchored:
         narrative = safe_fn(grounding)
         used_safe_fallback = True
     else:
         used_safe_fallback = False
-    return narrative, model, used_safe_fallback, weather, numbers
+    return narrative, model, used_safe_fallback, weather, numbers, speculative, unanchored
 
 
-def _seasonality_grounding(db_region, disease):
+def _seasonality_grounding(db_region, disease, as_of=None):
     """Deterministic server-side port of the Seasonality page's decomposition
     (frontend data.ts `decompose()`/`acf()`): centred ±6-month moving-average
     trend, month-of-year seasonal index, residual noise and autocorrelation.
     Computed from the already-loaded history tables only — the LLM narrates
-    these numbers, it never derives its own."""
+    these numbers, it never derives its own.
+
+    `as_of` truncates the series to a fixed window so a stored narrative
+    describes one reproducible slice of history. Without it the decomposition is
+    computed over every recorded month, which makes the figures drift as new
+    months arrive: across the shipped series, 30% change their seasonal peak
+    month and 6% cross the 0.4 autocorrelation threshold the UI reads as a
+    strong annual cycle when the window moves. The corpus is keyed by
+    (region, disease, surface, component) with no month, so it must be pinned
+    to a fixed cutoff — see _CORPUS_AS_OF. The cutoff is emitted in the payload
+    so the model can label the sentence's window instead of implying "now".
+    """
 
     hist = _history(db_region, disease)
+    if as_of is not None:
+        cutoff = pd.Timestamp(as_of)
+        hist = hist[hist["date"] <= cutoff]
+        if hist.empty:
+            raise HTTPException(
+                status_code=404,
+                detail=f"No {disease} history for '{db_region}' through {as_of}",
+            )
     dates = list(hist["date"])
     values = [float(c) for c in hist["cases"]]
     n = len(values)
@@ -747,6 +968,9 @@ def _seasonality_grounding(db_region, disease):
         "observed_months": n,
         "series_start": dates[0].date().isoformat(),
         "series_end": dates[-1].date().isoformat(),
+        # Present only when the caller pins a window, so the model can say
+        # "up to December 2024" instead of implying the description is current.
+        **({"as_of": pd.Timestamp(as_of).date().isoformat()} if as_of is not None else {}),
         "trend": {"latest_index": round(trend_pts[-1]), "change_pct_2y": trend_change},
         "seasonal": {
             "peak_month": peak_month,
@@ -774,6 +998,7 @@ _SEASONALITY_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + _PLAIN_LANGUAGE_RULES
+    + _HISTORY_ONLY_RULES
     + "\nTASK: using the JSON figures, write 2-3 sentences about the yearly "
     "{disease} pattern the user is looking at. Name months instead of month "
     "numbers whenever a number appears in the figures."
@@ -781,25 +1006,30 @@ _SEASONALITY_SYSTEM_PROMPT = (
 
 _SEASONALITY_FOCUS = {
     "observed": (
-        "Focus on how many cases are happening now compared with two years "
-        "ago and with what is usual for this region."
+        "Focus on the level of recorded cases at the end of the window "
+        "compared with two years earlier and with what is usual for this "
+        "region. Say which month you mean."
     ),
     "trend": (
-        "Focus on the long-term direction across the years shown — whether "
-        "{disease} is rising, falling, or steady — and how big that change is."
+        "Focus on the long-term direction across the years shown - whether "
+        "{disease} is rising, falling, or steady - and how big that change is. "
+        "State this one change only."
     ),
     "seasonal": (
         "Focus on the yearly rhythm: which months cases usually rise to a "
         "peak and fall to a low, sticking to calendar months and never "
-        "blaming rain or the seasons for the pattern."
+        "blaming rain or the seasons for the pattern. State only the peak and "
+        "the low, not the strength or the trend."
     ),
     "residual": (
         "Focus on unusual months that jumped above or dropped below the normal "
-        "pattern, and note that some up-and-down from month to month is normal."
+        "pattern, and note that some up-and-down from month to month is normal. "
+        "Do not restate the peak month, the trend or the strength here."
     ),
     "acf": (
-        "Focus on how reliably this pattern repeats every year — whether one "
-        "year looks much like the last."
+        "Focus on how reliably this pattern repeats every year - whether one "
+        "year looks much like the last. Do not repeat the peak month or the "
+        "overall size of the change."
     ),
 }
 
@@ -841,9 +1071,12 @@ def _get_ai_cache_key(system_prompt: str, user_prompt: str) -> str:
 def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
     """Shared constrained LLM call for interpretability endpoints.
 
-    Uses Groq as primary provider and OpenAI as fallback when Groq limits/errors are reached.
-    Includes in-memory TTL caching (30m) and a 5-minute Groq circuit breaker cooldown
-    to protect against quota reach and spam. Fails soft (503) on missing keys or total API errors."""
+    Provider order: Groq (primary) -> Gemini -> OpenAI. Each fallback engages only
+    when the previous provider returned nothing. A Groq 429 opens a circuit-breaker
+    cooldown so subsequent calls skip it entirely rather than retrying into the same
+    limit; Gemini carries the corpus run, which Groq's 8k TPM free tier cannot.
+    Includes in-memory TTL caching (30m). Fails soft (503) on missing keys or total
+    API errors."""
     global _GROQ_COOLDOWN_UNTIL
 
     now = time.time()
@@ -856,6 +1089,7 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
             return cached_narrative, f"{cached_model} (cached)"
 
     groq_key = os.environ.get("GROQ_API_KEY", "").strip()
+    gemini_key = os.environ.get("GEMINI_API_KEY", "").strip()
     openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
 
     narrative = ""
@@ -906,7 +1140,66 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
         except Exception as exc:
             print(f"[llm] Groq primary provider error: {exc!r}", flush=True)
 
-    # 3. Fallback Provider: OpenAI API
+    # 3. Fallback Provider: Gemini API
+    # Gemini is tried before OpenAI because a free Gemini tier has a materially
+    # larger per-minute budget than Groq's 8k TPM, which is what makes a full
+    # ~1,077-scenario corpus run feasible at all. Model IDs rotate often and
+    # several visible ones are retired or demand-throttled, so the list is
+    # tried in order and a 404/503 falls through to the next entry rather than
+    # being treated as fatal.
+    if not narrative and gemini_key:
+        try:
+            from google import genai
+            from google.genai import types as genai_types
+
+            client = genai.Client(api_key=gemini_key)
+            models_to_try = [
+                m.strip()
+                for m in os.environ.get(
+                    "GEMINI_MODEL",
+                    "gemini-flash-lite-latest,gemini-3.7-flash,gemini-3.6-flash",
+                ).split(",")
+                if m.strip()
+            ]
+            for model in models_to_try:
+                try:
+                    resp = client.models.generate_content(
+                        model=model,
+                        contents=[
+                            genai_types.Content(
+                                role="user",
+                                parts=[
+                                    genai_types.Part.from_text(text=user_prompt)
+                                ],
+                            )
+                        ],
+                        # automatic_function_calling is off: these prompts
+                        # never request tools, and leaving it on makes the
+                        # SDK warn (and speculate about tool use) on every call.
+                        config=genai_types.GenerateContentConfig(
+                            system_instruction=system_prompt,
+                            temperature=0.3,
+                            max_output_tokens=1024,
+                            automatic_function_calling=genai_types.AutomaticFunctionCallingConfig(
+                                disable=True
+                            ),
+                        ),
+                    )
+                    narrative = (resp.text or "").strip()
+                    if narrative:
+                        used_model = f"gemini:{model} (fallback)"
+                        break
+                except Exception as exc:
+                    exc_str = str(exc).lower()
+                    if "429" in exc_str or "resource_exhausted" in exc_str:
+                        print(f"[llm] Gemini rate limit/quota reached ({model}): {exc!r}", flush=True)
+                        break
+                    print(f"[llm] Gemini model '{model}' failed: {exc!r}", flush=True)
+                    continue
+        except Exception as exc:
+            print(f"[llm] Gemini fallback provider error: {exc!r}", flush=True)
+
+    # 4. Fallback Provider: OpenAI API
     if not narrative and openai_key:
         try:
             from openai import OpenAI
@@ -928,17 +1221,18 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
         except Exception as exc:
             print(f"[llm] OpenAI fallback provider error: {exc!r}", flush=True)
 
-    # 4. Success handling and Caching
+    # 5. Success handling and Caching
     if narrative and used_model:
         clean_model_tag = used_model.replace(" (fallback)", "")
         _AI_RESPONSE_CACHE[cache_key] = (narrative, clean_model_tag, now)
         return narrative, used_model
 
-    # 5. Soft Failure Responses
-    if not groq_key and not openai_key:
+    # 6. Soft Failure Responses
+    if not groq_key and not gemini_key and not openai_key:
         raise HTTPException(
             status_code=503,
-            detail="AI-assisted analysis unavailable: set GROQ_API_KEY or OPENAI_API_KEY on the server.",
+            detail="AI-assisted analysis unavailable: set GROQ_API_KEY, "
+            "GEMINI_API_KEY or OPENAI_API_KEY on the server.",
         )
 
     raise HTTPException(
@@ -1101,6 +1395,16 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
         "metrics": metrics_out,
         "outbreak": outbreak_items,
     }
+
+
+@app.get("/vocabulary", tags=["objective_5_interpretability"])
+def vocabulary():
+    """Canonical definitions for every user-facing term and both outputs.
+
+    Single source of truth, shared with PAPER.md section 1.6, so the dashboard's
+    wording cannot drift from the paper's. Read-only and static.
+    """
+    return vocabulary_.glossary()
 
 
 @app.get("/regions", tags=["objective_4_dashboard"])
@@ -1581,6 +1885,7 @@ _AI_INSIGHT_SYSTEM_PROMPT = (
     "You write ONE short plain-language sentence for a Philippine regional "
     "{disease} map panel. Base it strictly on the JSON figures.\n"
     + _PLAIN_LANGUAGE_RULES
+    + _FORECAST_RELAY_RULES
     + "\nTASK: in ONE sentence of at most 20 words, say the single most "
     "actionable outlook for this region right now: roughly how cases are "
     "expected to move next month, and only if the season probe is flagged "
@@ -1619,11 +1924,14 @@ def ai_insight(
             used_safe_fallback,
             weather_violations,
             numeric_violations,
+            speculative_violations,
+            unanchored_violations,
         ) = _guarded_narrative(
             _AI_INSIGHT_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
+            forecast_bearing=True,
         )
         source = "live"
     else:
@@ -1632,6 +1940,8 @@ def ai_insight(
         used_safe_fallback = stored["safe_season_fallback"]
         weather_violations = stored["weather_violations"]
         numeric_violations = stored["numeric_violations"]
+        speculative_violations = stored.get("speculative_violations", [])
+        unanchored_violations = stored.get("unanchored_violations", [])
         source = "corpus"
 
     return {
@@ -1641,6 +1951,8 @@ def ai_insight(
         "safe_season_fallback": used_safe_fallback,
         "weather_violations": list(weather_violations),
         "numeric_violations": list(numeric_violations),
+        "speculative_violations": list(speculative_violations),
+        "unanchored_violations": list(unanchored_violations),
         # `model` (not `models`) is the field name the other interpretability
         # endpoints return and the only one the client reads.
         "model": model,
@@ -1672,7 +1984,7 @@ def analysis_seasonality(
             status_code=404,
             detail=f"Unknown component '{component}'. Allowed: {list(allowed_components)}",
         )
-    grounding = _seasonality_grounding(db_region, disease)
+    grounding = _seasonality_grounding(db_region, disease, as_of=_CORPUS_AS_OF)
     grounding["disease"] = disease
 
     stored = _stored_narrative(db_region, disease, "chart_takeaway", component)
@@ -1688,11 +2000,14 @@ def analysis_seasonality(
             used_safe_fallback,
             weather_violations,
             numeric_violations,
+            speculative_violations,
+            unanchored_violations,
         ) = _guarded_narrative(
             _SEASONALITY_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
+            forecast_bearing=False,
         )
         source = "live"
     else:
@@ -1701,6 +2016,8 @@ def analysis_seasonality(
         used_safe_fallback = stored["safe_season_fallback"]
         weather_violations = stored["weather_violations"]
         numeric_violations = stored["numeric_violations"]
+        speculative_violations = stored.get("speculative_violations", [])
+        unanchored_violations = stored.get("unanchored_violations", [])
         source = "corpus"
 
     return {
@@ -1711,6 +2028,8 @@ def analysis_seasonality(
         "safe_season_fallback": used_safe_fallback,
         "weather_violations": list(weather_violations),
         "numeric_violations": list(numeric_violations),
+        "speculative_violations": list(speculative_violations),
+        "unanchored_violations": list(unanchored_violations),
         "grounding_data": grounding,
         "model": model,
         "source": source,
@@ -1748,11 +2067,14 @@ def analysis(
             used_safe_fallback,
             weather_violations,
             numeric_violations,
+            speculative_violations,
+            unanchored_violations,
         ) = _guarded_narrative(
             _ANALYSIS_SYSTEM_PROMPT.format(disease=disease),
             user_prompt,
             grounding,
             _safe_season_narrative,
+            forecast_bearing=True,
         )
         source = "live"
     else:
@@ -1761,6 +2083,8 @@ def analysis(
         used_safe_fallback = stored["safe_season_fallback"]
         weather_violations = stored["weather_violations"]
         numeric_violations = stored["numeric_violations"]
+        speculative_violations = stored.get("speculative_violations", [])
+        unanchored_violations = stored.get("unanchored_violations", [])
         source = "corpus"
 
     return {
@@ -1770,6 +2094,8 @@ def analysis(
         "safe_season_fallback": used_safe_fallback,
         "weather_violations": list(weather_violations),
         "numeric_violations": list(numeric_violations),
+        "speculative_violations": list(speculative_violations),
+        "unanchored_violations": list(unanchored_violations),
         "grounding_data": grounding,
         "model": model,
         "source": source,
@@ -1855,8 +2181,23 @@ def explain_element(request: Request, payload: ExplainElementPayload):
         user_prompt += f"Current Metric/Value: {payload.metric_value}\n"
 
     grounding = payload.model_dump()
-    narrative, model, used_safe_fallback, weather_violations, numeric_violations = (
-        _guarded_narrative(_EXPLAIN_ELEMENT_SYSTEM_PROMPT, user_prompt, grounding, _safe_element_narrative)
+    (
+        narrative,
+        model,
+        used_safe_fallback,
+        weather_violations,
+        numeric_violations,
+        speculative_violations,
+        unanchored_violations,
+    ) = _guarded_narrative(
+        _EXPLAIN_ELEMENT_SYSTEM_PROMPT,
+        user_prompt,
+        grounding,
+        _safe_element_narrative,
+        # The user clicked one element; its figures may or may not be forward-
+        # looking, so a bare "will" is treated as the model originating a
+        # prediction rather than relaying the pipeline's.
+        forecast_bearing=False,
     )
     return {
         "title": payload.title,
@@ -1864,5 +2205,7 @@ def explain_element(request: Request, payload: ExplainElementPayload):
         "safe_season_fallback": used_safe_fallback,
         "weather_violations": list(weather_violations),
         "numeric_violations": list(numeric_violations),
+        "speculative_violations": list(speculative_violations),
+        "unanchored_violations": list(unanchored_violations),
         "model": model,
     }

@@ -1,21 +1,27 @@
 """Seasonal outbreak indicator.
 
-Deterministically flags a region-season as being at seasonal outbreak risk using
-data already produced by the pipeline (O2 forecasts + percentile tiers) — no new
-ML. Two complementary rules, per (disease, region, season):
+Deterministically flags a region-season-probe as being at seasonal outbreak risk
+using data already produced by the pipeline (O2 forecasts + percentile tiers) --
+no new ML. Two complementary rules, per (disease, region, season, probe_anchor):
 
-  Rule A — consecutive High: the season's 3-month probe forecast contains a run
-      of >= N consecutive months whose risk tier is 'High' (>monthly P75).
-      Sustained elevation, not a single anomalous month.
+  Rule A -- all probe months High: every month of the 3-month probe window is in
+      the 'High' tier (>monthly P75). Sustained elevation, not a single
+      anomalous month.
 
-  Rule B — season P75 uplift: the average expected monthly load over the
+  Rule B -- season P75 uplift: the average expected monthly load over the
       season's probe months exceeds the region's historical P75 for that season
       (from seasonal_thresholds.csv). Captures elevated *seasonal* load even
       when individual months sit near the boundary.
 
-If either rule fires, the region is flagged for that season. Both rules reuse
-pre-2025 history via the existing thresholds, keeping the method deterministic
-and explainable (Objective 5).
+If either rule fires, the probe is flagged. The signal is deliberately keyed on
+`probe_anchor` -- the first month of the probe window -- so a season-level verdict
+carries its own position in time. Keying on the bare season name is what let a
+single forecast month stand in for a whole season. `season_start` / `season_end`
+give the window the dashboard brackets, and `history_status` distinguishes a
+window already inside reported data from a genuine extrapolation.
+
+Both rules reuse pre-2025 history via the existing thresholds, keeping the method
+deterministic and explainable (Objective 5).
 
 Run: python -m src.outbreak
 """
@@ -29,9 +35,12 @@ CONSECUTIVE_HIGH_N = 3
 
 def load_seasonal_classification():
     df = pd.read_csv(
-        ingest.PROCESSED_DIR / "seasonal_classification.csv", parse_dates=["date"]
+        ingest.PROCESSED_DIR / "seasonal_classification.csv",
+        parse_dates=["date", "probe_anchor", "season_start", "season_end"],
     )
-    return df.sort_values(["region", "season", "date"], ignore_index=True)
+    return df.sort_values(
+        ["region", "season", "probe_anchor", "date"], ignore_index=True
+    )
 
 
 def load_seasonal_thresholds():
@@ -59,8 +68,8 @@ def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
         consecutive_n = CONSECUTIVE_HIGH_N
 
     records = []
-    key = ["disease", "region", "season"]
-    for (disease, region, season), grp in classification.groupby(key):
+    key = ["disease", "region", "season", "probe_anchor"]
+    for (disease, region, season, probe_anchor), grp in classification.groupby(key):
         grp = grp.sort_values("date")
         n_months = len(grp)
         high_run = _longest_high_run(grp["risk_level"].tolist())
@@ -94,6 +103,10 @@ def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
                 "disease": disease,
                 "region": region,
                 "season": season,
+                "probe_anchor": probe_anchor,
+                "season_start": grp["season_start"].iloc[0],
+                "season_end": grp["season_end"].iloc[0],
+                "history_status": grp["history_status"].iloc[0],
                 "outbreak": bool(rule_a or rule_b),
                 "trigger": trigger,
                 "consecutive_high_n": int(high_run),
@@ -103,8 +116,11 @@ def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
             }
         )
 
-    return pd.DataFrame(records).sort_values(
-        ["region", "season"], ignore_index=True
+    out = pd.DataFrame(records)
+    for col in ("probe_anchor", "season_start", "season_end"):
+        out[col] = pd.to_datetime(out[col])
+    return out.sort_values(
+        ["region", "season", "probe_anchor"], ignore_index=True
     )
 
 
@@ -118,11 +134,12 @@ def run():
     print(f"Saved {len(indicators)} region-season indicators -> {path}")
 
     flagged = indicators[indicators["outbreak"]]
-    print(f"\nFlagged outbreak regions/seasons: {len(flagged)} / {len(indicators)}")
+    print(f"\nFlagged outbreak probes: {len(flagged)} / {len(indicators)}")
     if not flagged.empty:
         print(
             flagged[
-                ["region", "season", "trigger", "consecutive_high_n",
+                ["disease", "region", "season", "season_start", "season_end",
+                 "history_status", "trigger", "consecutive_high_n",
                  "season_avg", "season_p75"]
             ].to_string(index=False)
         )
@@ -132,7 +149,8 @@ def run():
         print("\nNot flagged:")
         print(
             ok[
-                ["region", "season", "consecutive_high_n", "season_avg", "season_p75"]
+                ["region", "season", "season_start", "season_end",
+                 "consecutive_high_n", "season_avg", "season_p75"]
             ].to_string(index=False)
         )
 

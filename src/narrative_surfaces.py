@@ -6,16 +6,21 @@ by construction the same text that gets dispatched. Adding a surface here makes
 it available to both without touching either script.
 
 Every surface declares:
-  surface     - stable key stored in the corpus and requested by the frontend
-  component   - sub-key (which decomposition chart), "" when not applicable
-  system      - system prompt (must include api._PLAIN_LANGUAGE_RULES)
-  grounding   - deterministic payload of pre-computed pipeline numbers
-  user        - user prompt; `disease` is substituted at build time
-  safe_fn     - deterministic fallback used when a guard rejects the prose
+  surface           - stable key stored in the corpus and requested by the frontend
+  component         - sub-key (which decomposition chart), "" when not applicable
+  system            - system prompt (must include api._PLAIN_LANGUAGE_RULES)
+  grounding         - deterministic payload of pre-computed pipeline numbers
+  user              - user prompt; `disease` is substituted at build time
+  safe_fn           - deterministic fallback used when a guard rejects the prose
+  forecast_bearing  - True when the grounding payload actually contains
+                      forward-looking figures (yhat/CI). These surfaces may relay
+                      the pipeline outlook; the rest are history-only and get
+                      api._HISTORY_ONLY_RULES plus a stricter speculative guard.
 
 The LLM narrates these payloads. It never produces a forecast, a tier, or a
 number of its own - the numeric-fidelity guard in api.py enforces that on the
-dispatched text.
+dispatched text, and the speculative-prose guard enforces that it does not
+originate a prediction the pipeline did not make.
 """
 
 from __future__ import annotations
@@ -25,6 +30,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Iterable, Iterator
 
 import pandas as pd
+from fastapi import HTTPException
 
 from . import api, db
 
@@ -57,6 +63,7 @@ _COMPARE_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._HISTORY_ONLY_RULES
     + "\nTASK: the user is comparing this region against the rest of the "
     "country. Write 2-3 sentences that place this region on that comparison: "
     "is it running higher or lower than the national picture, how does it rank, "
@@ -67,6 +74,7 @@ _REPORTED_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._HISTORY_ONLY_RULES
     + "\nTASK: the user is looking at a breakdown of confirmed reported cases "
     "for this region. Write 2-3 sentences describing who is most affected and "
     "how the total has moved, using only the figures provided. Describe the "
@@ -78,6 +86,7 @@ _NATIONAL_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._FORECAST_RELAY_RULES
     + "\nTASK: the user is looking at the national picture for the whole "
     "country. Write 2-3 sentences covering where the country stands overall, "
     "which regions are carrying the highest burden, and how the totals are "
@@ -88,9 +97,17 @@ _CHART_TAKEAWAY_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._HISTORY_ONLY_RULES
+    + "\nFIXED-WINDOW RULE (hard constraint): these figures were computed from a "
+    "fixed window of recorded months that ended in the past, at the date given "
+    "in the `as_of` field. They are not live and they do not reflect the user's "
+    "current slider position. Your sentence MUST contain the phrase 'up to "
+    "December 2024' exactly once, quoting the month and year from `as_of`. "
+    "This is required: text without it is discarded. Never write the words now, "
+    "today, currently or this month, and never write 'up to now'.\n"
     + "\nTASK: the user has just looked at this chart for this region. Write "
     "ONE short sentence stating what this specific chart is showing for this "
-    "region right now - the concrete reading, not a definition of the chart. "
+    "region - the concrete reading, not a definition of the chart. "
     "A separate panel already explains what the chart means, so do not "
     "describe the chart itself, only what its numbers say here."
 )
@@ -99,6 +116,7 @@ _KPI_TAKEAWAY_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._FORECAST_RELAY_RULES
     + "\nTASK: the user is looking at this region's headline number. Write ONE "
     "or two sentences stating where that number sits relative to its own "
     "history and thresholds, and whether it is rising or falling. Give the "
@@ -110,6 +128,7 @@ _ESCALATION_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._FORECAST_RELAY_RULES
     + "\nTASK: the user is looking at the escalation priority list, which ranks "
     "regions by how many risk-tier steps their forecast moves upward over the "
     "next 12 months. Write 2-3 sentences explaining what this region's place in "
@@ -121,6 +140,7 @@ _REPORT_SUMMARY_SYSTEM_PROMPT = (
     "You write short plain-language explanations of {disease} numbers for "
     "Philippine communities, based only on the figures you are given.\n"
     + api._PLAIN_LANGUAGE_RULES
+    + api._FORECAST_RELAY_RULES
     + "\nTASK: these figures are being exported into a surveillance report for "
     "this region. Write 2-3 sentences summarizing the region's current risk "
     "position, its forecast direction, and its data quality. The rest of the "
@@ -141,6 +161,9 @@ class Scenario:
     user: str
     grounding: dict
     safe_fn: Callable[[dict], str] = field(default=api._safe_season_narrative)
+    # Whether this surface's grounding contains forward-looking pipeline figures.
+    # Decides which prompt rules and which arm of the speculative guard apply.
+    forecast_bearing: bool = False
 
     @property
     def key(self) -> tuple[str, str, str, str]:
@@ -330,8 +353,17 @@ def _national_grounding(db_region: str, disease: str) -> dict:
 
 
 def _chart_takeaway_grounding(db_region: str, disease: str) -> dict:
-    """The deterministic decomposition the Seasonality page charts render."""
-    grounding = api._seasonality_grounding(db_region, disease)
+    """The deterministic decomposition the Seasonality page charts render.
+
+    Pinned to `_CORPUS_AS_OF` because this surface is pre-generated and stored
+    under a key with no month component, while the page's own decomposition
+    recomputes as its horizon slider moves. The stored sentence therefore
+    describes the fixed pre-2025 window and says so (`as_of`), rather than
+    drifting with the slider.
+    """
+    grounding = api._seasonality_grounding(
+        db_region, disease, as_of=api._CORPUS_AS_OF
+    )
     grounding["disease"] = disease
     return grounding
 
@@ -470,6 +502,7 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "Give the one-line insight for this region's next month. "
         "Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
     "analysis": {
         "system": api._ANALYSIS_SYSTEM_PROMPT,
@@ -477,6 +510,7 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "Explain the current {disease} situation for this region. "
         "Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
     "compare": {
         "system": _COMPARE_SYSTEM_PROMPT,
@@ -484,6 +518,8 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "The user is comparing this region against the rest of the "
         "country on the Compare page. Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        # Grounding is recorded counts plus the peer ranking only.
+        "forecast_bearing": False,
     },
     "reported": {
         "system": _REPORTED_SYSTEM_PROMPT,
@@ -491,6 +527,8 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "The user is looking at the reported-case breakdown for this "
         "region. Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        # Purely descriptive: who was reported, by age and sex.
+        "forecast_bearing": False,
     },
     "chart_takeaway": {
         "system": _CHART_TAKEAWAY_SYSTEM_PROMPT,
@@ -498,6 +536,8 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "The user is looking at the '{component}' chart for this "
         "region. {focus}Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        # Decomposition of recorded months only - no future figure anywhere.
+        "forecast_bearing": False,
     },
     "kpi_takeaway": {
         "system": _KPI_TAKEAWAY_SYSTEM_PROMPT,
@@ -505,6 +545,7 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "The user is looking at this region's headline {disease} "
         "figure and the trend around it. Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
     "escalation": {
         "system": _ESCALATION_SYSTEM_PROMPT,
@@ -513,6 +554,7 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "{disease}, which ranks regions by forecast upward movement. Figures "
         "you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
     "report_summary": {
         "system": _REPORT_SUMMARY_SYSTEM_PROMPT,
@@ -520,6 +562,7 @@ _PER_SERIES_BUILDERS: dict[str, dict] = {
         "user": "This region's {disease} figures are being exported into a "
         "surveillance report. Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
 }
 
@@ -530,13 +573,25 @@ _NATIONAL_BUILDERS: dict[str, dict] = {
         "user": "The user is looking at the national surveillance picture. "
         "Figures you may use:\n{g}",
         "safe_fn": api._safe_season_narrative,
+        "forecast_bearing": True,
     },
 }
 
 
 def _build_one(surface: str, spec: dict, db_region: str, label: str,
-               disease: str, component: str) -> Scenario:
-    grounding = spec["grounding"](db_region, disease)
+               disease: str, component: str) -> Scenario | None:
+    """Build one scenario, or None when the series is too sparse to narrate.
+
+    A handful of (region, disease) pairs - rare diseases in low-count regions,
+    e.g. Cholera in BARMM - never reach MIN_TRAIN_MONTHS, so they have no
+    validation metrics and the grounding builders raise 404. There is nothing
+    to explain for such a series, and it must not abort the corpus run for
+    every other series, so the pair is skipped here.
+    """
+    try:
+        grounding = spec["grounding"](db_region, disease)
+    except HTTPException:
+        return None
     focus = ""
     if surface == "chart_takeaway":
         focus = api._SEASONALITY_FOCUS[component].format(disease=disease) + " "
@@ -555,6 +610,7 @@ def _build_one(surface: str, spec: dict, db_region: str, label: str,
         user=user,
         grounding=grounding,
         safe_fn=spec["safe_fn"],
+        forecast_bearing=spec.get("forecast_bearing", False),
     )
 
 
@@ -568,7 +624,9 @@ def per_series_scenarios(db_region: str, label: str, disease: str,
         spec = _PER_SERIES_BUILDERS[surface]
         components = SEASONALITY_COMPONENTS if surface == "chart_takeaway" else ("",)
         for component in components:
-            yield _build_one(surface, spec, db_region, label, disease, component)
+            scenario = _build_one(surface, spec, db_region, label, disease, component)
+            if scenario is not None:
+                yield scenario
 
 
 def national_scenarios(db_region: str, label: str, disease: str,
@@ -578,8 +636,10 @@ def national_scenarios(db_region: str, label: str, disease: str,
     for surface in NATIONAL_SURFACES:
         if surface not in wanted:
             continue
-        yield _build_one(surface, _NATIONAL_BUILDERS[surface], db_region, label,
-                         disease, "")
+        scenario = _build_one(surface, _NATIONAL_BUILDERS[surface], db_region, label,
+                              disease, "")
+        if scenario is not None:
+            yield scenario
 
 
 def all_scenarios(diseases: Iterable[str], surfaces: Iterable[str] | None = None,
@@ -600,7 +660,7 @@ def all_scenarios(diseases: Iterable[str], surfaces: Iterable[str] | None = None
             yield from per_series_scenarios(db_region, label, disease, wanted)
 
     # National surfaces run once per disease against the national series.
-    if NATIONAL_SURFACES & wanted:
+    if set(NATIONAL_SURFACES) & wanted:
         for disease in diseases:
             yield from national_scenarios(
                 db.NATIONAL_CODE, db.NATIONAL_NAME, disease, wanted

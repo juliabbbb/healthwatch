@@ -25,6 +25,7 @@ import pandas as pd
 from prophet import Prophet
 
 from . import features, ingest
+from .doh_eb_ingest import DATA_END
 
 logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
 
@@ -38,14 +39,20 @@ WINDOWS = {
 }
 TRAIN_END = pd.Timestamp("2024-12-31")
 
-# Seasonal outbreak "probe" forecasts: one 3-month window per season, expressed
-# as month offsets after the training-end month. The dry probe is the immediate
-# Jan-Mar window; the wet probe targets the historical dengue-peak window
-# (Jul-Sep) of the next wet season so the outbreak indicator can compare each
-# season's expected load against that season's own historical P75.
+# Seasonal outbreak "probe" forecasts: one 3-month window per season, anchored to
+# the CALENDAR, not to the last observed month. The dry probe is Jan-Mar and the
+# wet probe is Jul-Sep of the first full year after TRAIN_END, so the outbreak
+# indicator can compare each season's expected load against that season's own
+# historical P75.
+#
+# The previous scheme took month offsets from series["ds"].max(), which silently
+# relabelled both windows for any series whose data ended mid-year -- Cholera
+# MIMAROPA's "wet" probe resolved to Mar-May (dry months) and Hep A BARMM's
+# "dry" probe to Jun-Aug (wet months). Calendar anchoring removes the dependence
+# on where a series happens to stop, and gives every probe a real month range.
 SEASON_PROBE_MONTHS = 3
-DRY_PROBE_OFFSETS = (1, 3)
-WET_PROBE_OFFSETS = (7, 9)  # Jul-Sep, the climatological wet-season peak
+DRY_PROBE_MONTHS = (1, 2, 3)
+WET_PROBE_MONTHS = (7, 8, 9)  # Jul-Sep, the climatological wet-season peak
 PROBE_HORIZON = 12
 
 FREQ = "MS"
@@ -151,33 +158,61 @@ def build_forecast(series, horizon=FORECAST_MONTHS):
     return fcst
 
 
-def build_season_probes(series, horizon=PROBE_HORIZON):
+def _probe_window(season, year):
+    """First month and full date index of `season`'s 3-month window in `year`."""
+    first = DRY_PROBE_MONTHS[0] if season == "dry" else WET_PROBE_MONTHS[0]
+    anchor = pd.Timestamp(year=year, month=first, day=1)
+    return anchor, pd.date_range(anchor, periods=SEASON_PROBE_MONTHS, freq=FREQ)
+
+
+def build_season_probes(series):
     """One 3-month 'probe' forecast per season (dry, wet) for a region.
 
-    Fits a single Prophet model on history up to TRAIN_END (2024-12-31),
-    forecasts a horizon reaching both seasonal windows, then takes a 3-month
-    slice from each season: DRY = the immediate Jan-Mar window, WET = the
-    Jul-Sep climatological peak of the next season. Month offsets (1-based)
-    count months after the last training month.
+    Fits a single Prophet model on history up to TRAIN_END (2024-12-31) and
+    predicts the two calendar probe windows of the following year. Windows are
+    fixed to the calendar, so a series whose data ends mid-year cannot shift its
+    own probe months.
+
+    Every row carries the probe's identity in time -- `probe_anchor`,
+    `season_start`, `season_end` -- because the outbreak signal is a season-level
+    verdict and must never be rendered against a single month. `history_status`
+    marks the window 'observed' when it already falls inside reported data (a
+    replay that can be checked against what happened) and 'extrapolated' when it
+    lies beyond DATA_END (a genuine forward-looking signal).
     """
     series = series[series["ds"] <= TRAIN_END].reset_index(drop=True)
     model = fit_prophet(series)
-    last = series["ds"].max()
-    future_dates = pd.date_range(last, periods=horizon + 1, freq=FREQ)[1:]
-    fcst = predict(model, future_dates)
-    fcst["yhat"] = fcst["yhat"].clip(lower=0)
-    fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=0)
-    fcst["month_offset"] = range(1, len(fcst) + 1)
+    probe_year = (TRAIN_END + pd.DateOffset(months=1)).year
 
-    def slice_offsets(a, b):
-        return fcst[(fcst["month_offset"] >= a) & (fcst["month_offset"] <= b)].copy()
+    frames = []
+    for season in ("dry", "wet"):
+        anchor, dates = _probe_window(season, probe_year)
+        fcst = predict(model, dates)
+        for col in ("yhat", "yhat_lower", "yhat_upper"):
+            fcst[col] = fcst[col].clip(lower=0)
+        fcst["season"] = season
+        fcst["probe_anchor"] = anchor
+        fcst["season_start"] = dates[0]
+        fcst["season_end"] = dates[-1]
+        fcst["history_status"] = (
+            "extrapolated" if anchor > DATA_END else "observed"
+        )
+        frames.append(fcst)
 
-    dry = slice_offsets(*DRY_PROBE_OFFSETS)
-    wet = slice_offsets(*WET_PROBE_OFFSETS)
-    dry["season"] = "dry"
-    wet["season"] = "wet"
-    out = pd.concat([dry, wet], ignore_index=True).drop(columns=["month_offset"])
-    return out[["ds", "season", "yhat", "yhat_lower", "yhat_upper"]]
+    out = pd.concat(frames, ignore_index=True)
+    return out[
+        [
+            "ds",
+            "season",
+            "probe_anchor",
+            "season_start",
+            "season_end",
+            "history_status",
+            "yhat",
+            "yhat_lower",
+            "yhat_upper",
+        ]
+    ]
 
 
 def run(probes_only=False):
@@ -235,13 +270,25 @@ def run(probes_only=False):
     probes_df = pd.concat(probe_frames, ignore_index=True)
     probes_df = probes_df.rename(columns={"ds": "target_date"})
     probes_df = probes_df[
-        ["disease", "region", "target_date", "season", "yhat", "yhat_lower", "yhat_upper"]
+        [
+            "disease",
+            "region",
+            "season",
+            "probe_anchor",
+            "season_start",
+            "season_end",
+            "history_status",
+            "target_date",
+            "yhat",
+            "yhat_lower",
+            "yhat_upper",
+        ]
     ]
     probes_path = ingest.save_processed(probes_df, "season_probes.csv")
     print(f"Saved {len(probes_df)} seasonal probe rows -> {probes_path}")
     if probes_only:
         print(
-            probes_df.groupby("season")["target_date"]
+            probes_df.groupby(["season", "history_status"])["target_date"]
             .agg(["min", "max", "count"])
             .to_string()
         )

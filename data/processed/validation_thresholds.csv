@@ -1,1140 +1,1140 @@
 disease,region,month,p50,p75
-Acute Bloody Diarrhea,Bangsamoro (BARMM),1,17.0,23.5
+Acute Bloody Diarrhea,Bangsamoro (BARMM),1,15.0,20.75
 Acute Viral Hepatitis,Bangsamoro (BARMM),1,1.0,2.0
 Cholera,Bangsamoro (BARMM),1,0.0,0.0
 Dengue,Bangsamoro (BARMM),1,369.5,459.25
-Typhoid Fever,Bangsamoro (BARMM),1,153.0,186.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),2,13.0,21.5
+Typhoid Fever,Bangsamoro (BARMM),1,144.0,192.0
+Acute Bloody Diarrhea,Bangsamoro (BARMM),2,14.0,24.25
 Acute Viral Hepatitis,Bangsamoro (BARMM),2,1.0,1.0
 Cholera,Bangsamoro (BARMM),2,0.0,0.0
 Dengue,Bangsamoro (BARMM),2,315.0,389.25
-Typhoid Fever,Bangsamoro (BARMM),2,114.0,132.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),3,22.0,24.5
+Typhoid Fever,Bangsamoro (BARMM),2,115.0,133.25
+Acute Bloody Diarrhea,Bangsamoro (BARMM),3,16.5,25.0
 Acute Viral Hepatitis,Bangsamoro (BARMM),3,0.0,0.0
-Cholera,Bangsamoro (BARMM),3,0.0,0.5
+Cholera,Bangsamoro (BARMM),3,0.0,0.75
 Dengue,Bangsamoro (BARMM),3,295.0,383.0
-Typhoid Fever,Bangsamoro (BARMM),3,152.0,178.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),4,18.0,19.0
-Acute Viral Hepatitis,Bangsamoro (BARMM),4,0.0,0.75
-Cholera,Bangsamoro (BARMM),4,0.0,1.0
+Typhoid Fever,Bangsamoro (BARMM),3,125.0,172.25
+Acute Bloody Diarrhea,Bangsamoro (BARMM),4,18.5,19.0
+Acute Viral Hepatitis,Bangsamoro (BARMM),4,0.0,1.0
+Cholera,Bangsamoro (BARMM),4,0.5,1.0
 Dengue,Bangsamoro (BARMM),4,303.0,390.5
-Typhoid Fever,Bangsamoro (BARMM),4,138.0,160.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),5,23.0,27.5
+Typhoid Fever,Bangsamoro (BARMM),4,127.0,161.25
+Acute Bloody Diarrhea,Bangsamoro (BARMM),5,23.5,29.25
 Acute Viral Hepatitis,Bangsamoro (BARMM),5,1.0,1.0
-Cholera,Bangsamoro (BARMM),5,0.0,4.0
+Cholera,Bangsamoro (BARMM),5,0.5,5.5
 Dengue,Bangsamoro (BARMM),5,462.5,577.0
-Typhoid Fever,Bangsamoro (BARMM),5,168.0,179.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),6,11.0,27.5
-Acute Viral Hepatitis,Bangsamoro (BARMM),6,0.0,1.0
+Typhoid Fever,Bangsamoro (BARMM),5,171.0,182.25
+Acute Bloody Diarrhea,Bangsamoro (BARMM),6,14.5,30.25
+Acute Viral Hepatitis,Bangsamoro (BARMM),6,0.5,1.0
 Cholera,Bangsamoro (BARMM),6,0.0,0.0
 Dengue,Bangsamoro (BARMM),6,686.5,883.25
-Typhoid Fever,Bangsamoro (BARMM),6,148.0,175.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),7,19.0,24.0
+Typhoid Fever,Bangsamoro (BARMM),6,152.0,184.5
+Acute Bloody Diarrhea,Bangsamoro (BARMM),7,20.0,25.5
 Acute Viral Hepatitis,Bangsamoro (BARMM),7,1.0,1.0
-Cholera,Bangsamoro (BARMM),7,0.0,0.5
+Cholera,Bangsamoro (BARMM),7,0.0,0.75
 Dengue,Bangsamoro (BARMM),7,769.0,977.75
-Typhoid Fever,Bangsamoro (BARMM),7,186.0,203.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),8,15.0,22.5
+Typhoid Fever,Bangsamoro (BARMM),7,186.5,211.0
+Acute Bloody Diarrhea,Bangsamoro (BARMM),8,16.0,24.25
 Acute Viral Hepatitis,Bangsamoro (BARMM),8,0.0,0.0
-Cholera,Bangsamoro (BARMM),8,1.0,4.0
+Cholera,Bangsamoro (BARMM),8,1.5,4.5
 Dengue,Bangsamoro (BARMM),8,936.5,1177.0
-Typhoid Fever,Bangsamoro (BARMM),8,180.0,190.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),9,13.0,15.5
-Acute Viral Hepatitis,Bangsamoro (BARMM),9,0.0,1.0
-Cholera,Bangsamoro (BARMM),9,0.0,0.5
+Typhoid Fever,Bangsamoro (BARMM),8,177.5,194.5
+Acute Bloody Diarrhea,Bangsamoro (BARMM),9,13.5,16.25
+Acute Viral Hepatitis,Bangsamoro (BARMM),9,0.0,0.75
+Cholera,Bangsamoro (BARMM),9,0.0,0.75
 Dengue,Bangsamoro (BARMM),9,687.0,871.5
-Typhoid Fever,Bangsamoro (BARMM),9,153.0,203.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),10,11.0,20.5
-Acute Viral Hepatitis,Bangsamoro (BARMM),10,0.0,1.0
-Cholera,Bangsamoro (BARMM),10,1.0,1.5
+Typhoid Fever,Bangsamoro (BARMM),9,177.0,204.75
+Acute Bloody Diarrhea,Bangsamoro (BARMM),10,10.5,20.75
+Acute Viral Hepatitis,Bangsamoro (BARMM),10,0.5,1.0
+Cholera,Bangsamoro (BARMM),10,1.0,1.75
 Dengue,Bangsamoro (BARMM),10,548.0,718.75
-Typhoid Fever,Bangsamoro (BARMM),10,148.0,206.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),11,22.0,22.5
-Acute Viral Hepatitis,Bangsamoro (BARMM),11,1.0,1.0
+Typhoid Fever,Bangsamoro (BARMM),10,167.0,206.0
+Acute Bloody Diarrhea,Bangsamoro (BARMM),11,22.0,22.75
+Acute Viral Hepatitis,Bangsamoro (BARMM),11,0.5,1.25
 Cholera,Bangsamoro (BARMM),11,0.0,0.0
 Dengue,Bangsamoro (BARMM),11,404.5,583.75
-Typhoid Fever,Bangsamoro (BARMM),11,111.0,160.0
-Acute Bloody Diarrhea,Bangsamoro (BARMM),12,13.0,23.0
-Acute Viral Hepatitis,Bangsamoro (BARMM),12,0.0,0.0
+Typhoid Fever,Bangsamoro (BARMM),11,130.0,165.5
+Acute Bloody Diarrhea,Bangsamoro (BARMM),12,16.0,25.0
+Acute Viral Hepatitis,Bangsamoro (BARMM),12,0.0,0.5
 Cholera,Bangsamoro (BARMM),12,0.0,0.0
 Dengue,Bangsamoro (BARMM),12,312.0,416.0
-Typhoid Fever,Bangsamoro (BARMM),12,76.0,106.5
-Acute Bloody Diarrhea,Bicol Region,1,10.0,10.5
-Acute Viral Hepatitis,Bicol Region,1,0.0,1.0
-Cholera,Bicol Region,1,40.0,55.5
+Typhoid Fever,Bangsamoro (BARMM),12,83.5,113.75
+Acute Bloody Diarrhea,Bicol Region,1,10.0,10.75
+Acute Viral Hepatitis,Bicol Region,1,0.0,0.75
+Cholera,Bicol Region,1,31.0,51.25
 Dengue,Bicol Region,1,87.5,381.25
-Typhoid Fever,Bicol Region,1,24.0,29.0
-Acute Bloody Diarrhea,Bicol Region,2,5.0,8.5
+Typhoid Fever,Bicol Region,1,22.5,30.0
+Acute Bloody Diarrhea,Bicol Region,2,5.0,10.25
 Acute Viral Hepatitis,Bicol Region,2,0.0,0.0
-Cholera,Bicol Region,2,25.0,38.5
+Cholera,Bicol Region,2,21.0,33.25
 Dengue,Bicol Region,2,85.5,281.0
-Typhoid Fever,Bicol Region,2,17.0,33.5
+Typhoid Fever,Bicol Region,2,16.5,26.75
 Acute Bloody Diarrhea,Bicol Region,3,8.0,8.0
-Acute Viral Hepatitis,Bicol Region,3,0.0,0.75
-Cholera,Bicol Region,3,30.0,39.0
+Acute Viral Hepatitis,Bicol Region,3,0.0,0.0
+Cholera,Bicol Region,3,26.0,35.25
 Dengue,Bicol Region,3,113.5,153.25
-Typhoid Fever,Bicol Region,3,15.0,21.0
-Acute Bloody Diarrhea,Bicol Region,4,8.0,10.0
+Typhoid Fever,Bicol Region,3,14.0,15.75
+Acute Bloody Diarrhea,Bicol Region,4,8.5,10.5
 Acute Viral Hepatitis,Bicol Region,4,0.0,0.0
-Cholera,Bicol Region,4,22.0,43.0
+Cholera,Bicol Region,4,20.5,25.0
 Dengue,Bicol Region,4,75.0,123.75
-Typhoid Fever,Bicol Region,4,17.0,19.0
-Acute Bloody Diarrhea,Bicol Region,5,9.0,15.5
+Typhoid Fever,Bicol Region,4,16.0,17.0
+Acute Bloody Diarrhea,Bicol Region,5,11.5,16.25
 Acute Viral Hepatitis,Bicol Region,5,0.0,0.0
-Cholera,Bicol Region,5,14.0,46.0
+Cholera,Bicol Region,5,12.5,20.0
 Dengue,Bicol Region,5,64.0,200.0
-Typhoid Fever,Bicol Region,5,11.0,23.5
-Acute Bloody Diarrhea,Bicol Region,6,7.0,10.0
+Typhoid Fever,Bicol Region,5,10.0,19.25
+Acute Bloody Diarrhea,Bicol Region,6,7.5,11.0
 Acute Viral Hepatitis,Bicol Region,6,0.0,0.0
-Cholera,Bicol Region,6,21.0,48.0
+Cholera,Bicol Region,6,20.5,36.0
 Dengue,Bicol Region,6,92.5,371.0
-Typhoid Fever,Bicol Region,6,22.0,25.0
-Acute Bloody Diarrhea,Bicol Region,7,6.0,10.5
+Typhoid Fever,Bicol Region,6,17.5,24.25
+Acute Bloody Diarrhea,Bicol Region,7,8.0,10.75
 Acute Viral Hepatitis,Bicol Region,7,0.0,0.0
-Cholera,Bicol Region,7,18.0,38.5
+Cholera,Bicol Region,7,16.0,30.0
 Dengue,Bicol Region,7,164.0,344.5
-Typhoid Fever,Bicol Region,7,27.0,27.5
-Acute Bloody Diarrhea,Bicol Region,8,9.0,10.5
+Typhoid Fever,Bicol Region,7,26.0,27.0
+Acute Bloody Diarrhea,Bicol Region,8,9.0,11.25
 Acute Viral Hepatitis,Bicol Region,8,0.0,0.0
-Cholera,Bicol Region,8,28.0,37.5
+Cholera,Bicol Region,8,19.5,31.0
 Dengue,Bicol Region,8,229.0,357.75
-Typhoid Fever,Bicol Region,8,26.0,36.0
-Acute Bloody Diarrhea,Bicol Region,9,7.0,10.0
+Typhoid Fever,Bicol Region,8,25.0,38.0
+Acute Bloody Diarrhea,Bicol Region,9,7.5,11.0
 Acute Viral Hepatitis,Bicol Region,9,0.0,0.0
-Cholera,Bicol Region,9,32.0,34.5
+Cholera,Bicol Region,9,26.5,32.75
 Dengue,Bicol Region,9,146.5,221.75
-Typhoid Fever,Bicol Region,9,15.0,29.5
-Acute Bloody Diarrhea,Bicol Region,10,10.0,11.0
+Typhoid Fever,Bicol Region,9,14.0,24.75
+Acute Bloody Diarrhea,Bicol Region,10,10.5,11.0
 Acute Viral Hepatitis,Bicol Region,10,0.0,0.0
-Cholera,Bicol Region,10,24.0,41.5
+Cholera,Bicol Region,10,21.0,28.5
 Dengue,Bicol Region,10,107.0,155.25
-Typhoid Fever,Bicol Region,10,26.0,31.0
-Acute Bloody Diarrhea,Bicol Region,11,8.0,11.5
+Typhoid Fever,Bicol Region,10,19.5,26.0
+Acute Bloody Diarrhea,Bicol Region,11,9.5,11.75
 Acute Viral Hepatitis,Bicol Region,11,0.0,0.0
-Cholera,Bicol Region,11,22.0,30.0
+Cholera,Bicol Region,11,16.5,25.75
 Dengue,Bicol Region,11,131.5,185.5
-Typhoid Fever,Bicol Region,11,17.0,26.0
-Acute Bloody Diarrhea,Bicol Region,12,11.0,14.0
+Typhoid Fever,Bicol Region,11,16.5,19.25
+Acute Bloody Diarrhea,Bicol Region,12,12.0,14.5
 Acute Viral Hepatitis,Bicol Region,12,0.0,0.0
-Cholera,Bicol Region,12,21.0,39.5
+Cholera,Bicol Region,12,15.5,27.75
 Dengue,Bicol Region,12,102.5,130.5
-Typhoid Fever,Bicol Region,12,14.0,19.0
-Acute Bloody Diarrhea,CALABARZON,1,31.0,65.5
-Acute Viral Hepatitis,CALABARZON,1,1.0,1.5
-Cholera,CALABARZON,1,0.0,1.0
+Typhoid Fever,Bicol Region,12,13.5,17.0
+Acute Bloody Diarrhea,CALABARZON,1,27.0,55.0
+Acute Viral Hepatitis,CALABARZON,1,1.0,1.75
+Cholera,CALABARZON,1,0.0,0.75
 Dengue,CALABARZON,1,1509.5,3332.0
-Typhoid Fever,CALABARZON,1,86.0,148.0
-Acute Bloody Diarrhea,CALABARZON,2,32.0,41.5
-Acute Viral Hepatitis,CALABARZON,2,1.0,2.0
-Cholera,CALABARZON,2,0.0,0.5
+Typhoid Fever,CALABARZON,1,78.5,95.0
+Acute Bloody Diarrhea,CALABARZON,2,31.0,33.5
+Acute Viral Hepatitis,CALABARZON,2,0.5,2.5
+Cholera,CALABARZON,2,0.0,0.0
 Dengue,CALABARZON,2,1401.5,1749.25
-Typhoid Fever,CALABARZON,2,56.0,112.5
-Acute Bloody Diarrhea,CALABARZON,3,22.0,43.0
-Acute Viral Hepatitis,CALABARZON,3,1.0,3.0
-Cholera,CALABARZON,3,0.0,1.0
+Typhoid Fever,CALABARZON,2,52.5,64.25
+Acute Bloody Diarrhea,CALABARZON,3,20.5,34.0
+Acute Viral Hepatitis,CALABARZON,3,0.5,2.5
+Cholera,CALABARZON,3,0.0,1.5
 Dengue,CALABARZON,3,893.5,1095.5
-Typhoid Fever,CALABARZON,3,49.0,88.5
-Acute Bloody Diarrhea,CALABARZON,4,32.0,50.0
+Typhoid Fever,CALABARZON,3,46.0,63.25
+Acute Bloody Diarrhea,CALABARZON,4,27.5,45.5
 Acute Viral Hepatitis,CALABARZON,4,1.0,1.0
-Cholera,CALABARZON,4,0.0,1.5
+Cholera,CALABARZON,4,0.0,0.75
 Dengue,CALABARZON,4,806.0,898.0
-Typhoid Fever,CALABARZON,4,69.0,83.5
-Acute Bloody Diarrhea,CALABARZON,5,42.0,58.5
-Acute Viral Hepatitis,CALABARZON,5,0.0,0.5
+Typhoid Fever,CALABARZON,4,68.0,72.75
+Acute Bloody Diarrhea,CALABARZON,5,35.5,42.75
+Acute Viral Hepatitis,CALABARZON,5,0.0,0.0
 Cholera,CALABARZON,5,0.0,0.0
 Dengue,CALABARZON,5,1027.0,1318.5
-Typhoid Fever,CALABARZON,5,84.0,112.0
-Acute Bloody Diarrhea,CALABARZON,6,36.0,55.0
-Acute Viral Hepatitis,CALABARZON,6,1.0,1.0
+Typhoid Fever,CALABARZON,5,78.0,97.5
+Acute Bloody Diarrhea,CALABARZON,6,22.0,40.5
+Acute Viral Hepatitis,CALABARZON,6,0.5,1.0
 Cholera,CALABARZON,6,0.0,0.0
 Dengue,CALABARZON,6,1966.0,3130.25
-Typhoid Fever,CALABARZON,6,88.0,121.0
-Acute Bloody Diarrhea,CALABARZON,7,35.0,57.5
+Typhoid Fever,CALABARZON,6,82.0,96.25
+Acute Bloody Diarrhea,CALABARZON,7,30.0,39.5
 Acute Viral Hepatitis,CALABARZON,7,0.0,0.0
 Cholera,CALABARZON,7,0.0,0.0
 Dengue,CALABARZON,7,2712.0,4524.25
-Typhoid Fever,CALABARZON,7,127.0,203.0
-Acute Bloody Diarrhea,CALABARZON,8,28.0,50.5
-Acute Viral Hepatitis,CALABARZON,8,0.0,2.0
-Cholera,CALABARZON,8,0.0,2.5
+Typhoid Fever,CALABARZON,7,125.0,187.0
+Acute Bloody Diarrhea,CALABARZON,8,24.5,30.25
+Acute Viral Hepatitis,CALABARZON,8,0.0,1.5
+Cholera,CALABARZON,8,0.0,1.5
 Dengue,CALABARZON,8,3527.5,6677.25
-Typhoid Fever,CALABARZON,8,112.0,181.5
-Acute Bloody Diarrhea,CALABARZON,9,19.0,52.5
-Acute Viral Hepatitis,CALABARZON,9,0.0,1.0
-Cholera,CALABARZON,9,1.0,1.5
+Typhoid Fever,CALABARZON,8,110.0,157.75
+Acute Bloody Diarrhea,CALABARZON,9,18.5,43.0
+Acute Viral Hepatitis,CALABARZON,9,0.0,0.0
+Cholera,CALABARZON,9,0.5,1.75
 Dengue,CALABARZON,9,3450.0,5432.0
-Typhoid Fever,CALABARZON,9,103.0,157.5
-Acute Bloody Diarrhea,CALABARZON,10,25.0,41.5
-Acute Viral Hepatitis,CALABARZON,10,0.0,2.0
-Cholera,CALABARZON,10,0.0,5.0
+Typhoid Fever,CALABARZON,9,91.0,141.25
+Acute Bloody Diarrhea,CALABARZON,10,19.5,28.75
+Acute Viral Hepatitis,CALABARZON,10,0.0,0.75
+Cholera,CALABARZON,10,0.0,7.5
 Dengue,CALABARZON,10,2532.5,7449.0
-Typhoid Fever,CALABARZON,10,105.0,127.0
-Acute Bloody Diarrhea,CALABARZON,11,28.0,36.0
-Acute Viral Hepatitis,CALABARZON,11,0.0,0.5
-Cholera,CALABARZON,11,0.0,3.0
+Typhoid Fever,CALABARZON,10,79.0,108.0
+Acute Bloody Diarrhea,CALABARZON,11,24.5,32.5
+Acute Viral Hepatitis,CALABARZON,11,0.0,0.75
+Cholera,CALABARZON,11,0.0,4.5
 Dengue,CALABARZON,11,2479.0,4065.25
-Typhoid Fever,CALABARZON,11,66.0,90.0
-Acute Bloody Diarrhea,CALABARZON,12,19.0,32.5
-Acute Viral Hepatitis,CALABARZON,12,0.0,0.5
+Typhoid Fever,CALABARZON,11,60.5,76.5
+Acute Bloody Diarrhea,CALABARZON,12,18.5,31.0
+Acute Viral Hepatitis,CALABARZON,12,0.0,0.0
 Cholera,CALABARZON,12,0.0,0.0
 Dengue,CALABARZON,12,1590.5,2796.75
-Typhoid Fever,CALABARZON,12,41.0,70.5
-Acute Bloody Diarrhea,Cagayan Valley,1,104.0,121.5
+Typhoid Fever,CALABARZON,12,39.0,60.5
+Acute Bloody Diarrhea,Cagayan Valley,1,101.0,116.0
 Acute Viral Hepatitis,Cagayan Valley,1,0.0,0.0
 Cholera,Cagayan Valley,1,0.0,0.0
 Dengue,Cagayan Valley,1,460.5,545.0
-Typhoid Fever,Cagayan Valley,1,89.0,96.5
-Acute Bloody Diarrhea,Cagayan Valley,2,83.0,100.0
+Typhoid Fever,Cagayan Valley,1,90.5,98.75
+Acute Bloody Diarrhea,Cagayan Valley,2,81.0,98.75
 Acute Viral Hepatitis,Cagayan Valley,2,0.0,0.0
 Cholera,Cagayan Valley,2,0.5,0.75
 Dengue,Cagayan Valley,2,352.0,429.0
-Typhoid Fever,Cagayan Valley,2,61.0,87.5
-Acute Bloody Diarrhea,Cagayan Valley,3,120.0,123.0
+Typhoid Fever,Cagayan Valley,2,66.5,95.25
+Acute Bloody Diarrhea,Cagayan Valley,3,90.5,124.5
 Acute Viral Hepatitis,Cagayan Valley,3,0.0,0.0
 Cholera,Cagayan Valley,3,0.0,0.0
 Dengue,Cagayan Valley,3,267.0,442.25
-Typhoid Fever,Cagayan Valley,3,55.0,70.5
-Acute Bloody Diarrhea,Cagayan Valley,4,121.0,139.0
+Typhoid Fever,Cagayan Valley,3,50.5,73.75
+Acute Bloody Diarrhea,Cagayan Valley,4,97.5,145.0
 Acute Viral Hepatitis,Cagayan Valley,4,0.0,0.0
 Cholera,Cagayan Valley,4,1.5,2.25
 Dengue,Cagayan Valley,4,243.0,361.25
-Typhoid Fever,Cagayan Valley,4,42.0,74.0
-Acute Bloody Diarrhea,Cagayan Valley,5,108.0,143.5
+Typhoid Fever,Cagayan Valley,4,51.5,79.5
+Acute Bloody Diarrhea,Cagayan Valley,5,87.5,124.5
 Acute Viral Hepatitis,Cagayan Valley,5,0.0,0.0
 Cholera,Cagayan Valley,5,0.5,0.75
 Dengue,Cagayan Valley,5,379.0,652.75
-Typhoid Fever,Cagayan Valley,5,56.0,76.0
-Acute Bloody Diarrhea,Cagayan Valley,6,137.0,155.0
+Typhoid Fever,Cagayan Valley,5,57.5,84.5
+Acute Bloody Diarrhea,Cagayan Valley,6,122.0,146.75
 Acute Viral Hepatitis,Cagayan Valley,6,0.0,0.0
 Cholera,Cagayan Valley,6,1.0,1.0
 Dengue,Cagayan Valley,6,663.0,1179.5
-Typhoid Fever,Cagayan Valley,6,68.0,97.5
-Acute Bloody Diarrhea,Cagayan Valley,7,81.0,138.5
+Typhoid Fever,Cagayan Valley,6,77.5,102.75
+Acute Bloody Diarrhea,Cagayan Valley,7,71.5,111.75
 Acute Viral Hepatitis,Cagayan Valley,7,0.0,0.0
 Cholera,Cagayan Valley,7,0.5,0.75
 Dengue,Cagayan Valley,7,1244.5,2158.75
-Typhoid Fever,Cagayan Valley,7,89.0,108.0
-Acute Bloody Diarrhea,Cagayan Valley,8,81.0,140.0
-Acute Viral Hepatitis,Cagayan Valley,8,0.0,0.75
+Typhoid Fever,Cagayan Valley,7,72.0,100.25
+Acute Bloody Diarrhea,Cagayan Valley,8,71.0,116.25
+Acute Viral Hepatitis,Cagayan Valley,8,0.0,0.0
 Cholera,Cagayan Valley,8,0.0,0.0
 Dengue,Cagayan Valley,8,1831.5,2947.75
-Typhoid Fever,Cagayan Valley,8,97.0,129.0
-Acute Bloody Diarrhea,Cagayan Valley,9,76.0,95.5
+Typhoid Fever,Cagayan Valley,8,95.0,101.5
+Acute Bloody Diarrhea,Cagayan Valley,9,67.5,80.5
 Acute Viral Hepatitis,Cagayan Valley,9,0.0,0.0
 Cholera,Cagayan Valley,9,0.5,0.75
 Dengue,Cagayan Valley,9,1124.5,2235.75
-Typhoid Fever,Cagayan Valley,9,99.0,118.5
-Acute Bloody Diarrhea,Cagayan Valley,10,78.0,83.5
+Typhoid Fever,Cagayan Valley,9,95.5,105.75
+Acute Bloody Diarrhea,Cagayan Valley,10,67.5,81.75
 Acute Viral Hepatitis,Cagayan Valley,10,0.0,0.0
 Cholera,Cagayan Valley,10,0.0,0.0
 Dengue,Cagayan Valley,10,1339.5,1529.25
-Typhoid Fever,Cagayan Valley,10,92.0,113.0
-Acute Bloody Diarrhea,Cagayan Valley,11,64.0,92.0
+Typhoid Fever,Cagayan Valley,10,91.0,107.75
+Acute Bloody Diarrhea,Cagayan Valley,11,62.5,94.75
 Acute Viral Hepatitis,Cagayan Valley,11,0.0,0.0
 Cholera,Cagayan Valley,11,1.0,1.0
 Dengue,Cagayan Valley,11,972.0,1295.5
-Typhoid Fever,Cagayan Valley,11,83.0,95.5
-Acute Bloody Diarrhea,Cagayan Valley,12,60.0,94.0
+Typhoid Fever,Cagayan Valley,11,80.0,97.75
+Acute Bloody Diarrhea,Cagayan Valley,12,60.0,78.75
 Acute Viral Hepatitis,Cagayan Valley,12,0.0,0.0
 Cholera,Cagayan Valley,12,0.0,0.0
 Dengue,Cagayan Valley,12,521.5,897.0
-Typhoid Fever,Cagayan Valley,12,58.0,78.5
-Acute Bloody Diarrhea,Caraga,1,103.0,175.0
+Typhoid Fever,Cagayan Valley,12,56.0,67.75
+Acute Bloody Diarrhea,Caraga,1,84.5,146.5
 Acute Viral Hepatitis,Caraga,1,0.0,0.75
-Cholera,Caraga,1,15.0,99.5
+Cholera,Caraga,1,13.5,72.75
 Dengue,Caraga,1,788.5,1299.0
-Typhoid Fever,Caraga,1,26.0,46.5
-Acute Bloody Diarrhea,Caraga,2,95.0,139.0
-Acute Viral Hepatitis,Caraga,2,0.0,1.0
-Cholera,Caraga,2,12.0,84.0
+Typhoid Fever,Caraga,1,25.5,38.75
+Acute Bloody Diarrhea,Caraga,2,68.0,104.0
+Acute Viral Hepatitis,Caraga,2,0.0,0.75
+Cholera,Caraga,2,9.5,68.25
 Dengue,Caraga,2,632.0,928.25
-Typhoid Fever,Caraga,2,30.0,42.0
-Acute Bloody Diarrhea,Caraga,3,92.0,155.0
+Typhoid Fever,Caraga,2,29.0,32.25
+Acute Bloody Diarrhea,Caraga,3,75.0,106.25
 Acute Viral Hepatitis,Caraga,3,0.0,0.0
-Cholera,Caraga,3,18.0,79.5
+Cholera,Caraga,3,16.5,47.25
 Dengue,Caraga,3,439.0,522.5
-Typhoid Fever,Caraga,3,29.0,43.0
-Acute Bloody Diarrhea,Caraga,4,81.0,177.5
-Acute Viral Hepatitis,Caraga,4,0.0,1.0
-Cholera,Caraga,4,43.0,54.0
+Typhoid Fever,Caraga,3,22.0,32.0
+Acute Bloody Diarrhea,Caraga,4,67.5,114.0
+Acute Viral Hepatitis,Caraga,4,0.0,0.75
+Cholera,Caraga,4,32.0,58.0
 Dengue,Caraga,4,300.0,377.5
-Typhoid Fever,Caraga,4,29.0,44.0
-Acute Bloody Diarrhea,Caraga,5,81.0,183.0
-Acute Viral Hepatitis,Caraga,5,0.0,0.5
-Cholera,Caraga,5,29.0,65.5
+Typhoid Fever,Caraga,4,26.0,36.5
+Acute Bloody Diarrhea,Caraga,5,79.5,135.75
+Acute Viral Hepatitis,Caraga,5,0.0,0.75
+Cholera,Caraga,5,22.5,41.0
 Dengue,Caraga,5,377.0,447.75
-Typhoid Fever,Caraga,5,28.0,41.5
-Acute Bloody Diarrhea,Caraga,6,83.0,170.0
-Acute Viral Hepatitis,Caraga,6,0.0,1.0
-Cholera,Caraga,6,32.0,56.5
+Typhoid Fever,Caraga,5,21.5,32.5
+Acute Bloody Diarrhea,Caraga,6,78.5,104.75
+Acute Viral Hepatitis,Caraga,6,0.0,0.0
+Cholera,Caraga,6,17.0,42.5
 Dengue,Caraga,6,444.0,660.25
-Typhoid Fever,Caraga,6,31.0,47.5
-Acute Bloody Diarrhea,Caraga,7,100.0,184.0
-Acute Viral Hepatitis,Caraga,7,1.0,1.5
-Cholera,Caraga,7,30.0,70.0
+Typhoid Fever,Caraga,6,24.0,34.0
+Acute Bloody Diarrhea,Caraga,7,83.0,100.0
+Acute Viral Hepatitis,Caraga,7,1.0,1.0
+Cholera,Caraga,7,20.5,33.0
 Dengue,Caraga,7,519.0,937.25
-Typhoid Fever,Caraga,7,27.0,59.5
-Acute Bloody Diarrhea,Caraga,8,60.0,139.0
-Acute Viral Hepatitis,Caraga,8,1.0,1.5
-Cholera,Caraga,8,14.0,61.5
+Typhoid Fever,Caraga,7,25.5,39.0
+Acute Bloody Diarrhea,Caraga,8,59.5,77.25
+Acute Viral Hepatitis,Caraga,8,0.5,1.0
+Cholera,Caraga,8,9.5,38.75
 Dengue,Caraga,8,581.5,1136.5
-Typhoid Fever,Caraga,8,27.0,75.0
-Acute Bloody Diarrhea,Caraga,9,45.0,109.0
-Acute Viral Hepatitis,Caraga,9,0.0,0.5
-Cholera,Caraga,9,16.0,57.5
+Typhoid Fever,Caraga,8,23.0,57.0
+Acute Bloody Diarrhea,Caraga,9,42.0,60.0
+Acute Viral Hepatitis,Caraga,9,0.0,0.0
+Cholera,Caraga,9,11.5,30.25
 Dengue,Caraga,9,652.0,839.25
-Typhoid Fever,Caraga,9,31.0,72.0
-Acute Bloody Diarrhea,Caraga,10,39.0,100.0
-Acute Viral Hepatitis,Caraga,10,0.0,0.5
-Cholera,Caraga,10,19.0,71.0
+Typhoid Fever,Caraga,9,28.5,60.25
+Acute Bloody Diarrhea,Caraga,10,33.0,60.75
+Acute Viral Hepatitis,Caraga,10,0.0,0.0
+Cholera,Caraga,10,13.0,28.75
 Dengue,Caraga,10,517.5,938.25
-Typhoid Fever,Caraga,10,34.0,53.0
-Acute Bloody Diarrhea,Caraga,11,50.0,98.5
+Typhoid Fever,Caraga,10,25.5,47.5
+Acute Bloody Diarrhea,Caraga,11,42.5,84.5
 Acute Viral Hepatitis,Caraga,11,0.0,0.0
-Cholera,Caraga,11,14.0,48.5
+Cholera,Caraga,11,8.5,22.25
 Dengue,Caraga,11,604.5,795.25
-Typhoid Fever,Caraga,11,31.0,43.0
-Acute Bloody Diarrhea,Caraga,12,51.0,82.0
+Typhoid Fever,Caraga,11,27.5,31.75
+Acute Bloody Diarrhea,Caraga,12,40.0,55.5
 Acute Viral Hepatitis,Caraga,12,0.0,0.0
-Cholera,Caraga,12,20.0,87.5
+Cholera,Caraga,12,12.5,46.25
 Dengue,Caraga,12,701.5,965.25
-Typhoid Fever,Caraga,12,18.0,33.5
-Acute Bloody Diarrhea,Central Luzon,1,33.0,41.5
+Typhoid Fever,Caraga,12,16.5,21.75
+Acute Bloody Diarrhea,Central Luzon,1,32.5,35.25
 Acute Viral Hepatitis,Central Luzon,1,0.0,0.75
 Cholera,Central Luzon,1,0.0,0.0
 Dengue,Central Luzon,1,2237.0,3257.25
-Typhoid Fever,Central Luzon,1,50.0,76.5
-Acute Bloody Diarrhea,Central Luzon,2,29.0,38.5
+Typhoid Fever,Central Luzon,1,56.0,83.75
+Acute Bloody Diarrhea,Central Luzon,2,28.0,34.25
 Acute Viral Hepatitis,Central Luzon,2,0.0,0.75
 Cholera,Central Luzon,2,0.0,3.0
 Dengue,Central Luzon,2,1311.0,1668.0
-Typhoid Fever,Central Luzon,2,46.0,61.5
-Acute Bloody Diarrhea,Central Luzon,3,32.0,68.0
-Acute Viral Hepatitis,Central Luzon,3,0.0,1.0
+Typhoid Fever,Central Luzon,2,40.5,65.75
+Acute Bloody Diarrhea,Central Luzon,3,26.5,51.5
+Acute Viral Hepatitis,Central Luzon,3,0.0,0.75
 Cholera,Central Luzon,3,0.0,0.75
 Dengue,Central Luzon,3,821.0,965.25
-Typhoid Fever,Central Luzon,3,27.0,45.0
-Acute Bloody Diarrhea,Central Luzon,4,50.0,64.0
-Acute Viral Hepatitis,Central Luzon,4,0.0,0.5
+Typhoid Fever,Central Luzon,3,23.0,42.0
+Acute Bloody Diarrhea,Central Luzon,4,41.0,60.5
+Acute Viral Hepatitis,Central Luzon,4,0.0,0.75
 Cholera,Central Luzon,4,0.0,0.75
 Dengue,Central Luzon,4,670.0,857.75
-Typhoid Fever,Central Luzon,4,26.0,53.0
-Acute Bloody Diarrhea,Central Luzon,5,47.0,59.5
+Typhoid Fever,Central Luzon,4,25.0,59.75
+Acute Bloody Diarrhea,Central Luzon,5,41.0,50.75
 Acute Viral Hepatitis,Central Luzon,5,0.0,1.5
 Cholera,Central Luzon,5,0.0,1.5
 Dengue,Central Luzon,5,777.0,886.0
-Typhoid Fever,Central Luzon,5,32.0,72.5
-Acute Bloody Diarrhea,Central Luzon,6,41.0,44.0
-Acute Viral Hepatitis,Central Luzon,6,0.0,1.0
+Typhoid Fever,Central Luzon,5,29.0,75.5
+Acute Bloody Diarrhea,Central Luzon,6,36.0,42.5
+Acute Viral Hepatitis,Central Luzon,6,0.0,0.75
 Cholera,Central Luzon,6,0.0,0.75
 Dengue,Central Luzon,6,1558.0,2264.25
-Typhoid Fever,Central Luzon,6,57.0,101.5
-Acute Bloody Diarrhea,Central Luzon,7,33.0,44.0
-Acute Viral Hepatitis,Central Luzon,7,0.0,0.5
+Typhoid Fever,Central Luzon,6,51.0,111.0
+Acute Bloody Diarrhea,Central Luzon,7,31.0,36.0
+Acute Viral Hepatitis,Central Luzon,7,0.0,0.75
 Cholera,Central Luzon,7,0.0,0.0
 Dengue,Central Luzon,7,2889.0,4012.0
-Typhoid Fever,Central Luzon,7,80.0,135.0
-Acute Bloody Diarrhea,Central Luzon,8,26.0,55.0
+Typhoid Fever,Central Luzon,7,86.0,150.0
+Acute Bloody Diarrhea,Central Luzon,8,22.5,45.5
 Acute Viral Hepatitis,Central Luzon,8,0.0,0.0
 Cholera,Central Luzon,8,0.0,0.0
 Dengue,Central Luzon,8,6001.5,9538.0
-Typhoid Fever,Central Luzon,8,66.0,121.5
-Acute Bloody Diarrhea,Central Luzon,9,36.0,60.0
-Acute Viral Hepatitis,Central Luzon,9,1.0,1.0
+Typhoid Fever,Central Luzon,8,69.5,143.75
+Acute Bloody Diarrhea,Central Luzon,9,29.0,59.25
+Acute Viral Hepatitis,Central Luzon,9,0.5,1.0
 Cholera,Central Luzon,9,0.0,2.25
 Dengue,Central Luzon,9,3988.0,6193.5
-Typhoid Fever,Central Luzon,9,54.0,119.5
-Acute Bloody Diarrhea,Central Luzon,10,37.0,40.0
-Acute Viral Hepatitis,Central Luzon,10,1.0,1.0
+Typhoid Fever,Central Luzon,9,80.5,125.75
+Acute Bloody Diarrhea,Central Luzon,10,31.0,39.25
+Acute Viral Hepatitis,Central Luzon,10,0.5,1.0
 Cholera,Central Luzon,10,0.5,5.5
 Dengue,Central Luzon,10,3710.0,4823.75
-Typhoid Fever,Central Luzon,10,62.0,85.5
-Acute Bloody Diarrhea,Central Luzon,11,28.0,44.5
-Acute Viral Hepatitis,Central Luzon,11,0.0,0.5
-Cholera,Central Luzon,11,1.0,4.0
+Typhoid Fever,Central Luzon,10,66.0,91.25
+Acute Bloody Diarrhea,Central Luzon,11,28.0,37.0
+Acute Viral Hepatitis,Central Luzon,11,0.0,0.75
+Cholera,Central Luzon,11,0.5,5.5
 Dengue,Central Luzon,11,2810.5,3104.0
-Typhoid Fever,Central Luzon,11,35.0,90.5
-Acute Bloody Diarrhea,Central Luzon,12,26.0,42.5
+Typhoid Fever,Central Luzon,11,34.0,93.5
+Acute Bloody Diarrhea,Central Luzon,12,26.0,32.0
 Acute Viral Hepatitis,Central Luzon,12,1.0,1.0
-Cholera,Central Luzon,12,0.0,0.5
+Cholera,Central Luzon,12,0.0,0.75
 Dengue,Central Luzon,12,2260.0,2679.25
-Typhoid Fever,Central Luzon,12,41.0,71.5
-Acute Bloody Diarrhea,Central Visayas,1,255.0,598.5
-Acute Viral Hepatitis,Central Visayas,1,3.0,3.5
-Cholera,Central Visayas,1,1.0,3.5
+Typhoid Fever,Central Luzon,12,35.0,75.5
+Acute Bloody Diarrhea,Central Visayas,1,242.0,447.75
+Acute Viral Hepatitis,Central Visayas,1,2.5,3.0
+Cholera,Central Visayas,1,0.5,4.75
 Dengue,Central Visayas,1,1013.0,2673.5
-Typhoid Fever,Central Visayas,1,65.0,103.5
-Acute Bloody Diarrhea,Central Visayas,2,198.0,434.0
-Acute Viral Hepatitis,Central Visayas,2,1.0,2.0
-Cholera,Central Visayas,2,0.0,0.5
+Typhoid Fever,Central Visayas,1,63.5,110.75
+Acute Bloody Diarrhea,Central Visayas,2,164.5,354.75
+Acute Viral Hepatitis,Central Visayas,2,1.0,1.0
+Cholera,Central Visayas,2,0.0,0.75
 Dengue,Central Visayas,2,1093.5,1577.0
-Typhoid Fever,Central Visayas,2,51.0,88.5
-Acute Bloody Diarrhea,Central Visayas,3,217.0,372.5
-Acute Viral Hepatitis,Central Visayas,3,3.0,5.0
-Cholera,Central Visayas,3,0.0,0.5
+Typhoid Fever,Central Visayas,2,48.5,89.25
+Acute Bloody Diarrhea,Central Visayas,3,184.0,295.0
+Acute Viral Hepatitis,Central Visayas,3,2.5,3.75
+Cholera,Central Visayas,3,0.0,0.75
 Dengue,Central Visayas,3,945.0,1058.25
-Typhoid Fever,Central Visayas,3,49.0,85.0
-Acute Bloody Diarrhea,Central Visayas,4,164.0,276.5
-Acute Viral Hepatitis,Central Visayas,4,2.0,4.0
-Cholera,Central Visayas,4,1.0,1.0
+Typhoid Fever,Central Visayas,3,59.5,90.0
+Acute Bloody Diarrhea,Central Visayas,4,154.0,188.0
+Acute Viral Hepatitis,Central Visayas,4,1.5,2.75
+Cholera,Central Visayas,4,0.5,1.0
 Dengue,Central Visayas,4,399.0,635.0
-Typhoid Fever,Central Visayas,4,51.0,60.5
-Acute Bloody Diarrhea,Central Visayas,5,197.0,309.0
-Acute Viral Hepatitis,Central Visayas,5,2.0,2.5
+Typhoid Fever,Central Visayas,4,49.0,62.25
+Acute Bloody Diarrhea,Central Visayas,5,188.5,210.5
+Acute Viral Hepatitis,Central Visayas,5,1.5,2.0
 Cholera,Central Visayas,5,0.0,0.0
 Dengue,Central Visayas,5,416.0,712.0
-Typhoid Fever,Central Visayas,5,65.0,88.0
-Acute Bloody Diarrhea,Central Visayas,6,174.0,306.0
-Acute Viral Hepatitis,Central Visayas,6,2.0,3.0
-Cholera,Central Visayas,6,0.0,1.0
+Typhoid Fever,Central Visayas,5,70.5,94.0
+Acute Bloody Diarrhea,Central Visayas,6,164.5,213.75
+Acute Viral Hepatitis,Central Visayas,6,2.0,2.75
+Cholera,Central Visayas,6,0.5,1.0
 Dengue,Central Visayas,6,621.0,782.75
-Typhoid Fever,Central Visayas,6,75.0,144.0
-Acute Bloody Diarrhea,Central Visayas,7,147.0,383.5
-Acute Viral Hepatitis,Central Visayas,7,1.0,3.0
-Cholera,Central Visayas,7,0.0,1.0
+Typhoid Fever,Central Visayas,6,103.5,150.0
+Acute Bloody Diarrhea,Central Visayas,7,141.0,250.5
+Acute Viral Hepatitis,Central Visayas,7,0.5,2.5
+Cholera,Central Visayas,7,0.5,1.0
 Dengue,Central Visayas,7,1262.0,1945.0
-Typhoid Fever,Central Visayas,7,106.0,138.0
-Acute Bloody Diarrhea,Central Visayas,8,213.0,330.5
-Acute Viral Hepatitis,Central Visayas,8,2.0,2.0
-Cholera,Central Visayas,8,0.0,0.5
+Typhoid Fever,Central Visayas,7,95.5,143.0
+Acute Bloody Diarrhea,Central Visayas,8,155.0,231.75
+Acute Viral Hepatitis,Central Visayas,8,1.5,2.0
+Cholera,Central Visayas,8,0.0,0.75
 Dengue,Central Visayas,8,1216.0,3498.75
-Typhoid Fever,Central Visayas,8,112.0,139.5
-Acute Bloody Diarrhea,Central Visayas,9,147.0,226.5
-Acute Viral Hepatitis,Central Visayas,9,3.0,4.5
-Cholera,Central Visayas,9,0.0,1.0
+Typhoid Fever,Central Visayas,8,105.0,151.25
+Acute Bloody Diarrhea,Central Visayas,9,114.5,175.5
+Acute Viral Hepatitis,Central Visayas,9,2.5,3.75
+Cholera,Central Visayas,9,0.0,1.5
 Dengue,Central Visayas,9,1131.0,2677.25
-Typhoid Fever,Central Visayas,9,102.0,107.0
-Acute Bloody Diarrhea,Central Visayas,10,131.0,208.5
-Acute Viral Hepatitis,Central Visayas,10,2.0,2.5
+Typhoid Fever,Central Visayas,9,96.0,108.0
+Acute Bloody Diarrhea,Central Visayas,10,124.5,137.0
+Acute Viral Hepatitis,Central Visayas,10,1.5,2.75
 Cholera,Central Visayas,10,0.0,0.0
 Dengue,Central Visayas,10,823.0,2555.75
-Typhoid Fever,Central Visayas,10,96.0,113.5
-Acute Bloody Diarrhea,Central Visayas,11,142.0,211.0
-Acute Viral Hepatitis,Central Visayas,11,1.0,3.0
+Typhoid Fever,Central Visayas,10,86.5,121.25
+Acute Bloody Diarrhea,Central Visayas,11,131.0,144.25
+Acute Viral Hepatitis,Central Visayas,11,1.5,3.5
 Cholera,Central Visayas,11,0.0,0.0
 Dengue,Central Visayas,11,1104.0,2076.75
-Typhoid Fever,Central Visayas,11,78.0,117.5
-Acute Bloody Diarrhea,Central Visayas,12,124.0,176.5
-Acute Viral Hepatitis,Central Visayas,12,2.0,3.5
+Typhoid Fever,Central Visayas,11,71.0,125.25
+Acute Bloody Diarrhea,Central Visayas,12,122.5,125.5
+Acute Viral Hepatitis,Central Visayas,12,2.0,3.75
 Cholera,Central Visayas,12,0.0,0.0
 Dengue,Central Visayas,12,872.5,1715.25
-Typhoid Fever,Central Visayas,12,58.0,77.5
-Acute Bloody Diarrhea,Cordillera Administrative Region,1,95.0,102.5
+Typhoid Fever,Central Visayas,12,61.0,83.75
+Acute Bloody Diarrhea,Cordillera Administrative Region,1,78.0,95.75
 Acute Viral Hepatitis,Cordillera Administrative Region,1,0.0,0.0
 Cholera,Cordillera Administrative Region,1,0.0,2.25
 Dengue,Cordillera Administrative Region,1,313.0,427.75
-Typhoid Fever,Cordillera Administrative Region,1,248.0,319.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,2,74.0,107.5
-Acute Viral Hepatitis,Cordillera Administrative Region,2,0.0,0.5
+Typhoid Fever,Cordillera Administrative Region,1,281.5,321.0
+Acute Bloody Diarrhea,Cordillera Administrative Region,2,70.0,89.0
+Acute Viral Hepatitis,Cordillera Administrative Region,2,0.0,0.0
 Cholera,Cordillera Administrative Region,2,0.0,1.5
 Dengue,Cordillera Administrative Region,2,257.0,336.5
-Typhoid Fever,Cordillera Administrative Region,2,178.0,208.5
-Acute Bloody Diarrhea,Cordillera Administrative Region,3,75.0,139.0
+Typhoid Fever,Cordillera Administrative Region,2,184.0,217.75
+Acute Bloody Diarrhea,Cordillera Administrative Region,3,74.0,114.75
 Acute Viral Hepatitis,Cordillera Administrative Region,3,0.0,0.0
 Cholera,Cordillera Administrative Region,3,0.0,0.0
 Dengue,Cordillera Administrative Region,3,202.0,249.75
-Typhoid Fever,Cordillera Administrative Region,3,170.0,231.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,4,70.0,130.0
-Acute Viral Hepatitis,Cordillera Administrative Region,4,0.0,1.5
+Typhoid Fever,Cordillera Administrative Region,3,196.5,235.0
+Acute Bloody Diarrhea,Cordillera Administrative Region,4,68.0,83.5
+Acute Viral Hepatitis,Cordillera Administrative Region,4,0.0,0.75
 Cholera,Cordillera Administrative Region,4,0.0,0.0
 Dengue,Cordillera Administrative Region,4,194.0,265.75
-Typhoid Fever,Cordillera Administrative Region,4,132.0,188.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,5,111.0,144.0
+Typhoid Fever,Cordillera Administrative Region,4,146.0,202.0
+Acute Bloody Diarrhea,Cordillera Administrative Region,5,100.0,117.0
 Acute Viral Hepatitis,Cordillera Administrative Region,5,0.0,0.0
 Cholera,Cordillera Administrative Region,5,0.0,0.75
 Dengue,Cordillera Administrative Region,5,361.5,817.75
-Typhoid Fever,Cordillera Administrative Region,5,143.0,299.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,6,105.0,126.0
+Typhoid Fever,Cordillera Administrative Region,5,199.0,314.5
+Acute Bloody Diarrhea,Cordillera Administrative Region,6,90.5,110.25
 Acute Viral Hepatitis,Cordillera Administrative Region,6,0.0,0.0
 Cholera,Cordillera Administrative Region,6,0.0,0.75
 Dengue,Cordillera Administrative Region,6,865.5,2460.75
-Typhoid Fever,Cordillera Administrative Region,6,212.0,348.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,7,103.0,137.0
+Typhoid Fever,Cordillera Administrative Region,6,264.5,363.5
+Acute Bloody Diarrhea,Cordillera Administrative Region,7,98.0,125.5
 Acute Viral Hepatitis,Cordillera Administrative Region,7,0.0,0.0
 Cholera,Cordillera Administrative Region,7,0.0,1.5
 Dengue,Cordillera Administrative Region,7,1489.0,3027.25
-Typhoid Fever,Cordillera Administrative Region,7,344.0,398.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,8,90.0,112.5
+Typhoid Fever,Cordillera Administrative Region,7,334.0,422.75
+Acute Bloody Diarrhea,Cordillera Administrative Region,8,77.5,104.25
 Acute Viral Hepatitis,Cordillera Administrative Region,8,0.0,0.0
-Cholera,Cordillera Administrative Region,8,0.0,0.5
+Cholera,Cordillera Administrative Region,8,0.0,0.0
 Dengue,Cordillera Administrative Region,8,1611.5,2742.0
-Typhoid Fever,Cordillera Administrative Region,8,363.0,515.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,9,74.0,114.5
+Typhoid Fever,Cordillera Administrative Region,8,365.5,555.5
+Acute Bloody Diarrhea,Cordillera Administrative Region,9,73.0,92.75
 Acute Viral Hepatitis,Cordillera Administrative Region,9,0.0,0.0
 Cholera,Cordillera Administrative Region,9,0.0,0.0
 Dengue,Cordillera Administrative Region,9,1303.0,2349.25
-Typhoid Fever,Cordillera Administrative Region,9,403.0,457.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,10,80.0,99.5
+Typhoid Fever,Cordillera Administrative Region,9,411.0,476.0
+Acute Bloody Diarrhea,Cordillera Administrative Region,10,72.0,83.0
 Acute Viral Hepatitis,Cordillera Administrative Region,10,0.0,0.0
-Cholera,Cordillera Administrative Region,10,0.0,0.5
+Cholera,Cordillera Administrative Region,10,0.0,0.75
 Dengue,Cordillera Administrative Region,10,1093.0,1350.5
-Typhoid Fever,Cordillera Administrative Region,10,276.0,393.5
-Acute Bloody Diarrhea,Cordillera Administrative Region,11,67.0,78.0
+Typhoid Fever,Cordillera Administrative Region,10,303.5,421.25
+Acute Bloody Diarrhea,Cordillera Administrative Region,11,61.5,71.5
 Acute Viral Hepatitis,Cordillera Administrative Region,11,0.0,0.0
-Cholera,Cordillera Administrative Region,11,0.0,1.5
+Cholera,Cordillera Administrative Region,11,0.5,1.75
 Dengue,Cordillera Administrative Region,11,669.5,994.5
-Typhoid Fever,Cordillera Administrative Region,11,269.0,298.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,12,46.0,71.0
+Typhoid Fever,Cordillera Administrative Region,11,279.0,302.5
+Acute Bloody Diarrhea,Cordillera Administrative Region,12,42.0,60.25
 Acute Viral Hepatitis,Cordillera Administrative Region,12,0.0,0.0
 Cholera,Cordillera Administrative Region,12,0.0,0.0
 Dengue,Cordillera Administrative Region,12,480.5,636.75
-Typhoid Fever,Cordillera Administrative Region,12,194.0,226.5
-Acute Bloody Diarrhea,Davao Region,1,24.0,29.5
+Typhoid Fever,Cordillera Administrative Region,12,164.0,240.75
+Acute Bloody Diarrhea,Davao Region,1,20.0,31.5
 Acute Viral Hepatitis,Davao Region,1,0.0,0.0
-Cholera,Davao Region,1,3.0,20.0
+Cholera,Davao Region,1,2.0,25.5
 Dengue,Davao Region,1,759.5,1050.0
-Typhoid Fever,Davao Region,1,24.0,33.5
-Acute Bloody Diarrhea,Davao Region,2,14.0,19.0
+Typhoid Fever,Davao Region,1,24.0,38.25
+Acute Bloody Diarrhea,Davao Region,2,16.0,19.5
 Acute Viral Hepatitis,Davao Region,2,0.0,0.0
-Cholera,Davao Region,2,3.0,26.0
+Cholera,Davao Region,2,2.0,37.0
 Dengue,Davao Region,2,623.5,995.5
-Typhoid Fever,Davao Region,2,26.0,34.5
-Acute Bloody Diarrhea,Davao Region,3,29.0,41.0
+Typhoid Fever,Davao Region,2,27.0,37.75
+Acute Bloody Diarrhea,Davao Region,3,30.0,46.0
 Acute Viral Hepatitis,Davao Region,3,0.0,0.0
-Cholera,Davao Region,3,1.0,9.5
+Cholera,Davao Region,3,3.0,11.25
 Dengue,Davao Region,3,567.0,1084.5
-Typhoid Fever,Davao Region,3,33.0,48.5
-Acute Bloody Diarrhea,Davao Region,4,22.0,35.5
-Acute Viral Hepatitis,Davao Region,4,0.0,0.5
-Cholera,Davao Region,4,0.0,2.5
+Typhoid Fever,Davao Region,3,37.5,51.75
+Acute Bloody Diarrhea,Davao Region,4,24.0,40.25
+Acute Viral Hepatitis,Davao Region,4,0.0,0.75
+Cholera,Davao Region,4,0.0,3.75
 Dengue,Davao Region,4,560.0,891.25
-Typhoid Fever,Davao Region,4,22.0,49.5
-Acute Bloody Diarrhea,Davao Region,5,33.0,59.0
-Acute Viral Hepatitis,Davao Region,5,0.0,0.5
-Cholera,Davao Region,5,1.0,3.0
+Typhoid Fever,Davao Region,4,25.0,58.25
+Acute Bloody Diarrhea,Davao Region,5,44.5,60.5
+Acute Viral Hepatitis,Davao Region,5,0.0,0.75
+Cholera,Davao Region,5,1.0,4.0
 Dengue,Davao Region,5,631.5,1240.75
-Typhoid Fever,Davao Region,5,37.0,60.0
-Acute Bloody Diarrhea,Davao Region,6,29.0,38.0
-Acute Viral Hepatitis,Davao Region,6,0.0,0.5
-Cholera,Davao Region,6,0.0,1.5
+Typhoid Fever,Davao Region,5,44.0,64.5
+Acute Bloody Diarrhea,Davao Region,6,30.5,41.0
+Acute Viral Hepatitis,Davao Region,6,0.0,0.75
+Cholera,Davao Region,6,0.0,2.25
 Dengue,Davao Region,6,964.5,1790.5
-Typhoid Fever,Davao Region,6,46.0,69.5
-Acute Bloody Diarrhea,Davao Region,7,22.0,31.5
+Typhoid Fever,Davao Region,6,49.5,77.75
+Acute Bloody Diarrhea,Davao Region,7,23.5,34.75
 Acute Viral Hepatitis,Davao Region,7,0.0,0.0
-Cholera,Davao Region,7,0.0,19.0
+Cholera,Davao Region,7,4.5,24.0
 Dengue,Davao Region,7,1049.0,1786.0
-Typhoid Fever,Davao Region,7,25.0,60.0
-Acute Bloody Diarrhea,Davao Region,8,15.0,30.0
+Typhoid Fever,Davao Region,7,28.5,74.0
+Acute Bloody Diarrhea,Davao Region,8,18.5,33.5
 Acute Viral Hepatitis,Davao Region,8,0.0,0.0
-Cholera,Davao Region,8,0.0,0.5
+Cholera,Davao Region,8,0.0,0.75
 Dengue,Davao Region,8,1184.5,2592.75
-Typhoid Fever,Davao Region,8,28.0,67.5
-Acute Bloody Diarrhea,Davao Region,9,14.0,24.0
+Typhoid Fever,Davao Region,8,35.0,80.25
+Acute Bloody Diarrhea,Davao Region,9,18.0,25.0
 Acute Viral Hepatitis,Davao Region,9,0.0,0.0
 Cholera,Davao Region,9,0.0,0.0
 Dengue,Davao Region,9,928.5,1932.0
-Typhoid Fever,Davao Region,9,22.0,75.5
-Acute Bloody Diarrhea,Davao Region,10,18.0,37.5
-Acute Viral Hepatitis,Davao Region,10,0.0,0.5
-Cholera,Davao Region,10,0.0,5.5
+Typhoid Fever,Davao Region,9,36.0,88.25
+Acute Bloody Diarrhea,Davao Region,10,22.5,42.75
+Acute Viral Hepatitis,Davao Region,10,0.0,0.0
+Cholera,Davao Region,10,0.0,8.25
 Dengue,Davao Region,10,713.5,1527.0
-Typhoid Fever,Davao Region,10,22.0,60.0
-Acute Bloody Diarrhea,Davao Region,11,17.0,35.0
+Typhoid Fever,Davao Region,10,34.5,66.5
+Acute Bloody Diarrhea,Davao Region,11,17.5,43.5
 Acute Viral Hepatitis,Davao Region,11,0.0,0.0
-Cholera,Davao Region,11,0.0,0.5
+Cholera,Davao Region,11,0.0,0.75
 Dengue,Davao Region,11,798.0,1742.0
-Typhoid Fever,Davao Region,11,16.0,55.5
-Acute Bloody Diarrhea,Davao Region,12,11.0,22.5
+Typhoid Fever,Davao Region,11,33.0,58.25
+Acute Bloody Diarrhea,Davao Region,12,13.5,25.75
 Acute Viral Hepatitis,Davao Region,12,0.0,0.0
-Cholera,Davao Region,12,0.0,0.5
+Cholera,Davao Region,12,0.0,0.75
 Dengue,Davao Region,12,734.5,1405.5
-Typhoid Fever,Davao Region,12,24.0,31.5
-Acute Bloody Diarrhea,Eastern Visayas,1,42.0,49.0
+Typhoid Fever,Davao Region,12,24.0,35.25
+Acute Bloody Diarrhea,Eastern Visayas,1,37.0,42.0
 Acute Viral Hepatitis,Eastern Visayas,1,0.0,0.0
-Cholera,Eastern Visayas,1,174.0,266.5
+Cholera,Eastern Visayas,1,208.5,278.25
 Dengue,Eastern Visayas,1,408.0,1364.0
-Typhoid Fever,Eastern Visayas,1,28.0,50.5
-Acute Bloody Diarrhea,Eastern Visayas,2,39.0,48.0
+Typhoid Fever,Eastern Visayas,1,25.5,44.5
+Acute Bloody Diarrhea,Eastern Visayas,2,33.0,43.5
 Acute Viral Hepatitis,Eastern Visayas,2,0.0,0.0
-Cholera,Eastern Visayas,2,129.0,234.5
+Cholera,Eastern Visayas,2,166.0,250.25
 Dengue,Eastern Visayas,2,373.5,708.0
-Typhoid Fever,Eastern Visayas,2,30.0,43.5
-Acute Bloody Diarrhea,Eastern Visayas,3,41.0,50.0
+Typhoid Fever,Eastern Visayas,2,23.0,36.75
+Acute Bloody Diarrhea,Eastern Visayas,3,41.0,54.5
 Acute Viral Hepatitis,Eastern Visayas,3,0.5,1.0
-Cholera,Eastern Visayas,3,160.0,246.5
+Cholera,Eastern Visayas,3,179.0,270.75
 Dengue,Eastern Visayas,3,383.0,520.75
-Typhoid Fever,Eastern Visayas,3,24.0,49.0
-Acute Bloody Diarrhea,Eastern Visayas,4,28.0,36.5
+Typhoid Fever,Eastern Visayas,3,23.0,39.0
+Acute Bloody Diarrhea,Eastern Visayas,4,29.0,37.25
 Acute Viral Hepatitis,Eastern Visayas,4,0.0,0.0
-Cholera,Eastern Visayas,4,72.0,213.5
+Cholera,Eastern Visayas,4,111.0,245.25
 Dengue,Eastern Visayas,4,252.0,385.75
-Typhoid Fever,Eastern Visayas,4,27.0,37.0
-Acute Bloody Diarrhea,Eastern Visayas,5,18.0,27.5
+Typhoid Fever,Eastern Visayas,4,25.0,33.0
+Acute Bloody Diarrhea,Eastern Visayas,5,22.5,27.75
 Acute Viral Hepatitis,Eastern Visayas,5,0.0,0.0
-Cholera,Eastern Visayas,5,82.0,220.5
+Cholera,Eastern Visayas,5,139.5,232.25
 Dengue,Eastern Visayas,5,328.0,620.0
-Typhoid Fever,Eastern Visayas,5,23.0,30.5
-Acute Bloody Diarrhea,Eastern Visayas,6,18.0,28.5
+Typhoid Fever,Eastern Visayas,5,22.5,25.25
+Acute Bloody Diarrhea,Eastern Visayas,6,21.5,30.25
 Acute Viral Hepatitis,Eastern Visayas,6,0.0,0.0
-Cholera,Eastern Visayas,6,73.0,168.5
+Cholera,Eastern Visayas,6,101.5,187.75
 Dengue,Eastern Visayas,6,447.0,943.75
-Typhoid Fever,Eastern Visayas,6,32.0,36.5
-Acute Bloody Diarrhea,Eastern Visayas,7,24.0,33.5
+Typhoid Fever,Eastern Visayas,6,24.5,33.5
+Acute Bloody Diarrhea,Eastern Visayas,7,16.0,33.75
 Acute Viral Hepatitis,Eastern Visayas,7,0.0,0.0
-Cholera,Eastern Visayas,7,83.0,214.0
+Cholera,Eastern Visayas,7,105.5,257.0
 Dengue,Eastern Visayas,7,683.0,930.25
-Typhoid Fever,Eastern Visayas,7,39.0,45.5
-Acute Bloody Diarrhea,Eastern Visayas,8,21.0,32.0
+Typhoid Fever,Eastern Visayas,7,38.0,42.0
+Acute Bloody Diarrhea,Eastern Visayas,8,16.5,33.0
 Acute Viral Hepatitis,Eastern Visayas,8,0.0,0.0
-Cholera,Eastern Visayas,8,55.0,228.5
+Cholera,Eastern Visayas,8,119.5,250.75
 Dengue,Eastern Visayas,8,614.5,1775.5
-Typhoid Fever,Eastern Visayas,8,30.0,31.5
-Acute Bloody Diarrhea,Eastern Visayas,9,26.0,36.5
-Acute Viral Hepatitis,Eastern Visayas,9,0.0,1.0
-Cholera,Eastern Visayas,9,35.0,184.5
+Typhoid Fever,Eastern Visayas,8,27.0,30.75
+Acute Bloody Diarrhea,Eastern Visayas,9,19.0,29.0
+Acute Viral Hepatitis,Eastern Visayas,9,0.5,1.0
+Cholera,Eastern Visayas,9,84.5,209.75
 Dengue,Eastern Visayas,9,580.0,772.5
-Typhoid Fever,Eastern Visayas,9,19.0,31.0
-Acute Bloody Diarrhea,Eastern Visayas,10,20.0,33.0
+Typhoid Fever,Eastern Visayas,9,15.5,26.5
+Acute Bloody Diarrhea,Eastern Visayas,10,20.5,34.0
 Acute Viral Hepatitis,Eastern Visayas,10,0.0,0.0
-Cholera,Eastern Visayas,10,61.0,202.5
+Cholera,Eastern Visayas,10,107.5,226.75
 Dengue,Eastern Visayas,10,477.5,531.75
-Typhoid Fever,Eastern Visayas,10,14.0,21.5
-Acute Bloody Diarrhea,Eastern Visayas,11,13.0,29.0
+Typhoid Fever,Eastern Visayas,10,13.0,14.75
+Acute Bloody Diarrhea,Eastern Visayas,11,17.5,32.5
 Acute Viral Hepatitis,Eastern Visayas,11,0.0,0.0
-Cholera,Eastern Visayas,11,68.0,204.0
+Cholera,Eastern Visayas,11,102.0,238.0
 Dengue,Eastern Visayas,11,462.5,740.75
-Typhoid Fever,Eastern Visayas,11,14.0,21.5
-Acute Bloody Diarrhea,Eastern Visayas,12,11.0,15.0
+Typhoid Fever,Eastern Visayas,11,11.0,15.5
+Acute Bloody Diarrhea,Eastern Visayas,12,11.0,17.0
 Acute Viral Hepatitis,Eastern Visayas,12,0.0,0.0
-Cholera,Eastern Visayas,12,59.0,138.0
+Cholera,Eastern Visayas,12,63.0,173.5
 Dengue,Eastern Visayas,12,347.5,500.0
-Typhoid Fever,Eastern Visayas,12,4.0,15.5
+Typhoid Fever,Eastern Visayas,12,4.0,6.25
 Acute Bloody Diarrhea,Ilocos Region,1,5.0,6.0
 Acute Viral Hepatitis,Ilocos Region,1,0.0,0.0
 Cholera,Ilocos Region,1,1.0,1.5
 Dengue,Ilocos Region,1,394.5,747.75
-Typhoid Fever,Ilocos Region,1,85.0,119.0
-Acute Bloody Diarrhea,Ilocos Region,2,1.0,2.5
+Typhoid Fever,Ilocos Region,1,94.0,126.0
+Acute Bloody Diarrhea,Ilocos Region,2,1.0,1.75
 Acute Viral Hepatitis,Ilocos Region,2,0.0,0.0
 Cholera,Ilocos Region,2,0.0,0.0
 Dengue,Ilocos Region,2,278.5,442.75
-Typhoid Fever,Ilocos Region,2,76.0,90.5
-Acute Bloody Diarrhea,Ilocos Region,3,2.0,3.5
+Typhoid Fever,Ilocos Region,2,68.0,86.5
+Acute Bloody Diarrhea,Ilocos Region,3,1.5,2.75
 Acute Viral Hepatitis,Ilocos Region,3,0.0,0.0
 Cholera,Ilocos Region,3,0.0,0.0
 Dengue,Ilocos Region,3,161.0,208.75
-Typhoid Fever,Ilocos Region,3,72.0,88.0
-Acute Bloody Diarrhea,Ilocos Region,4,3.0,11.0
+Typhoid Fever,Ilocos Region,3,73.0,95.0
+Acute Bloody Diarrhea,Ilocos Region,4,2.0,6.75
 Acute Viral Hepatitis,Ilocos Region,4,0.0,0.0
 Cholera,Ilocos Region,4,0.0,0.0
 Dengue,Ilocos Region,4,167.5,193.0
-Typhoid Fever,Ilocos Region,4,42.0,63.5
-Acute Bloody Diarrhea,Ilocos Region,5,4.0,11.5
+Typhoid Fever,Ilocos Region,4,44.0,72.25
+Acute Bloody Diarrhea,Ilocos Region,5,3.0,5.5
 Acute Viral Hepatitis,Ilocos Region,5,0.0,1.0
 Cholera,Ilocos Region,5,0.0,0.0
 Dengue,Ilocos Region,5,293.0,308.25
-Typhoid Fever,Ilocos Region,5,52.0,78.0
-Acute Bloody Diarrhea,Ilocos Region,6,4.0,6.5
+Typhoid Fever,Ilocos Region,5,52.5,90.5
+Acute Bloody Diarrhea,Ilocos Region,6,3.0,4.75
 Acute Viral Hepatitis,Ilocos Region,6,0.0,0.0
 Cholera,Ilocos Region,6,0.0,0.0
 Dengue,Ilocos Region,6,837.0,962.25
-Typhoid Fever,Ilocos Region,6,90.0,100.5
-Acute Bloody Diarrhea,Ilocos Region,7,11.0,17.0
-Acute Viral Hepatitis,Ilocos Region,7,0.0,0.75
+Typhoid Fever,Ilocos Region,6,92.0,101.75
+Acute Bloody Diarrhea,Ilocos Region,7,8.5,18.0
+Acute Viral Hepatitis,Ilocos Region,7,0.0,0.0
 Cholera,Ilocos Region,7,0.0,0.0
 Dengue,Ilocos Region,7,1534.5,1688.5
-Typhoid Fever,Ilocos Region,7,127.0,145.0
-Acute Bloody Diarrhea,Ilocos Region,8,5.0,15.5
+Typhoid Fever,Ilocos Region,7,107.5,143.5
+Acute Bloody Diarrhea,Ilocos Region,8,7.5,18.25
 Acute Viral Hepatitis,Ilocos Region,8,0.0,0.0
 Cholera,Ilocos Region,8,0.0,0.0
 Dengue,Ilocos Region,8,1604.0,3409.0
-Typhoid Fever,Ilocos Region,8,143.0,211.5
-Acute Bloody Diarrhea,Ilocos Region,9,6.0,20.0
+Typhoid Fever,Ilocos Region,8,168.0,214.25
+Acute Bloody Diarrhea,Ilocos Region,9,12.5,20.5
 Acute Viral Hepatitis,Ilocos Region,9,0.0,0.0
 Cholera,Ilocos Region,9,1.0,1.5
 Dengue,Ilocos Region,9,1175.0,2077.5
-Typhoid Fever,Ilocos Region,9,147.0,220.0
-Acute Bloody Diarrhea,Ilocos Region,10,3.0,4.0
+Typhoid Fever,Ilocos Region,9,153.5,250.0
+Acute Bloody Diarrhea,Ilocos Region,10,3.0,4.5
 Acute Viral Hepatitis,Ilocos Region,10,0.0,0.0
 Cholera,Ilocos Region,10,0.0,0.5
 Dengue,Ilocos Region,10,1074.5,1690.5
-Typhoid Fever,Ilocos Region,10,141.0,157.0
-Acute Bloody Diarrhea,Ilocos Region,11,2.0,3.5
+Typhoid Fever,Ilocos Region,10,148.5,157.5
+Acute Bloody Diarrhea,Ilocos Region,11,1.0,2.75
 Acute Viral Hepatitis,Ilocos Region,11,0.0,0.0
 Cholera,Ilocos Region,11,0.0,0.0
 Dengue,Ilocos Region,11,1049.5,1079.75
-Typhoid Fever,Ilocos Region,11,101.0,121.0
-Acute Bloody Diarrhea,Ilocos Region,12,1.0,2.0
+Typhoid Fever,Ilocos Region,11,101.0,131.0
+Acute Bloody Diarrhea,Ilocos Region,12,0.5,1.0
 Acute Viral Hepatitis,Ilocos Region,12,0.0,0.0
 Cholera,Ilocos Region,12,0.0,0.0
 Dengue,Ilocos Region,12,396.0,776.0
-Typhoid Fever,Ilocos Region,12,71.0,78.0
-Acute Bloody Diarrhea,MIMAROPA,1,7.0,7.5
+Typhoid Fever,Ilocos Region,12,71.5,81.0
+Acute Bloody Diarrhea,MIMAROPA,1,6.5,7.75
 Acute Viral Hepatitis,MIMAROPA,1,0.0,0.0
 Cholera,MIMAROPA,1,0.0,0.0
 Dengue,MIMAROPA,1,647.5,698.75
-Typhoid Fever,MIMAROPA,1,48.0,102.5
-Acute Bloody Diarrhea,MIMAROPA,2,4.0,9.5
+Typhoid Fever,MIMAROPA,1,51.0,126.75
+Acute Bloody Diarrhea,MIMAROPA,2,3.5,7.75
 Acute Viral Hepatitis,MIMAROPA,2,0.0,0.0
 Cholera,MIMAROPA,2,0.0,0.0
 Dengue,MIMAROPA,2,624.5,729.5
-Typhoid Fever,MIMAROPA,2,34.0,87.5
-Acute Bloody Diarrhea,MIMAROPA,3,8.0,10.0
+Typhoid Fever,MIMAROPA,2,34.0,114.25
+Acute Bloody Diarrhea,MIMAROPA,3,7.0,8.75
 Acute Viral Hepatitis,MIMAROPA,3,0.0,0.0
 Cholera,MIMAROPA,3,0.0,0.0
 Dengue,MIMAROPA,3,400.5,558.0
-Typhoid Fever,MIMAROPA,3,35.0,44.0
-Acute Bloody Diarrhea,MIMAROPA,4,8.0,13.5
+Typhoid Fever,MIMAROPA,3,36.0,47.5
+Acute Bloody Diarrhea,MIMAROPA,4,10.0,13.75
 Acute Viral Hepatitis,MIMAROPA,4,0.0,0.0
 Cholera,MIMAROPA,4,0.0,0.0
 Dengue,MIMAROPA,4,231.0,463.75
-Typhoid Fever,MIMAROPA,4,32.0,82.5
-Acute Bloody Diarrhea,MIMAROPA,5,12.0,14.5
+Typhoid Fever,MIMAROPA,4,38.0,101.75
+Acute Bloody Diarrhea,MIMAROPA,5,10.5,12.75
 Acute Viral Hepatitis,MIMAROPA,5,0.0,0.0
 Cholera,MIMAROPA,5,0.0,0.0
 Dengue,MIMAROPA,5,453.0,678.25
-Typhoid Fever,MIMAROPA,5,38.0,95.5
-Acute Bloody Diarrhea,MIMAROPA,6,9.0,13.0
+Typhoid Fever,MIMAROPA,5,49.0,113.25
+Acute Bloody Diarrhea,MIMAROPA,6,9.0,10.5
 Acute Viral Hepatitis,MIMAROPA,6,0.0,0.0
 Cholera,MIMAROPA,6,0.0,0.0
 Dengue,MIMAROPA,6,1140.5,1586.5
-Typhoid Fever,MIMAROPA,6,50.0,99.0
-Acute Bloody Diarrhea,MIMAROPA,7,8.0,12.5
+Typhoid Fever,MIMAROPA,6,53.0,114.0
+Acute Bloody Diarrhea,MIMAROPA,7,6.5,11.0
 Acute Viral Hepatitis,MIMAROPA,7,0.0,0.0
-Cholera,MIMAROPA,7,0.0,3.0
+Cholera,MIMAROPA,7,0.0,1.5
 Dengue,MIMAROPA,7,2143.0,2338.25
-Typhoid Fever,MIMAROPA,7,54.0,118.5
-Acute Bloody Diarrhea,MIMAROPA,8,8.0,16.5
-Acute Viral Hepatitis,MIMAROPA,8,0.0,0.75
-Cholera,MIMAROPA,8,0.0,0.5
+Typhoid Fever,MIMAROPA,7,54.0,145.25
+Acute Bloody Diarrhea,MIMAROPA,8,6.5,9.5
+Acute Viral Hepatitis,MIMAROPA,8,0.0,0.0
+Cholera,MIMAROPA,8,0.0,0.75
 Dengue,MIMAROPA,8,1858.0,2285.0
-Typhoid Fever,MIMAROPA,8,51.0,210.0
-Acute Bloody Diarrhea,MIMAROPA,9,8.0,16.5
-Acute Viral Hepatitis,MIMAROPA,9,0.0,0.75
-Cholera,MIMAROPA,9,0.0,1.5
+Typhoid Fever,MIMAROPA,8,89.0,247.0
+Acute Bloody Diarrhea,MIMAROPA,9,12.0,16.75
+Acute Viral Hepatitis,MIMAROPA,9,0.0,1.0
+Cholera,MIMAROPA,9,0.0,2.0
 Dengue,MIMAROPA,9,1118.0,1253.0
-Typhoid Fever,MIMAROPA,9,81.0,125.5
-Acute Bloody Diarrhea,MIMAROPA,10,14.0,18.5
+Typhoid Fever,MIMAROPA,9,88.5,140.25
+Acute Bloody Diarrhea,MIMAROPA,10,15.0,19.25
 Acute Viral Hepatitis,MIMAROPA,10,0.0,0.0
 Cholera,MIMAROPA,10,0.0,0.0
 Dengue,MIMAROPA,10,711.5,1168.0
-Typhoid Fever,MIMAROPA,10,88.0,119.5
-Acute Bloody Diarrhea,MIMAROPA,11,11.0,13.5
+Typhoid Fever,MIMAROPA,10,92.5,130.75
+Acute Bloody Diarrhea,MIMAROPA,11,10.5,14.25
 Acute Viral Hepatitis,MIMAROPA,11,0.0,0.0
 Cholera,MIMAROPA,11,0.0,0.0
 Dengue,MIMAROPA,11,560.0,1039.25
-Typhoid Fever,MIMAROPA,11,47.0,107.5
-Acute Bloody Diarrhea,MIMAROPA,12,6.0,10.0
+Typhoid Fever,MIMAROPA,11,50.0,134.75
+Acute Bloody Diarrhea,MIMAROPA,12,5.5,11.5
 Acute Viral Hepatitis,MIMAROPA,12,0.0,0.0
 Cholera,MIMAROPA,12,0.0,0.0
 Dengue,MIMAROPA,12,374.5,764.25
-Typhoid Fever,MIMAROPA,12,30.0,92.0
-Acute Bloody Diarrhea,National,1,1555.0,1657.5
-Acute Viral Hepatitis,National,1,19.0,20.5
-Cholera,National,1,377.0,436.0
+Typhoid Fever,MIMAROPA,12,46.0,107.0
+Acute Bloody Diarrhea,National,1,1101.5,1606.75
+Acute Viral Hepatitis,National,1,19.5,20.75
+Cholera,National,1,404.5,438.0
 Dengue,National,1,14876.5,23923.25
-Typhoid Fever,National,1,1759.0,2132.5
-Acute Bloody Diarrhea,National,2,1153.0,1202.5
-Acute Viral Hepatitis,National,2,12.0,16.5
-Cholera,National,2,292.0,374.5
+Typhoid Fever,National,1,1740.0,2121.25
+Acute Bloody Diarrhea,National,2,886.5,1170.25
+Acute Viral Hepatitis,National,2,11.0,15.0
+Cholera,National,2,330.0,377.75
 Dengue,National,2,12440.0,17625.0
-Typhoid Fever,National,2,1383.0,1795.0
-Acute Bloody Diarrhea,National,3,900.0,1474.5
-Acute Viral Hepatitis,National,3,12.0,16.5
-Cholera,National,3,254.0,400.0
+Typhoid Fever,National,2,1367.5,1744.5
+Acute Bloody Diarrhea,National,3,881.5,1265.25
+Acute Viral Hepatitis,National,3,11.0,14.25
+Cholera,National,3,325.5,401.5
 Dengue,National,3,10478.5,12088.5
-Typhoid Fever,National,3,1478.0,1800.5
-Acute Bloody Diarrhea,National,4,994.0,1321.5
-Acute Viral Hepatitis,National,4,13.0,14.0
-Cholera,National,4,145.0,377.5
+Typhoid Fever,National,3,1178.5,1753.25
+Acute Bloody Diarrhea,National,4,934.0,1110.25
+Acute Viral Hepatitis,National,4,12.0,13.75
+Cholera,National,4,246.5,383.75
 Dengue,National,4,8772.0,10442.25
-Typhoid Fever,National,4,1534.0,1597.0
-Acute Bloody Diarrhea,National,5,1143.0,1373.0
-Acute Viral Hepatitis,National,5,18.0,25.5
-Cholera,National,5,169.0,362.5
+Typhoid Fever,National,4,1298.0,1589.5
+Acute Bloody Diarrhea,National,5,1070.5,1257.0
+Acute Viral Hepatitis,National,5,15.0,23.25
+Cholera,National,5,229.0,385.75
 Dengue,National,5,13395.0,15737.5
-Typhoid Fever,National,5,1723.0,1896.5
-Acute Bloody Diarrhea,National,6,969.0,1270.5
-Acute Viral Hepatitis,National,6,9.0,22.5
-Cholera,National,6,146.0,264.5
+Typhoid Fever,National,5,1618.5,1964.5
+Acute Bloody Diarrhea,National,6,934.5,1056.75
+Acute Viral Hepatitis,National,6,9.0,18.0
+Cholera,National,6,192.0,277.75
 Dengue,National,6,22077.5,28189.75
-Typhoid Fever,National,6,2034.0,2301.0
-Acute Bloody Diarrhea,National,7,1158.0,1423.0
-Acute Viral Hepatitis,National,7,10.0,19.5
-Cholera,National,7,174.0,317.5
+Typhoid Fever,National,6,1973.0,2341.5
+Acute Bloody Diarrhea,National,7,1001.0,1161.75
+Acute Viral Hepatitis,National,7,10.0,16.75
+Cholera,National,7,230.5,326.75
 Dengue,National,7,32788.0,46783.0
-Typhoid Fever,National,7,2655.0,2845.5
-Acute Bloody Diarrhea,National,8,996.0,1270.0
-Acute Viral Hepatitis,National,8,8.0,17.0
-Cholera,National,8,201.0,322.0
+Typhoid Fever,National,7,2276.0,2901.0
+Acute Bloody Diarrhea,National,8,850.0,1068.75
+Acute Viral Hepatitis,National,8,7.5,12.5
+Cholera,National,8,215.0,336.5
 Dengue,National,8,33302.5,78867.0
-Typhoid Fever,National,8,2517.0,2799.0
-Acute Bloody Diarrhea,National,9,761.0,1093.5
-Acute Viral Hepatitis,National,9,11.0,16.0
-Cholera,National,9,157.0,265.0
+Typhoid Fever,National,8,2343.5,2792.25
+Acute Bloody Diarrhea,National,9,736.0,980.0
+Acute Viral Hepatitis,National,9,9.0,14.0
+Cholera,National,9,177.0,273.0
 Dengue,National,9,30074.0,48578.0
-Typhoid Fever,National,9,2433.0,2722.5
-Acute Bloody Diarrhea,National,10,793.0,1092.0
-Acute Viral Hepatitis,National,10,5.0,16.5
-Cholera,National,10,263.0,294.0
+Typhoid Fever,National,9,2386.5,2729.75
+Acute Bloody Diarrhea,National,10,677.0,1015.0
+Acute Viral Hepatitis,National,10,4.0,11.0
+Cholera,National,10,278.0,294.5
 Dengue,National,10,21639.5,40954.25
-Typhoid Fever,National,10,2385.0,2665.5
-Acute Bloody Diarrhea,National,11,774.0,1132.0
-Acute Viral Hepatitis,National,11,10.0,16.0
-Cholera,National,11,200.0,260.5
+Typhoid Fever,National,10,2091.5,2700.25
+Acute Bloody Diarrhea,National,11,661.5,926.25
+Acute Viral Hepatitis,National,11,8.0,18.0
+Cholera,National,11,216.0,274.75
 Dengue,National,11,20653.5,25745.0
-Typhoid Fever,National,11,2043.0,2147.5
-Acute Bloody Diarrhea,National,12,745.0,1021.0
-Acute Viral Hepatitis,National,12,5.0,10.0
-Cholera,National,12,174.0,233.5
+Typhoid Fever,National,11,1752.5,2198.25
+Acute Bloody Diarrhea,National,12,569.5,943.0
+Acute Viral Hepatitis,National,12,4.5,6.5
+Cholera,National,12,192.5,244.25
 Dengue,National,12,15705.0,16270.5
-Typhoid Fever,National,12,1210.0,1582.0
-Acute Bloody Diarrhea,National Capital Region,1,4.0,11.0
-Acute Viral Hepatitis,National Capital Region,1,2.0,2.5
+Typhoid Fever,National,12,1029.5,1426.75
+Acute Bloody Diarrhea,National Capital Region,1,7.0,11.5
+Acute Viral Hepatitis,National Capital Region,1,1.5,2.0
 Cholera,National Capital Region,1,0.0,0.75
 Dengue,National Capital Region,1,1720.0,2818.25
-Typhoid Fever,National Capital Region,1,35.0,44.0
-Acute Bloody Diarrhea,National Capital Region,2,8.0,14.0
-Acute Viral Hepatitis,National Capital Region,2,1.0,1.5
+Typhoid Fever,National Capital Region,1,27.0,46.5
+Acute Bloody Diarrhea,National Capital Region,2,10.5,14.5
+Acute Viral Hepatitis,National Capital Region,2,0.5,1.0
 Cholera,National Capital Region,2,0.0,0.0
 Dengue,National Capital Region,2,1409.5,1563.5
-Typhoid Fever,National Capital Region,2,19.0,33.5
-Acute Bloody Diarrhea,National Capital Region,3,7.0,9.5
-Acute Viral Hepatitis,National Capital Region,3,0.0,1.0
+Typhoid Fever,National Capital Region,2,19.0,21.25
+Acute Bloody Diarrhea,National Capital Region,3,7.0,10.0
+Acute Viral Hepatitis,National Capital Region,3,0.5,1.0
 Cholera,National Capital Region,3,0.0,0.75
 Dengue,National Capital Region,3,827.0,951.75
-Typhoid Fever,National Capital Region,3,20.0,31.0
-Acute Bloody Diarrhea,National Capital Region,4,5.0,17.5
-Acute Viral Hepatitis,National Capital Region,4,0.0,1.0
+Typhoid Fever,National Capital Region,3,17.5,26.0
+Acute Bloody Diarrhea,National Capital Region,4,7.0,21.25
+Acute Viral Hepatitis,National Capital Region,4,0.0,0.75
 Cholera,National Capital Region,4,0.0,0.75
 Dengue,National Capital Region,4,611.0,742.25
-Typhoid Fever,National Capital Region,4,20.0,29.5
-Acute Bloody Diarrhea,National Capital Region,5,8.0,16.0
-Acute Viral Hepatitis,National Capital Region,5,2.0,3.5
+Typhoid Fever,National Capital Region,4,14.5,25.25
+Acute Bloody Diarrhea,National Capital Region,5,11.0,16.5
+Acute Viral Hepatitis,National Capital Region,5,1.5,2.0
 Cholera,National Capital Region,5,0.0,0.0
 Dengue,National Capital Region,5,679.0,873.25
-Typhoid Fever,National Capital Region,5,20.0,27.5
-Acute Bloody Diarrhea,National Capital Region,6,9.0,17.0
-Acute Viral Hepatitis,National Capital Region,6,1.0,2.0
+Typhoid Fever,National Capital Region,5,18.5,26.75
+Acute Bloody Diarrhea,National Capital Region,6,12.0,18.0
+Acute Viral Hepatitis,National Capital Region,6,0.5,1.0
 Cholera,National Capital Region,6,0.0,0.0
 Dengue,National Capital Region,6,917.5,2014.25
-Typhoid Fever,National Capital Region,6,29.0,39.0
-Acute Bloody Diarrhea,National Capital Region,7,15.0,18.5
+Typhoid Fever,National Capital Region,6,22.0,33.5
+Acute Bloody Diarrhea,National Capital Region,7,16.5,18.75
 Acute Viral Hepatitis,National Capital Region,7,0.0,1.5
 Cholera,National Capital Region,7,0.5,1.0
 Dengue,National Capital Region,7,1796.5,2802.0
-Typhoid Fever,National Capital Region,7,33.0,50.0
-Acute Bloody Diarrhea,National Capital Region,8,12.0,15.0
-Acute Viral Hepatitis,National Capital Region,8,1.0,1.0
+Typhoid Fever,National Capital Region,7,31.0,42.0
+Acute Bloody Diarrhea,National Capital Region,8,12.5,16.0
+Acute Viral Hepatitis,National Capital Region,8,0.5,1.0
 Cholera,National Capital Region,8,0.5,1.0
 Dengue,National Capital Region,8,3561.0,5414.5
-Typhoid Fever,National Capital Region,8,29.0,40.0
-Acute Bloody Diarrhea,National Capital Region,9,7.0,20.5
-Acute Viral Hepatitis,National Capital Region,9,1.0,1.0
+Typhoid Fever,National Capital Region,8,25.5,38.0
+Acute Bloody Diarrhea,National Capital Region,9,12.5,20.75
+Acute Viral Hepatitis,National Capital Region,9,0.5,1.0
 Cholera,National Capital Region,9,0.5,1.75
 Dengue,National Capital Region,9,4056.0,6143.5
-Typhoid Fever,National Capital Region,9,28.0,43.0
-Acute Bloody Diarrhea,National Capital Region,10,11.0,21.5
-Acute Viral Hepatitis,National Capital Region,10,0.0,0.5
-Cholera,National Capital Region,10,2.0,2.5
+Typhoid Fever,National Capital Region,9,27.5,39.25
+Acute Bloody Diarrhea,National Capital Region,10,13.5,24.25
+Acute Viral Hepatitis,National Capital Region,10,0.0,0.0
+Cholera,National Capital Region,10,2.0,2.75
 Dengue,National Capital Region,10,3135.0,6023.25
-Typhoid Fever,National Capital Region,10,28.0,45.5
-Acute Bloody Diarrhea,National Capital Region,11,10.0,26.0
-Acute Viral Hepatitis,National Capital Region,11,1.0,1.5
-Cholera,National Capital Region,11,0.0,2.0
+Typhoid Fever,National Capital Region,10,27.5,38.5
+Acute Bloody Diarrhea,National Capital Region,11,15.5,28.5
+Acute Viral Hepatitis,National Capital Region,11,1.0,1.0
+Cholera,National Capital Region,11,0.5,2.5
 Dengue,National Capital Region,11,3009.0,3641.0
-Typhoid Fever,National Capital Region,11,22.0,38.5
-Acute Bloody Diarrhea,National Capital Region,12,4.0,15.0
+Typhoid Fever,National Capital Region,11,19.5,34.75
+Acute Bloody Diarrhea,National Capital Region,12,4.5,20.0
 Acute Viral Hepatitis,National Capital Region,12,0.0,0.0
-Cholera,National Capital Region,12,0.0,0.5
+Cholera,National Capital Region,12,0.0,0.75
 Dengue,National Capital Region,12,1904.0,2180.25
-Typhoid Fever,National Capital Region,12,11.0,27.0
-Acute Bloody Diarrhea,Negros Island Region,1,87.0,98.0
+Typhoid Fever,National Capital Region,12,8.0,19.25
+Acute Bloody Diarrhea,Negros Island Region,1,77.5,87.75
 Cholera,Negros Island Region,1,0.0,1.5
 Dengue,Negros Island Region,1,376.5,989.0
-Typhoid Fever,Negros Island Region,1,124.0,144.5
-Acute Bloody Diarrhea,Negros Island Region,2,52.0,59.0
+Typhoid Fever,Negros Island Region,1,127.0,146.75
+Acute Bloody Diarrhea,Negros Island Region,2,50.5,55.75
 Acute Viral Hepatitis,Negros Island Region,2,3.0,3.0
-Cholera,Negros Island Region,2,0.0,0.5
+Cholera,Negros Island Region,2,0.0,0.0
 Dengue,Negros Island Region,2,405.5,583.75
-Typhoid Fever,Negros Island Region,2,113.0,136.5
-Acute Bloody Diarrhea,Negros Island Region,3,54.0,71.0
+Typhoid Fever,Negros Island Region,2,114.0,138.25
+Acute Bloody Diarrhea,Negros Island Region,3,53.5,67.5
 Acute Viral Hepatitis,Negros Island Region,3,1.0,1.0
-Cholera,Negros Island Region,3,0.0,3.0
+Cholera,Negros Island Region,3,0.0,4.5
 Dengue,Negros Island Region,3,277.5,374.75
-Typhoid Fever,Negros Island Region,3,110.0,121.0
-Acute Bloody Diarrhea,Negros Island Region,4,53.0,56.5
+Typhoid Fever,Negros Island Region,3,99.5,111.5
+Acute Bloody Diarrhea,Negros Island Region,4,49.0,58.25
 Acute Viral Hepatitis,Negros Island Region,4,0.0,0.0
-Cholera,Negros Island Region,4,0.0,2.0
+Cholera,Negros Island Region,4,0.5,2.5
 Dengue,Negros Island Region,4,271.5,366.0
-Typhoid Fever,Negros Island Region,4,107.0,110.5
-Acute Bloody Diarrhea,Negros Island Region,5,64.0,72.5
+Typhoid Fever,Negros Island Region,4,86.5,107.75
+Acute Bloody Diarrhea,Negros Island Region,5,63.0,72.25
 Acute Viral Hepatitis,Negros Island Region,5,0.0,0.0
-Cholera,Negros Island Region,5,0.0,4.0
+Cholera,Negros Island Region,5,0.5,5.5
 Dengue,Negros Island Region,5,296.5,483.0
-Typhoid Fever,Negros Island Region,5,117.0,131.5
-Acute Bloody Diarrhea,Negros Island Region,6,56.0,79.0
+Typhoid Fever,Negros Island Region,5,112.0,120.75
+Acute Bloody Diarrhea,Negros Island Region,6,54.5,71.75
 Acute Viral Hepatitis,Negros Island Region,6,0.0,0.0
 Cholera,Negros Island Region,6,0.0,0.0
 Dengue,Negros Island Region,6,434.5,1162.0
-Typhoid Fever,Negros Island Region,6,166.0,171.0
-Acute Bloody Diarrhea,Negros Island Region,7,86.0,117.5
+Typhoid Fever,Negros Island Region,6,142.0,169.0
+Acute Bloody Diarrhea,Negros Island Region,7,77.5,89.0
 Acute Viral Hepatitis,Negros Island Region,7,0.0,0.0
 Cholera,Negros Island Region,7,0.0,0.0
 Dengue,Negros Island Region,7,1209.0,1929.25
-Typhoid Fever,Negros Island Region,7,174.0,199.0
-Acute Bloody Diarrhea,Negros Island Region,8,58.0,79.0
+Typhoid Fever,Negros Island Region,7,168.5,180.75
+Acute Bloody Diarrhea,Negros Island Region,8,57.0,83.5
 Acute Viral Hepatitis,Negros Island Region,8,0.0,0.0
-Cholera,Negros Island Region,8,0.0,2.5
+Cholera,Negros Island Region,8,0.5,3.25
 Dengue,Negros Island Region,8,1005.5,4018.5
-Typhoid Fever,Negros Island Region,8,200.0,239.0
-Acute Bloody Diarrhea,Negros Island Region,9,60.0,81.5
+Typhoid Fever,Negros Island Region,8,178.0,210.5
+Acute Bloody Diarrhea,Negros Island Region,9,48.0,88.25
 Acute Viral Hepatitis,Negros Island Region,9,0.0,0.0
-Cholera,Negros Island Region,9,0.0,9.5
+Cholera,Negros Island Region,9,2.0,12.25
 Dengue,Negros Island Region,9,761.0,2178.75
-Typhoid Fever,Negros Island Region,9,182.0,206.5
-Acute Bloody Diarrhea,Negros Island Region,10,50.0,70.0
+Typhoid Fever,Negros Island Region,9,153.0,187.25
+Acute Bloody Diarrhea,Negros Island Region,10,42.0,60.5
 Acute Viral Hepatitis,Negros Island Region,10,0.0,0.0
-Cholera,Negros Island Region,10,0.0,7.5
+Cholera,Negros Island Region,10,0.0,11.25
 Dengue,Negros Island Region,10,409.5,1743.75
-Typhoid Fever,Negros Island Region,10,163.0,195.0
-Acute Bloody Diarrhea,Negros Island Region,11,34.0,69.5
+Typhoid Fever,Negros Island Region,10,132.0,181.75
+Acute Bloody Diarrhea,Negros Island Region,11,30.5,52.0
 Acute Viral Hepatitis,Negros Island Region,11,1.0,1.0
-Cholera,Negros Island Region,11,0.0,6.0
+Cholera,Negros Island Region,11,0.0,9.0
 Dengue,Negros Island Region,11,475.5,1015.75
-Typhoid Fever,Negros Island Region,11,147.0,169.0
-Acute Bloody Diarrhea,Negros Island Region,12,32.0,68.5
+Typhoid Fever,Negros Island Region,11,138.5,147.75
+Acute Bloody Diarrhea,Negros Island Region,12,29.0,51.5
 Acute Viral Hepatitis,Negros Island Region,12,0.0,0.0
-Cholera,Negros Island Region,12,0.0,5.5
+Cholera,Negros Island Region,12,0.0,8.25
 Dengue,Negros Island Region,12,363.0,670.25
-Typhoid Fever,Negros Island Region,12,99.0,121.5
-Acute Bloody Diarrhea,Northern Mindanao,1,93.0,140.5
-Acute Viral Hepatitis,Northern Mindanao,1,1.0,1.5
-Cholera,Northern Mindanao,1,1.0,3.5
+Typhoid Fever,Negros Island Region,12,79.0,102.75
+Acute Bloody Diarrhea,Northern Mindanao,1,82.0,100.5
+Acute Viral Hepatitis,Northern Mindanao,1,1.0,1.75
+Cholera,Northern Mindanao,1,0.5,1.0
 Dengue,Northern Mindanao,1,1255.5,1656.25
-Typhoid Fever,Northern Mindanao,1,229.0,295.0
-Acute Bloody Diarrhea,Northern Mindanao,2,70.0,100.5
-Acute Viral Hepatitis,Northern Mindanao,2,1.0,3.0
-Cholera,Northern Mindanao,2,2.0,4.5
+Typhoid Fever,Northern Mindanao,1,229.0,245.5
+Acute Bloody Diarrhea,Northern Mindanao,2,69.5,70.75
+Acute Viral Hepatitis,Northern Mindanao,2,0.5,2.5
+Cholera,Northern Mindanao,2,2.0,2.75
 Dengue,Northern Mindanao,2,943.5,1370.5
-Typhoid Fever,Northern Mindanao,2,176.0,250.0
-Acute Bloody Diarrhea,Northern Mindanao,3,90.0,101.0
-Acute Viral Hepatitis,Northern Mindanao,3,1.0,1.0
-Cholera,Northern Mindanao,3,3.0,5.0
+Typhoid Fever,Northern Mindanao,2,161.0,187.25
+Acute Bloody Diarrhea,Northern Mindanao,3,82.0,93.75
+Acute Viral Hepatitis,Northern Mindanao,3,0.5,1.0
+Cholera,Northern Mindanao,3,2.5,5.25
 Dengue,Northern Mindanao,3,894.5,1142.75
-Typhoid Fever,Northern Mindanao,3,166.0,250.0
-Acute Bloody Diarrhea,Northern Mindanao,4,69.0,104.0
-Acute Viral Hepatitis,Northern Mindanao,4,0.0,1.0
-Cholera,Northern Mindanao,4,1.0,4.5
+Typhoid Fever,Northern Mindanao,3,141.5,179.5
+Acute Bloody Diarrhea,Northern Mindanao,4,66.0,91.5
+Acute Viral Hepatitis,Northern Mindanao,4,0.5,1.0
+Cholera,Northern Mindanao,4,0.5,3.25
 Dengue,Northern Mindanao,4,743.5,940.75
-Typhoid Fever,Northern Mindanao,4,182.0,252.0
-Acute Bloody Diarrhea,Northern Mindanao,5,85.0,105.0
-Acute Viral Hepatitis,Northern Mindanao,5,0.0,1.0
-Cholera,Northern Mindanao,5,2.0,5.0
+Typhoid Fever,Northern Mindanao,4,177.0,197.0
+Acute Bloody Diarrhea,Northern Mindanao,5,79.0,91.0
+Acute Viral Hepatitis,Northern Mindanao,5,0.5,1.0
+Cholera,Northern Mindanao,5,1.5,2.75
 Dengue,Northern Mindanao,5,1041.5,1459.0
-Typhoid Fever,Northern Mindanao,5,210.0,299.0
-Acute Bloody Diarrhea,Northern Mindanao,6,82.0,107.5
-Acute Viral Hepatitis,Northern Mindanao,6,0.0,1.0
-Cholera,Northern Mindanao,6,0.0,5.5
+Typhoid Fever,Northern Mindanao,5,188.0,233.25
+Acute Bloody Diarrhea,Northern Mindanao,6,64.0,91.75
+Acute Viral Hepatitis,Northern Mindanao,6,0.5,1.0
+Cholera,Northern Mindanao,6,0.0,1.5
 Dengue,Northern Mindanao,6,1613.0,1761.5
-Typhoid Fever,Northern Mindanao,6,251.0,349.5
-Acute Bloody Diarrhea,Northern Mindanao,7,83.0,112.5
-Acute Viral Hepatitis,Northern Mindanao,7,0.0,2.0
+Typhoid Fever,Northern Mindanao,6,240.5,277.25
+Acute Bloody Diarrhea,Northern Mindanao,7,64.0,108.5
+Acute Viral Hepatitis,Northern Mindanao,7,0.0,1.5
 Cholera,Northern Mindanao,7,0.0,0.0
 Dengue,Northern Mindanao,7,1518.5,2785.0
-Typhoid Fever,Northern Mindanao,7,255.0,388.0
-Acute Bloody Diarrhea,Northern Mindanao,8,86.0,100.5
+Typhoid Fever,Northern Mindanao,7,241.5,281.25
+Acute Bloody Diarrhea,Northern Mindanao,8,60.5,92.0
 Acute Viral Hepatitis,Northern Mindanao,8,1.0,2.0
-Cholera,Northern Mindanao,8,0.0,3.0
+Cholera,Northern Mindanao,8,0.0,0.75
 Dengue,Northern Mindanao,8,1746.0,4329.25
-Typhoid Fever,Northern Mindanao,8,221.0,386.5
-Acute Bloody Diarrhea,Northern Mindanao,9,39.0,77.5
-Acute Viral Hepatitis,Northern Mindanao,9,1.0,1.5
-Cholera,Northern Mindanao,9,0.0,1.5
+Typhoid Fever,Northern Mindanao,8,218.0,341.75
+Acute Bloody Diarrhea,Northern Mindanao,9,37.0,47.25
+Acute Viral Hepatitis,Northern Mindanao,9,0.5,1.0
+Cholera,Northern Mindanao,9,0.0,0.75
 Dengue,Northern Mindanao,9,1525.5,2224.75
-Typhoid Fever,Northern Mindanao,9,257.0,321.5
-Acute Bloody Diarrhea,Northern Mindanao,10,59.0,74.0
-Acute Viral Hepatitis,Northern Mindanao,10,0.0,1.0
-Cholera,Northern Mindanao,10,0.0,1.5
+Typhoid Fever,Northern Mindanao,9,240.0,281.75
+Acute Bloody Diarrhea,Northern Mindanao,10,50.5,60.5
+Acute Viral Hepatitis,Northern Mindanao,10,0.0,0.75
+Cholera,Northern Mindanao,10,0.0,0.75
 Dengue,Northern Mindanao,10,1326.5,1816.5
-Typhoid Fever,Northern Mindanao,10,233.0,284.5
-Acute Bloody Diarrhea,Northern Mindanao,11,57.0,91.5
-Acute Viral Hepatitis,Northern Mindanao,11,1.0,1.0
-Cholera,Northern Mindanao,11,2.0,12.0
+Typhoid Fever,Northern Mindanao,10,211.5,263.75
+Acute Bloody Diarrhea,Northern Mindanao,11,52.5,79.5
+Acute Viral Hepatitis,Northern Mindanao,11,0.5,1.0
+Cholera,Northern Mindanao,11,1.0,17.0
 Dengue,Northern Mindanao,11,1042.5,1682.5
-Typhoid Fever,Northern Mindanao,11,194.0,302.0
-Acute Bloody Diarrhea,Northern Mindanao,12,54.0,71.5
-Acute Viral Hepatitis,Northern Mindanao,12,0.0,1.0
-Cholera,Northern Mindanao,12,0.0,3.0
+Typhoid Fever,Northern Mindanao,11,194.0,232.25
+Acute Bloody Diarrhea,Northern Mindanao,12,49.5,68.25
+Acute Viral Hepatitis,Northern Mindanao,12,0.0,0.0
+Cholera,Northern Mindanao,12,0.0,0.75
 Dengue,Northern Mindanao,12,880.0,1059.0
-Typhoid Fever,Northern Mindanao,12,111.0,164.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,1,21.0,22.5
+Typhoid Fever,Northern Mindanao,12,105.5,137.25
+Acute Bloody Diarrhea,SOCCSKSARGEN,1,12.0,21.75
 Acute Viral Hepatitis,SOCCSKSARGEN,1,0.0,0.75
 Cholera,SOCCSKSARGEN,1,0.0,0.0
 Dengue,SOCCSKSARGEN,1,694.5,1171.5
-Typhoid Fever,SOCCSKSARGEN,1,107.0,207.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,2,12.0,17.0
+Typhoid Fever,SOCCSKSARGEN,1,86.5,181.25
+Acute Bloody Diarrhea,SOCCSKSARGEN,2,9.5,14.25
 Acute Viral Hepatitis,SOCCSKSARGEN,2,0.0,0.0
 Cholera,SOCCSKSARGEN,2,0.0,2.25
 Dengue,SOCCSKSARGEN,2,639.0,1242.0
-Typhoid Fever,SOCCSKSARGEN,2,102.0,158.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,3,11.0,23.0
+Typhoid Fever,SOCCSKSARGEN,2,68.5,169.5
+Acute Bloody Diarrhea,SOCCSKSARGEN,3,10.0,16.25
 Acute Viral Hepatitis,SOCCSKSARGEN,3,0.0,0.0
 Cholera,SOCCSKSARGEN,3,0.0,15.75
 Dengue,SOCCSKSARGEN,3,747.5,1001.5
-Typhoid Fever,SOCCSKSARGEN,3,58.0,142.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,4,8.0,10.0
+Typhoid Fever,SOCCSKSARGEN,3,54.0,121.75
+Acute Bloody Diarrhea,SOCCSKSARGEN,4,8.0,8.75
 Acute Viral Hepatitis,SOCCSKSARGEN,4,0.0,0.0
 Cholera,SOCCSKSARGEN,4,0.0,2.25
 Dengue,SOCCSKSARGEN,4,697.5,864.5
-Typhoid Fever,SOCCSKSARGEN,4,95.0,149.0
+Typhoid Fever,SOCCSKSARGEN,4,68.5,140.0
 Acute Bloody Diarrhea,SOCCSKSARGEN,5,14.0,16.0
-Acute Viral Hepatitis,SOCCSKSARGEN,5,0.0,0.5
+Acute Viral Hepatitis,SOCCSKSARGEN,5,0.0,0.0
 Cholera,SOCCSKSARGEN,5,0.0,0.75
 Dengue,SOCCSKSARGEN,5,1197.5,1733.75
-Typhoid Fever,SOCCSKSARGEN,5,128.0,176.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,6,11.0,16.0
-Acute Viral Hepatitis,SOCCSKSARGEN,6,0.0,1.5
+Typhoid Fever,SOCCSKSARGEN,5,103.0,158.0
+Acute Bloody Diarrhea,SOCCSKSARGEN,6,12.5,17.0
+Acute Viral Hepatitis,SOCCSKSARGEN,6,0.0,0.75
 Cholera,SOCCSKSARGEN,6,0.0,0.0
 Dengue,SOCCSKSARGEN,6,1608.0,2009.0
-Typhoid Fever,SOCCSKSARGEN,6,167.0,177.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,7,13.0,14.5
+Typhoid Fever,SOCCSKSARGEN,6,112.5,173.0
+Acute Bloody Diarrhea,SOCCSKSARGEN,7,11.5,13.75
 Acute Viral Hepatitis,SOCCSKSARGEN,7,0.0,0.0
-Cholera,SOCCSKSARGEN,7,0.0,1.5
+Cholera,SOCCSKSARGEN,7,0.0,0.0
 Dengue,SOCCSKSARGEN,7,1084.0,2351.0
-Typhoid Fever,SOCCSKSARGEN,7,167.0,182.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,8,13.0,17.5
-Acute Viral Hepatitis,SOCCSKSARGEN,8,0.0,0.5
+Typhoid Fever,SOCCSKSARGEN,7,130.0,184.25
+Acute Bloody Diarrhea,SOCCSKSARGEN,8,12.0,16.0
+Acute Viral Hepatitis,SOCCSKSARGEN,8,0.0,0.0
 Cholera,SOCCSKSARGEN,8,0.0,0.0
 Dengue,SOCCSKSARGEN,8,1206.5,3060.5
-Typhoid Fever,SOCCSKSARGEN,8,154.0,171.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,9,9.0,16.0
-Acute Viral Hepatitis,SOCCSKSARGEN,9,0.0,0.5
-Cholera,SOCCSKSARGEN,9,0.0,1.0
+Typhoid Fever,SOCCSKSARGEN,8,115.5,173.25
+Acute Bloody Diarrhea,SOCCSKSARGEN,9,7.5,12.75
+Acute Viral Hepatitis,SOCCSKSARGEN,9,0.0,0.0
+Cholera,SOCCSKSARGEN,9,0.0,1.5
 Dengue,SOCCSKSARGEN,9,1006.0,1356.25
-Typhoid Fever,SOCCSKSARGEN,9,134.0,182.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,10,9.0,10.5
+Typhoid Fever,SOCCSKSARGEN,9,92.0,167.75
+Acute Bloody Diarrhea,SOCCSKSARGEN,10,8.5,10.5
 Acute Viral Hepatitis,SOCCSKSARGEN,10,0.0,0.0
-Cholera,SOCCSKSARGEN,10,0.0,38.5
+Cholera,SOCCSKSARGEN,10,1.0,56.75
 Dengue,SOCCSKSARGEN,10,737.0,1223.75
-Typhoid Fever,SOCCSKSARGEN,10,119.0,164.0
-Acute Bloody Diarrhea,SOCCSKSARGEN,11,9.0,12.5
+Typhoid Fever,SOCCSKSARGEN,10,76.0,139.25
+Acute Bloody Diarrhea,SOCCSKSARGEN,11,8.0,13.25
 Acute Viral Hepatitis,SOCCSKSARGEN,11,0.0,0.0
-Cholera,SOCCSKSARGEN,11,0.0,1.5
+Cholera,SOCCSKSARGEN,11,0.0,2.25
 Dengue,SOCCSKSARGEN,11,550.0,1009.25
-Typhoid Fever,SOCCSKSARGEN,11,102.0,130.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,12,5.0,7.5
+Typhoid Fever,SOCCSKSARGEN,11,81.0,105.0
+Acute Bloody Diarrhea,SOCCSKSARGEN,12,4.0,6.5
 Acute Viral Hepatitis,SOCCSKSARGEN,12,0.0,0.0
 Cholera,SOCCSKSARGEN,12,0.0,0.0
 Dengue,SOCCSKSARGEN,12,430.0,779.75
-Typhoid Fever,SOCCSKSARGEN,12,55.0,96.0
-Acute Bloody Diarrhea,Western Visayas,1,1.0,1.5
+Typhoid Fever,SOCCSKSARGEN,12,54.0,60.25
+Acute Bloody Diarrhea,Western Visayas,1,0.5,1.0
 Acute Viral Hepatitis,Western Visayas,1,1.0,1.0
 Cholera,Western Visayas,1,4.5,5.25
 Dengue,Western Visayas,1,443.5,557.5
-Typhoid Fever,Western Visayas,1,64.0,97.0
-Acute Bloody Diarrhea,Western Visayas,2,1.0,1.0
-Acute Viral Hepatitis,Western Visayas,2,1.0,1.0
+Typhoid Fever,Western Visayas,1,60.0,94.75
+Acute Bloody Diarrhea,Western Visayas,2,0.5,1.0
+Acute Viral Hepatitis,Western Visayas,2,0.5,1.0
 Cholera,Western Visayas,2,3.5,3.75
 Dengue,Western Visayas,2,398.5,654.75
-Typhoid Fever,Western Visayas,2,72.0,103.5
-Acute Bloody Diarrhea,Western Visayas,3,0.0,1.5
-Acute Viral Hepatitis,Western Visayas,3,1.0,2.0
+Typhoid Fever,Western Visayas,2,61.5,102.75
+Acute Bloody Diarrhea,Western Visayas,3,0.0,0.75
+Acute Viral Hepatitis,Western Visayas,3,0.5,1.75
 Cholera,Western Visayas,3,4.5,6.25
 Dengue,Western Visayas,3,278.5,492.75
-Typhoid Fever,Western Visayas,3,53.0,85.0
+Typhoid Fever,Western Visayas,3,35.0,86.75
 Acute Bloody Diarrhea,Western Visayas,4,0.0,0.0
-Acute Viral Hepatitis,Western Visayas,4,1.0,1.5
+Acute Viral Hepatitis,Western Visayas,4,1.0,1.0
 Cholera,Western Visayas,4,1.0,1.0
 Dengue,Western Visayas,4,241.5,383.5
-Typhoid Fever,Western Visayas,4,31.0,68.5
-Acute Bloody Diarrhea,Western Visayas,5,0.0,0.5
-Acute Viral Hepatitis,Western Visayas,5,1.0,4.0
+Typhoid Fever,Western Visayas,4,24.5,64.75
+Acute Bloody Diarrhea,Western Visayas,5,0.0,0.0
+Acute Viral Hepatitis,Western Visayas,5,0.5,1.0
 Cholera,Western Visayas,5,0.0,0.5
 Dengue,Western Visayas,5,420.5,722.75
-Typhoid Fever,Western Visayas,5,51.0,95.0
-Acute Bloody Diarrhea,Western Visayas,6,0.0,1.0
-Acute Viral Hepatitis,Western Visayas,6,1.0,2.5
+Typhoid Fever,Western Visayas,5,40.0,92.25
+Acute Bloody Diarrhea,Western Visayas,6,0.0,0.0
+Acute Viral Hepatitis,Western Visayas,6,1.0,1.0
 Cholera,Western Visayas,6,1.0,2.0
 Dengue,Western Visayas,6,815.5,1853.5
-Typhoid Fever,Western Visayas,6,58.0,116.5
-Acute Bloody Diarrhea,Western Visayas,7,1.0,2.0
-Acute Viral Hepatitis,Western Visayas,7,2.0,3.5
+Typhoid Fever,Western Visayas,6,46.5,100.0
+Acute Bloody Diarrhea,Western Visayas,7,1.0,1.0
+Acute Viral Hepatitis,Western Visayas,7,1.5,2.0
 Cholera,Western Visayas,7,2.0,5.5
 Dengue,Western Visayas,7,1543.0,3853.5
-Typhoid Fever,Western Visayas,7,91.0,168.5
-Acute Bloody Diarrhea,Western Visayas,8,0.0,1.5
-Acute Viral Hepatitis,Western Visayas,8,2.0,5.0
+Typhoid Fever,Western Visayas,7,66.0,138.25
+Acute Bloody Diarrhea,Western Visayas,8,0.0,0.0
+Acute Viral Hepatitis,Western Visayas,8,1.5,3.5
 Cholera,Western Visayas,8,11.0,14.0
 Dengue,Western Visayas,8,1047.0,7304.25
-Typhoid Fever,Western Visayas,8,83.0,126.5
+Typhoid Fever,Western Visayas,8,59.0,101.0
 Acute Bloody Diarrhea,Western Visayas,9,0.0,0.0
-Acute Viral Hepatitis,Western Visayas,9,0.0,2.0
+Acute Viral Hepatitis,Western Visayas,9,0.0,1.5
 Cholera,Western Visayas,9,8.0,20.5
 Dengue,Western Visayas,9,697.5,2780.0
-Typhoid Fever,Western Visayas,9,68.0,141.0
-Acute Bloody Diarrhea,Western Visayas,10,0.0,0.5
-Acute Viral Hepatitis,Western Visayas,10,0.0,0.5
+Typhoid Fever,Western Visayas,9,51.5,113.0
+Acute Bloody Diarrhea,Western Visayas,10,0.0,0.0
+Acute Viral Hepatitis,Western Visayas,10,0.0,0.75
 Cholera,Western Visayas,10,0.0,9.0
 Dengue,Western Visayas,10,439.5,1572.5
-Typhoid Fever,Western Visayas,10,66.0,134.0
+Typhoid Fever,Western Visayas,10,52.5,108.75
 Acute Bloody Diarrhea,Western Visayas,11,0.0,0.0
-Acute Viral Hepatitis,Western Visayas,11,0.0,2.0
+Acute Viral Hepatitis,Western Visayas,11,0.0,1.5
 Cholera,Western Visayas,11,2.0,7.5
 Dengue,Western Visayas,11,445.5,702.0
-Typhoid Fever,Western Visayas,11,68.0,98.0
+Typhoid Fever,Western Visayas,11,55.0,77.0
 Acute Bloody Diarrhea,Western Visayas,12,0.0,0.0
-Acute Viral Hepatitis,Western Visayas,12,0.0,1.0
+Acute Viral Hepatitis,Western Visayas,12,0.0,0.75
 Cholera,Western Visayas,12,0.0,5.5
 Dengue,Western Visayas,12,270.5,326.5
-Typhoid Fever,Western Visayas,12,21.0,77.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,1,211.0,246.5
-Acute Viral Hepatitis,Zamboanga Peninsula,1,3.0,4.5
+Typhoid Fever,Western Visayas,12,16.5,58.5
+Acute Bloody Diarrhea,Zamboanga Peninsula,1,145.5,227.5
+Acute Viral Hepatitis,Zamboanga Peninsula,1,3.5,4.75
 Cholera,Zamboanga Peninsula,1,0.5,1.0
 Dengue,Zamboanga Peninsula,1,775.5,860.0
-Typhoid Fever,Zamboanga Peninsula,1,117.0,127.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,2,136.0,207.5
-Acute Viral Hepatitis,Zamboanga Peninsula,2,2.0,3.0
+Typhoid Fever,Zamboanga Peninsula,1,98.0,117.75
+Acute Bloody Diarrhea,Zamboanga Peninsula,2,106.0,151.75
+Acute Viral Hepatitis,Zamboanga Peninsula,2,2.0,3.5
 Cholera,Zamboanga Peninsula,2,1.0,1.75
 Dengue,Zamboanga Peninsula,2,603.5,794.25
-Typhoid Fever,Zamboanga Peninsula,2,73.0,91.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,3,184.0,221.0
-Acute Viral Hepatitis,Zamboanga Peninsula,3,2.0,3.0
+Typhoid Fever,Zamboanga Peninsula,2,72.5,84.25
+Acute Bloody Diarrhea,Zamboanga Peninsula,3,163.0,229.5
+Acute Viral Hepatitis,Zamboanga Peninsula,3,2.5,3.0
 Cholera,Zamboanga Peninsula,3,2.5,5.75
 Dengue,Zamboanga Peninsula,3,816.5,921.5
-Typhoid Fever,Zamboanga Peninsula,3,62.0,115.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,4,197.0,211.5
-Acute Viral Hepatitis,Zamboanga Peninsula,4,2.0,3.0
+Typhoid Fever,Zamboanga Peninsula,3,58.5,97.25
+Acute Bloody Diarrhea,Zamboanga Peninsula,4,166.0,207.5
+Acute Viral Hepatitis,Zamboanga Peninsula,4,2.5,3.0
 Cholera,Zamboanga Peninsula,4,1.5,5.75
 Dengue,Zamboanga Peninsula,4,789.0,1128.5
-Typhoid Fever,Zamboanga Peninsula,4,96.0,138.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,5,163.0,189.0
-Acute Viral Hepatitis,Zamboanga Peninsula,5,1.0,2.5
+Typhoid Fever,Zamboanga Peninsula,4,95.5,155.5
+Acute Bloody Diarrhea,Zamboanga Peninsula,5,169.0,196.0
+Acute Viral Hepatitis,Zamboanga Peninsula,5,1.5,2.75
 Cholera,Zamboanga Peninsula,5,2.5,7.5
 Dengue,Zamboanga Peninsula,5,1214.5,1686.25
-Typhoid Fever,Zamboanga Peninsula,5,107.0,128.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,6,113.0,179.0
-Acute Viral Hepatitis,Zamboanga Peninsula,6,2.0,5.0
+Typhoid Fever,Zamboanga Peninsula,5,116.0,130.25
+Acute Bloody Diarrhea,Zamboanga Peninsula,6,136.0,189.0
+Acute Viral Hepatitis,Zamboanga Peninsula,6,2.0,6.0
 Cholera,Zamboanga Peninsula,6,0.0,3.0
 Dengue,Zamboanga Peninsula,6,1687.0,2059.75
-Typhoid Fever,Zamboanga Peninsula,6,92.0,124.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,7,146.0,216.5
-Acute Viral Hepatitis,Zamboanga Peninsula,7,2.0,2.5
+Typhoid Fever,Zamboanga Peninsula,6,108.0,124.75
+Acute Bloody Diarrhea,Zamboanga Peninsula,7,156.5,226.75
+Acute Viral Hepatitis,Zamboanga Peninsula,7,1.5,2.75
 Cholera,Zamboanga Peninsula,7,2.0,3.75
 Dengue,Zamboanga Peninsula,7,1228.5,2232.75
-Typhoid Fever,Zamboanga Peninsula,7,130.0,162.0
-Acute Bloody Diarrhea,Zamboanga Peninsula,8,160.0,214.5
-Acute Viral Hepatitis,Zamboanga Peninsula,8,1.0,4.5
+Typhoid Fever,Zamboanga Peninsula,7,138.0,166.5
+Acute Bloody Diarrhea,Zamboanga Peninsula,8,124.0,166.75
+Acute Viral Hepatitis,Zamboanga Peninsula,8,1.0,3.25
 Cholera,Zamboanga Peninsula,8,0.5,4.75
 Dengue,Zamboanga Peninsula,8,1242.0,2520.0
-Typhoid Fever,Zamboanga Peninsula,8,120.0,171.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,9,150.0,194.5
-Acute Viral Hepatitis,Zamboanga Peninsula,9,1.0,2.5
+Typhoid Fever,Zamboanga Peninsula,8,128.0,177.75
+Acute Bloody Diarrhea,Zamboanga Peninsula,9,112.0,182.25
+Acute Viral Hepatitis,Zamboanga Peninsula,9,1.5,2.75
 Cholera,Zamboanga Peninsula,9,0.5,4.0
 Dengue,Zamboanga Peninsula,9,1214.0,1395.75
-Typhoid Fever,Zamboanga Peninsula,9,122.0,155.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,10,153.0,186.0
-Acute Viral Hepatitis,Zamboanga Peninsula,10,2.0,4.0
-Cholera,Zamboanga Peninsula,10,1.0,6.0
+Typhoid Fever,Zamboanga Peninsula,9,116.0,161.25
+Acute Bloody Diarrhea,Zamboanga Peninsula,10,125.5,170.25
+Acute Viral Hepatitis,Zamboanga Peninsula,10,1.5,3.5
+Cholera,Zamboanga Peninsula,10,1.5,8.0
 Dengue,Zamboanga Peninsula,10,945.0,1405.0
-Typhoid Fever,Zamboanga Peninsula,10,111.0,159.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,11,179.0,210.5
-Acute Viral Hepatitis,Zamboanga Peninsula,11,0.0,0.5
-Cholera,Zamboanga Peninsula,11,1.0,7.0
+Typhoid Fever,Zamboanga Peninsula,10,108.0,166.75
+Acute Bloody Diarrhea,Zamboanga Peninsula,11,144.0,192.5
+Acute Viral Hepatitis,Zamboanga Peninsula,11,0.0,0.75
+Cholera,Zamboanga Peninsula,11,1.5,9.5
 Dengue,Zamboanga Peninsula,11,888.5,1089.75
-Typhoid Fever,Zamboanga Peninsula,11,110.0,130.5
-Acute Bloody Diarrhea,Zamboanga Peninsula,12,143.0,155.5
-Acute Viral Hepatitis,Zamboanga Peninsula,12,0.0,1.0
-Cholera,Zamboanga Peninsula,12,0.0,3.0
+Typhoid Fever,Zamboanga Peninsula,11,98.5,133.75
+Acute Bloody Diarrhea,Zamboanga Peninsula,12,97.0,158.0
+Acute Viral Hepatitis,Zamboanga Peninsula,12,0.0,1.5
+Cholera,Zamboanga Peninsula,12,1.0,3.5
 Dengue,Zamboanga Peninsula,12,607.0,696.5
-Typhoid Fever,Zamboanga Peninsula,12,69.0,88.0
+Typhoid Fever,Zamboanga Peninsula,12,58.0,95.0

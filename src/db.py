@@ -219,6 +219,10 @@ outbreak_signals = Table(
     Column("region_code", String(9), primary_key=True),
     Column("disease", String(32), primary_key=True),
     Column("season", String(6), primary_key=True),
+    Column("probe_anchor", Date, primary_key=True),
+    Column("season_start", Date, nullable=False),
+    Column("season_end", Date, nullable=False),
+    Column("history_status", String(16), nullable=False),
     Column("outbreak", Boolean, nullable=False),
     Column("trigger", String(24), nullable=False),
     Column("consecutive_high_n", Integer, nullable=False),
@@ -316,6 +320,11 @@ narratives = Table(
     Column("fallback_fired", Boolean, nullable=False, default=False),
     Column("weather_violations", String(160), nullable=False, default=""),
     Column("numeric_violations", String(160), nullable=False, default=""),
+    # Added for the speculative-prose and window-anchor guards. Always empty in
+    # a shipped corpus: the generator refuses to persist a narrative that tripped
+    # a guard, so a non-empty value here would mean the guard was bypassed.
+    Column("speculative_violations", String(160), nullable=False, default=""),
+    Column("unanchored_violations", String(160), nullable=False, default=""),
     Column("generated_at", String(32), nullable=False),
     Index("ix_narratives_surface_disease", "surface", "disease"),
 )
@@ -497,8 +506,12 @@ def build_db():
             if code_col not in out.columns:
                 out = out.rename(columns={"region": code_col})
             out[code_col] = out[code_col].map(_region_code)
-            if date_col:
-                out[date_col] = _to_mid(out[date_col])
+            # date_col accepts a single column name or several; the outbreak
+            # table carries a probe window (anchor + both bounds) that must all
+            # land as real dates rather than pandas' default object dtype.
+            cols = [date_col] if isinstance(date_col, str) else list(date_col or [])
+            for col in cols:
+                out[col] = _to_mid(out[col])
             if drop:
                 out = out.drop(columns=[c for c in drop if c in out.columns])
             return out
@@ -515,7 +528,11 @@ def build_db():
         if cls is not None and not cls.empty:
             conn.execute(risk_classifications.insert(), cls.to_dict(orient="records"))
 
-        obk = _remap(_load_csv("outbreak_indicators.csv"), "region_code")
+        obk = _remap(
+            _load_csv("outbreak_indicators.csv"),
+            "region_code",
+            date_col=["probe_anchor", "season_start", "season_end"],
+        )
         if obk is not None and not obk.empty:
             conn.execute(outbreak_signals.insert(), obk.to_dict(orient="records"))
 
@@ -576,13 +593,16 @@ def build_db():
                 for col in (
                     "weather_violations", "numeric_violations", "component",
                     "model", "region", "region_code", "generated_at",
+                    "speculative_violations", "unanchored_violations",
                 ):
                     if col in nar.columns:
                         nar[col] = nar[col].fillna("").astype(str)
                 keep = [
                     "region_code", "disease", "surface", "component", "region",
                     "narrative", "model", "fallback_fired",
-                    "weather_violations", "numeric_violations", "generated_at",
+                    "weather_violations", "numeric_violations",
+                    "speculative_violations", "unanchored_violations",
+                    "generated_at",
                 ]
                 nar = nar[[c for c in keep if c in nar.columns]]
                 # A resumed generator run can append a key it had already

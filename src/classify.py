@@ -145,7 +145,9 @@ def classify_seasonal(thresholds, probes=None, season_func=None):
     the outbreak indicator, without altering the dashboard's next-12-months view.
     Pass `season_func(date, region)` to relabel probes under a regional
     climate-type override (Type II regions: the Jan-Mar 'dry' probe is actually
-    their local wet peak).
+    their local wet peak). Relabelling changes the season *name* only -- the
+    probe's calendar window and anchor are carried through unchanged, so the
+    window stays the physical one even when the label flips.
     """
     if probes is None:
         probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
@@ -154,15 +156,32 @@ def classify_seasonal(thresholds, probes=None, season_func=None):
     else:
         probes = probes.rename(columns={"target_date": "date"})
     probes["date"] = pd.to_datetime(probes["date"])
+    for col in ("probe_anchor", "season_start", "season_end"):
+        probes[col] = pd.to_datetime(probes[col])
     if season_func is not None:
         probes["season"] = probes.apply(
             lambda r: season_func(r["date"], r["region"]), axis=1
         )
     merged = _apply_tiers(probes, thresholds)
     out = merged[
-        ["disease", "region", "season", "date", "yhat", "p50", "p75", "risk_level"]
+        [
+            "disease",
+            "region",
+            "season",
+            "probe_anchor",
+            "season_start",
+            "season_end",
+            "history_status",
+            "date",
+            "yhat",
+            "p50",
+            "p75",
+            "risk_level",
+        ]
     ]
-    return out.sort_values(["region", "season", "date"], ignore_index=True)
+    return out.sort_values(
+        ["region", "season", "probe_anchor", "date"], ignore_index=True
+    )
 
 
 def tier_backtest(thresholds):
