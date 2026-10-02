@@ -7,12 +7,10 @@
  * unchanged instead of being mis-parsed into a bogus century.
  */
 export function formatMonthYear(input: string | Date): string {
-  if (typeof input === 'string' && !/^\d{4}-\d{2}(-\d{2})?$/.test(input)) {
+  if (typeof input === "string" && !/^\d{4}-\d{2}(-\d{2})?$/.test(input)) {
     return input;
   }
   const date =
-    typeof input === 'string'
-      ? new Date(input.length === 7 ? `${input}-01` : input)
-      : input;
-  return date.toLocaleDateString('en-PH', { month: 'short', year: 'numeric' });
+    typeof input === "string" ? new Date(input.length === 7 ? `${input}-01` : input) : input;
+  return date.toLocaleDateString("en-PH", { month: "short", year: "numeric" });
 }

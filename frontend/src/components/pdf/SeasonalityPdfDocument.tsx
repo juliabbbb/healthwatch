@@ -35,6 +35,8 @@ export interface SeasonalityPdfDocumentProps {
     p50: number;
     p75: number;
     cases: number;
+    /** Which yardstick P50/P75 came from, printed so the tier is reproducible. */
+    basisLabel?: string;
   };
   /** Seasonal outbreak indicator (Rule A / Rule B). */
   outbreak?: {
@@ -270,6 +272,7 @@ export function SeasonalityPdfDocument({
         <MetaRow label="Reported cases" value={risk.cases.toLocaleString()} />
         <MetaRow label="P50 threshold (seasonal median)" value={risk.p50.toFixed(1)} />
         <MetaRow label="P75 threshold (seasonal upper quartile)" value={risk.p75.toFixed(1)} />
+        {risk.basisLabel && <MetaRow label="Tier basis" value={risk.basisLabel} />}
 
         {/* ---- Seasonal Outbreak Indicator ---- */}
         {outbreak && (

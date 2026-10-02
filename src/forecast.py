@@ -1,15 +1,41 @@
 """Monthly disease forecasting (dengue + food/waterborne disease groups).
 
-Monthly Prophet (~55 observed months per region, 3 full yearly cycles) with a
-wet-season regressor only (Config B, the deployed default: yearly Fourier
-seasonality disabled after the ablation in src/ablation reported Config C, the
-former yearly + wet-regressor stack, as strictly worse, with a projected R2 of
-1.0 between the wet step and the Fourier columns on the training calendar), a
-12-month production horizon and a 12-month walk-forward validation that REFITS
-EVERY MONTH (REFIT_EVERY = 1). Two validation windows:
+Monthly Prophet (~92 observed months per region, 7 full yearly cycles) with a
+wet-season regressor only -- Config B, the deployed default (`fit_prophet`'s
+`use_year_seasonality=False, use_wet_regressor=True`), a 12-month production
+horizon on one shared calendar and a 12-month walk-forward validation that
+REFITS EVERY MONTH (REFIT_EVERY = 1).
 
+Config B was originally adopted because the ablation reported Config C (the
+yearly + wet-regressor stack) as strictly worse. ON THE CORRECTED WALK-FORWARD
+WINDOWS THAT ORDERING REVERSES, and the reversal is not a rounding artefact:
+across the 19 dengue series, C has the lowest MAE in 12 regions on
+`2025_prospective` and 10 on `last_12m`, and the lowest MAPE in both windows
+(101.75 and 79.91, vs B's 119.41 and 115.82). B still wins on RMSE. The
+original result came from a validation window that leaked the holdout into its
+own thresholds; see RESULTS_AFTER_FIX.md. B remains deployed because switching
+is a modelling decision, not a bug fix, and because the collinearity that
+motivated B in the first place is unresolved: the projected R2 of the wet step
+on the Fourier columns is still 1.0 with a joint condition number of ~6.1e16, so
+C's two seasonal channels are not separately identified and its edge is not
+safely attributable. Re-deciding the deployed config is open work.
+
+Two validation windows:
   last_12m         train through 2025-08, hold out 2025-09 .. 2026-08
   2025_prospective train through 2024-12, hold out 2025-01 .. 2025-12
+
+Each window's `end_date` is the last month the model may TRAIN on, so the
+holdout starts the month after it. A series that stops reporting before the
+window ends cannot fill the holdout and is DROPPED from that window (it
+contributes no metric row), so the per-window series count is reported
+explicitly rather than assumed to be every region.
+
+The production forecast shares ONE calendar across all five diseases --
+FORECAST_START..FORECAST_END (2026-09..2027-08), derived from the last complete
+reported month. It does not start at each series' own last observation. A series
+that stopped reporting more than MAX_STALE_MONTHS (12) months before the last
+complete month is not forecast; those skips, with their reason, are written to
+forecast_skips.csv.
 
 Seasonal outbreak "probe" forecasts (dry = Jan-Mar, wet = Jul-Sep of the next
 season) are fit on history through 2024-12-31 so the 2025 seasons are true
@@ -24,7 +50,7 @@ import numpy as np
 import pandas as pd
 from prophet import Prophet
 
-from . import features, ingest
+from . import config, features, ingest
 from .doh_eb_ingest import DATA_END
 
 logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
@@ -33,11 +59,37 @@ FORECAST_MONTHS = 12
 VAL_MONTHS = 12
 REFIT_EVERY = 1  # walk-forward refits every month (methodology text must match)
 MIN_TRAIN_MONTHS = 24
+# A series whose reporting stops more than this many months before the last
+# complete month is not forecast at all: its "next 12 months" would be an
+# extrapolation across a reporting gap, presented with the same confidence as a
+# current series. The skip is recorded in forecast_skips.csv.
+MAX_STALE_MONTHS = 12
+# One shared production calendar for EVERY disease, derived from the last
+# complete reported month so it moves automatically when the data does:
+#   FORECAST_START = 2026-09-01, FORECAST_END = 2027-08-01
+# The horizon used to start at each series' own last observation, so a series
+# that stopped reporting early began its "next 12 months" months earlier than a
+# current one -- the five diseases spanned 2023-06..2026-10 as anchors and the
+# frontend had to re-anchor each one on its own. Every series now carries the
+# same 12 target months, which is what the shared dashboard calendar expects.
+FORECAST_START = config.DATA_END_MONTH_START + pd.DateOffset(months=1)
+FORECAST_END = config.DATA_END_MONTH_START + pd.DateOffset(months=FORECAST_MONTHS)
 WINDOWS = {
     "last_12m": "2025-08-31",
     "2025_prospective": "2024-12-31",
 }
 TRAIN_END = pd.Timestamp("2024-12-31")
+
+
+def months_between(start, end):
+    """Whole months from `start` to `end` (calendar months, ignoring day)."""
+    return (end.year - start.year) * 12 + (end.month - start.month)
+
+
+def stale_months(series, as_of=None):
+    """Months between a series' last observation and the last complete month."""
+    as_of = as_of if as_of is not None else config.DATA_END_MONTH_START
+    return max(0, months_between(series["ds"].max(), as_of))
 
 # Seasonal outbreak "probe" forecasts: one 3-month window per season, anchored to
 # the CALENDAR, not to the last observed month. The dry probe is Jan-Mar and the
@@ -92,18 +144,51 @@ def predict(model, dates, use_wet_regressor=True):
 
 
 def _split_index(series, val_months, end_date):
+    """Index of the FIRST held-out month for a window whose training cutoff is
+    `end_date`.
+
+    `end_date` is the last month the model may TRAIN on, so the holdout starts
+    the month after it. The previous expression (`eligible[-1] - val_months +
+    1`) subtracted a whole window from the cutoff and therefore held out the
+    twelve months BEFORE the window instead of the window itself, putting every
+    published metric a year early.
+    """
     if end_date is None:
         return len(series) - val_months
     eligible = series.index[series["ds"] <= pd.Timestamp(end_date)]
     if len(eligible) == 0:
         return -1
-    return int(eligible[-1]) - val_months + 1
+    return int(eligible[-1]) + 1
+
+
+def _skip_reason(series, val_months, end_date):
+    """Why a series cannot be scored on a window, or None when it can.
+
+    Two distinct causes, previously reported under one vague message:
+      * `history_too_short` - fewer than MIN_TRAIN_MONTHS months on or before
+        the training cutoff, so Prophet cannot be fit at all;
+      * `series_ends_in_window` - the series stops reporting before the
+        holdout's last month, so there are no observed months to score.
+    """
+    series = series.reset_index(drop=True)
+    split = _split_index(series, val_months, end_date)
+    if split == -1:
+        return "no history before cutoff"
+    if split < MIN_TRAIN_MONTHS:
+        return f"history_too_short ({split} months before cutoff, need {MIN_TRAIN_MONTHS})"
+    if split + val_months > len(series):
+        missing = split + val_months - len(series)
+        last = series["ds"].iloc[-1].strftime("%Y-%m")
+        return f"series_ends_in_window (last observed {last}, {missing} months short)"
+    return None
 
 
 def walk_forward_validation(series, val_months=VAL_MONTHS, refit_every=REFIT_EVERY, end_date=None):
     series = series.reset_index(drop=True)
     split = _split_index(series, val_months, end_date)
-    if split < MIN_TRAIN_MONTHS:
+    # A series that stops reporting before the window ends cannot fill the
+    # holdout: return None so it drops out instead of scoring a short window.
+    if split < MIN_TRAIN_MONTHS or split + val_months > len(series):
         return None
     preds = []
     model = None
@@ -137,7 +222,7 @@ def score(validation):
 def naive_scores(series, val_months=VAL_MONTHS, end_date=None):
     series = series.reset_index(drop=True)
     split = _split_index(series, val_months, end_date)
-    if split < val_months:
+    if split < val_months or split + val_months > len(series):
         return None
     actual = series.iloc[split : split + val_months]["y"].to_numpy(dtype=float)
     naive = series["y"].shift(val_months).iloc[split : split + val_months].to_numpy(dtype=float)
@@ -145,13 +230,17 @@ def naive_scores(series, val_months=VAL_MONTHS, end_date=None):
     return round(float(np.mean(np.abs(actual[ok] - naive[ok]))), 2)
 
 
-def build_forecast(series, horizon=FORECAST_MONTHS):
-    """Production forecast: fit on ALL observed history (through 2026-08) and
-    forecast the next 12 months."""
+def build_forecast(series, start=FORECAST_START, end=FORECAST_END):
+    """Production forecast on the SHARED calendar.
+
+    Fits on ALL observed history (through 2026-08) and predicts the fixed
+    12-month window `start`..`end` for every series, regardless of where that
+    series' own observations stop. A stale series is rejected by `run()` before
+    it gets here, so a large `start - last_ds` gap is a bug, not a normal case.
+    """
     series = series[["ds", "y"]].reset_index(drop=True)
     model = fit_prophet(series)
-    last = series["ds"].max()
-    future_dates = pd.date_range(last, periods=horizon + 1, freq=FREQ)[1:]
+    future_dates = pd.date_range(start, end, freq=FREQ)
     fcst = predict(model, future_dates)
     fcst["yhat"] = fcst["yhat"].clip(lower=1)
     fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=1)
@@ -221,6 +310,7 @@ def run(probes_only=False):
     forecast_frames = []
     metric_rows = []
     val_rows = []
+    skip_rows = []
     for (disease, region), group in df.groupby(["disease", "region"]):
         series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
         if len(series) < MIN_TRAIN_MONTHS:
@@ -228,6 +318,19 @@ def run(probes_only=False):
                 f"SKIP {region:<32} [{disease}]: only {len(series)} months"
                 f" (< {MIN_TRAIN_MONTHS})"
             )
+            # Recorded too, so forecast_skips.csv accounts for every series that
+            # produces no production forecast rather than only the stale ones.
+            if not probes_only:
+                skip_rows.append(
+                    {
+                        "disease": disease,
+                        "region": region,
+                        "last_observed": series["ds"].max(),
+                        "stale_months": stale_months(series),
+                        "months_observed": int(len(series)),
+                        "reason": f"history_too_short ({len(series)} months < {MIN_TRAIN_MONTHS})",
+                    }
+                )
             continue
         probes = build_season_probes(series)
         probes.insert(0, "region", region)
@@ -238,7 +341,7 @@ def run(probes_only=False):
         for window_name, end_date in WINDOWS.items():
             validation = walk_forward_validation(series, end_date=end_date)
             if validation is None:
-                print(f"SKIP {region} [{window_name}]: not enough history")
+                print(f"SKIP {region} [{window_name}]: {_skip_reason(series, VAL_MONTHS, end_date)}")
                 continue
             val_rows.append(
                 validation.assign(disease=disease, region=region, window=window_name)
@@ -262,6 +365,27 @@ def run(probes_only=False):
                 f"{region:<32} [{window_name:<18}] MAE={scores['MAE']:>9.2f}  "
                 f"naive={naive_mae:>9.2f}  skill={skill if skill is not None else 'n/a':>6}%"
             )
+        gap = stale_months(series)
+        if gap > MAX_STALE_MONTHS:
+            # Still probed and still validated above -- only the PRODUCTION
+            # forecast is withheld, because a series that stopped reporting is
+            # not forecasting "the next 12 months".
+            reason = (
+                f"stale ({gap} months before last complete month "
+                f"{config.DATA_END_MONTH_START.date()}, max {MAX_STALE_MONTHS})"
+            )
+            print(f"SKIP {region:<32} [{disease}]: {reason}")
+            skip_rows.append(
+                {
+                    "disease": disease,
+                    "region": region,
+                    "last_observed": series["ds"].max(),
+                    "stale_months": gap,
+                    "months_observed": int(len(series)),
+                    "reason": reason,
+                }
+            )
+            continue
         fcst = build_forecast(series)
         fcst.insert(0, "region", region)
         fcst.insert(0, "disease", disease)
@@ -301,6 +425,23 @@ def run(probes_only=False):
     ]
     fcst_path = ingest.save_processed(forecasts, "forecasts.csv")
 
+    skips_df = pd.DataFrame(
+        skip_rows,
+        columns=[
+            "disease",
+            "region",
+            "last_observed",
+            "stale_months",
+            "months_observed",
+            "reason",
+        ],
+    )
+    if not skips_df.empty:
+        skips_df = skips_df.sort_values(
+            ["disease", "stale_months", "region"], ascending=[True, False, True], ignore_index=True
+        )
+    skips_path = ingest.save_processed(skips_df, "forecast_skips.csv")
+
     metrics_df = pd.DataFrame(metric_rows)
     metrics_df = metrics_df.sort_values(["region", "window"], ignore_index=True)
     metrics_path = ingest.save_processed(metrics_df, "validation_metrics.csv")
@@ -308,8 +449,21 @@ def run(probes_only=False):
     val_df = pd.concat(val_rows, ignore_index=True)
     val_path = ingest.save_processed(val_df, "validation_predictions.csv")
 
+    n_series = df.groupby(["disease", "region"]).ngroups
     print(f"\nSaved {len(forecasts)} forecast rows -> {fcst_path}")
-    print(f"Saved {len(metrics_df)} validation rows -> {metrics_path}")
+    print(f"Forecast calendar {FORECAST_START.date()} .. {FORECAST_END.date()} "
+          f"({FORECAST_MONTHS} months, shared by all diseases)")
+    print(f"Forecasted {forecasts.groupby(['disease', 'region']).ngroups} of {n_series} series; "
+          f"skipped {len(skips_df)} -> {skips_path}")
+    if not skips_df.empty:
+        print("\nSkipped series (no production forecast):")
+        print(
+            skips_df[["disease", "region", "last_observed", "stale_months", "reason"]]
+            .to_string(index=False)
+        )
+        print()
+        print(skips_df.groupby("disease").size().to_string())
+    print(f"\nSaved {len(metrics_df)} validation rows -> {metrics_path}")
     print(f"Saved {len(val_df)} validation prediction rows -> {val_path}")
     return forecasts, metrics_df
 

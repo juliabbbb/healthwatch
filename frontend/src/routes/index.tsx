@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Activity, ChevronDown, Globe, X } from "lucide-react";
-import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
 import { ForecastCard } from "@/components/hw/ForecastCard";
@@ -9,6 +8,7 @@ import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
 import { ExplainOverlay } from "@/components/hw/ExplainOverlay";
+import { TierBasisSwitch } from "@/components/hw/TierBasisSwitch";
 import {
   CURRENT_MONTH_INDEX,
   OUTBREAK_BENCHMARK_SEASON,
@@ -18,6 +18,7 @@ import {
   nationalDominant,
   type MetricMode,
   type Season,
+  type TierBasis,
 } from "@/lib/healthwatch/data";
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
@@ -56,7 +57,7 @@ function MapView() {
   const [selected, setSelected] = useState<string | null>(null);
   const [flyTo, setFlyTo] = useState<string | null>(null);
   const [mode, setMode] = useState<MetricMode>("percapita");
-  const [layer, setLayer] = useState<DataLayer>("hotspot");
+  const [basis, setBasis] = useState<TierBasis>("hotspot");
   const [outbreakSeason, setOutbreakSeason] = useState<Season>(OUTBREAK_BENCHMARK_SEASON);
   const [showOutbreakMarkers, setShowOutbreakMarkers] = useState(false);
   const [mobileNationalOpen, setMobileNationalOpen] = useState(false);
@@ -70,8 +71,8 @@ function MapView() {
   const { explainActive, toggleExplain, exitExplain } = useExplainMode();
 
   const assessments = useMemo(
-    () => assessAll(illness, monthIndex, mode),
-    [illness, monthIndex, mode],
+    () => assessAll(illness, monthIndex, mode, basis),
+    [illness, monthIndex, mode, basis],
   );
   const counts = useMemo(() => {
     const c = { high: 0, moderate: 0, low: 0 };
@@ -112,6 +113,7 @@ function MapView() {
               illness={illness}
               monthIndex={monthIndex}
               mode={mode}
+              basis={basis}
               selectedCode={selected}
               onSelect={handleSelect}
               flyToCode={flyTo}
@@ -119,6 +121,15 @@ function MapView() {
             />
           </Suspense>
         )}
+      </div>
+
+      {/* 1b. DESKTOP ONLY: Tier-basis switch. Mobile gets the same control inside
+          the bottom sheet's ForecastCard, so it is hidden here to avoid two
+          controls fighting over one piece of state. */}
+      <div className="pointer-events-none absolute left-1/2 top-4 z-30 hidden -translate-x-1/2 md:block">
+        <div className="pointer-events-auto">
+          <TierBasisSwitch basis={basis} onBasisChange={setBasis} illness={illness} />
+        </div>
       </div>
 
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
@@ -149,13 +160,17 @@ function MapView() {
 
       {/* 5. DESKTOP ONLY: Floating Forecast Card on Right */}
       {selected && (
-        <div id="hw-forecast-card" className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
+        <div
+          id="hw-forecast-card"
+          className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll"
+        >
           <ForecastCard
             regionCode={selected}
             illness={illness}
             monthIndex={monthIndex}
             mode={mode}
             onModeChange={setMode}
+            basis={basis}
             onClose={() => setSelected(null)}
             outbreakSeason={outbreakSeason}
             onOutbreakSeasonChange={setOutbreakSeason}
@@ -192,7 +207,12 @@ function MapView() {
 
       {/* 4. Top Navigation Bar (Desktop Toolbar / Mobile Hamburger Bar) */}
       <div className="absolute right-3 top-3 md:right-4 md:top-4 z-30">
-        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} onStartTour={toggleExplain} explainActive={explainActive} />
+        <TopToolbar
+          onPick={handleFocusRegion}
+          selectedRegionCode={selected}
+          onStartTour={toggleExplain}
+          explainActive={explainActive}
+        />
       </div>
 
       {/* Explain Mode Inspector Overlay */}
@@ -205,8 +225,8 @@ function MapView() {
         monthIndex={monthIndex}
         mode={mode}
         onModeChange={setMode}
-        layer={layer}
-        onLayerChange={setLayer}
+        basis={basis}
+        onBasisChange={setBasis}
         onClose={() => setSelected(null)}
       />
 

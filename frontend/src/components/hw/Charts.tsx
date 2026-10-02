@@ -37,7 +37,20 @@ const axis = {
   axisLine: false,
 };
 
-const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const MONTH_NAMES = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
 
 const tooltipStyle = {
   contentStyle: {
@@ -293,10 +306,7 @@ export function ForecastChart({
             ]}
 
         <ReferenceLine
-          x={
-            series.find((p) => p.forecast)?.label ??
-            monthMeta(HIST_MONTHS - 1).label
-          }
+          x={series.find((p) => p.forecast)?.label ?? monthMeta(HIST_MONTHS - 1).label}
           stroke="var(--color-muted-foreground)"
           strokeDasharray="3 3"
           label={{
@@ -470,11 +480,7 @@ export function MonthOfYearChart({
         />
         <Bar dataKey="value" radius={[4, 4, 0, 0]} isAnimationActive={false}>
           {rows.map((r, i) => (
-            <Cell
-              key={i}
-              fill={r.wet ? CHART_COLORS.wet : CHART_COLORS.dry}
-              fillOpacity={0.85}
-            />
+            <Cell key={i} fill={r.wet ? CHART_COLORS.wet : CHART_COLORS.dry} fillOpacity={0.85} />
           ))}
         </Bar>
       </BarChart>

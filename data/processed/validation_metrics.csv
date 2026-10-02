@@ -1,184 +1,142 @@
 disease,region,window,MAE,RMSE,MAPE,months,excluded_zero_actual,naive_MAE,skill_vs_naive_pct
-Acute Bloody Diarrhea,Bangsamoro (BARMM),2025_prospective,17.13,20.95,43.16,12,0,20.17,15.1
-Acute Viral Hepatitis,Bangsamoro (BARMM),2025_prospective,0.77,1.0,60.48,12,5,0.92,16.3
-Cholera,Bangsamoro (BARMM),2025_prospective,3.18,5.5,53.35,12,2,3.83,17.0
-Dengue,Bangsamoro (BARMM),2025_prospective,430.03,466.66,48.48,12,0,412.25,-4.3
-Typhoid Fever,Bangsamoro (BARMM),2025_prospective,44.75,50.4,23.46,12,0,68.33,34.5
-Acute Bloody Diarrhea,Bangsamoro (BARMM),last_12m,23.93,34.43,34.74,12,0,32.08,25.4
-Acute Viral Hepatitis,Bangsamoro (BARMM),last_12m,0.77,1.0,60.48,12,5,0.92,16.3
-Cholera,Bangsamoro (BARMM),last_12m,3.54,5.76,48.13,12,0,5.17,31.5
-Dengue,Bangsamoro (BARMM),last_12m,351.76,438.61,54.58,12,0,398.67,11.8
-Typhoid Fever,Bangsamoro (BARMM),last_12m,36.92,41.8,19.69,12,0,45.58,19.0
-Acute Bloody Diarrhea,Bicol Region,2025_prospective,3.56,4.21,171.23,12,0,4.0,11.0
-Acute Viral Hepatitis,Bicol Region,2025_prospective,0.11,0.28,96.42,12,11,0.25,56.0
-Cholera,Bicol Region,2025_prospective,4.31,5.13,136.34,12,2,18.25,76.4
-Dengue,Bicol Region,2025_prospective,71.36,85.74,68.16,12,0,54.83,-30.1
-Typhoid Fever,Bicol Region,2025_prospective,5.65,7.8,56.22,12,0,11.83,52.2
-Acute Bloody Diarrhea,Bicol Region,last_12m,7.86,8.69,176.95,12,0,9.58,18.0
-Acute Viral Hepatitis,Bicol Region,last_12m,0.11,0.28,96.42,12,11,0.25,56.0
-Cholera,Bicol Region,last_12m,3.66,4.99,75.15,12,2,10.33,64.6
-Dengue,Bicol Region,last_12m,111.84,127.31,63.69,12,0,89.0,-25.7
-Typhoid Fever,Bicol Region,last_12m,13.02,15.95,51.63,12,0,15.08,13.7
-Acute Bloody Diarrhea,CALABARZON,2025_prospective,9.22,11.01,33.76,12,0,11.08,16.8
-Acute Viral Hepatitis,CALABARZON,2025_prospective,1.08,1.76,100.0,12,6,0.67,-61.2
-Cholera,CALABARZON,2025_prospective,1.69,2.36,181.76,12,5,4.08,58.6
-Dengue,CALABARZON,2025_prospective,2286.19,2873.79,68.1,12,0,2389.17,4.3
-Typhoid Fever,CALABARZON,2025_prospective,27.99,33.28,30.65,12,0,43.58,35.8
-Acute Bloody Diarrhea,CALABARZON,last_12m,25.43,32.76,47.87,12,0,23.17,-9.8
-Acute Viral Hepatitis,CALABARZON,last_12m,1.49,2.14,92.17,12,5,1.42,-4.9
-Cholera,CALABARZON,last_12m,0.39,0.61,100.0,12,8,0.75,48.0
-Dengue,CALABARZON,last_12m,3355.48,4075.09,77.56,12,0,3142.83,-6.8
-Typhoid Fever,CALABARZON,last_12m,30.27,34.31,37.85,12,0,24.58,-23.1
-Acute Bloody Diarrhea,Cagayan Valley,2025_prospective,26.1,33.52,21.4,12,0,49.17,46.9
-Acute Viral Hepatitis,Cagayan Valley,2025_prospective,0.33,0.91,100.0,12,10,0.42,21.4
-Dengue,Cagayan Valley,2025_prospective,590.84,931.56,54.66,12,0,670.5,11.9
-Typhoid Fever,Cagayan Valley,2025_prospective,65.1,80.73,39.83,12,0,77.92,16.5
-Acute Bloody Diarrhea,Cagayan Valley,last_12m,35.73,47.67,24.52,12,0,34.33,-4.1
-Acute Viral Hepatitis,Cagayan Valley,last_12m,0.33,0.91,100.0,12,10,0.42,21.4
-Dengue,Cagayan Valley,last_12m,427.41,535.69,43.58,12,0,628.0,31.9
-Typhoid Fever,Cagayan Valley,last_12m,53.17,69.36,23.95,12,0,104.42,49.1
-Acute Bloody Diarrhea,Caraga,2025_prospective,25.03,28.5,82.76,12,0,56.0,55.3
-Acute Viral Hepatitis,Caraga,2025_prospective,0.0,0.0,,12,12,0.08,100.0
-Cholera,Caraga,2025_prospective,1.25,1.94,100.0,12,5,9.33,86.6
-Dengue,Caraga,2025_prospective,855.91,1024.87,60.5,12,0,867.58,1.3
-Typhoid Fever,Caraga,2025_prospective,16.86,20.0,28.87,12,0,26.67,36.8
-Acute Bloody Diarrhea,Caraga,last_12m,21.45,23.86,72.1,12,0,25.0,14.2
-Acute Viral Hepatitis,Caraga,last_12m,0.08,0.29,100.0,12,11,0.08,0.0
-Cholera,Caraga,last_12m,0.67,1.0,100.0,12,6,1.25,46.4
-Dengue,Caraga,last_12m,761.09,880.39,106.25,12,0,827.92,8.1
-Typhoid Fever,Caraga,last_12m,15.3,20.52,20.45,12,0,20.17,24.1
-Acute Bloody Diarrhea,Central Luzon,2025_prospective,11.49,16.39,57.57,12,0,31.5,63.5
-Acute Viral Hepatitis,Central Luzon,2025_prospective,0.59,0.67,63.61,12,7,0.5,-18.0
-Cholera,Central Luzon,2025_prospective,1.06,1.48,88.76,12,5,1.58,32.9
-Dengue,Central Luzon,2025_prospective,1663.4,2279.56,71.47,12,0,1848.75,10.0
-Typhoid Fever,Central Luzon,2025_prospective,32.57,42.63,28.25,12,0,40.17,18.9
-Acute Bloody Diarrhea,Central Luzon,last_12m,8.9,10.88,30.32,12,0,10.75,17.2
-Acute Viral Hepatitis,Central Luzon,last_12m,0.6,0.67,57.63,12,6,0.83,27.7
-Cholera,Central Luzon,last_12m,0.85,1.35,88.46,12,5,1.75,51.4
-Dengue,Central Luzon,last_12m,2444.03,3055.4,40.05,12,0,2979.92,18.0
-Typhoid Fever,Central Luzon,last_12m,36.85,44.41,32.92,12,0,32.75,-12.5
-Acute Bloody Diarrhea,Central Visayas,2025_prospective,119.49,132.34,75.8,12,0,88.58,-34.9
-Acute Viral Hepatitis,Central Visayas,2025_prospective,1.49,1.73,73.49,12,1,1.75,14.9
-Cholera,Central Visayas,2025_prospective,1.31,1.6,47.47,12,6,1.33,1.5
-Dengue,Central Visayas,2025_prospective,1916.36,2829.69,59.36,12,0,2005.0,4.4
-Typhoid Fever,Central Visayas,2025_prospective,41.6,49.07,26.12,12,0,64.33,35.3
-Acute Bloody Diarrhea,Central Visayas,last_12m,99.14,104.02,67.03,12,0,70.58,-40.5
-Acute Viral Hepatitis,Central Visayas,last_12m,6.32,11.79,81.11,12,0,6.75,6.4
-Cholera,Central Visayas,last_12m,1.07,1.14,30.9,12,8,1.0,-7.0
-Dengue,Central Visayas,last_12m,1831.63,2345.76,151.01,12,0,1823.0,-0.5
-Typhoid Fever,Central Visayas,last_12m,55.19,65.62,52.48,12,0,64.58,14.5
-Acute Bloody Diarrhea,Cordillera Administrative Region,2025_prospective,20.76,23.15,55.86,12,0,50.58,59.0
-Acute Viral Hepatitis,Cordillera Administrative Region,2025_prospective,0.0,0.0,,12,12,0.25,100.0
-Cholera,Cordillera Administrative Region,2025_prospective,1.23,1.62,42.68,12,4,0.92,-33.7
-Dengue,Cordillera Administrative Region,2025_prospective,2148.87,3025.86,117.08,12,0,1766.75,-21.6
-Typhoid Fever,Cordillera Administrative Region,2025_prospective,80.9,105.63,23.72,12,0,99.92,19.0
-Acute Bloody Diarrhea,Cordillera Administrative Region,last_12m,18.1,22.25,51.6,12,0,34.92,48.2
-Acute Viral Hepatitis,Cordillera Administrative Region,last_12m,0.08,0.29,100.0,12,11,0.08,0.0
-Cholera,Cordillera Administrative Region,last_12m,2.18,4.16,44.72,12,5,2.25,3.1
-Dengue,Cordillera Administrative Region,last_12m,2047.44,2879.91,186.25,12,0,1878.58,-9.0
-Typhoid Fever,Cordillera Administrative Region,last_12m,85.59,102.17,43.21,12,0,125.33,31.7
-Acute Bloody Diarrhea,Davao Region,2025_prospective,15.26,17.44,66.71,12,0,20.75,26.5
-Acute Viral Hepatitis,Davao Region,2025_prospective,0.71,1.16,93.82,12,11,0.5,-42.0
-Cholera,Davao Region,2025_prospective,26.23,29.22,525.48,12,8,9.75,-169.0
-Dengue,Davao Region,2025_prospective,717.16,1079.2,28.58,12,0,775.42,7.5
-Typhoid Fever,Davao Region,2025_prospective,19.4,22.86,28.7,12,0,20.75,6.5
-Acute Bloody Diarrhea,Davao Region,last_12m,14.4,16.21,44.45,12,0,24.83,42.0
-Acute Viral Hepatitis,Davao Region,last_12m,0.72,0.99,73.99,12,8,1.08,33.3
-Cholera,Davao Region,last_12m,18.85,20.24,1320.9,12,5,3.58,-426.5
-Dengue,Davao Region,last_12m,913.8,1193.95,70.63,12,0,909.92,-0.4
-Typhoid Fever,Davao Region,last_12m,34.42,37.91,83.41,12,0,34.83,1.2
-Acute Bloody Diarrhea,Eastern Visayas,2025_prospective,15.29,16.32,147.39,12,0,21.5,28.9
-Acute Viral Hepatitis,Eastern Visayas,2025_prospective,0.69,0.78,78.02,12,11,1.08,36.1
-Cholera,Eastern Visayas,2025_prospective,231.44,246.34,363.44,12,0,165.75,-39.6
-Dengue,Eastern Visayas,2025_prospective,438.34,537.14,90.36,12,0,360.0,-21.8
-Typhoid Fever,Eastern Visayas,2025_prospective,16.09,20.75,128.01,12,0,15.58,-3.3
-Acute Bloody Diarrhea,Eastern Visayas,last_12m,21.55,24.0,99.69,12,0,31.92,32.5
-Acute Viral Hepatitis,Eastern Visayas,last_12m,0.7,0.78,68.3,12,7,0.5,-40.0
-Cholera,Eastern Visayas,last_12m,186.51,194.49,335.57,12,0,111.58,-67.2
-Dengue,Eastern Visayas,last_12m,442.17,494.06,157.41,12,0,394.83,-12.0
-Typhoid Fever,Eastern Visayas,last_12m,12.59,15.04,129.59,12,0,15.0,16.1
-Acute Bloody Diarrhea,Ilocos Region,2025_prospective,6.78,8.86,156.15,12,0,5.58,-21.5
-Acute Viral Hepatitis,Ilocos Region,2025_prospective,0.25,0.5,99.14,12,9,0.25,0.0
-Dengue,Ilocos Region,2025_prospective,564.07,945.09,44.41,12,0,472.33,-19.4
-Typhoid Fever,Ilocos Region,2025_prospective,32.68,41.73,25.76,12,0,36.58,10.7
-Acute Bloody Diarrhea,Ilocos Region,last_12m,8.52,10.11,177.86,12,0,7.33,-16.2
-Acute Viral Hepatitis,Ilocos Region,last_12m,0.25,0.5,99.14,12,9,0.25,0.0
-Dengue,Ilocos Region,last_12m,628.86,722.44,59.73,12,0,638.58,1.5
-Typhoid Fever,Ilocos Region,last_12m,15.88,20.22,14.62,12,0,24.25,34.5
-Acute Bloody Diarrhea,MIMAROPA,2025_prospective,8.73,11.08,51.63,12,0,10.0,12.7
-Acute Viral Hepatitis,MIMAROPA,2025_prospective,0.08,0.29,100.0,12,11,0.08,0.0
-Cholera,MIMAROPA,2025_prospective,0.82,1.8,88.63,12,8,1.58,48.1
-Dengue,MIMAROPA,2025_prospective,792.52,1033.52,48.2,12,0,513.5,-54.3
-Typhoid Fever,MIMAROPA,2025_prospective,38.56,53.96,23.11,12,0,55.08,30.0
-Acute Bloody Diarrhea,MIMAROPA,last_12m,15.87,18.54,46.09,12,0,18.67,15.0
-Acute Viral Hepatitis,MIMAROPA,last_12m,0.08,0.29,100.0,12,11,0.08,0.0
-Cholera,MIMAROPA,last_12m,0.82,1.8,88.63,12,8,1.58,48.1
-Dengue,MIMAROPA,last_12m,759.87,913.03,55.98,12,0,711.83,-6.7
-Typhoid Fever,MIMAROPA,last_12m,67.26,76.76,42.45,12,0,72.67,7.4
-Acute Bloody Diarrhea,National,2025_prospective,253.37,310.76,27.31,12,0,343.25,26.2
-Acute Viral Hepatitis,National,2025_prospective,7.63,9.73,65.46,12,0,9.0,15.2
-Cholera,National,2025_prospective,253.83,269.54,216.52,12,0,169.58,-49.7
-Dengue,National,2025_prospective,15209.83,20480.4,50.99,12,0,16686.08,8.8
-Typhoid Fever,National,2025_prospective,831.42,883.36,35.58,12,0,422.08,-97.0
-Acute Bloody Diarrhea,National,last_12m,279.96,326.92,24.45,12,0,297.92,6.0
-Acute Viral Hepatitis,National,last_12m,7.86,12.5,61.83,12,0,10.17,22.7
-Cholera,National,last_12m,199.46,216.82,193.77,12,0,128.33,-55.4
-Dengue,National,last_12m,15049.29,18741.93,52.66,12,0,16846.0,10.7
-Typhoid Fever,National,last_12m,579.64,688.58,25.28,12,0,412.17,-40.6
-Acute Bloody Diarrhea,National Capital Region,2025_prospective,6.98,10.41,23.4,12,0,12.33,43.4
-Acute Viral Hepatitis,National Capital Region,2025_prospective,0.48,0.66,76.9,12,8,1.0,52.0
-Cholera,National Capital Region,2025_prospective,1.12,1.55,97.92,12,4,1.83,38.8
-Dengue,National Capital Region,2025_prospective,2111.9,2848.1,61.63,12,0,1766.08,-19.6
-Typhoid Fever,National Capital Region,2025_prospective,12.77,14.84,37.17,12,0,11.33,-12.7
-Acute Bloody Diarrhea,National Capital Region,last_12m,12.47,13.99,29.05,12,0,20.75,39.9
-Acute Viral Hepatitis,National Capital Region,last_12m,0.88,1.34,83.86,12,5,1.0,12.0
-Cholera,National Capital Region,last_12m,2.67,3.17,80.24,12,2,3.0,11.0
-Dengue,National Capital Region,last_12m,2814.79,3489.71,64.12,12,0,2663.67,-5.7
-Typhoid Fever,National Capital Region,last_12m,14.76,18.56,29.56,12,0,14.75,-0.1
-Acute Bloody Diarrhea,Negros Island Region,2025_prospective,17.77,20.23,49.69,12,0,26.67,33.4
-Cholera,Negros Island Region,2025_prospective,7.71,8.61,104.21,12,1,13.17,41.5
-Dengue,Negros Island Region,2025_prospective,932.95,1362.83,78.97,12,0,1095.5,14.8
-Typhoid Fever,Negros Island Region,2025_prospective,57.6,86.5,26.97,12,0,56.75,-1.5
-Acute Bloody Diarrhea,Negros Island Region,last_12m,11.33,13.18,32.78,12,0,18.67,39.3
-Cholera,Negros Island Region,last_12m,7.55,8.69,75.89,12,0,7.5,-0.7
-Dengue,Negros Island Region,last_12m,866.24,1022.11,85.14,12,0,1057.58,18.1
-Typhoid Fever,Negros Island Region,last_12m,59.78,76.89,27.24,12,0,91.0,34.3
-Acute Bloody Diarrhea,Northern Mindanao,2025_prospective,23.89,28.19,63.82,12,0,57.08,58.1
-Acute Viral Hepatitis,Northern Mindanao,2025_prospective,0.17,0.41,100.0,12,10,0.08,-112.5
-Cholera,Northern Mindanao,2025_prospective,0.74,1.15,97.73,12,7,1.92,61.5
-Dengue,Northern Mindanao,2025_prospective,952.32,1122.36,50.11,12,0,787.42,-20.9
-Typhoid Fever,Northern Mindanao,2025_prospective,53.93,65.89,28.33,12,0,58.08,7.1
-Acute Bloody Diarrhea,Northern Mindanao,last_12m,33.09,38.78,34.54,12,0,42.5,22.1
-Acute Viral Hepatitis,Northern Mindanao,last_12m,0.67,1.15,100.0,12,7,0.5,-34.0
-Cholera,Northern Mindanao,last_12m,1.75,2.53,99.6,12,4,2.08,15.9
-Dengue,Northern Mindanao,last_12m,852.51,1074.15,70.87,12,0,826.75,-3.1
-Typhoid Fever,Northern Mindanao,last_12m,57.79,67.72,27.43,12,0,77.58,25.5
-Acute Bloody Diarrhea,SOCCSKSARGEN,2025_prospective,6.47,8.51,48.39,12,0,9.0,28.1
-Acute Viral Hepatitis,SOCCSKSARGEN,2025_prospective,0.0,0.0,,12,12,0.25,100.0
-Cholera,SOCCSKSARGEN,2025_prospective,8.71,9.71,238.46,12,2,8.08,-7.8
-Dengue,SOCCSKSARGEN,2025_prospective,1072.54,1234.13,55.62,12,0,777.25,-38.0
-Typhoid Fever,SOCCSKSARGEN,2025_prospective,94.39,101.7,62.53,12,0,63.0,-49.8
-Acute Bloody Diarrhea,SOCCSKSARGEN,last_12m,10.35,12.4,47.42,12,0,10.33,-0.2
-Acute Viral Hepatitis,SOCCSKSARGEN,last_12m,0.18,0.41,100.0,12,10,0.17,-5.9
-Cholera,SOCCSKSARGEN,last_12m,19.13,32.0,171.13,12,0,18.5,-3.4
-Dengue,SOCCSKSARGEN,last_12m,438.13,626.06,36.8,12,0,789.0,44.5
-Typhoid Fever,SOCCSKSARGEN,last_12m,35.1,44.99,35.15,12,0,61.5,42.9
-Acute Bloody Diarrhea,Western Visayas,2025_prospective,0.34,0.71,100.0,12,9,0.5,32.0
-Acute Viral Hepatitis,Western Visayas,2025_prospective,0.72,1.25,50.04,12,9,2.17,66.8
-Dengue,Western Visayas,2025_prospective,1965.26,2716.11,104.41,12,0,1686.58,-16.5
-Typhoid Fever,Western Visayas,2025_prospective,64.4,81.59,45.33,12,0,79.83,19.3
-Acute Bloody Diarrhea,Western Visayas,last_12m,0.09,0.29,100.0,12,11,0.25,64.0
-Acute Viral Hepatitis,Western Visayas,last_12m,0.86,1.38,54.58,12,6,0.75,-14.7
-Cholera,Western Visayas,last_12m,0.29,0.52,100.0,12,9,2.08,86.1
-Dengue,Western Visayas,last_12m,1728.22,1984.98,110.93,12,0,1592.42,-8.5
-Typhoid Fever,Western Visayas,last_12m,35.46,48.47,25.6,12,0,62.67,43.4
-Acute Bloody Diarrhea,Zamboanga Peninsula,2025_prospective,75.43,82.67,41.25,12,0,85.08,11.3
-Acute Viral Hepatitis,Zamboanga Peninsula,2025_prospective,6.24,7.63,52.79,12,2,10.25,39.1
-Cholera,Zamboanga Peninsula,2025_prospective,6.03,6.45,209.5,12,0,12.25,50.8
-Dengue,Zamboanga Peninsula,2025_prospective,760.11,797.7,62.03,12,0,362.0,-110.0
-Typhoid Fever,Zamboanga Peninsula,2025_prospective,66.07,73.14,42.79,12,0,46.17,-43.1
-Acute Bloody Diarrhea,Zamboanga Peninsula,last_12m,119.11,133.26,44.93,12,0,112.08,-6.3
-Acute Viral Hepatitis,Zamboanga Peninsula,last_12m,4.73,4.96,163.12,12,9,10.92,56.7
-Cholera,Zamboanga Peninsula,last_12m,5.18,6.96,61.06,12,0,11.08,53.2
-Dengue,Zamboanga Peninsula,last_12m,777.05,877.99,92.41,12,0,573.0,-35.6
-Typhoid Fever,Zamboanga Peninsula,last_12m,49.12,54.07,33.56,12,0,53.25,7.8
+Acute Bloody Diarrhea,Bangsamoro (BARMM),2025_prospective,27.52,37.03,367.58,12,0,28.67,4.0
+Cholera,Bangsamoro (BARMM),2025_prospective,4.6,6.16,60.73,12,4,5.25,12.4
+Dengue,Bangsamoro (BARMM),2025_prospective,397.44,476.23,104.74,12,0,475.08,16.3
+Typhoid Fever,Bangsamoro (BARMM),2025_prospective,52.9,77.67,86.52,12,0,44.92,-17.8
+Acute Bloody Diarrhea,Bangsamoro (BARMM),last_12m,13.18,18.3,375.18,12,0,27.42,51.9
+Cholera,Bangsamoro (BARMM),last_12m,4.31,4.46,216.75,12,7,5.42,20.5
+Dengue,Bangsamoro (BARMM),last_12m,300.8,368.85,97.06,12,0,292.33,-2.9
+Typhoid Fever,Bangsamoro (BARMM),last_12m,84.01,96.94,126.05,12,0,84.67,0.8
+Acute Bloody Diarrhea,Bicol Region,2025_prospective,8.44,10.13,46.0,12,0,10.0,15.6
+Cholera,Bicol Region,2025_prospective,2.36,3.83,56.63,12,2,6.0,60.7
+Dengue,Bicol Region,2025_prospective,116.07,130.97,62.08,12,0,93.0,-24.8
+Typhoid Fever,Bicol Region,2025_prospective,12.28,14.54,37.68,12,0,16.33,24.8
+Acute Bloody Diarrhea,Bicol Region,last_12m,5.51,7.13,35.49,12,0,7.75,28.9
+Cholera,Bicol Region,last_12m,12.49,21.95,81.19,12,2,9.83,-27.1
+Dengue,Bicol Region,last_12m,154.5,217.92,61.48,12,0,125.5,-23.1
+Typhoid Fever,Bicol Region,last_12m,15.62,20.12,43.82,12,0,15.5,-0.8
+Acute Bloody Diarrhea,CALABARZON,2025_prospective,38.03,43.94,63.88,12,0,33.0,-15.2
+Cholera,CALABARZON,2025_prospective,0.25,0.5,100.0,12,9,0.75,66.7
+Dengue,CALABARZON,2025_prospective,2701.06,3535.44,85.48,12,0,2780.92,2.9
+Typhoid Fever,CALABARZON,2025_prospective,33.02,38.46,94.02,12,0,26.67,-23.8
+Acute Bloody Diarrhea,CALABARZON,last_12m,32.13,35.13,51.65,12,0,25.92,-24.0
+Dengue,CALABARZON,last_12m,1424.37,1888.99,78.32,12,0,2706.67,47.4
+Typhoid Fever,CALABARZON,last_12m,38.99,42.76,157.45,12,0,44.17,11.7
+Acute Bloody Diarrhea,Cagayan Valley,2025_prospective,53.28,70.39,344.4,12,0,42.5,-25.4
+Dengue,Cagayan Valley,2025_prospective,442.39,629.81,104.44,12,0,614.17,28.0
+Typhoid Fever,Cagayan Valley,2025_prospective,68.21,93.34,93.07,12,0,87.33,21.9
+Acute Bloody Diarrhea,Cagayan Valley,last_12m,79.78,85.31,438.69,12,0,85.58,6.8
+Dengue,Cagayan Valley,last_12m,504.2,685.88,149.4,12,0,516.33,2.3
+Typhoid Fever,Cagayan Valley,last_12m,95.08,110.07,150.27,12,0,113.75,16.4
+Acute Bloody Diarrhea,Caraga,2025_prospective,17.5,26.76,48.09,12,0,26.75,34.6
+Dengue,Caraga,2025_prospective,642.55,735.34,195.42,12,0,985.83,34.8
+Typhoid Fever,Caraga,2025_prospective,22.12,27.21,35.52,12,0,16.92,-30.7
+Acute Bloody Diarrhea,Caraga,last_12m,10.26,13.99,56.17,12,0,29.08,64.7
+Dengue,Caraga,last_12m,521.33,538.54,208.95,12,0,908.75,42.6
+Typhoid Fever,Caraga,last_12m,19.36,27.76,38.56,12,0,26.92,28.1
+Acute Bloody Diarrhea,Central Luzon,2025_prospective,20.04,21.86,92.55,12,0,11.67,-71.7
+Cholera,Central Luzon,2025_prospective,0.48,0.88,95.27,12,9,1.33,63.9
+Dengue,Central Luzon,2025_prospective,2484.52,3009.45,38.74,12,0,2654.75,6.4
+Typhoid Fever,Central Luzon,2025_prospective,32.16,40.62,35.64,12,0,30.42,-5.7
+Acute Bloody Diarrhea,Central Luzon,last_12m,19.2,22.18,102.25,12,0,14.5,-32.4
+Cholera,Central Luzon,last_12m,0.22,0.36,50.68,12,9,1.0,78.0
+Dengue,Central Luzon,last_12m,2273.51,2540.89,90.92,12,0,2463.08,7.7
+Typhoid Fever,Central Luzon,last_12m,49.42,54.45,91.8,12,0,47.75,-3.5
+Acute Bloody Diarrhea,Central Visayas,2025_prospective,66.9,75.24,48.17,12,0,61.58,-8.6
+Cholera,Central Visayas,2025_prospective,3.19,5.24,60.9,12,5,3.92,18.6
+Dengue,Central Visayas,2025_prospective,1306.53,1875.46,180.05,12,0,1914.58,31.8
+Typhoid Fever,Central Visayas,2025_prospective,70.19,77.74,97.95,12,0,71.5,1.8
+Acute Bloody Diarrhea,Central Visayas,last_12m,68.07,79.19,45.01,12,0,45.58,-49.3
+Cholera,Central Visayas,last_12m,7.83,8.69,78.82,12,0,9.75,19.7
+Dengue,Central Visayas,last_12m,873.67,1064.24,100.17,12,0,1704.92,48.8
+Typhoid Fever,Central Visayas,last_12m,80.24,82.39,142.28,12,0,69.67,-15.2
+Acute Bloody Diarrhea,Cordillera Administrative Region,2025_prospective,10.41,13.08,19.31,12,0,20.42,49.0
+Cholera,Cordillera Administrative Region,2025_prospective,2.25,4.17,67.7,12,4,2.42,7.0
+Dengue,Cordillera Administrative Region,2025_prospective,1296.32,2034.72,154.61,12,0,1965.67,34.1
+Typhoid Fever,Cordillera Administrative Region,2025_prospective,105.11,126.73,108.78,12,0,146.58,28.3
+Acute Bloody Diarrhea,Cordillera Administrative Region,last_12m,12.16,14.45,43.27,12,0,24.5,50.4
+Cholera,Cordillera Administrative Region,last_12m,1.3,1.46,89.72,12,3,2.5,48.0
+Dengue,Cordillera Administrative Region,last_12m,744.07,1043.82,89.59,12,0,729.42,-2.0
+Typhoid Fever,Cordillera Administrative Region,last_12m,110.99,125.77,140.67,12,0,100.42,-10.5
+Acute Bloody Diarrhea,Davao Region,2025_prospective,14.09,15.99,51.76,12,0,21.33,33.9
+Cholera,Davao Region,2025_prospective,12.03,14.54,1020.32,12,5,4.17,-188.5
+Dengue,Davao Region,2025_prospective,1198.06,1400.54,151.86,12,0,1229.58,2.6
+Typhoid Fever,Davao Region,2025_prospective,42.43,45.21,141.38,12,0,44.42,4.5
+Acute Bloody Diarrhea,Davao Region,last_12m,14.48,15.91,63.28,12,0,19.67,26.4
+Cholera,Davao Region,last_12m,7.73,9.25,174.6,12,8,2.25,-243.6
+Dengue,Davao Region,last_12m,872.48,1050.66,129.19,12,0,1163.0,25.0
+Typhoid Fever,Davao Region,last_12m,29.12,34.77,94.49,12,0,37.75,22.9
+Acute Bloody Diarrhea,Eastern Visayas,2025_prospective,22.13,25.02,119.29,12,0,31.17,29.0
+Cholera,Eastern Visayas,2025_prospective,153.52,157.19,2353.83,12,0,63.83,-140.5
+Dengue,Eastern Visayas,2025_prospective,349.12,416.73,226.16,12,0,384.58,9.2
+Typhoid Fever,Eastern Visayas,2025_prospective,11.23,14.19,295.82,12,0,11.5,2.3
+Acute Bloody Diarrhea,Eastern Visayas,last_12m,16.74,19.42,161.09,12,0,29.58,43.4
+Cholera,Eastern Visayas,last_12m,109.37,129.21,3851.93,12,1,70.25,-55.7
+Dengue,Eastern Visayas,last_12m,168.54,207.31,174.79,12,0,257.67,34.6
+Typhoid Fever,Eastern Visayas,last_12m,17.38,18.48,490.18,12,0,17.0,-2.2
+Acute Bloody Diarrhea,Ilocos Region,2025_prospective,12.1,15.88,148.34,12,0,12.58,3.8
+Cholera,Ilocos Region,2025_prospective,0.08,0.29,100.0,12,11,0.08,0.0
+Dengue,Ilocos Region,2025_prospective,679.17,792.48,70.84,12,0,503.75,-34.8
+Typhoid Fever,Ilocos Region,2025_prospective,32.33,46.09,88.66,12,0,40.42,20.0
+Acute Bloody Diarrhea,Ilocos Region,last_12m,10.16,14.33,134.25,12,0,10.83,6.2
+Cholera,Ilocos Region,last_12m,0.51,0.77,90.05,12,7,0.5,-2.0
+Dengue,Ilocos Region,last_12m,593.54,753.15,68.45,12,0,202.42,-193.2
+Typhoid Fever,Ilocos Region,last_12m,34.66,47.29,112.85,12,0,50.0,30.7
+Acute Bloody Diarrhea,MIMAROPA,2025_prospective,15.48,17.47,129.8,12,0,19.75,21.6
+Dengue,MIMAROPA,2025_prospective,704.87,857.38,60.93,12,0,750.67,6.1
+Typhoid Fever,MIMAROPA,2025_prospective,74.39,80.49,57.82,12,0,64.5,-15.3
+Acute Bloody Diarrhea,MIMAROPA,last_12m,10.72,12.55,157.78,12,0,18.17,41.0
+Dengue,MIMAROPA,last_12m,630.41,752.78,85.62,12,0,543.17,-16.1
+Typhoid Fever,MIMAROPA,last_12m,74.07,80.46,77.87,12,0,61.75,-20.0
+Acute Bloody Diarrhea,National,2025_prospective,363.24,403.97,44.14,12,0,301.42,-20.5
+Cholera,National,2025_prospective,157.53,170.52,282.15,12,0,86.17,-82.8
+Dengue,National,2025_prospective,16430.42,19918.85,70.08,12,0,16628.83,1.2
+Typhoid Fever,National,2025_prospective,856.65,1032.69,64.21,12,0,629.83,-36.0
+Acute Bloody Diarrhea,National,last_12m,139.06,215.77,27.93,12,0,336.0,58.6
+Cholera,National,last_12m,140.85,154.17,359.28,12,0,88.58,-59.0
+Dengue,National,last_12m,11164.48,15041.68,63.39,12,0,13251.5,15.7
+Typhoid Fever,National,last_12m,862.18,997.17,79.01,12,0,889.5,3.1
+Acute Bloody Diarrhea,National Capital Region,2025_prospective,19.45,21.7,408.31,12,1,22.33,12.9
+Cholera,National Capital Region,2025_prospective,2.88,3.25,94.08,12,3,2.42,-19.0
+Dengue,National Capital Region,2025_prospective,2053.26,2674.25,124.95,12,0,2593.92,20.8
+Typhoid Fever,National Capital Region,2025_prospective,19.38,23.24,321.63,12,0,19.08,-1.6
+Acute Bloody Diarrhea,National Capital Region,last_12m,13.48,18.14,393.93,12,1,12.08,-11.6
+Cholera,National Capital Region,last_12m,1.45,1.79,87.73,12,8,3.0,51.7
+Dengue,National Capital Region,last_12m,1664.44,1912.49,160.78,12,0,2487.0,33.1
+Typhoid Fever,National Capital Region,last_12m,103.59,198.57,429.84,12,0,71.25,-45.4
+Acute Bloody Diarrhea,Negros Island Region,2025_prospective,10.69,12.82,38.9,12,0,16.58,35.5
+Cholera,Negros Island Region,2025_prospective,6.78,8.74,134.41,12,0,4.83,-40.4
+Dengue,Negros Island Region,2025_prospective,921.26,1057.12,145.31,12,0,1038.0,11.2
+Typhoid Fever,Negros Island Region,2025_prospective,88.56,106.34,97.98,12,0,116.42,23.9
+Acute Bloody Diarrhea,Negros Island Region,last_12m,13.86,15.99,77.26,12,0,14.58,4.9
+Cholera,Negros Island Region,last_12m,6.68,8.69,147.44,12,0,4.58,-45.9
+Dengue,Negros Island Region,last_12m,647.95,779.34,141.99,12,0,794.83,18.5
+Typhoid Fever,Negros Island Region,last_12m,95.32,102.84,144.16,12,0,126.33,24.5
+Acute Bloody Diarrhea,Northern Mindanao,2025_prospective,27.37,30.42,28.66,12,0,35.0,21.8
+Cholera,Northern Mindanao,2025_prospective,1.4,1.83,43.69,12,3,2.17,35.5
+Dengue,Northern Mindanao,2025_prospective,961.05,1163.25,128.7,12,0,996.25,3.5
+Typhoid Fever,Northern Mindanao,2025_prospective,97.4,114.13,65.3,12,0,77.58,-25.5
+Acute Bloody Diarrhea,Northern Mindanao,last_12m,18.78,21.04,32.94,12,0,37.58,50.0
+Dengue,Northern Mindanao,last_12m,685.83,851.97,132.2,12,0,769.75,10.9
+Typhoid Fever,Northern Mindanao,last_12m,62.94,93.36,59.48,12,0,84.83,25.8
+Acute Bloody Diarrhea,SOCCSKSARGEN,2025_prospective,9.56,11.59,38.62,12,0,10.17,6.0
+Dengue,SOCCSKSARGEN,2025_prospective,534.65,708.78,159.21,12,0,988.83,45.9
+Typhoid Fever,SOCCSKSARGEN,2025_prospective,22.9,35.55,51.92,12,0,67.83,66.2
+Acute Bloody Diarrhea,SOCCSKSARGEN,last_12m,6.64,7.42,41.38,12,0,8.0,17.0
+Dengue,SOCCSKSARGEN,last_12m,595.1,685.03,206.1,12,0,745.08,20.1
+Typhoid Fever,SOCCSKSARGEN,last_12m,46.32,51.94,114.51,12,0,54.5,15.0
+Acute Bloody Diarrhea,Western Visayas,2025_prospective,0.17,0.41,99.97,12,10,0.33,48.5
+Cholera,Western Visayas,2025_prospective,0.25,0.5,100.0,12,9,1.25,80.0
+Dengue,Western Visayas,2025_prospective,1190.77,1436.88,100.82,12,0,1462.08,18.6
+Typhoid Fever,Western Visayas,2025_prospective,46.49,55.3,36.74,12,0,51.75,10.2
+Cholera,Western Visayas,last_12m,0.08,0.29,100.0,12,11,0.17,52.9
+Dengue,Western Visayas,last_12m,746.24,943.0,98.21,12,0,950.67,21.5
+Typhoid Fever,Western Visayas,last_12m,56.3,60.63,67.33,12,0,50.75,-10.9
+Acute Bloody Diarrhea,Zamboanga Peninsula,2025_prospective,114.34,128.83,108.68,12,0,107.75,-6.1
+Cholera,Zamboanga Peninsula,2025_prospective,5.67,7.63,102.87,12,0,9.83,42.3
+Dengue,Zamboanga Peninsula,2025_prospective,611.69,747.7,104.36,12,0,797.67,23.3
+Typhoid Fever,Zamboanga Peninsula,2025_prospective,68.85,79.31,259.97,12,0,75.83,9.2
+Acute Bloody Diarrhea,Zamboanga Peninsula,last_12m,59.47,76.35,96.3,12,0,90.92,34.6
+Cholera,Zamboanga Peninsula,last_12m,5.56,6.63,204.4,12,0,7.33,24.1
+Dengue,Zamboanga Peninsula,last_12m,468.98,634.71,64.02,12,0,719.42,34.8
+Typhoid Fever,Zamboanga Peninsula,last_12m,69.59,77.02,291.15,12,0,99.83,30.3

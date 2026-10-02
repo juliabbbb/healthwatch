@@ -10,15 +10,16 @@ import {
   assessRegion,
   classify,
   formatPHTDateTime,
-  getThresholds,
   metricValue,
   modelMetrics,
   monthMeta,
+  resolveThresholds,
   seriesFor,
   type MetricMode,
   type MonthPoint,
   type Region,
   type RiskLevel,
+  type TierBasis,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -38,6 +39,11 @@ export interface ExportCustomizationModalProps {
   illness: string;
   monthIndex: number;
   mode: MetricMode;
+  /**
+   * The yardstick the tiers in this export are cut against. Must match what the
+   * page is showing, otherwise the CSV disagrees with the screen it came from.
+   */
+  basis: TierBasis;
 }
 
 type SectionKey =
@@ -81,22 +87,22 @@ const csvEscape = (value: string | number | boolean): string => {
 const csvMetric = (cases: number, region: Region, mode: MetricMode): string =>
   mode === "raw" ? String(Math.round(cases)) : ((cases / region.population) * 100000).toFixed(2);
 
-/** Hotspot tier for a single month point, identical to the dashboard's classify(). */
+/** Tier for a single month point, using the same yardstick as assessRegion(). */
 const pointRisk = (
   code: string,
   illness: string,
   p: MonthPoint,
   mode: MetricMode,
+  basis: TierBasis,
 ): RiskLevel =>
   classify(
     metricValue(p.cases, REGION_BY_CODE[code]!, mode),
-    getThresholds(illness, p.month, mode),
+    resolveThresholds(code, illness, p.month, mode, basis).thresholds,
   );
 
 const downloadCsv = (header: string[], body: (string | number)[][], filename: string) => {
   const content =
-    "\ufeff" +
-    [header, ...body].map((row) => row.map(csvEscape).join(",")).join("\n");
+    "\ufeff" + [header, ...body].map((row) => row.map(csvEscape).join(",")).join("\n");
   const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -115,6 +121,7 @@ export function ExportCustomizationModal({
   illness,
   monthIndex,
   mode,
+  basis,
 }: ExportCustomizationModalProps) {
   useBodyScrollLock(open);
 
@@ -169,7 +176,7 @@ export function ExportCustomizationModal({
     const regions = [];
     for (let i = 0; i < codes.length; i++) {
       const code = codes[i]!;
-      const a = assessRegion(code, illness, exportMonthIndex, mode);
+      const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
       const metrics = modelMetrics(code, illness);
       const region = REGION_BY_CODE[code]!;
 
@@ -264,7 +271,7 @@ export function ExportCustomizationModal({
     } finally {
       setPhase(0);
     }
-  }, [illness, regionCodes, exportMonthIndex, mode, unit, sections, baselineLabel]);
+  }, [illness, regionCodes, exportMonthIndex, mode, basis, unit, sections, baselineLabel]);
 
   const buildCSV = useCallback(() => {
     if (regionCodes.length === 0) return;
@@ -276,6 +283,7 @@ export function ExportCustomizationModal({
         "short",
         "unit",
         "risk_tier",
+        "tier_basis",
         "reported_latest",
         "predicted_baseline",
         "lower",
@@ -286,7 +294,7 @@ export function ExportCustomizationModal({
         "baseline_is_forecast",
       ];
       const body = regionCodes.map((code) => {
-        const a = assessRegion(code, illness, exportMonthIndex, mode);
+        const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
         const region = REGION_BY_CODE[code]!;
         const lastObserved = [...seriesFor(code, illness)].reverse().find((p) => !p.forecast);
         const reported = lastObserved ? metricValue(lastObserved.cases, region, mode) : a.value;
@@ -296,6 +304,7 @@ export function ExportCustomizationModal({
           region.short,
           unit,
           a.risk,
+          basis,
           csvMetric(reported, region, mode),
           csvMetric(a.value, region, mode),
           csvMetric(a.point.lower, region, mode),
@@ -324,10 +333,11 @@ export function ExportCustomizationModal({
         "lower",
         "upper",
         "risk_tier",
+        "tier_basis",
       ];
       const body: (string | number)[][] = [];
       for (const code of regionCodes) {
-        const a = assessRegion(code, illness, exportMonthIndex, mode);
+        const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
         const region = REGION_BY_CODE[code]!;
         for (const p of a.forecastWindow) {
           body.push([
@@ -342,12 +352,13 @@ export function ExportCustomizationModal({
             csvMetric(p.cases, region, mode),
             csvMetric(p.lower, region, mode),
             csvMetric(p.upper, region, mode),
-            pointRisk(code, illness, p, mode),
+            pointRisk(code, illness, p, mode, basis),
+            basis,
           ]);
         }
       }
       const fw = regionCodes.length
-        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode).forecastWindow
+        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode, basis).forecastWindow
         : [];
       const start = fw[0]?.label ?? baselineLabel;
       const end = fw.at(-1)?.label ?? baselineLabel;
@@ -369,6 +380,7 @@ export function ExportCustomizationModal({
       "lower",
       "upper",
       "risk_tier",
+      "tier_basis",
     ];
     const body: (string | number)[][] = [];
     for (const code of regionCodes) {
@@ -387,7 +399,8 @@ export function ExportCustomizationModal({
           csvMetric(p.cases, region, mode),
           csvMetric(p.lower, region, mode),
           csvMetric(p.upper, region, mode),
-          pointRisk(code, illness, p, mode),
+          pointRisk(code, illness, p, mode, basis),
+          basis,
         ]);
       }
     }
@@ -396,7 +409,7 @@ export function ExportCustomizationModal({
       body,
       `TimeSeries_${monthMeta(0).label}_${monthMeta(TOTAL_MONTHS - 1).label}.csv`,
     );
-  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, unit, baselineLabel]);
+  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, basis, unit, baselineLabel]);
 
   if (!open) return null;
 

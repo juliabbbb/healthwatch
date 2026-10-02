@@ -31,7 +31,7 @@ $steps = @(
     'src.rank_escalation'        # risk-tier escalation ranking (hotspot priority)
     'src.outbreak'               # season-level outbreak flags
     'src.validate_2025'          # prospective check of the 2025 flags (real data)
-    'src.validate_known_epidemic' # independent 2019 dengue outbreak check (line-list 2019 monthly cross-check)
+    'src.validate_2019_consistency' # 2019 consistency check (production monthly rule on real line-list rows)
 )
 
 foreach ($step in $steps) {

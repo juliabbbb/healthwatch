@@ -108,9 +108,7 @@ export function NationalSnapshot({
       <div className="grid grid-cols-3 gap-3">
         {/* Card A: National Incidence */}
         <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps leading-tight">
-            National Incidence
-          </p>
+          <p className="label-caps leading-tight">National Incidence</p>
           <div className="mt-2">
             <p className="font-mono text-2xl sm:text-3xl font-bold tabular-nums tracking-tight text-foreground leading-none">
               {formatMetric(value, mode)}
@@ -124,9 +122,7 @@ export function NationalSnapshot({
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
         <div className="relative rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <div className="flex items-start justify-between gap-1 min-w-0">
-            <p className="label-caps leading-tight">
-              Risk Distribution
-            </p>
+            <p className="label-caps leading-tight">Risk Distribution</p>
             <div
               ref={legendRef}
               className="relative shrink-0 flex items-center"
@@ -197,9 +193,7 @@ export function NationalSnapshot({
 
         {/* Card C: Dominant Illness */}
         <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps leading-tight">
-            Dominant Illness
-          </p>
+          <p className="label-caps leading-tight">Dominant Illness</p>
           <div className="mt-2">
             <p className="text-base sm:text-lg font-bold text-foreground leading-snug">
               {dominantIllness}

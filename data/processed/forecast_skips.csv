@@ -1,0 +1,10 @@
+disease,region,last_observed,stale_months,months_observed,reason
+Acute Viral Hepatitis,Bangsamoro (BARMM),2023-05-01,39,53,"stale (39 months before last complete month 2026-08-01, max 12)"
+Acute Viral Hepatitis,MIMAROPA,2023-11-01,33,59,"stale (33 months before last complete month 2026-08-01, max 12)"
+Acute Viral Hepatitis,Cagayan Valley,2024-01-01,31,61,"stale (31 months before last complete month 2026-08-01, max 12)"
+Acute Viral Hepatitis,Bicol Region,2024-02-01,30,62,"stale (30 months before last complete month 2026-08-01, max 12)"
+Acute Viral Hepatitis,Ilocos Region,2024-02-01,30,62,"stale (30 months before last complete month 2026-08-01, max 12)"
+Acute Viral Hepatitis,Negros Island Region,2025-01-01,19,12,history_too_short (12 months < 24)
+Acute Viral Hepatitis,Caraga,2025-05-01,15,77,"stale (15 months before last complete month 2026-08-01, max 12)"
+Cholera,MIMAROPA,2024-08-01,24,68,"stale (24 months before last complete month 2026-08-01, max 12)"
+Cholera,Cagayan Valley,2025-04-01,16,30,"stale (16 months before last complete month 2026-08-01, max 12)"

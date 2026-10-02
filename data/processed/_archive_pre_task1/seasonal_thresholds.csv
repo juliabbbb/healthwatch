@@ -1,0 +1,191 @@
+disease,region,season,p75,n_months
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,35.5,47
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,1.0,29
+Cholera,Bangsamoro (BARMM),dry,1.0,47
+Dengue,Bangsamoro (BARMM),dry,465.0,47
+Typhoid Fever,Bangsamoro (BARMM),dry,182.5,47
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,32.0,45
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,1.0,24
+Cholera,Bangsamoro (BARMM),wet,3.0,45
+Dengue,Bangsamoro (BARMM),wet,936.0,45
+Typhoid Fever,Bangsamoro (BARMM),wet,206.0,45
+Acute Bloody Diarrhea,Bicol Region,dry,16.5,47
+Acute Viral Hepatitis,Bicol Region,dry,0.0,32
+Cholera,Bicol Region,dry,30.0,47
+Dengue,Bicol Region,dry,189.0,47
+Typhoid Fever,Bicol Region,dry,26.5,47
+Acute Bloody Diarrhea,Bicol Region,wet,13.0,45
+Acute Viral Hepatitis,Bicol Region,wet,0.0,30
+Cholera,Bicol Region,wet,32.0,45
+Dengue,Bicol Region,wet,320.0,45
+Typhoid Fever,Bicol Region,wet,29.0,45
+Acute Bloody Diarrhea,CALABARZON,dry,50.0,47
+Acute Viral Hepatitis,CALABARZON,dry,1.0,41
+Cholera,CALABARZON,dry,1.0,47
+Dengue,CALABARZON,dry,1809.0,47
+Typhoid Fever,CALABARZON,dry,77.0,47
+Acute Bloody Diarrhea,CALABARZON,wet,54.0,45
+Acute Viral Hepatitis,CALABARZON,wet,1.0,39
+Cholera,CALABARZON,wet,1.0,44
+Dengue,CALABARZON,wet,4815.0,45
+Typhoid Fever,CALABARZON,wet,123.0,45
+Acute Bloody Diarrhea,Cagayan Valley,dry,126.5,47
+Acute Viral Hepatitis,Cagayan Valley,dry,0.0,31
+Cholera,Cagayan Valley,dry,1.0,17
+Dengue,Cagayan Valley,dry,612.0,47
+Typhoid Fever,Cagayan Valley,dry,102.0,47
+Acute Bloody Diarrhea,Cagayan Valley,wet,122.0,45
+Acute Viral Hepatitis,Cagayan Valley,wet,0.0,30
+Cholera,Cagayan Valley,wet,1.0,13
+Dengue,Cagayan Valley,wet,1939.0,45
+Typhoid Fever,Cagayan Valley,wet,110.0,45
+Acute Bloody Diarrhea,Caraga,dry,99.0,47
+Acute Viral Hepatitis,Caraga,dry,0.0,41
+Cholera,Caraga,dry,55.0,41
+Dengue,Caraga,dry,755.5,47
+Typhoid Fever,Caraga,dry,47.5,47
+Acute Bloody Diarrhea,Caraga,wet,83.0,45
+Acute Viral Hepatitis,Caraga,wet,1.0,36
+Cholera,Caraga,wet,33.0,39
+Dengue,Caraga,wet,849.0,45
+Typhoid Fever,Caraga,wet,61.0,45
+Acute Bloody Diarrhea,Central Luzon,dry,47.0,47
+Acute Viral Hepatitis,Central Luzon,dry,1.0,41
+Cholera,Central Luzon,dry,1.0,47
+Dengue,Central Luzon,dry,2553.0,47
+Typhoid Fever,Central Luzon,dry,79.5,47
+Acute Bloody Diarrhea,Central Luzon,wet,40.0,45
+Acute Viral Hepatitis,Central Luzon,wet,1.0,40
+Cholera,Central Luzon,wet,1.0,45
+Dengue,Central Luzon,wet,6188.0,45
+Typhoid Fever,Central Luzon,wet,129.0,45
+Acute Bloody Diarrhea,Central Visayas,dry,217.5,47
+Acute Viral Hepatitis,Central Visayas,dry,3.0,41
+Cholera,Central Visayas,dry,1.5,47
+Dengue,Central Visayas,dry,1234.0,47
+Typhoid Fever,Central Visayas,dry,99.5,47
+Acute Bloody Diarrhea,Central Visayas,wet,185.0,45
+Acute Viral Hepatitis,Central Visayas,wet,3.0,40
+Cholera,Central Visayas,wet,2.0,45
+Dengue,Central Visayas,wet,2326.0,45
+Typhoid Fever,Central Visayas,wet,132.0,45
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,88.5,47
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,0.0,41
+Cholera,Cordillera Administrative Region,dry,1.0,47
+Dengue,Cordillera Administrative Region,dry,455.5,47
+Typhoid Fever,Cordillera Administrative Region,dry,251.5,47
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,93.0,45
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,0.0,40
+Cholera,Cordillera Administrative Region,wet,1.0,45
+Dengue,Cordillera Administrative Region,wet,1740.0,45
+Typhoid Fever,Cordillera Administrative Region,wet,419.0,45
+Acute Bloody Diarrhea,Davao Region,dry,33.5,47
+Acute Viral Hepatitis,Davao Region,dry,0.0,41
+Cholera,Davao Region,dry,4.5,47
+Dengue,Davao Region,dry,1243.0,47
+Typhoid Fever,Davao Region,dry,51.0,47
+Acute Bloody Diarrhea,Davao Region,wet,39.0,45
+Acute Viral Hepatitis,Davao Region,wet,0.0,39
+Cholera,Davao Region,wet,1.0,45
+Dengue,Davao Region,wet,1965.0,45
+Typhoid Fever,Davao Region,wet,81.0,45
+Acute Bloody Diarrhea,Eastern Visayas,dry,40.5,47
+Acute Viral Hepatitis,Eastern Visayas,dry,0.0,41
+Cholera,Eastern Visayas,dry,226.0,47
+Dengue,Eastern Visayas,dry,509.0,47
+Typhoid Fever,Eastern Visayas,dry,29.0,47
+Acute Bloody Diarrhea,Eastern Visayas,wet,37.0,45
+Acute Viral Hepatitis,Eastern Visayas,wet,0.0,40
+Cholera,Eastern Visayas,wet,207.0,45
+Dengue,Eastern Visayas,wet,765.0,45
+Typhoid Fever,Eastern Visayas,wet,32.0,45
+Acute Bloody Diarrhea,Ilocos Region,dry,6.0,47
+Acute Viral Hepatitis,Ilocos Region,dry,0.0,32
+Cholera,Ilocos Region,dry,0.0,24
+Dengue,Ilocos Region,dry,536.0,47
+Typhoid Fever,Ilocos Region,dry,87.0,47
+Acute Bloody Diarrhea,Ilocos Region,wet,11.0,45
+Acute Viral Hepatitis,Ilocos Region,wet,0.0,30
+Cholera,Ilocos Region,wet,0.0,23
+Dengue,Ilocos Region,wet,1888.0,45
+Typhoid Fever,Ilocos Region,wet,156.0,45
+Acute Bloody Diarrhea,MIMAROPA,dry,14.0,47
+Acute Viral Hepatitis,MIMAROPA,dry,0.0,29
+Cholera,MIMAROPA,dry,0.0,35
+Dengue,MIMAROPA,dry,757.5,47
+Typhoid Fever,MIMAROPA,dry,138.5,47
+Acute Bloody Diarrhea,MIMAROPA,wet,19.0,45
+Acute Viral Hepatitis,MIMAROPA,wet,0.0,30
+Cholera,MIMAROPA,wet,0.0,33
+Dengue,MIMAROPA,wet,1533.0,45
+Typhoid Fever,MIMAROPA,wet,162.0,45
+Acute Bloody Diarrhea,National,dry,1177.5,47
+Acute Viral Hepatitis,National,dry,18.0,41
+Cholera,National,dry,385.5,47
+Dengue,National,dry,16497.5,47
+Typhoid Fever,National,dry,1883.0,47
+Acute Bloody Diarrhea,National,wet,1089.0,45
+Acute Viral Hepatitis,National,wet,16.0,40
+Cholera,National,wet,293.0,45
+Dengue,National,wet,39531.0,45
+Typhoid Fever,National,wet,2550.0,45
+Acute Bloody Diarrhea,National Capital Region,dry,25.5,47
+Acute Viral Hepatitis,National Capital Region,dry,1.0,41
+Cholera,National Capital Region,dry,1.0,47
+Dengue,National Capital Region,dry,1826.5,47
+Typhoid Fever,National Capital Region,dry,39.5,47
+Acute Bloody Diarrhea,National Capital Region,wet,31.0,45
+Acute Viral Hepatitis,National Capital Region,wet,1.0,39
+Cholera,National Capital Region,wet,2.0,45
+Dengue,National Capital Region,wet,4556.0,45
+Typhoid Fever,National Capital Region,wet,44.0,45
+Acute Bloody Diarrhea,Negros Island Region,dry,62.5,47
+Acute Viral Hepatitis,Negros Island Region,dry,1.8,6
+Cholera,Negros Island Region,dry,10.5,47
+Dengue,Negros Island Region,dry,553.5,47
+Typhoid Fever,Negros Island Region,dry,139.5,47
+Acute Bloody Diarrhea,Negros Island Region,wet,70.0,45
+Acute Viral Hepatitis,Negros Island Region,wet,0.0,6
+Cholera,Negros Island Region,wet,11.0,45
+Dengue,Negros Island Region,wet,1488.0,45
+Typhoid Fever,Negros Island Region,wet,183.0,45
+Acute Bloody Diarrhea,Northern Mindanao,dry,94.0,47
+Acute Viral Hepatitis,Northern Mindanao,dry,1.0,41
+Cholera,Northern Mindanao,dry,3.0,47
+Dengue,Northern Mindanao,dry,1248.5,47
+Typhoid Fever,Northern Mindanao,dry,229.0,47
+Acute Bloody Diarrhea,Northern Mindanao,wet,88.0,45
+Acute Viral Hepatitis,Northern Mindanao,wet,1.0,39
+Cholera,Northern Mindanao,wet,2.0,44
+Dengue,Northern Mindanao,wet,1834.0,45
+Typhoid Fever,Northern Mindanao,wet,290.0,45
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,18.5,47
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,0.0,41
+Cholera,SOCCSKSARGEN,dry,4.0,41
+Dengue,SOCCSKSARGEN,dry,1120.5,47
+Typhoid Fever,SOCCSKSARGEN,dry,118.5,47
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,18.0,45
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,0.0,40
+Cholera,SOCCSKSARGEN,wet,3.0,40
+Dengue,SOCCSKSARGEN,wet,1673.0,45
+Typhoid Fever,SOCCSKSARGEN,wet,167.0,45
+Acute Bloody Diarrhea,Western Visayas,dry,1.0,47
+Acute Viral Hepatitis,Western Visayas,dry,1.0,41
+Cholera,Western Visayas,dry,1.0,26
+Dengue,Western Visayas,dry,743.0,47
+Typhoid Fever,Western Visayas,dry,97.0,47
+Acute Bloody Diarrhea,Western Visayas,wet,0.0,44
+Acute Viral Hepatitis,Western Visayas,wet,2.0,39
+Cholera,Western Visayas,wet,5.5,27
+Dengue,Western Visayas,wet,1981.0,45
+Typhoid Fever,Western Visayas,wet,128.0,45
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,223.0,47
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,3.0,41
+Cholera,Zamboanga Peninsula,dry,9.0,47
+Dengue,Zamboanga Peninsula,dry,922.0,47
+Typhoid Fever,Zamboanga Peninsula,dry,119.5,47
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,197.0,45
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,3.0,40
+Cholera,Zamboanga Peninsula,wet,6.0,45
+Dengue,Zamboanga Peninsula,wet,1736.0,45
+Typhoid Fever,Zamboanga Peninsula,wet,159.0,45

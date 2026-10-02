@@ -271,9 +271,9 @@ export interface Illness {
 
 /** Presentation grouping only — the pipeline runs each disease independently. */
 export const DISEASE_GROUPS = {
-  "Dengue": "Dengue",
+  Dengue: "Dengue",
   "Acute Bloody Diarrhea": "Food and Waterborne Diseases",
-  "Cholera": "Food and Waterborne Diseases",
+  Cholera: "Food and Waterborne Diseases",
   "Typhoid Fever": "Food and Waterborne Diseases",
   "Acute Viral Hepatitis": "Food and Waterborne Diseases",
 } as const;
@@ -395,11 +395,13 @@ const FWD_CASE_NOTES: ReportedCaseNotes = {
     },
     {
       label: "Probable",
-      definition: "A suspect case with a positive rapid diagnostic result or an epidemiological link to a confirmed case.",
+      definition:
+        "A suspect case with a positive rapid diagnostic result or an epidemiological link to a confirmed case.",
     },
     {
       label: "Confirmed",
-      definition: "A suspect or probable case with positive laboratory confirmation (culture, serology, or molecular test).",
+      definition:
+        "A suspect or probable case with positive laboratory confirmation (culture, serology, or molecular test).",
     },
   ],
   source: "Source: DOH FWD line-list",
@@ -407,18 +409,18 @@ const FWD_CASE_NOTES: ReportedCaseNotes = {
 
 /** Reported-case classification notes per canonical disease id. */
 export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
-  "Dengue": DENGUE_CASE_NOTES,
+  Dengue: DENGUE_CASE_NOTES,
   "Acute Bloody Diarrhea": FWD_CASE_NOTES,
-  "Cholera": FWD_CASE_NOTES,
+  Cholera: FWD_CASE_NOTES,
   "Typhoid Fever": FWD_CASE_NOTES,
   "Acute Viral Hepatitis": FWD_CASE_NOTES,
 };
 
 /** One-line source attribution per disease for the reported-case tables. */
 export const REPORTED_SOURCE: Record<string, string> = {
-  "Dengue": "Source: DOH dengue case line-list (2019-2026)",
+  Dengue: "Source: DOH dengue case line-list (2019-2026)",
   "Acute Bloody Diarrhea": "Source: DOH FWD line-list (2019-2026)",
-  "Cholera": "Source: DOH FWD line-list (2019-2026)",
+  Cholera: "Source: DOH FWD line-list (2019-2026)",
   "Typhoid Fever": "Source: DOH FWD line-list (2019-2026)",
   "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
 };
@@ -563,8 +565,19 @@ export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
     series: Record<string, MonthPoint[]>;
-    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
+    metrics: Record<
+      string,
+      {
+        mae: number;
+        rmse: number;
+        mape: number;
+        months: number;
+        confidence: { label: string; tone: "low" | "moderate" | "high" };
+      }
+    >;
     outbreak: OutbreakIndicator[];
+    /** Region x calendar-month P50/P75: the hotspot tiering basis. */
+    thresholds?: { region_code: string; month: number; p50: number; p75: number }[];
   }
 
   await hydratePopulations();
@@ -602,6 +615,10 @@ export async function loadHealthwatchData(): Promise<void> {
             rmse: m.rmse,
             mape: m.mape,
           });
+        }
+
+        if (res.thresholds?.length) {
+          setHotspotThresholds(disease, res.thresholds);
         }
 
         for (const item of res.outbreak) {
@@ -867,6 +884,159 @@ export function getThresholds(
   return { p50: percentile(pooled, 0.5), p75: percentile(pooled, 0.75) };
 }
 
+/**
+ * Which yardstick the Low / Moderate / High tiers are cut against.
+ *
+ * - `hotspot`  the region's OWN seasonal norm: its historical P50/P75 for that
+ *              calendar month, the same percentiles `classify.py` writes to
+ *              risk_thresholds.csv and uses to tier the forecasts, re-expressed
+ *              in the active metric. Answers "is this region hot for itself?" A
+ *              region whose January is always busy reads Moderate in a mild
+ *              January, and a quiet region reads High the moment it exceeds its
+ *              own norm. Because both sides are converted, the tier is
+ *              unit-invariant: a region reads the same in raw and per-100k.
+ * - `burden`   the national seasonal distribution pooled across all regions in
+ *              the active metric. Answers "is this region's burden big?",
+ *              which is what a per-100k view is for.
+ *
+ * `hotspot` is the default because it is the deployed, validated tiering; the
+ * burden basis is the comparison view.
+ */
+export type TierBasis = "hotspot" | "burden";
+
+export const TIER_BASIS_META: Record<
+  TierBasis,
+  { label: string; short: string; basisNote: string }
+> = {
+  hotspot: {
+    label: "Hotspot (High tier)",
+    short: "Hotspot",
+    basisNote:
+      "Tiers compare each region against its own seasonal history (its own P50/P75 for this calendar month).",
+  },
+  burden: {
+    label: "Relative burden (national distribution)",
+    short: "Burden",
+    basisNote:
+      "Tiers compare each region against the national seasonal distribution pooled across all regions, in the selected unit (raw cases or per 100k).",
+  },
+};
+
+export const DEFAULT_TIER_BASIS: TierBasis = "hotspot";
+
+/**
+ * Why the hotspot basis was not used for an assessment, if it wasn't. Surfaced
+ * in the UI instead of silently changing the map under the user.
+ */
+export type PooledFallbackReason = "all_illnesses" | "no_threshold_row" | null;
+
+interface ThresholdRow {
+  p50: number;
+  p75: number;
+}
+
+// region_code -> illnessId -> calendar month -> P50/P75, filled from the
+// `/dashboard` `thresholds` block so the hotspot basis uses the authoritative
+// per-region percentiles rather than a client-side approximation.
+const hotspotCache = new Map<string, Map<string, Map<number, ThresholdRow>>>();
+
+export function setHotspotThresholds(
+  disease: string,
+  rows: { region_code: string; month: number; p50: number; p75: number }[],
+): void {
+  for (const r of rows) {
+    let byIllness = hotspotCache.get(r.region_code);
+    if (!byIllness) {
+      byIllness = new Map();
+      hotspotCache.set(r.region_code, byIllness);
+    }
+    let byMonth = byIllness.get(disease);
+    if (!byMonth) {
+      byMonth = new Map();
+      byIllness.set(disease, byMonth);
+    }
+    byMonth.set(r.month, { p50: r.p50, p75: r.p75 });
+  }
+  poolCache.clear();
+}
+
+export function hasHotspotThresholds(): boolean {
+  return hotspotCache.size > 0;
+}
+
+/** The region's own seasonal P50/P75 for this disease and calendar month. */
+export function hotspotThresholds(
+  regionCode: string,
+  illnessId: string,
+  monthOfYear: number,
+): Thresholds | null {
+  const row = hotspotCache.get(regionCode)?.get(illnessId)?.get(monthOfYear);
+  return row ? { p50: row.p50, p75: row.p75 } : null;
+}
+
+export interface ResolvedThresholds {
+  thresholds: Thresholds;
+  /**
+   * True ONLY when the pooled national distribution was substituted for the
+   * hotspot basis the caller asked for. An explicitly chosen `burden` basis is
+   * NOT a fallback, so it reports false.
+   */
+  pooled: boolean;
+  reason: PooledFallbackReason;
+}
+
+/**
+ * Re-express a raw-count threshold pair in the active metric.
+ *
+ * `risk_thresholds.csv` stores raw case counts (that is what `classify.py`
+ * tiers against), but the dashboard can display per-100k. Comparing a per-100k
+ * value to a raw-count threshold silently mislabels the region, so both sides
+ * of the comparison must be in the same unit. Returns null when the population
+ * is unknown, which sends the caller down the pooled path rather than dividing
+ * by zero.
+ */
+function toMetric(t: Thresholds, region: Region | undefined, mode: MetricMode): Thresholds | null {
+  if (mode === "raw") return t;
+  const population = region?.population;
+  if (!population || population <= 0) return null;
+  const per100k = (cases: number) => Number(((cases / population) * 100000).toFixed(2));
+  return { p50: per100k(t.p50), p75: per100k(t.p75) };
+}
+
+export function resolveThresholds(
+  regionCode: string,
+  illnessId: string | "all",
+  monthOfYear: number,
+  mode: MetricMode,
+  basis: TierBasis = DEFAULT_TIER_BASIS,
+): ResolvedThresholds {
+  // Fallback yardstick: the national seasonal distribution, already expressed in
+  // the active metric by `getThresholds`. Only reached when the hotspot basis
+  // was requested but is unavailable.
+  const fallback = (): ResolvedThresholds => ({
+    thresholds: getThresholds(illnessId, monthOfYear, mode),
+    pooled: true,
+    reason: "no_threshold_row",
+  });
+  if (basis !== "hotspot") {
+    // The burden basis IS the pooled distribution, so it is the requested
+    // yardstick rather than a substitute for another one.
+    return { thresholds: getThresholds(illnessId, monthOfYear, mode), pooled: false, reason: null };
+  }
+  // The hotspot basis needs ONE disease's own percentiles. There is no such
+  // thing as a percentile of a summed total (and "All Illnesses" mixes five
+  // unrelated case scales), so the aggregate view stays on the pooled
+  // distribution and says so.
+  if (illnessId === "all") {
+    return { ...fallback(), reason: "all_illnesses" };
+  }
+  const own = hotspotThresholds(regionCode, illnessId, monthOfYear);
+  if (!own) return fallback();
+  const converted = toMetric(own, REGION_BY_CODE[regionCode], mode);
+  if (!converted) return fallback();
+  return { thresholds: converted, pooled: false, reason: null };
+}
+
 export function classify(value: number, t: Thresholds): RiskLevel {
   if (value > t.p75) return "high";
   if (value >= t.p50) return "moderate";
@@ -878,9 +1048,14 @@ export interface RegionAssessment {
   monthIndex: number;
   point: MonthPoint;
   mode: MetricMode;
+  /** The yardstick the tier was cut against. */
+  basis: TierBasis;
   /** point.cases expressed in the active metric (raw cases or per 100k). */
   value: number;
   thresholds: Thresholds;
+  /** True when `thresholds` came from the pooled national distribution, not the requested basis. */
+  pooledFallback: boolean;
+  pooledFallbackReason: PooledFallbackReason;
   risk: RiskLevel;
   percentileRank: number; // 0-100 within the national seasonal distribution
   dominantIllness: Illness;
@@ -894,6 +1069,7 @@ export function assessRegion(
   illnessId: string | "all",
   monthIndex: number,
   mode: MetricMode = "percapita",
+  basis: TierBasis = DEFAULT_TIER_BASIS,
 ): RegionAssessment {
   const region = REGION_BY_CODE[regionCode]!;
   const series = seriesFor(regionCode, illnessId);
@@ -919,16 +1095,19 @@ export function assessRegion(
       raw: 0,
       adjusted: false,
     };
-    const thresholds = getThresholds(illnessId, point.month, mode);
+    const resolved = resolveThresholds(regionCode, illnessId, point.month, mode, basis);
     const dist = pooledValues(illnessId, point.month, mode);
     return {
       region,
       monthIndex: idx,
       point,
       mode,
+      basis,
       value: 0,
-      thresholds,
-      risk: classify(0, thresholds),
+      thresholds: resolved.thresholds,
+      pooledFallback: resolved.pooled,
+      pooledFallbackReason: resolved.reason,
+      risk: classify(0, resolved.thresholds),
       percentileRank: Math.round(
         (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
       ),
@@ -940,7 +1119,7 @@ export function assessRegion(
 
   const idx = Math.min(Math.max(monthIndex, 0), series.length - 1);
   const point = series[idx]!;
-  const thresholds = getThresholds(illnessId, point.month, mode);
+  const resolved = resolveThresholds(regionCode, illnessId, point.month, mode, basis);
   const value = metricValue(point.cases, region, mode);
 
   const dist = pooledValues(illnessId, point.month, mode);
@@ -966,9 +1145,12 @@ export function assessRegion(
     monthIndex: idx,
     point,
     mode,
+    basis,
     value,
-    thresholds,
-    risk: classify(value, thresholds),
+    thresholds: resolved.thresholds,
+    pooledFallback: resolved.pooled,
+    pooledFallbackReason: resolved.reason,
+    risk: classify(value, resolved.thresholds),
     percentileRank,
     dominantIllness,
     forecastWindow,
@@ -980,8 +1162,9 @@ export function assessAll(
   illnessId: string | "all",
   monthIndex: number,
   mode: MetricMode = "percapita",
+  basis: TierBasis = DEFAULT_TIER_BASIS,
 ): RegionAssessment[] {
-  return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
+  return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode, basis));
 }
 
 export interface NationalDominant {
@@ -1024,6 +1207,46 @@ export function nationalDominant(
     cases,
     metric: mode === "raw" ? cases : (cases / population) * 100000,
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* Risk-tier escalation ranking (GET /escalation)                      */
+/* ------------------------------------------------------------------ */
+
+/**
+ * One row of the pipeline's risk-tier escalation ranking: how many upward
+ * risk-tier transitions a region's forecast makes across the 12-month horizon.
+ * `tier_climbs` is the sort key -- steepest risers first -- because that is the
+ * prioritization order for resource allocation.
+ */
+export interface EscalationItem {
+  region_code: string;
+  region: string;
+  disease: string;
+  rank: number;
+  tier_climbs: number;
+  net_climb: number;
+  n_high_months: number;
+  first_high_month: string | null;
+  final_tier: string;
+}
+
+const escalationCache = new Map<string, EscalationItem[]>();
+
+export async function loadEscalation(disease: string): Promise<EscalationItem[]> {
+  const cached = escalationCache.get(disease);
+  if (cached) return cached;
+  try {
+    const res = await fetchJson<{ items: EscalationItem[] }>(
+      `/escalation?disease=${encodeURIComponent(disease)}`,
+    );
+    const items = res.items ?? [];
+    escalationCache.set(disease, items);
+    return items;
+  } catch (err) {
+    console.warn(`[healthwatch] escalation load failed for ${disease}`, err);
+    return [];
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -1079,8 +1302,8 @@ export function decompose(
   illnessId: string | "all",
   endIndex?: number,
 ): DecompPoint[] {
-  const series = seriesFor(regionCode, illnessId).filter((p) =>
-    (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+  const series = seriesFor(regionCode, illnessId).filter(
+    (p) => (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
   );
   const values = series.map((p) => p.cases);
   const half = 6;
@@ -1118,10 +1341,7 @@ export function decompose(
 /** Autocorrelation function up to `maxLag` months — reveals the 12-month cycle. */
 export function acf(regionCode: string, illnessId: string | "all", maxLag = 24, endIndex?: number) {
   const values = seriesFor(regionCode, illnessId)
-    .filter(
-      (p) =>
-        (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
-    )
+    .filter((p) => (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0)
     .map((p) => p.cases);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const denom = values.reduce((a, v) => a + (v - mean) ** 2, 0) || 1;

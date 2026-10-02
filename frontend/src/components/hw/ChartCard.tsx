@@ -52,12 +52,7 @@ export function ChartCard({
 
   return (
     <>
-      <section
-        className={cn(
-          "glass-panel rounded-2xl p-5 shadow-sm flex flex-col",
-          className,
-        )}
-      >
+      <section className={cn("glass-panel rounded-2xl p-5 shadow-sm flex flex-col", className)}>
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
@@ -95,9 +90,7 @@ export function ChartCard({
               </DialogDescription>
             )}
           </DialogHeader>
-          <div className="mt-4">
-            {renderExpanded ? renderExpanded() : children}
-          </div>
+          <div className="mt-4">{renderExpanded ? renderExpanded() : children}</div>
         </DialogContent>
       </Dialog>
     </>

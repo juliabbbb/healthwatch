@@ -1,0 +1,58 @@
+region,config,y5,wet,mean_yhat_12mo
+Bangsamoro (BARMM),A,True,False,592.19
+Bangsamoro (BARMM),B,False,True,512.55
+Bangsamoro (BARMM),C,True,True,551.76
+Bicol Region,A,True,False,193.61
+Bicol Region,B,False,True,202.17
+Bicol Region,C,True,True,192.72
+CALABARZON,A,True,False,3840.13
+CALABARZON,B,False,True,3409.63
+CALABARZON,C,True,True,3835.74
+Cagayan Valley,A,True,False,451.8
+Cagayan Valley,B,False,True,441.37
+Cagayan Valley,C,True,True,447.07
+Caraga,A,True,False,688.81
+Caraga,B,False,True,681.84
+Caraga,C,True,True,696.66
+Central Luzon,A,True,False,4050.33
+Central Luzon,B,False,True,3928.69
+Central Luzon,C,True,True,4032.53
+Central Visayas,A,True,False,1383.77
+Central Visayas,B,False,True,1343.14
+Central Visayas,C,True,True,1348.88
+Cordillera Administrative Region,A,True,False,77.3
+Cordillera Administrative Region,B,False,True,765.27
+Cordillera Administrative Region,C,True,True,699.13
+Davao Region,A,True,False,700.54
+Davao Region,B,False,True,929.56
+Davao Region,C,True,True,1599.55
+Eastern Visayas,A,True,False,42.48
+Eastern Visayas,B,False,True,142.34
+Eastern Visayas,C,True,True,7.95
+Ilocos Region,A,True,False,626.77
+Ilocos Region,B,False,True,1180.44
+Ilocos Region,C,True,True,461.76
+MIMAROPA,A,True,False,156.03
+MIMAROPA,B,False,True,761.52
+MIMAROPA,C,True,True,218.52
+National,A,True,False,14422.81
+National,B,False,True,18872.04
+National,C,True,True,8978.88
+National Capital Region,A,True,False,3161.23
+National Capital Region,B,False,True,2609.24
+National Capital Region,C,True,True,3160.71
+Negros Island Region,A,True,False,491.3
+Negros Island Region,B,False,True,705.29
+Negros Island Region,C,True,True,618.54
+Northern Mindanao,A,True,False,62.91
+Northern Mindanao,B,False,True,202.88
+Northern Mindanao,C,True,True,399.09
+SOCCSKSARGEN,A,True,False,1227.18
+SOCCSKSARGEN,B,False,True,1288.16
+SOCCSKSARGEN,C,True,True,996.16
+Western Visayas,A,True,False,173.39
+Western Visayas,B,False,True,156.04
+Western Visayas,C,True,True,576.86
+Zamboanga Peninsula,A,True,False,813.81
+Zamboanga Peninsula,B,False,True,876.01
+Zamboanga Peninsula,C,True,True,816.21

@@ -34,7 +34,7 @@ powershell -ExecutionPolicy Bypass -File update-data.ps1
 .venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak            # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025       # prospective 2025 validation
-.venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
+.venv\Scripts\python -m src.validate_2019_consistency # 2019 consistency check (pool contains the checked months)
 .venv\Scripts\python -m src.generate_narratives # pre-generated AI narrative corpus (needs GROQ_API_KEY)
 .venv\Scripts\python -m src.db                  # rebuild relational DB from processed CSVs
 
@@ -213,7 +213,7 @@ never body text, carrying shadow (`Glass Floor`).
 
 No formal test suite. Validation scripts are run manually:
 - `src.validate_2025` — prospective check of 2025 outbreak flags
-- `src.validate_known_epidemic` — independent 2019 outbreak check (line-list 2019 monthly cross-check)
+- `src.validate_2019_consistency` — 2019 consistency check (production monthly rule on real line-list rows; the pool contains the checked months, so it is not an independent validation)
 
 ## Lovable Connection
 

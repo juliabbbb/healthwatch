@@ -1389,11 +1389,32 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
     ).drop(columns=["region_code"])
     outbreak_items = outbreak_df.sort_values(["region", "season"]).to_dict(orient="records")
 
+    # --- thresholds ---
+    # Region x calendar-month P50/P75 for the requested disease. This is the
+    # "hotspot" basis: each region is judged against ITS OWN seasonal norm for
+    # that month, which is exactly how risk_classification tiers the forecasts.
+    # The frontend needed the same numbers client-side and was recomputing an
+    # approximation from whatever series had loaded; sending the authoritative
+    # per-region percentiles lets the map offer hotspot vs national-burden tiers
+    # on identical data. 19 regions x 12 months = 228 rows.
+    thr_df = _THRESHOLDS[_THRESHOLDS["disease"] == disease]
+    threshold_items = [
+        {
+            "region_code": row.region_code,
+            "region": NAME_BY_CODE.get(row.region_code, row.region_code),
+            "month": int(row.month),
+            "p50": float(row.p50),
+            "p75": float(row.p75),
+        }
+        for row in thr_df.sort_values(["region_code", "month"]).itertuples(index=False)
+    ]
+
     return {
         "disease": disease,
         "series": series_out,
         "metrics": metrics_out,
         "outbreak": outbreak_items,
+        "thresholds": threshold_items,
     }
 
 

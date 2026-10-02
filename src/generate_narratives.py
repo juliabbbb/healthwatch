@@ -108,6 +108,9 @@ def _path():
     return ingest.PROCESSED_DIR / CSV_NAME
 
 
+KEY_COLUMNS = ("region_code", "disease", "surface", "component")
+
+
 def load_existing() -> pd.DataFrame:
     path = _path()
     if not path.exists():
@@ -119,7 +122,14 @@ def load_existing() -> pd.DataFrame:
     for col in COLUMNS:
         if col not in df.columns:
             df[col] = ""
-    return df[COLUMNS]
+    df = df[COLUMNS]
+    # Rows are appended, so a re-generated key appears twice: the stale row and
+    # the newer one. Keep only the LAST occurrence of each key. Without this,
+    # `existing_keys` would report the key as present and a resumed run would
+    # skip it forever, leaving the stale text in the corpus permanently.
+    if not df.empty:
+        df = df.drop_duplicates(subset=list(KEY_COLUMNS), keep="last").reset_index(drop=True)
+    return df
 
 
 def existing_keys(df: pd.DataFrame) -> set[tuple[str, str, str, str]]:

@@ -42,9 +42,7 @@ export function FilterPanel({
       <div className="min-w-0" data-explain="region-select">
         <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-2">
-            {!regionDropdown && (
-              <span className="text-sm font-medium text-foreground">Region</span>
-            )}
+            {!regionDropdown && <span className="text-sm font-medium text-foreground">Region</span>}
             {multiSelectRegion && selectedCount !== undefined && (
               <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-mono text-muted-foreground">
                 {selectedCount} of {regions.length} selected

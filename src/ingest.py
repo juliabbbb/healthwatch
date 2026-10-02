@@ -69,7 +69,16 @@ def load_monthly_series():
     lower bound (2019-2026, src/config.py) is enforced and asserted here so
     every consumer (Prophet, thresholds, validation, API hot-load) inherits
     it even from stale on-disk CSVs.
+
+    The upper bound is enforced here too. The FWD line-lists carry a partial,
+    in-progress snapshot of the current month (2026-09) and the four FWD CSVs
+    held 44 rows past 2026-08 at the time of writing. Those rows stay in the
+    CSVs -- this is a compute-time trim, not a data deletion -- but they must
+    not reach a fit: the API already trimmed them at hot-load, so without this
+    the pipeline's Prophet fits saw a month the served data does not, and every
+    forecast anchor for a current-reporting series shifted one month forward.
     """
+
     frames = []
     for name in MONTHLY_FILES:
         path = PROCESSED_DIR / name
@@ -81,7 +90,7 @@ def load_monthly_series():
         )
     combined = pd.concat(frames, ignore_index=True)
     return config.assert_data_window(
-        config.at_or_after_data_start(combined),
+        config.trim_to_data_end(config.at_or_after_data_start(combined)),
         date_col="date",
         context="load_monthly_series: ",
     )

@@ -11,12 +11,7 @@ import {
   upcomingSeasonForMonth,
   type MetricMode,
 } from "@/lib/healthwatch/data";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { formatMonthYear } from "@/utils/formatDate";
 import { AiNarrativeLine } from "./AiNarrative";
 
@@ -40,7 +35,9 @@ export function HotspotTimeline({
 
   const monthIndex = CURRENT_MONTH_INDEX;
   const a = assessRegion(regionCode, illness, monthIndex, mode);
-  const upcoming = getOutbreak(regionCode, illness)[upcomingSeasonForMonth(monthMeta(monthIndex).month)];
+  const upcoming = getOutbreak(regionCode, illness)[
+    upcomingSeasonForMonth(monthMeta(monthIndex).month)
+  ];
   const upcomingSeasonName = upcomingSeasonForMonth(monthMeta(monthIndex).month);
   const meta = RISK_META;
 
@@ -62,12 +59,13 @@ export function HotspotTimeline({
                   backgroundColor: meta[c.risk].solidColor,
                   borderColor: `color-mix(in oklab, ${meta[c.risk].color} 60%, transparent)`,
                   color: "oklch(0.99 0.003 95)",
-                  boxShadow: i === 0 ? "0 0 0 1px color-mix(in oklab, var(--card) 40%, transparent)" : undefined,
+                  boxShadow:
+                    i === 0
+                      ? "0 0 0 1px color-mix(in oklab, var(--card) 40%, transparent)"
+                      : undefined,
                 }}
               >
-                <span className="font-mono tabular-nums">
-                  {Math.round(c.val).toLocaleString()}
-                </span>
+                <span className="font-mono tabular-nums">{Math.round(c.val).toLocaleString()}</span>
                 <span className="opacity-80">{c.p.month.toString().padStart(2, "0")}</span>
               </div>
             </TooltipTrigger>

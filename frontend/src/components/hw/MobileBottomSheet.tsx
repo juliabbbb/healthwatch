@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
-import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import { METRIC_META, assessRegion, formatMetric, type MetricMode } from "@/lib/healthwatch/data";
+import {
+  METRIC_META,
+  assessRegion,
+  formatMetric,
+  type MetricMode,
+  type TierBasis,
+} from "@/lib/healthwatch/data";
 import { RiskBadge } from "./RiskBadge";
 import { ForecastCard } from "./ForecastCard";
 
@@ -13,8 +18,8 @@ export interface MobileBottomSheetProps {
   monthIndex: number;
   mode?: MetricMode;
   onModeChange?: (m: MetricMode) => void;
-  layer?: DataLayer;
-  onLayerChange?: (l: DataLayer) => void;
+  basis?: TierBasis;
+  onBasisChange?: (b: TierBasis) => void;
   onClose?: () => void;
 }
 
@@ -24,8 +29,8 @@ export function MobileBottomSheet({
   monthIndex,
   mode = "percapita",
   onModeChange,
-  layer = "hotspot",
-  onLayerChange,
+  basis = "hotspot",
+  onBasisChange,
   onClose,
 }: MobileBottomSheetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -58,7 +63,7 @@ export function MobileBottomSheet({
   // If no region has ever been selected, render nothing
   if (!activeCode) return null;
 
-  const a = assessRegion(activeCode, illness, monthIndex, mode);
+  const a = assessRegion(activeCode, illness, monthIndex, mode, basis);
   const unit = METRIC_META[mode].unit;
 
   // Touch & Pointer Gesture Handlers
@@ -310,9 +315,7 @@ export function MobileBottomSheet({
             className="overflow-y-auto hw-scroll overscroll-contain"
             style={{
               height: isExpanded ? "calc(100dvh - 3.5rem)" : "0px",
-              transition: isDragging
-                ? "none"
-                : "height 320ms cubic-bezier(0.32, 0.72, 0, 1)",
+              transition: isDragging ? "none" : "height 320ms cubic-bezier(0.32, 0.72, 0, 1)",
             }}
           >
             <ForecastCard
@@ -321,8 +324,8 @@ export function MobileBottomSheet({
               monthIndex={monthIndex}
               mode={mode}
               {...(onModeChange ? { onModeChange } : {})}
-              {...(onLayerChange ? { onLayerChange } : {})}
-              layer={layer}
+              {...(onBasisChange ? { onBasisChange } : {})}
+              basis={basis}
               variant="sheet"
               showHeader={false}
               className="rounded-none border-none shadow-none bg-transparent"

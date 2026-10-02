@@ -15,17 +15,11 @@ import { useEffect, useState } from "react";
 import { Info } from "lucide-react";
 import { caseNotesFor, REPORTED_SOURCE } from "@/lib/healthwatch/data";
 import { AiNarrativeLine } from "@/components/hw/AiNarrative";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
-const ACCESSIBLE_DISEASE = (disease: string) =>
-  disease === "all" ? "Dengue" : disease;
+const ACCESSIBLE_DISEASE = (disease: string) => (disease === "all" ? "Dengue" : disease);
 
 interface BreakdownRow {
   value: string;
@@ -48,7 +42,7 @@ interface ReportedBreakdownData {
 }
 
 const DIM_LABELS: Record<string, Record<string, string>> = {
-  "Dengue": {
+  Dengue: {
     final_classification: "Clinical Classification",
     age_group: "Age Group",
     sex: "Sex",
@@ -62,7 +56,7 @@ const DIM_LABELS: Record<string, Record<string, string>> = {
     admitted: "Admission Status",
     outcome: "Outcome",
   },
-  "Cholera": {
+  Cholera: {
     final_classification: "Case Classification",
     age_group: "Age Group",
     sex: "Sex",

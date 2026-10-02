@@ -1,0 +1,189 @@
+disease,region,season,probe_anchor,season_start,season_end,history_status,outbreak,trigger,consecutive_high_n,season_avg,season_p75,n_forecast_months
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,24.5,35.5,3
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,0.6,1.0,3
+Cholera,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,2.2,1.0,3
+Dengue,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,642.8,465.0,3
+Typhoid Fever,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,175.9,182.5,3
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,26.1,32.0,3
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,0.5,1.0,3
+Cholera,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,4.0,3.0,3
+Dengue,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,1522.2,936.0,3
+Typhoid Fever,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,217.9,206.0,3
+Acute Bloody Diarrhea,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,5.2,16.5,3
+Acute Viral Hepatitis,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,0.2,0.0,3
+Cholera,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,4.0,30.0,3
+Dengue,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,15.7,189.0,3
+Typhoid Fever,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,12.5,26.5,3
+Acute Bloody Diarrhea,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,3.6,13.0,3
+Acute Viral Hepatitis,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,0.0,0.0,3
+Cholera,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.7,32.0,3
+Dengue,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,199.8,320.0,3
+Typhoid Fever,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,14.5,29.0,3
+Acute Bloody Diarrhea,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,18.9,50.0,3
+Acute Viral Hepatitis,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.3,1.0,3
+Cholera,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,1.0,3
+Dengue,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,504.7,1809.0,3
+Typhoid Fever,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,65.4,77.0,3
+Acute Bloody Diarrhea,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,17.1,54.0,3
+Acute Viral Hepatitis,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,0.3,1.0,3
+Cholera,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,1.0,3
+Dengue,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,8324.3,4815.0,3
+Typhoid Fever,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,96.3,123.0,3
+Acute Bloody Diarrhea,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,136.2,126.5,3
+Acute Viral Hepatitis,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,0.6,0.0,3
+Cholera,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,0.7,1.0,3
+Dengue,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,628.8,612.0,3
+Typhoid Fever,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,120.2,102.0,3
+Acute Bloody Diarrhea,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,126.8,122.0,3
+Acute Viral Hepatitis,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,0.1,0.0,3
+Cholera,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,0.6,1.0,3
+Dengue,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,1886.0,1939.0,3
+Typhoid Fever,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,237.4,110.0,3
+Acute Bloody Diarrhea,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,18.0,99.0,3
+Acute Viral Hepatitis,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,0.0,3
+Cholera,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,55.0,3
+Dengue,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,755.5,3
+Typhoid Fever,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,36.2,47.5,3
+Acute Bloody Diarrhea,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,7.2,83.0,3
+Acute Viral Hepatitis,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,1.0,3
+Cholera,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,33.0,3
+Dengue,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,2610.8,849.0,3
+Typhoid Fever,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,43.1,61.0,3
+Acute Bloody Diarrhea,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,58.2,47.0,3
+Acute Viral Hepatitis,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2,0.6,1.0,3
+Cholera,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,1.0,3
+Dengue,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,1932.3,2553.0,3
+Typhoid Fever,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,91.2,79.5,3
+Acute Bloody Diarrhea,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,50.4,40.0,3
+Acute Viral Hepatitis,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,0.5,1.0,3
+Cholera,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,0.6,1.0,3
+Dengue,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,4992.2,6188.0,3
+Typhoid Fever,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,181.0,129.0,3
+Acute Bloody Diarrhea,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,65.2,217.5,3
+Acute Viral Hepatitis,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,1.6,3.0,3
+Cholera,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,1.4,1.5,3
+Dengue,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,412.3,1234.0,3
+Typhoid Fever,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,130.2,99.5,3
+Acute Bloody Diarrhea,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,30.6,185.0,3
+Acute Viral Hepatitis,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,1.4,3.0,3
+Cholera,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,1.4,2.0,3
+Dengue,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,6163.5,2326.0,3
+Typhoid Fever,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,195.6,132.0,3
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,55.9,88.5,3
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,0.1,0.0,3
+Cholera,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,1.4,1.0,3
+Dengue,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,322.1,455.5,3
+Typhoid Fever,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,221.7,251.5,3
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,53.9,93.0,3
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Cholera,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,1.7,1.0,3
+Dengue,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,6534.1,1740.0,3
+Typhoid Fever,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,397.4,419.0,3
+Acute Bloody Diarrhea,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,39.1,33.5,3
+Acute Viral Hepatitis,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,0.4,0.0,3
+Cholera,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,27.0,4.5,3
+Dengue,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,1886.5,1243.0,3
+Typhoid Fever,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,76.3,51.0,3
+Acute Bloody Diarrhea,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,37.4,39.0,3
+Acute Viral Hepatitis,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,0.3,0.0,3
+Cholera,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,13.8,1.0,3
+Dengue,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,3803.0,1965.0,3
+Typhoid Fever,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,103.2,81.0,3
+Acute Bloody Diarrhea,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,30.5,40.5,3
+Acute Viral Hepatitis,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,0.8,0.0,3
+Cholera,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,235.3,226.0,3
+Dengue,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,67.5,509.0,3
+Typhoid Fever,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,26.9,29.0,3
+Acute Bloody Diarrhea,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,23.6,37.0,3
+Acute Viral Hepatitis,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,0.3,0.0,3
+Cholera,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,271.8,207.0,3
+Dengue,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,1004.0,765.0,3
+Typhoid Fever,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,25.0,32.0,3
+Acute Bloody Diarrhea,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,6.5,6.0,3
+Acute Viral Hepatitis,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,0.0,3
+Cholera,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,0.0,3
+Dengue,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,153.9,536.0,3
+Typhoid Fever,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,65.3,87.0,3
+Acute Bloody Diarrhea,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,16.8,11.0,3
+Acute Viral Hepatitis,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Cholera,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Dengue,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,2266.3,1888.0,3
+Typhoid Fever,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,161.7,156.0,3
+Acute Bloody Diarrhea,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,15.1,14.0,3
+Acute Viral Hepatitis,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,0.0,3
+Cholera,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,0.3,0.0,3
+Dengue,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,678.5,757.5,3
+Typhoid Fever,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,162.1,138.5,3
+Acute Bloody Diarrhea,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,18.5,19.0,3
+Acute Viral Hepatitis,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Cholera,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,1.7,0.0,3
+Dengue,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,2822.5,1533.0,3
+Typhoid Fever,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,268.8,162.0,3
+Acute Bloody Diarrhea,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,781.3,1177.5,3
+Acute Viral Hepatitis,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,11.8,18.0,3
+Cholera,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,305.7,385.5,3
+Dengue,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,8041.9,16497.5,3
+Typhoid Fever,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,2130.1,1883.0,3
+Acute Bloody Diarrhea,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,676.9,1089.0,3
+Acute Viral Hepatitis,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,10.1,16.0,3
+Cholera,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,337.6,293.0,3
+Dengue,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,57349.5,39531.0,3
+Typhoid Fever,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,3713.8,2550.0,3
+Acute Bloody Diarrhea,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,21.9,25.5,3
+Acute Viral Hepatitis,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.2,1.0,3
+Cholera,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,0.0,1.0,3
+Dengue,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,876.7,1826.5,3
+Typhoid Fever,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,24.0,39.5,3
+Acute Bloody Diarrhea,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,1,31.7,31.0,3
+Acute Viral Hepatitis,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.1,1.0,3
+Cholera,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,2.0,3
+Dengue,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,5698.4,4556.0,3
+Typhoid Fever,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,31.6,44.0,3
+Acute Bloody Diarrhea,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,47.1,62.5,3
+Cholera,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,13.1,10.5,3
+Dengue,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,153.5,553.5,3
+Typhoid Fever,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,158.9,139.5,3
+Acute Bloody Diarrhea,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,47.2,70.0,3
+Cholera,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,22.7,11.0,3
+Dengue,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,3640.7,1488.0,3
+Typhoid Fever,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,287.8,183.0,3
+Acute Bloody Diarrhea,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,67.5,94.0,3
+Acute Viral Hepatitis,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,1.0,3
+Cholera,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,1.5,3.0,3
+Dengue,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,915.3,1248.5,3
+Typhoid Fever,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,1,203.2,229.0,3
+Acute Bloody Diarrhea,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,53.8,88.0,3
+Acute Viral Hepatitis,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,1.0,3
+Cholera,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,1.7,2.0,3
+Dengue,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,3079.4,1834.0,3
+Typhoid Fever,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,336.4,290.0,3
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,10.4,18.5,3
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,0.0,3
+Cholera,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,6.3,4.0,3
+Dengue,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,1,1150.7,1120.5,3
+Typhoid Fever,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,109.1,118.5,3
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,9.5,18.0,3
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Cholera,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,14.1,3.0,3
+Dengue,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,1,1645.2,1673.0,3
+Typhoid Fever,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,121.9,167.0,3
+Acute Bloody Diarrhea,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,1.0,3
+Acute Viral Hepatitis,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2,1.1,1.0,3
+Cholera,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,0.0,1.0,3
+Dengue,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,177.8,743.0,3
+Typhoid Fever,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,0,99.6,97.0,3
+Acute Bloody Diarrhea,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,0.0,3
+Acute Viral Hepatitis,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,1.3,2.0,3
+Cholera,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,0.0,5.5,3
+Dengue,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,5621.0,1981.0,3
+Typhoid Fever,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,216.0,128.0,3
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,148.1,223.0,3
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,6.9,3.0,3
+Cholera,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,1,10.7,9.0,3
+Dengue,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,0,334.8,922.0,3
+Typhoid Fever,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,3,136.7,119.5,3
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,0,137.1,197.0,3
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,6.1,3.0,3
+Cholera,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,9.1,6.0,3
+Dengue,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2,2354.5,1736.0,3
+Typhoid Fever,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,3,244.6,159.0,3

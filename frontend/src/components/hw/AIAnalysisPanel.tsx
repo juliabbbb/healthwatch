@@ -19,8 +19,7 @@ import { formatMonthYear } from "@/utils/formatDate";
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const WINDOW = "last_12m";
 
-const ACCESSIBLE_DISEASE = (disease: string) =>
-  disease === "all" ? "Dengue" : disease;
+const ACCESSIBLE_DISEASE = (disease: string) => (disease === "all" ? "Dengue" : disease);
 
 interface GroundingData {
   observed_through: { month_label: string; cases: number };
@@ -248,7 +247,11 @@ function GroundingReadout({ data }: { data: GroundingData }) {
   );
 }
 
-const NARRATIVE_SECTIONS = ["Current Situation", "Seasonal Outlook", "Recommended Actions"] as const;
+const NARRATIVE_SECTIONS = [
+  "Current Situation",
+  "Seasonal Outlook",
+  "Recommended Actions",
+] as const;
 
 /**
  * Splits the LLM narrative into its 3 labelled blocks (the analysis prompt

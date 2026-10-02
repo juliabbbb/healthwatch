@@ -40,8 +40,9 @@ DOH_FILE = "DOH-Epi-Dengue-2019-2026-line-list.csv"
 DISEASE = "Dengue"
 
 # Epi-week month cut: months strictly after this are excluded from the monthly
-# modelling grid (foreign months that the previous export did not cover).
-DATA_END = pd.Timestamp("2026-08-31")
+# modelling grid (foreign months that the previous export did not cover). Shared
+# with config so there is one source of truth for the last complete month.
+DATA_END = config.DATA_END
 
 # Raw DOH CSV region labels -> HEALTHWATCH canonical labels (REGION_META names
 # in the API / REGIONS in the frontend). 18 regions including NIR.

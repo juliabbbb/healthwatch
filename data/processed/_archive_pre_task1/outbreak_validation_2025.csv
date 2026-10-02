@@ -1,0 +1,175 @@
+disease,region,season,forecast_avg,actual_avg,actual_max,season_p75,actual_high_run,predicted,actual_outbreak,rule_a_actual,rule_b_actual,tp,fp,fn,tn
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,23.7,97.7,107.0,24.8,3,False,True,True,True,False,False,True,False
+Cholera,Bangsamoro (BARMM),dry,0.0,5.0,10.0,0.0,3,False,True,True,True,False,False,True,False
+Dengue,Bangsamoro (BARMM),dry,642.8,525.3,649.0,439.5,3,True,True,True,True,True,False,False,False
+Typhoid Fever,Bangsamoro (BARMM),dry,160.4,197.0,226.0,168.8,3,False,True,True,True,False,False,True,False
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,24.3,47.7,61.0,22.8,3,False,True,True,True,False,False,True,False
+Cholera,Bangsamoro (BARMM),wet,7.9,3.7,6.0,1.0,2,True,True,False,True,True,False,False,False
+Dengue,Bangsamoro (BARMM),wet,1522.2,637.7,870.0,946.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Bangsamoro (BARMM),wet,192.1,227.0,245.0,200.5,3,False,True,True,True,False,False,True,False
+Acute Bloody Diarrhea,Bicol Region,dry,9.0,21.3,22.0,11.8,3,False,True,True,True,False,False,True,False
+Cholera,Bicol Region,dry,1.4,3.0,5.0,47.0,0,False,False,False,False,False,False,False,True
+Dengue,Bicol Region,dry,15.7,219.3,243.0,169.5,1,False,True,False,True,False,False,True,False
+Typhoid Fever,Bicol Region,dry,10.6,31.7,39.0,25.8,1,False,True,False,True,False,False,True,False
+Acute Bloody Diarrhea,Bicol Region,wet,7.0,17.3,22.0,11.0,2,False,True,False,True,False,False,True,False
+Cholera,Bicol Region,wet,0.0,2.3,4.0,39.0,0,False,False,False,False,False,False,False,True
+Dengue,Bicol Region,wet,199.8,292.3,320.0,323.2,1,False,False,False,False,False,False,False,True
+Typhoid Fever,Bicol Region,wet,11.5,28.7,36.0,30.2,1,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,CALABARZON,dry,20.8,42.3,52.0,48.8,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,CALABARZON,dry,0.0,2.7,5.0,1.0,1,False,True,False,True,False,False,True,False
+Cholera,CALABARZON,dry,0.0,0.3,1.0,1.0,1,False,False,False,False,False,False,False,True
+Dengue,CALABARZON,dry,504.7,5550.3,7685.0,1580.2,3,False,True,True,True,False,False,True,False
+Typhoid Fever,CALABARZON,dry,70.1,96.0,116.0,101.0,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,CALABARZON,wet,27.8,103.3,111.0,49.5,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,CALABARZON,wet,0.0,2.5,3.0,1.0,1,False,True,False,True,False,False,True,False
+Cholera,CALABARZON,wet,0.0,0.3,1.0,1.0,0,False,False,False,False,False,False,False,True
+Dengue,CALABARZON,wet,8324.3,5035.3,5218.0,4713.8,1,True,True,False,True,True,False,False,False
+Typhoid Fever,CALABARZON,wet,121.2,120.0,125.0,158.5,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Cagayan Valley,dry,110.0,126.7,139.0,125.2,2,False,True,False,True,False,False,True,False
+Cholera,Cagayan Valley,dry,0.7,1.0,2.0,0.0,2,False,True,False,True,False,False,True,False
+Dengue,Cagayan Valley,dry,628.8,899.3,1125.0,564.0,3,True,True,True,True,True,False,False,False
+Typhoid Fever,Cagayan Valley,dry,112.9,217.7,245.0,86.0,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Cagayan Valley,wet,104.4,152.0,224.0,126.5,2,False,True,False,True,False,False,True,False
+Dengue,Cagayan Valley,wet,1886.0,1801.7,2060.0,2012.2,0,False,False,False,False,False,False,False,True
+Typhoid Fever,Cagayan Valley,wet,233.6,253.0,332.0,109.5,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Caraga,dry,36.3,72.0,81.0,168.5,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Caraga,dry,0.0,0.0,0.0,1.0,0,False,False,False,False,False,False,False,True
+Cholera,Caraga,dry,0.0,0.0,0.0,86.8,0,False,False,False,False,False,False,False,True
+Dengue,Caraga,dry,0.0,1130.3,1619.0,822.5,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Caraga,dry,46.6,77.3,97.0,47.8,3,False,True,True,True,False,False,True,False
+Acute Bloody Diarrhea,Caraga,wet,37.7,14.7,18.0,127.0,0,False,False,False,False,False,False,False,True
+Cholera,Caraga,wet,0.0,1.0,1.0,70.8,0,False,False,False,False,False,False,False,True
+Dengue,Caraga,wet,2610.8,269.3,415.0,869.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Caraga,wet,70.9,76.3,93.0,65.2,1,False,True,False,True,False,False,True,False
+Acute Bloody Diarrhea,Central Luzon,dry,45.5,32.3,39.0,55.8,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Central Luzon,dry,0.5,0.3,1.0,1.0,1,False,False,False,False,False,False,False,True
+Cholera,Central Luzon,dry,0.0,0.7,1.0,1.0,1,False,False,False,False,False,False,False,True
+Dengue,Central Luzon,dry,1932.3,4874.3,6497.0,1849.0,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Central Luzon,dry,90.3,122.7,135.0,68.0,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Central Luzon,wet,40.2,23.3,35.0,49.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Central Luzon,wet,0.4,0.7,1.0,1.0,1,False,False,False,False,False,False,False,True
+Cholera,Central Luzon,wet,0.0,1.0,3.0,1.0,1,False,False,False,False,False,False,False,True
+Dengue,Central Luzon,wet,4992.2,9941.3,10675.0,5263.2,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Central Luzon,wet,186.6,138.0,154.0,111.5,2,True,True,False,True,True,False,False,False
+Acute Bloody Diarrhea,Central Visayas,dry,35.0,178.7,211.0,406.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Central Visayas,dry,0.6,22.3,38.0,3.8,3,False,True,True,True,False,False,True,False
+Cholera,Central Visayas,dry,1.4,0.3,1.0,1.0,1,True,False,False,False,False,True,False,False
+Dengue,Central Visayas,dry,412.3,1549.3,2189.0,1304.8,0,False,True,False,True,False,False,True,False
+Typhoid Fever,Central Visayas,dry,135.7,157.0,225.0,87.8,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Central Visayas,wet,3.8,124.7,166.0,277.8,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Central Visayas,wet,0.2,3.3,4.0,3.0,1,False,True,False,True,False,False,True,False
+Cholera,Central Visayas,wet,1.4,2.3,5.0,0.8,2,False,True,False,True,False,False,True,False
+Dengue,Central Visayas,wet,6163.5,873.7,1076.0,2344.8,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Central Visayas,wet,231.3,118.3,140.0,131.2,1,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,46.7,47.3,49.0,117.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,0.0,0.0,0.0,0.0,0,False,False,False,False,False,False,False,True
+Cholera,Cordillera Administrative Region,dry,1.3,1.0,2.0,0.0,1,True,True,False,True,True,False,False,False
+Dengue,Cordillera Administrative Region,dry,322.1,574.0,649.0,415.8,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Cordillera Administrative Region,dry,217.1,210.3,274.0,253.2,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,43.0,47.7,64.0,114.5,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,0.0,0.7,1.0,0.0,2,False,True,False,True,False,False,True,False
+Cholera,Cordillera Administrative Region,wet,1.5,0.3,1.0,1.0,1,True,False,False,False,False,True,False,False
+Dengue,Cordillera Administrative Region,wet,6534.1,962.7,994.0,1881.8,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Cordillera Administrative Region,wet,371.8,205.7,230.0,430.2,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Davao Region,dry,39.3,51.3,71.0,32.5,3,True,True,True,True,True,False,False,False
+Acute Viral Hepatitis,Davao Region,dry,0.4,0.3,1.0,0.0,1,True,True,False,True,True,False,False,False
+Cholera,Davao Region,dry,30.4,2.7,4.0,5.0,0,True,False,False,False,False,True,False,False
+Dengue,Davao Region,dry,1886.5,1644.3,1967.0,1124.0,3,True,True,True,True,True,False,False,False
+Typhoid Fever,Davao Region,dry,76.8,50.0,69.0,42.8,2,True,True,False,True,True,False,False,False
+Acute Bloody Diarrhea,Davao Region,wet,37.5,27.7,30.0,31.2,1,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Davao Region,wet,0.3,1.5,2.0,0.0,2,True,True,False,True,True,False,False,False
+Cholera,Davao Region,wet,15.2,0.0,0.0,0.8,0,True,False,False,False,False,True,False,False
+Dengue,Davao Region,wet,3803.0,1087.7,1413.0,1969.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Davao Region,wet,108.9,39.3,44.0,70.0,0,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,Eastern Visayas,dry,28.8,40.3,54.0,40.5,1,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Eastern Visayas,dry,0.8,0.3,1.0,0.0,0,True,True,False,True,True,False,False,False
+Cholera,Eastern Visayas,dry,263.0,102.0,129.0,243.8,0,True,False,False,False,False,True,False,False
+Dengue,Eastern Visayas,dry,67.5,502.3,601.0,521.8,0,False,False,False,False,False,False,False,True
+Typhoid Fever,Eastern Visayas,dry,29.8,17.0,18.0,42.8,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Eastern Visayas,wet,22.2,54.7,57.0,34.2,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,Eastern Visayas,wet,0.3,1.3,2.0,0.0,2,True,True,False,True,True,False,False,False
+Cholera,Eastern Visayas,wet,304.6,40.0,81.0,228.0,0,True,False,False,False,False,True,False,False
+Dengue,Eastern Visayas,wet,1004.0,222.0,251.0,858.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Eastern Visayas,wet,28.3,39.7,50.0,36.2,1,False,True,False,True,False,False,True,False
+Acute Bloody Diarrhea,Ilocos Region,dry,5.2,11.7,22.0,4.8,3,False,True,True,True,False,False,True,False
+Cholera,Ilocos Region,dry,0.0,0.0,0.0,0.0,0,False,False,False,False,False,False,False,True
+Dengue,Ilocos Region,dry,153.9,642.7,819.0,468.8,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Ilocos Region,dry,68.9,88.0,109.0,90.8,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Ilocos Region,wet,17.4,5.7,10.0,9.5,0,True,False,False,False,False,True,False,False
+Cholera,Ilocos Region,wet,0.0,0.0,0.0,0.0,0,False,False,False,False,False,False,False,True
+Dengue,Ilocos Region,wet,2266.3,2685.0,3066.0,1603.8,1,True,True,False,True,True,False,False,False
+Typhoid Fever,Ilocos Region,wet,128.4,135.0,139.0,157.5,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,MIMAROPA,dry,12.9,33.7,39.0,12.8,3,False,True,True,True,False,False,True,False
+Dengue,MIMAROPA,dry,678.5,1340.3,1555.0,717.0,3,False,True,True,True,False,False,True,False
+Typhoid Fever,MIMAROPA,dry,158.9,214.3,256.0,106.2,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,MIMAROPA,wet,17.5,30.0,35.0,15.0,3,False,True,True,True,False,False,True,False
+Dengue,MIMAROPA,wet,2822.5,1516.7,2280.0,1639.8,0,True,False,False,False,False,True,False,False
+Typhoid Fever,MIMAROPA,wet,268.0,132.0,165.0,140.5,1,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,National,dry,792.8,1208.7,1294.0,1435.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,National,dry,8.7,29.7,46.0,18.8,3,False,True,True,True,False,False,True,False
+Cholera,National,dry,329.4,157.7,170.0,395.2,0,False,False,False,False,False,False,False,True
+Dengue,National,dry,8041.9,30400.3,38909.0,15834.0,3,False,True,True,True,False,False,True,False
+Typhoid Fever,National,dry,2124.0,2465.0,2840.0,1765.8,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,National,wet,769.5,1127.3,1417.0,1161.8,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,National,wet,13.2,13.3,19.0,20.0,1,False,False,False,False,False,False,False,True
+Cholera,National,wet,363.2,84.7,123.0,293.0,0,True,False,False,False,False,True,False,False
+Dengue,National,wet,57349.5,34957.0,39497.0,41685.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,National,wet,3603.1,2396.0,2550.0,2694.8,0,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,National Capital Region,dry,22.2,33.7,40.0,14.5,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,National Capital Region,dry,0.1,1.7,4.0,2.0,1,False,False,False,False,False,False,False,True
+Cholera,National Capital Region,dry,0.0,2.7,3.0,0.0,3,False,True,True,True,False,False,True,False
+Dengue,National Capital Region,dry,876.7,5450.0,7042.0,1606.5,3,False,True,True,True,False,False,True,False
+Typhoid Fever,National Capital Region,dry,28.3,58.0,64.0,33.5,3,False,True,True,True,False,False,True,False
+Acute Bloody Diarrhea,National Capital Region,wet,34.3,53.3,54.0,19.0,3,True,True,True,True,True,False,False,False
+Acute Viral Hepatitis,National Capital Region,wet,0.0,1.5,2.0,1.0,1,False,True,False,True,False,False,True,False
+Cholera,National Capital Region,wet,0.0,4.0,6.0,2.0,2,False,True,False,True,False,False,True,False
+Dengue,National Capital Region,wet,5698.4,4300.3,4724.0,4566.2,1,True,False,False,False,False,True,False,False
+Typhoid Fever,National Capital Region,wet,50.3,50.0,55.0,43.0,2,True,True,False,True,True,False,False,False
+Acute Bloody Diarrhea,Negros Island Region,dry,39.0,42.0,57.0,70.8,0,False,False,False,False,False,False,False,True
+Cholera,Negros Island Region,dry,0.4,9.0,11.0,2.0,3,False,True,True,True,False,False,True,False
+Dengue,Negros Island Region,dry,153.5,895.7,1188.0,517.8,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Negros Island Region,dry,147.2,238.0,333.0,132.2,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Negros Island Region,wet,41.3,38.0,46.0,84.8,0,False,False,False,False,False,False,False,True
+Cholera,Negros Island Region,wet,23.0,12.3,21.0,3.2,3,True,True,True,True,True,False,False,False
+Dengue,Negros Island Region,wet,3640.7,914.7,1379.0,1825.0,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Negros Island Region,wet,289.2,165.7,197.0,201.5,0,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,Northern Mindanao,dry,53.1,110.3,117.0,102.0,2,False,True,False,True,False,False,True,False
+Acute Viral Hepatitis,Northern Mindanao,dry,0.0,0.3,1.0,1.0,0,False,False,False,False,False,False,False,True
+Cholera,Northern Mindanao,dry,0.0,2.3,4.0,5.0,0,False,False,False,False,False,False,False,True
+Dengue,Northern Mindanao,dry,915.3,1359.3,1432.0,1198.5,2,False,True,False,True,False,False,True,False
+Typhoid Fever,Northern Mindanao,dry,205.6,246.3,289.0,289.2,1,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Northern Mindanao,wet,40.1,90.3,103.0,96.0,1,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Northern Mindanao,wet,0.0,1.5,2.0,1.8,0,False,False,False,False,False,False,False,True
+Cholera,Northern Mindanao,wet,0.0,2.7,3.0,2.0,1,False,True,False,True,False,False,True,False
+Dengue,Northern Mindanao,wet,3079.4,1005.0,1491.0,2091.2,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Northern Mindanao,wet,344.5,301.0,359.0,357.5,0,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,8.9,20.0,23.0,16.0,1,False,True,False,True,False,False,True,False
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,0.0,0.0,0.0,0.0,0,False,False,False,False,False,False,False,True
+Cholera,SOCCSKSARGEN,dry,1.0,6.0,8.0,0.0,2,False,True,False,True,False,False,True,False
+Dengue,SOCCSKSARGEN,dry,1150.7,1187.3,1321.0,1091.5,1,True,True,False,True,True,False,False,False
+Typhoid Fever,SOCCSKSARGEN,dry,87.9,102.7,109.0,155.0,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,7.7,27.3,37.0,14.0,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,0.0,0.3,1.0,0.0,1,False,True,False,True,False,False,True,False
+Cholera,SOCCSKSARGEN,wet,6.4,7.7,12.0,2.0,3,True,True,True,True,True,False,False,False
+Dengue,SOCCSKSARGEN,wet,1645.2,1107.3,1501.0,1833.5,0,False,False,False,False,False,False,False,True
+Typhoid Fever,SOCCSKSARGEN,wet,91.9,102.0,119.0,178.0,0,False,False,False,False,False,False,False,True
+Acute Bloody Diarrhea,Western Visayas,dry,0.0,0.3,1.0,1.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Western Visayas,dry,0.1,0.7,1.0,1.0,0,False,False,False,False,False,False,False,True
+Cholera,Western Visayas,dry,0.0,0.3,1.0,3.5,0,False,False,False,False,False,False,False,True
+Dengue,Western Visayas,dry,177.8,1158.3,1300.0,583.2,3,False,True,True,True,False,False,True,False
+Typhoid Fever,Western Visayas,dry,94.2,151.0,200.0,92.0,3,False,True,True,True,False,False,True,False
+Acute Bloody Diarrhea,Western Visayas,wet,0.0,0.0,0.0,1.0,0,False,False,False,False,False,False,False,True
+Acute Viral Hepatitis,Western Visayas,wet,1.4,3.0,5.0,2.0,0,False,True,False,True,False,False,True,False
+Cholera,Western Visayas,wet,0.0,0.3,1.0,10.5,0,False,False,False,False,False,False,False,True
+Dengue,Western Visayas,wet,5621.0,1734.0,2798.0,2011.8,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Western Visayas,wet,208.9,133.3,149.0,138.5,1,True,False,False,False,False,True,False,False
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,125.2,247.0,268.0,210.8,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,6.4,0.3,1.0,3.0,0,True,False,False,False,False,True,False,False
+Cholera,Zamboanga Peninsula,dry,10.5,21.3,31.0,5.0,3,True,True,True,True,True,False,False,False
+Dengue,Zamboanga Peninsula,dry,334.8,897.7,1060.0,956.8,2,False,False,False,False,False,False,False,True
+Typhoid Fever,Zamboanga Peninsula,dry,137.0,190.0,202.0,117.8,3,True,True,True,True,True,False,False,False
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,110.8,269.7,365.0,196.8,3,False,True,True,True,False,False,True,False
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,5.6,0.3,1.0,3.8,0,True,False,False,False,False,True,False,False
+Cholera,Zamboanga Peninsula,wet,8.9,7.0,8.0,4.8,3,True,True,True,True,True,False,False,False
+Dengue,Zamboanga Peninsula,wet,2354.5,570.3,835.0,1643.5,0,True,False,False,False,False,True,False,False
+Typhoid Fever,Zamboanga Peninsula,wet,225.7,131.0,159.0,155.2,0,True,False,False,False,False,True,False,False

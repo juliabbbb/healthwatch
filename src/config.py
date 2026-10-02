@@ -18,6 +18,12 @@ DATA_START_YEAR = 2019
 DATA_END_YEAR = 2026
 DATA_END_MONTH = 8  # last complete reported month (2026-09 is in-progress)
 DATA_START = pd.Timestamp(f"{DATA_START_YEAR}-01-01")
+# The last COMPLETE reported month, expressed both ways consumers need it: as a
+# month-start for series alignment, and as the end of that month for the
+# inclusive `<= DATA_END` row filters the ingest modules use. Single source of
+# truth -- doh_eb_ingest and classify import these rather than hardcoding.
+DATA_END_MONTH_START = pd.Timestamp(f"{DATA_END_YEAR}-{DATA_END_MONTH:02d}-01")
+DATA_END = DATA_END_MONTH_START + pd.offsets.MonthEnd(0)
 
 
 def at_or_after_data_start(df, date_col="date"):
@@ -33,13 +39,28 @@ def at_or_before_data_end(df, year_col="year", month_col="month"):
     The FWD line-lists include a partial, in-progress snapshot of the
     current month (2026-09); treating it as a full reported month would
     leak an incomplete count onto the slider/snapshot. Applied at the API
-    hot-load only (the pipeline still fits on its full window).
+    hot-load, and again at `ingest.load_monthly_series` so the pipeline's own
+    fits cannot train on the partial month either (see `trim_to_data_end`).
     """
     out = df.copy()
     end_ym = DATA_END_YEAR * 100 + DATA_END_MONTH
     out["_ym"] = out[year_col] * 100 + out[month_col]
     out = out[out["_ym"] <= end_ym].drop(columns="_ym").reset_index(drop=True)
     return out
+
+
+def trim_to_data_end(df, date_col="date"):
+    """Drop rows after the last complete reported month (date-column form).
+
+    The monthly series CSVs carry a `date` column rather than year/month, so
+    they use this instead of `at_or_before_data_end`. Applied once in
+    `ingest.load_monthly_series`, the shared chokepoint, so the Prophet fits,
+    the percentile thresholds and the validation all inherit the trim. The CSVs
+    on disk keep their partial-month rows; only computation excludes them.
+    """
+    out = df.copy()
+    out[date_col] = pd.to_datetime(out[date_col])
+    return out[out[date_col] <= DATA_END].reset_index(drop=True)
 
 
 def assert_data_window(df, date_col="date", context=""):

@@ -76,23 +76,10 @@ export function ForecastSparkline({ data }: { data: SparklinePoint[] }) {
         ).toLocaleString()}–${Math.round(d.upper).toLocaleString()}) · ${d.risk}`;
         return (
           <g key={i}>
-            <rect
-              x={x - barW / 2}
-              y={y}
-              width={barW}
-              height={h}
-              rx={3}
-              fill={CHART_COLORS.primary}
-            >
+            <rect x={x - barW / 2} y={y} width={barW} height={h} rx={3} fill={CHART_COLORS.primary}>
               <title>{tooltip}</title>
             </rect>
-            <text
-              x={x}
-              y={VB_H - 5}
-              textAnchor="middle"
-              fontSize={9}
-              fill={CHART_COLORS.axisLabel}
-            >
+            <text x={x} y={VB_H - 5} textAnchor="middle" fontSize={9} fill={CHART_COLORS.axisLabel}>
               {d.label}
             </text>
           </g>

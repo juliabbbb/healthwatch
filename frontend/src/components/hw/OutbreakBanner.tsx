@@ -17,12 +17,7 @@ export interface OutbreakBannerProps {
  * Conditional alert strip shown only when the region's upcoming-season probe
  * is flagged as an outbreak. Names the triggering rule in plain language.
  */
-export function OutbreakBanner({
-  regionName,
-  season,
-  indicator,
-  className,
-}: OutbreakBannerProps) {
+export function OutbreakBanner({ regionName, season, indicator, className }: OutbreakBannerProps) {
   if (!indicator || !indicator.outbreak) return null;
 
   const trigger = OUTBREAK_TRIGGER_LABEL[indicator.trigger] ?? indicator.trigger;
@@ -46,8 +41,8 @@ export function OutbreakBanner({
     >
       <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
       <p>
-        <span className="font-semibold">Outbreak signal — {season} season.</span>{" "}
-        {regionName}: {trigger}
+        <span className="font-semibold">Outbreak signal — {season} season.</span> {regionName}:{" "}
+        {trigger}
         {detail}.
       </p>
     </div>

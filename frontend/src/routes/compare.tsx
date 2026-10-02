@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { ClassificationInfo } from "@/components/hw/ClassificationInfo";
 import { ReportedBreakdown } from "@/components/hw/ReportedBreakdown";
+import { EscalationTable } from "@/components/hw/EscalationTable";
 import { AiNarrativeLine } from "@/components/hw/AiNarrative";
 import { SEASON_CONFIG } from "@/components/hw/ForecastCard";
 import { RiskBadge } from "@/components/hw/RiskBadge";
@@ -41,6 +42,7 @@ import {
   recommendations,
   seriesFor,
   type MetricMode,
+  type TierBasis,
   type RegionAssessment,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
@@ -111,6 +113,11 @@ export default function ComparePage() {
   // PDF Export Engine modal
   const [isExportOpen, setIsExportOpen] = useState(false);
 
+  // Single source of truth for the tier yardstick on this page, so the table, the
+  // explanation panel and the exported CSVs can never disagree. "All Illnesses"
+  // has no single disease's percentile, so it falls back to pooled national burden.
+  const tierBasis: TierBasis = illness === "all" ? "burden" : "hotspot";
+
   // Lock background scroll while either custom portal overlay is open
   // (Radix dialogs and ExportCustomizationModal lock themselves).
   useBodyScrollLock(isBenchmarkModalOpen);
@@ -130,8 +137,8 @@ export default function ComparePage() {
 
   // Selected regions assessment rows
   const rows = useMemo(
-    () => selected.map((code) => assessRegion(code, illness, monthIndex, mode)),
-    [selected, illness, monthIndex, mode],
+    () => selected.map((code) => assessRegion(code, illness, monthIndex, mode, tierBasis)),
+    [selected, illness, monthIndex, mode, tierBasis],
   );
 
   // Global maximum across all selected regions in the sparkline window for consistent scaling
@@ -204,8 +211,8 @@ export default function ComparePage() {
   // Detailed assessment object for the active detailed card modal
   const detailedAssessment = useMemo(() => {
     if (!detailedCardRegionCode) return null;
-    return assessRegion(detailedCardRegionCode, illness, monthIndex, mode);
-  }, [detailedCardRegionCode, illness, monthIndex, mode]);
+    return assessRegion(detailedCardRegionCode, illness, monthIndex, mode, tierBasis);
+  }, [detailedCardRegionCode, illness, monthIndex, mode, tierBasis]);
 
   const detailedMetrics = useMemo(() => {
     if (!detailedCardRegionCode) return null;
@@ -213,7 +220,10 @@ export default function ComparePage() {
   }, [detailedCardRegionCode, illness]);
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-32" data-explain="compare-page">
+    <main
+      className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-6 sm:py-8 pb-32"
+      data-explain="compare-page"
+    >
       {/* Navigation & Header */}
       <Link
         to="/"
@@ -234,7 +244,13 @@ export default function ComparePage() {
           </p>
         </div>
         <div className="flex items-start gap-3">
-          <ClassificationInfo mode={mode} thresholds={rows[0]?.thresholds} />
+          <ClassificationInfo
+            mode={mode}
+            thresholds={rows[0]?.thresholds}
+            basis={tierBasis}
+            pooledFallback={rows[0]?.pooledFallback ?? false}
+            pooledFallbackReason={rows[0]?.pooledFallbackReason ?? null}
+          />
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
@@ -495,6 +511,12 @@ export default function ComparePage() {
         )}
       </section>
 
+      {/* Who is about to get worse, ranked. Independent of the region selection
+          above: this is the whole-country priority order, not a comparison. */}
+      <section className="mt-8">
+        <EscalationTable disease={illness} />
+      </section>
+
       {/* Clutter-reduced synchronized season footnote */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-[11px] text-muted-foreground border-t border-border/40 pt-3">
         <p>
@@ -559,9 +581,9 @@ export default function ComparePage() {
             {/* Modal Body: Upgraded Table with clear divisions & On-click Interventions */}
             <div className="overflow-y-auto p-3 sm:p-5 hw-scroll space-y-4 max-h-[calc(90vh-4.5rem)]">
               <div
-                  className="overflow-x-auto rounded-xl border border-border/80 shadow-xs"
-                  data-explain="compare-table"
-                >
+                className="overflow-x-auto rounded-xl border border-border/80 shadow-xs"
+                data-explain="compare-table"
+              >
                 <table className="w-full min-w-[720px] text-left text-sm border-collapse">
                   <thead className="label-caps">
                     <tr className="border-b border-border/80 bg-secondary/35 text-[10px] tracking-wider uppercase font-semibold text-muted-foreground">
@@ -972,6 +994,7 @@ export default function ComparePage() {
         illness={illness}
         monthIndex={monthIndex}
         mode={mode}
+        basis={tierBasis}
       />
     </main>
   );

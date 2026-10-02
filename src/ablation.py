@@ -2,8 +2,16 @@
 yearly seasonality that Prophet's Fourier terms already model?
 
 Config A - yearly_seasonality=True, is_wet_season regressor omitted
-Config B - yearly_seasonality=False, is_wet_season regressor present
-Config C - both (deployed configuration, forecast.fit_prophet defaults)
+Config B - DEPLOYED, the fit_prophet defaults: yearly_seasonality=False,
+         is_wet_season present
+Config C - both terms, i.e. the configuration this pipeline originally rejected
+
+On the corrected walk-forward windows the original ordering REVERSES: C has the
+lowest MAE in 12 of 19 dengue regions on 2025_prospective and 10 of 19 on
+last_12m, and the lowest MAPE in both windows, while B keeps the lowest RMSE.
+The projected R2 is 1.0 with a joint condition number of ~6.1e16, so the two
+seasonal channels are not separately identified and C's edge is not safely
+attributable. See forecast.py and RESULTS_AFTER_FIX.md.
 
 For every region and every walk-forward window we report MAE / RMSE / MAPE on
 the held-out months, the seasonal-naive baseline and skill, and the mean
@@ -12,9 +20,11 @@ report the overlap statistic: the fraction of variance of the is_wet_season
 step function explained by the yearly Fourier columns (projected R2). This
 quantifies how collinear the two seasonal channels are on the training calendar.
 
-Run: python -m src.ablation
+Run: python -m src.ablation (all five diseases, ~1,400 fits, run detached) or
+python -m src.ablation --disease Dengue for a single-disease sweep.
 """
 
+import argparse
 import logging
 from pathlib import Path
 
@@ -49,7 +59,9 @@ def walk_forward_validation(series, use_year_seasonality, use_wet_regressor,
                             val_months=forecast.VAL_MONTHS, end_date=None):
     series = series.reset_index(drop=True)
     split = forecast._split_index(series, val_months, end_date)
-    if split < forecast.MIN_TRAIN_MONTHS:
+    # Same drop-out rule as forecast.walk_forward_validation: a series that
+    # stops reporting inside the window has no holdout months to score.
+    if split < forecast.MIN_TRAIN_MONTHS or split + val_months > len(series):
         return None
     preds = []
     model = None
@@ -116,7 +128,7 @@ def overlap_statistic(series):
 
 def _naive_mae(series, val_months, end_date):
     split = forecast._split_index(series, val_months, end_date)
-    if split is None:
+    if split is None or split < val_months or split + val_months > len(series):
         return None
     actual = series.iloc[split: split + val_months]["y"].to_numpy(dtype=float)
     naive = series["y"].shift(val_months).iloc[split: split + val_months].to_numpy(dtype=float)
@@ -135,22 +147,36 @@ def production_volume(series, use_year_seasonality, use_wet_regressor):
     return round(float(yhat.mean()), 2)
 
 
-def run():
+def run(disease=None):
+    """Fit configs A/B/C on the validation windows and report the cost.
+
+    `disease` restricts the sweep to one disease. The full sweep is ~1,400
+    Prophet fits and runs detached; a single-disease run is the practical unit
+    and is what the chapter's numbers are computed from. The CSVs carry a
+    `disease` column either way, so a filtered run stays self-describing.
+    """
     df = forecast.load_series()
+    if disease:
+        if disease not in set(df["disease"].unique()):
+            raise ValueError(
+                f"Unknown disease {disease!r}. Choose from: "
+                + ", ".join(sorted(df["disease"].unique()))
+            )
+        df = df[df["disease"] == disease]
     metric_rows = []
     overlap_rows = []
     volume_rows = []
 
-    for (disease, region), group in df.groupby(["disease", "region"]):
+    for (dis, region), group in df.groupby(["disease", "region"]):
         series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
         r2, cond = overlap_statistic(series)
-        overlap_rows.append({"region": region, "R2_fourier_explains_wet": r2,
-                             "cond_num_joint": cond})
+        overlap_rows.append({"disease": dis, "region": region,
+                             "R2_fourier_explains_wet": r2, "cond_num_joint": cond})
 
         for config, params in CONFIGS.items():
             vol = production_volume(series, params["use_year_seasonality"],
                                     params["use_wet_regressor"])
-            volume_rows.append({"region": region, "config": config,
+            volume_rows.append({"disease": dis, "region": region, "config": config,
                                 "y5": params["use_year_seasonality"],
                                 "wet": params["use_wet_regressor"],
                                 "mean_yhat_12mo": vol})
@@ -163,7 +189,8 @@ def run():
                     continue
                 row = score_row(validation, _naive_mae(series, forecast.VAL_MONTHS, end_date))
                 metric_rows.append({
-                    "region": region, "window": window_name, "config": config,
+                    "disease": dis, "region": region, "window": window_name,
+                    "config": config,
                     "year_seasonality": params["use_year_seasonality"],
                     "wet_regressor": params["use_wet_regressor"], **row,
                 })
@@ -176,36 +203,51 @@ def run():
     overlap_path = ingest.save_processed(overlap, "ablation_overlap.csv")
     volume_path = ingest.save_processed(volumes, "ablation_production_volumes.csv")
 
+    scope = disease or "all diseases"
+    print(f"Scope: {scope} "
+          f"({metrics.groupby('disease')['region'].nunique().to_dict() if len(metrics) else {}})")
     print(f"Saved -> {metrics_path}")
     print(f"Saved -> {overlap_path}")
     print(f"Saved -> {volume_path}")
 
     print("\nOverlap statistic (collinearity of wet-step on Fourier columns):")
-    print(f"  projected R2 = {overlap['R2_fourier_explains_wet'].iloc[0]}  "
-          f"condition number = {overlap['cond_num_joint'].iloc[0]}")
+    print(overlap[["disease", "region", "R2_fourier_explains_wet", "cond_num_joint"]]
+          .head(3).to_string(index=False))
 
     w = "2025_prospective"
     sub = metrics[metrics["window"] == w]
     pivot = sub.pivot_table(
-        index="region", columns="config",
+        index=["disease", "region"], columns="config",
         values=["MAE", "RMSE", "MAPE", "val_mean_yhat"],
         aggfunc="first",
     )
-    print(f"\nConfig comparison on {w} (nationwide means):")
+    print(f"\nConfig comparison on {w} (means across the swept series):")
     print(pivot.groupby(level=0).mean().round(2).to_string())
 
     print("\nType II region: Eastern Visayas")
     ev = sub[sub["region"] == "Eastern Visayas"]
-    print(ev[["config", "MAE", "RMSE", "MAPE", "val_mean_yhat", "val_mean_y", "skill_pct"]].to_string(index=False))
+    print(ev[["disease", "config", "MAE", "RMSE", "MAPE", "val_mean_yhat",
+              "val_mean_y", "skill_pct"]].to_string(index=False))
 
     print("\nProduction 12-month mean volume (inflation check) - Eastern Visayas,"
-          " and nationwide means per config:")
+          " and means per config:")
     evv = volumes[volumes["region"] == "Eastern Visayas"]
-    print(evv[["config", "mean_yhat_12mo"]].to_string(index=False))
-    print(volumes.groupby("config")["mean_yhat_12mo"].mean().round(2).to_string())
+    print(evv[["disease", "config", "mean_yhat_12mo"]].to_string(index=False))
+    print(volumes.groupby(["disease", "config"])["mean_yhat_12mo"].mean().round(2).to_string())
 
     return metrics, overlap, volumes
 
 
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--disease", default=None,
+        help="Restrict the sweep to one disease (e.g. --disease Dengue). "
+             "Omit for all five; the full sweep is ~1,400 Prophet fits.",
+    )
+    args = parser.parse_args()
+    run(disease=args.disease)
+
+
 if __name__ == "__main__":
-    run()
+    main()

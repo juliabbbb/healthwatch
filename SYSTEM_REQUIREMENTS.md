@@ -153,7 +153,7 @@
 | `ingest.py` | Raw CSV/Excel → monthly series |
 | `doh_eb_ingest.py` | DOH-Epi Bureau specific ingestion |
 | `validate_2025.py` | Prospective 2025 validation |
-| `validate_known_epidemic.py` | Independent 2019 outbreak check |
+| `validate_2019_consistency.py` | 2019 consistency check (production monthly rule on 2019 line-list rows) |
 
 ---
 
@@ -165,7 +165,7 @@
 | **Connection** | `DATABASE_URL` env var (sslmode=require) | `DATABASE_URL` env var (sslmode=require) |
 | **Pool size** | pool_size=5, max_overflow=10 | pool_size=5, max_overflow=10 |
 | **Pool recycle** | 300 seconds | 300 seconds |
-| **Tables** | 12 tables (same schema) | 12 tables |
+| **Tables** | 14 tables (same schema) | 14 tables |
 | **Schema rebuild** | `python -m src.db` (idempotent, drop+recreate of pipeline tables) | Same command, points to Postgres |
 
 > Postgres-only: there is no SQLite anywhere. Every component of the API reads
@@ -287,14 +287,17 @@ The ML pipeline is **never run on Render**. It runs locally and produces CSVs th
 | 4. Outbreak | `python -m src.outbreak` | Low | Low |
 | 5. Rebuild DB | `python -m src.db` | Low | Low (~200 MB) |
 | 6. Validate | `python -m src.validate_2025` | Medium | Medium |
-| 7. Validate (epidemic) | `python -m src.validate_known_epidemic` | Medium | Medium |
+| 7. Check 2019 consistency | `python -m src.validate_2019_consistency` | Medium | Medium |
 
 ### Prophet Fit Details
 
-- **18 regions** × walk-forward validation (refit every month)
-- ~55 observed months per region (3 full yearly cycles)
-- 12-month production forecast horizon
-- Wet-season regressor included
+- **18 regions + National** × walk-forward validation (refit every month)
+- ~92 observed months per region (7 full yearly cycles; 2019-01…2026-08, partial month excluded at compute time)
+- 12-month production forecast horizon (2026-09-01…2027-08-01, one shared calendar)
+- Series whose last observation is more than 12 months before the compute end are skipped and
+  recorded in `data/processed/forecast_skips.csv` (9 of 95 series at the current data cut)
+- Wet-season regressor included; yearly Fourier seasonality disabled (Config B — see the modelling
+  ablation, which on the corrected validation windows no longer selects this configuration)
 - CMDStan backend (C++ compiler required via cmdstanpy)
 
 ---

@@ -13,6 +13,9 @@ flags flip and how the 2025 out-of-sample confusion matrix shifts when the local
 calendar is enforced, so the manuscript can disclose the metric deltas (or the
 absence of them) rather than hand-wave the limitation.
 
+Both the predicted and the actual side run on the pre-2025 validation pool, and
+both are disease-keyed across all five diseases.
+
 Run: python -m src.sensitivity
 """
 
@@ -20,6 +23,7 @@ import pandas as pd
 
 from . import ingest, outbreak
 from .classify import (
+    VALIDATION_THRESHOLDS,
     classify_seasonal,
     compute_seasonal_thresholds,
     compute_thresholds,
@@ -72,31 +76,36 @@ def _diff_flags(national, override):
 def _validate_2025_under(indicators, season_func):
     """Replicates validate_2025 semantics but with a regional season function,
     so the 'actual' flags use the same monthly P75s with the region-aware
-    seasonal P75 bucket on the observed 2025 months."""
-    observed = pd.concat(
-        [
-            pd.read_csv(ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]),
-            pd.read_csv(ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]),
-        ],
-        ignore_index=True,
+    seasonal P75 bucket on the observed 2025 months.
+
+    Three corrections over the original implementation:
+      * the observed panel is ALL five diseases -- it used to concatenate only
+        `national_monthly.csv` + `regional_dengue_monthly.csv`, so a
+        multi-disease indicator set was scored against 38 dengue-only rows;
+      * the monthly percentiles come from the pre-2025 validation pool -- the
+        production `risk_thresholds.csv` baseline runs through 2026-08 and so
+        contains the very 2025 months being scored (the seasonal P75 two lines
+        below already used pre-2025 history, so the two sides disagreed);
+      * every lookup is keyed on disease as well as region, so a region's flag
+        is no longer read off whichever disease happened to sort first.
+    """
+    observed = ingest.load_monthly_series().sort_values(
+        ["disease", "region", "date"], ignore_index=True
     )
-    monthly = pd.read_csv(ingest.PROCESSED_DIR / "risk_thresholds.csv")
-    seasonal = compute_seasonal_thresholds(
-        observed[observed["date"] <= pd.Timestamp("2024-12-31")],
-        season_func=season_func,
-    )
+    monthly = pd.read_csv(ingest.PROCESSED_DIR / VALIDATION_THRESHOLDS)
+    seasonal = compute_seasonal_thresholds(load_history(), season_func=season_func)
 
     rows = []
-    for region in indicators["region"].unique():
+    for disease, region in indicators[["disease", "region"]].drop_duplicates().itertuples(index=False):
         for season, (start, end) in PROBE_WINDOWS.items():
             seg = observed[
-                (observed["region"] == region)
+                (observed["disease"] == disease)
+                & (observed["region"] == region)
                 & (observed["date"] >= start)
                 & (observed["date"] <= end)
             ].sort_values("date")
             if seg.empty:
                 continue
-            disease = seg["disease"].iloc[0]
             avg_actual = float(seg["cases"].mean())
             thr = monthly[(monthly["disease"] == disease) & (monthly["region"] == region)]
             seg = with_month_of_year(seg).merge(
@@ -114,11 +123,13 @@ def _validate_2025_under(indicators, season_func):
             season_p75 = float(srow["p75"].iloc[0]) if not srow.empty else float("nan")
             rule_b = avg_actual > season_p75 if pd.notna(season_p75) else False
             ind = indicators[
-                (indicators["region"] == region) & (indicators["season"] == season)
+                (indicators["disease"] == disease)
+                & (indicators["region"] == region)
+                & (indicators["season"] == season)
             ]
             predicted = bool(ind["outbreak"].iloc[0]) if not ind.empty else False
             rows.append({
-                "region": region, "season": season,
+                "disease": disease, "region": region, "season": season,
                 "predicted": predicted, "actual": bool(rule_a or rule_b),
                 "rule_a_actual": rule_a, "rule_b_actual": rule_b,
                 "avg_actual": round(avg_actual, 1), "season_p75": round(season_p75, 1),
@@ -156,10 +167,12 @@ def run():
     else:
         print(
             flipped[
-                ["region", "season", "flag_national", "flag_override",
+                ["disease", "region", "season", "flag_national", "flag_override",
                  "trigger_national", "trigger_override"]
             ].to_string(index=False)
         )
+        print(f"  {len(flipped)} of {len(diff)} region-season-disease flags flip "
+              f"({len(flipped) / len(diff) * 100:.1f}%)")
 
     val_n = _validate_2025_under(national, lambda d, r: _national_season(d))
     val_o = _validate_2025_under(override, region_season)
@@ -170,15 +183,37 @@ def run():
     print("2025 out-of-sample confusion (Type II local-calendar run):")
     print(" ", co)
 
+    # Per-disease breakdown is only meaningful now that the actual side is
+    # disease-keyed and covers all five diseases (was dengue-only).
+    print("\nPer-disease 2025 confusion (national calendar run):")
+    per = val_n.groupby("disease").apply(
+        lambda g: pd.Series(_confusion(g)), include_groups=False
+    )
+    print(per.to_string())
+    print("\nDeltas, Type II override vs national calendar:")
+    print(
+        pd.DataFrame(
+            {
+                "national_P": [cn["precision"]],
+                "override_P": [co["precision"]],
+                "national_R": [cn["recall"]],
+                "override_R": [co["recall"]],
+                "national_F1": [cn["F1"]],
+                "override_F1": [co["F1"]],
+            }
+        ).to_string(index=False)
+    )
+
     type2 = ["Bicol Region", "Eastern Visayas", "Caraga"]
     for r in type2:
         print(f"\nType II region: {r}")
         sub = diff[diff["region"] == r]
         if not sub.empty:
             print(
-                sub[["region", "season", "flag_national", "trigger_national",
+                sub[["disease", "region", "season", "flag_national", "trigger_national",
                      "flag_override", "trigger_override", "flip"]].to_string(index=False)
             )
+            print(f"  {int(sub['flip'].sum())} of {len(sub)} flip")
         else:
             print("  no rows")
 

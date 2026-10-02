@@ -37,7 +37,14 @@ export interface TopToolbarProps {
   explainActive?: boolean;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onStartTour, explainActive }: TopToolbarProps) {
+export function TopToolbar({
+  onPick,
+  onZoom,
+  trailing,
+  selectedRegionCode,
+  onStartTour,
+  explainActive,
+}: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
@@ -202,11 +209,16 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
         <div className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <IconButton
             id="hw-tour-btn"
-            label={explainActive ? "Exit Explain Mode" : "Explain Mode — click anything to learn what it does"}
+            label={
+              explainActive
+                ? "Exit Explain Mode"
+                : "Explain Mode — click anything to learn what it does"
+            }
             {...(onStartTour ? { onClick: onStartTour } : {})}
-            className={explainActive
-              ? "text-primary bg-primary/15 ring-1 ring-primary/50 hover:bg-primary/20 hover:text-primary"
-              : "text-primary hover:text-primary"
+            className={
+              explainActive
+                ? "text-primary bg-primary/15 ring-1 ring-primary/50 hover:bg-primary/20 hover:text-primary"
+                : "text-primary hover:text-primary"
             }
           >
             <HelpCircle className="size-4" />

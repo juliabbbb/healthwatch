@@ -24,7 +24,9 @@ export function BackToTop() {
       aria-label="Back to top"
       className={cn(
         "fixed bottom-6 right-6 z-50 flex items-center gap-1.5 rounded-full border border-primary/40 bg-card/80 px-3.5 py-2 text-xs font-semibold text-primary shadow-lg backdrop-blur-sm transition-all duration-300 hover:bg-primary/15 hover:border-primary/70 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer touch-manipulation",
-        visible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-3 pointer-events-none",
+        visible
+          ? "opacity-100 translate-y-0 pointer-events-auto"
+          : "opacity-0 translate-y-3 pointer-events-none",
       )}
     >
       <ArrowUp className="size-3.5" aria-hidden="true" />

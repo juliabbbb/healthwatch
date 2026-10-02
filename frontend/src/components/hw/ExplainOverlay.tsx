@@ -92,7 +92,7 @@ const ICON_MAP: Record<string, LucideIcon> = {
   LayoutGrid,
   Layers,
   Mail,
-Map: MapIcon,
+  Map: MapIcon,
   MapPin,
   Menu,
   Navigation,
@@ -157,11 +157,7 @@ function findExplanation(
 }
 
 /** Compute best position for the popover card (avoid viewport edges). */
-function computePopoverStyle(
-  anchorRect: DOMRect,
-  cardW = 340,
-  cardH = 200,
-): React.CSSProperties {
+function computePopoverStyle(anchorRect: DOMRect, cardW = 340, cardH = 200): React.CSSProperties {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const margin = 12;
@@ -294,7 +290,8 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
       });
 
       if (!res.ok) {
-        let detail = "AI analysis unavailable: AI provider keys (GROQ_API_KEY / OPENAI_API_KEY) are not configured on the server.";
+        let detail =
+          "AI analysis unavailable: AI provider keys (GROQ_API_KEY / OPENAI_API_KEY) are not configured on the server.";
         try {
           const errData = (await res.json()) as { detail?: string };
           if (errData?.detail) detail = errData.detail;
@@ -318,8 +315,7 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
   if (!active || typeof document === "undefined") return null;
 
   const popoverStyle = popover ? computePopoverStyle(popover.anchorRect) : undefined;
-  const PopoverIcon: LucideIcon =
-    (popover?.icon ? ICON_MAP[popover.icon] : undefined) ?? Info;
+  const PopoverIcon: LucideIcon = (popover?.icon ? ICON_MAP[popover.icon] : undefined) ?? Info;
 
   return createPortal(
     <>
@@ -398,7 +394,10 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
               )}
               {aiState === "loading" && (
                 <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
-                  <Loader2 className="size-3.5 animate-spin text-primary shrink-0" aria-hidden="true" />
+                  <Loader2
+                    className="size-3.5 animate-spin text-primary shrink-0"
+                    aria-hidden="true"
+                  />
                   <span>Fetching AI analysis...</span>
                 </div>
               )}

@@ -8,7 +8,12 @@ export interface RiskCounts {
 
 const TIERS: { key: keyof RiskCounts; label: string; color: string; solid: string }[] = [
   { key: "low", label: "Low", color: "var(--risk-low)", solid: "var(--risk-low-solid)" },
-  { key: "moderate", label: "Moderate", color: "var(--risk-moderate)", solid: "var(--risk-moderate-solid)" },
+  {
+    key: "moderate",
+    label: "Moderate",
+    color: "var(--risk-moderate)",
+    solid: "var(--risk-moderate-solid)",
+  },
   { key: "high", label: "High", color: "var(--risk-high)", solid: "var(--risk-high-solid)" },
 ];
 

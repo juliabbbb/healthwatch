@@ -1,0 +1,95 @@
+rank,disease,region,tier_climbs,net_climb,n_high_months,first_high_month,final_tier
+1,Acute Bloody Diarrhea,Eastern Visayas,5,0,2,2026-12,Low
+2,Acute Bloody Diarrhea,Bicol Region,4,0,5,2026-10,High
+3,Acute Viral Hepatitis,CALABARZON,4,0,4,2025-11,Moderate
+4,Acute Viral Hepatitis,Central Luzon,4,0,4,2025-11,Moderate
+5,Dengue,National,4,0,4,2026-11,Moderate
+6,Typhoid Fever,Bangsamoro (BARMM),4,0,3,2026-11,Moderate
+7,Acute Viral Hepatitis,National Capital Region,4,0,2,2025-10,Moderate
+8,Typhoid Fever,Bicol Region,4,1,1,2026-12,Moderate
+9,Typhoid Fever,Central Visayas,3,0,9,2026-10,High
+10,Acute Bloody Diarrhea,Davao Region,3,1,8,2026-11,High
+11,Acute Bloody Diarrhea,CALABARZON,3,0,7,2026-10,High
+12,Dengue,National Capital Region,3,1,7,2026-11,Moderate
+13,Acute Bloody Diarrhea,SOCCSKSARGEN,3,0,6,2026-10,High
+14,Acute Viral Hepatitis,Central Visayas,3,-1,5,2025-12,Low
+15,Acute Viral Hepatitis,Bangsamoro (BARMM),3,0,4,2023-08,Moderate
+16,Dengue,Cordillera Administrative Region,3,1,4,2026-10,High
+17,Typhoid Fever,Northern Mindanao,3,0,4,2026-10,High
+18,Typhoid Fever,Zamboanga Peninsula,3,0,4,2026-11,Moderate
+19,Cholera,National Capital Region,3,0,3,2027-02,Moderate
+20,Typhoid Fever,National,3,0,3,2026-11,Low
+21,Acute Bloody Diarrhea,Central Luzon,3,1,2,2027-01,Moderate
+22,Typhoid Fever,Negros Island Region,3,-1,2,2026-12,Low
+23,Acute Bloody Diarrhea,Zamboanga Peninsula,3,0,1,2026-12,Moderate
+24,Cholera,Eastern Visayas,3,0,1,2026-12,Moderate
+25,Cholera,Western Visayas,3,1,1,2027-05,Moderate
+26,Dengue,Northern Mindanao,3,1,0,,Moderate
+27,Cholera,Ilocos Region,2,1,10,2026-10,High
+28,Cholera,Cagayan Valley,2,-1,9,2025-05,Moderate
+29,Dengue,MIMAROPA,2,-1,9,2026-09,Moderate
+30,Typhoid Fever,Central Luzon,2,0,9,2026-10,High
+31,Dengue,Central Luzon,2,0,8,2026-10,Moderate
+32,Typhoid Fever,Western Visayas,2,0,8,2026-10,High
+33,Acute Bloody Diarrhea,Western Visayas,2,-1,6,2026-08,Moderate
+34,Acute Viral Hepatitis,Caraga,2,0,6,2025-09,Moderate
+35,Cholera,Central Luzon,2,0,6,2026-12,Moderate
+36,Dengue,Cagayan Valley,2,-1,6,2026-11,Low
+37,Dengue,Central Visayas,2,0,5,2026-11,Moderate
+38,Dengue,SOCCSKSARGEN,2,-1,5,2026-09,Moderate
+39,Dengue,Ilocos Region,2,-1,4,2026-09,Moderate
+40,Acute Bloody Diarrhea,Cagayan Valley,2,-1,3,2026-10,Moderate
+41,Acute Viral Hepatitis,Western Visayas,2,-1,2,2025-10,Low
+42,Acute Viral Hepatitis,National,2,0,1,2025-12,Moderate
+43,Dengue,Western Visayas,2,0,1,2026-11,Low
+44,Dengue,Zamboanga Peninsula,2,0,1,2026-11,Moderate
+45,Typhoid Fever,Cordillera Administrative Region,2,0,1,2027-04,Low
+46,Typhoid Fever,Eastern Visayas,2,0,1,2026-12,Low
+47,Acute Bloody Diarrhea,Northern Mindanao,2,1,0,,Moderate
+48,Cholera,National,2,1,0,,Moderate
+49,Dengue,CALABARZON,2,0,0,,Low
+50,Typhoid Fever,SOCCSKSARGEN,2,0,0,,Low
+51,Acute Bloody Diarrhea,Bangsamoro (BARMM),1,0,11,2026-10,High
+52,Acute Bloody Diarrhea,MIMAROPA,1,0,11,2026-10,High
+53,Acute Bloody Diarrhea,National Capital Region,1,0,11,2026-10,High
+54,Acute Viral Hepatitis,Bicol Region,1,0,11,2024-03,High
+55,Acute Viral Hepatitis,Cordillera Administrative Region,1,0,11,2025-10,High
+56,Acute Viral Hepatitis,Davao Region,1,0,11,2025-09,High
+57,Acute Viral Hepatitis,Ilocos Region,1,0,11,2024-03,High
+58,Acute Viral Hepatitis,Zamboanga Peninsula,1,1,11,2025-11,High
+59,Cholera,Cordillera Administrative Region,1,0,11,2026-10,High
+60,Cholera,Davao Region,1,0,11,2026-09,High
+61,Cholera,MIMAROPA,1,0,11,2024-09,High
+62,Cholera,SOCCSKSARGEN,1,1,11,2025-11,High
+63,Cholera,Zamboanga Peninsula,1,0,11,2026-10,High
+64,Acute Viral Hepatitis,Eastern Visayas,1,-1,10,2025-10,Moderate
+65,Acute Viral Hepatitis,SOCCSKSARGEN,1,-1,10,2025-10,Moderate
+66,Cholera,Bangsamoro (BARMM),1,-1,10,2026-09,Moderate
+67,Cholera,Negros Island Region,1,0,10,2026-11,Moderate
+68,Typhoid Fever,Davao Region,1,0,10,2026-10,High
+69,Dengue,Bangsamoro (BARMM),1,-1,9,2026-09,Moderate
+70,Acute Bloody Diarrhea,Ilocos Region,1,-1,7,2026-10,Moderate
+71,Dengue,Bicol Region,1,0,6,2026-09,High
+72,Dengue,Caraga,1,0,4,2027-03,Moderate
+73,Acute Bloody Diarrhea,National,1,0,0,,Low
+74,Cholera,Northern Mindanao,1,0,0,,Moderate
+75,Typhoid Fever,CALABARZON,1,0,0,,Low
+76,Typhoid Fever,Ilocos Region,1,0,0,,Low
+77,Acute Viral Hepatitis,Cagayan Valley,0,0,12,2024-02,High
+78,Acute Viral Hepatitis,MIMAROPA,0,0,12,2023-12,High
+79,Cholera,CALABARZON,0,0,12,2026-08,High
+80,Cholera,Central Visayas,0,0,12,2026-10,High
+81,Dengue,Davao Region,0,0,12,2026-09,High
+82,Typhoid Fever,Cagayan Valley,0,0,12,2026-10,High
+83,Typhoid Fever,Caraga,0,0,12,2026-10,High
+84,Typhoid Fever,MIMAROPA,0,0,12,2026-10,High
+85,Typhoid Fever,National Capital Region,0,0,12,2026-10,High
+86,Acute Bloody Diarrhea,Caraga,0,0,0,,Low
+87,Acute Bloody Diarrhea,Central Visayas,0,0,0,,Low
+88,Acute Bloody Diarrhea,Cordillera Administrative Region,0,0,0,,Low
+89,Acute Bloody Diarrhea,Negros Island Region,0,0,0,,Low
+90,Acute Viral Hepatitis,Northern Mindanao,0,-1,0,,Low
+91,Cholera,Bicol Region,0,0,0,,Low
+92,Cholera,Caraga,0,0,0,,Low
+93,Dengue,Eastern Visayas,0,0,0,,Low
+94,Dengue,Negros Island Region,0,0,0,,Low

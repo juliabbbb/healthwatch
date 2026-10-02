@@ -12,17 +12,22 @@ Ground truth mirrors the detector's own semantics, computed on observed data:
       historical P75 (validation_seasonal_thresholds.csv, history <= 2024).
   actual_flag = RuleA_obs OR RuleB_obs.
 
-Predicted flag comes from outbreak_indicators.csv. Result: per (region, season)
-table plus an overall confusion matrix (TP / FP / FN / TN) and precision /
-recall / F1, and forecast-error for each season probe.
+Predicted flag is recomputed IN-PROCESS by validation_pool_indicators() on the
+same pre-2025 pool, NOT read from outbreak_indicators.csv. The production file
+thresholds the probes against percentiles whose baseline runs through 2026-08
+and therefore contains the 2025 months being predicted, so scoring a 2025
+prospective check against it leaks the holdout into the predicted side (13 of
+188 flags were contaminated). Result: per (region, season) table plus an overall
+confusion matrix (TP / FP / FN / TN) and precision / recall / F1, and
+forecast-error for each season probe.
 
 Run: python -m src.validate_2025
 """
 
 import pandas as pd
 
-from . import ingest
-from .classify import season_of, with_month_of_year
+from . import classify, ingest, outbreak
+from .classify import with_month_of_year
 from .outbreak import CONSECUTIVE_HIGH_N, _longest_high_run
 
 PROBE_WINDOWS = {
@@ -38,7 +43,35 @@ def load_observed():
 
 
 def load_indicators():
-    return pd.read_csv(ingest.PROCESSED_DIR / "outbreak_indicators.csv")
+    """PRODUCTION indicators (baseline through 2026-08).
+
+    Not a valid predicted side for the 2025 prospective check -- see
+    validation_pool_indicators(). Retained for provenance/debugging only.
+    """
+    return pd.read_csv(
+        ingest.PROCESSED_DIR / "outbreak_indicators.csv",
+        parse_dates=["probe_anchor", "season_start", "season_end"],
+    )
+
+
+def validation_pool_indicators():
+    """Predicted-side outbreak indicators rebuilt on the pre-2025 pool.
+
+    Mirrors what classify.run() + outbreak.run() produce for the dashboard, but
+    with the thresholds taken from `load_history(HISTORY_END)` so the baseline
+    stops at 2024-12-31 and neither side of the confusion matrix can see 2025.
+    """
+    history = classify.load_history(classify.HISTORY_END)
+    if history["date"].max() > classify.HISTORY_END:
+        raise AssertionError(
+            f"validation pool leaked past {classify.HISTORY_END.date()}: "
+            f"max date {history['date'].max().date()}"
+        )
+    thresholds = classify.compute_thresholds(history)
+    seasonal = classify.compute_seasonal_thresholds(history)
+    probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv")
+    classification = classify.classify_seasonal(thresholds, probes=probes)
+    return outbreak.detect_outbreaks(classification, seasonal)
 
 
 def load_monthly_thresholds():
@@ -57,7 +90,7 @@ def _actual_high_run(month_cases, month_p75s):
 
 def validate(observed=None, indicators=None, monthly=None, seasonal=None):
     observed = observed if observed is not None else load_observed()
-    indicators = indicators if indicators is not None else load_indicators()
+    indicators = indicators if indicators is not None else validation_pool_indicators()
     monthly = monthly if monthly is not None else load_monthly_thresholds()
     seasonal = seasonal if seasonal is not None else load_seasonal_thresholds()
 
@@ -95,10 +128,15 @@ def validate(observed=None, indicators=None, monthly=None, seasonal=None):
             rule_b_actual = avg_actual > season_p75 if pd.notna(season_p75) else False
             actual_flag = bool(rule_a_actual or rule_b_actual)
 
+            # Keyed on the anchor as well as the season: the production table is
+            # keyed on probe_anchor so a season verdict carries its position in
+            # time, and an unkeyed .iloc[0] would silently pick one anchor's
+            # verdict if a second anchor were ever added.
             ind = indicators[
                 (indicators["disease"] == disease)
                 & (indicators["region"] == region)
                 & (indicators["season"] == season)
+                & (indicators["probe_anchor"] == start)
             ]
             predicted = bool(ind["outbreak"].iloc[0]) if not ind.empty else False
             forecast_avg = float(ind["season_avg"].iloc[0]) if not ind.empty else float("nan")

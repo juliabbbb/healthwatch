@@ -5,8 +5,7 @@ import { REGION_BY_CODE } from "@/lib/healthwatch/data";
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 const WINDOW = "last_12m";
 
-const ACCESSIBLE_DISEASE = (disease: string) =>
-  disease === "all" ? "Dengue" : disease;
+const ACCESSIBLE_DISEASE = (disease: string) => (disease === "all" ? "Dengue" : disease);
 
 interface MetricsData {
   region: string;
@@ -76,8 +75,12 @@ function MetricTile({
   return (
     <div className="rounded-lg border border-border/60 bg-card/50 px-3 py-2.5">
       <p className="label-caps text-muted-foreground">{label}</p>
-      <p className="mt-1 font-mono text-2xl font-bold leading-none tracking-tight tabular-nums" style={{ color }}>
-        {value}{unit}
+      <p
+        className="mt-1 font-mono text-2xl font-bold leading-none tracking-tight tabular-nums"
+        style={{ color }}
+      >
+        {value}
+        {unit}
       </p>
       <p className="mt-1 text-[10px] leading-snug text-muted-foreground">{context}</p>
     </div>
@@ -160,38 +163,56 @@ export function ValidationMetricsPanel({
       {regionCode && (
         <div className="rounded-xl border border-border/80 bg-card/50 p-4">
           <p className="label-caps text-[10px] mb-2.5 text-muted-foreground">Forecast Accuracy</p>
-        {status === "loading" && !metrics ? (
-          <div className="space-y-2">
-            <div className="h-16 w-full animate-pulse rounded bg-secondary" />
-          </div>
-        ) : metrics ? (
-          <div className="space-y-3">
-            <div className="grid grid-cols-3 gap-2">
-              <MetricTile label="MAE" value={metrics.mae.toLocaleString()} unit="" context="Mean Absolute Error" />
-              <MetricTile label="RMSE" value={metrics.rmse.toLocaleString()} unit="" context="Root Mean Squared Error" />
-              <MetricTile label="MAPE" value={`${metrics.mape}`} unit="%" context="Mean Absolute % Error" quality={mapeQuality(metrics.mape)} />
+          {status === "loading" && !metrics ? (
+            <div className="space-y-2">
+              <div className="h-16 w-full animate-pulse rounded bg-secondary" />
             </div>
-            <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
-              <span className="label-caps">Skill vs seasonal-naive</span>
-              <p className="font-mono text-sm font-semibold tabular-nums">
-                {metrics.skill_vs_naive_pct == null
-                  ? "—"
-                  : `${metrics.skill_vs_naive_pct > 0 ? "+" : ""}${metrics.skill_vs_naive_pct}%`}
-              </p>
+          ) : metrics ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-3 gap-2">
+                <MetricTile
+                  label="MAE"
+                  value={metrics.mae.toLocaleString()}
+                  unit=""
+                  context="Mean Absolute Error"
+                />
+                <MetricTile
+                  label="RMSE"
+                  value={metrics.rmse.toLocaleString()}
+                  unit=""
+                  context="Root Mean Squared Error"
+                />
+                <MetricTile
+                  label="MAPE"
+                  value={`${metrics.mape}`}
+                  unit="%"
+                  context="Mean Absolute % Error"
+                  quality={mapeQuality(metrics.mape)}
+                />
+              </div>
+              <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
+                <span className="label-caps">Skill vs seasonal-naive</span>
+                <p className="font-mono text-sm font-semibold tabular-nums">
+                  {metrics.skill_vs_naive_pct == null
+                    ? "—"
+                    : `${metrics.skill_vs_naive_pct > 0 ? "+" : ""}${metrics.skill_vs_naive_pct}%`}
+                </p>
+              </div>
+              {confidence && (
+                <p className="text-[11px] leading-snug text-muted-foreground">{confidence.note}</p>
+              )}
             </div>
-            {confidence && (
-              <p className="text-[11px] leading-snug text-muted-foreground">{confidence.note}</p>
-            )}
-          </div>
-        ) : (
-          <p className="text-xs text-muted-foreground">No forecast metrics available yet.</p>
-        )}
-      </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">No forecast metrics available yet.</p>
+          )}
+        </div>
       )}
 
       {/* Right: Outbreak Classification (national 2025 validation) */}
       <div className="rounded-xl border border-border/80 bg-card/50 p-4">
-        <p className="label-caps text-[10px] mb-2.5 text-muted-foreground">Outbreak Classification</p>
+        <p className="label-caps text-[10px] mb-2.5 text-muted-foreground">
+          Outbreak Classification
+        </p>
         {status === "loading" && !outbreak ? (
           <div className="space-y-2">
             <div className="h-16 w-full animate-pulse rounded bg-secondary" />
@@ -199,14 +220,32 @@ export function ValidationMetricsPanel({
         ) : o ? (
           <div className="space-y-3">
             <div className="grid grid-cols-3 gap-2">
-              <MetricTile label="Precision" value={o.precision == null ? "—" : `${Math.round(o.precision * 100)}`} unit="%" context={`${o.tp} of ${o.tp + o.fp} flags correct`} quality={accuracyLabel(o.precision)} />
-              <MetricTile label="Recall" value={o.recall == null ? "—" : `${Math.round(o.recall * 100)}`} unit="%" context={`${o.tp} of ${o.tp + o.fn} outbreaks caught`} quality={accuracyLabel(o.recall)} />
-              <MetricTile label="F1 Score" value={o.f1 == null ? "—" : o.f1.toFixed(2)} unit="" context="Harmonic mean of precision & recall" quality={accuracyLabel(o.f1)} />
+              <MetricTile
+                label="Precision"
+                value={o.precision == null ? "—" : `${Math.round(o.precision * 100)}`}
+                unit="%"
+                context={`${o.tp} of ${o.tp + o.fp} flags correct`}
+                quality={accuracyLabel(o.precision)}
+              />
+              <MetricTile
+                label="Recall"
+                value={o.recall == null ? "—" : `${Math.round(o.recall * 100)}`}
+                unit="%"
+                context={`${o.tp} of ${o.tp + o.fn} outbreaks caught`}
+                quality={accuracyLabel(o.recall)}
+              />
+              <MetricTile
+                label="F1 Score"
+                value={o.f1 == null ? "—" : o.f1.toFixed(2)}
+                unit=""
+                context="Harmonic mean of precision & recall"
+                quality={accuracyLabel(o.f1)}
+              />
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2 text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">{o.tp} TP</span> ·{" "}
-              <span>{o.fp} FP</span> · <span>{o.fn} FN</span> ·{" "}
-              <span>{o.tn} TN</span> — 2025 prospective validation
+              <span>{o.fp} FP</span> · <span>{o.fn} FN</span> · <span>{o.tn} TN</span> — 2025
+              prospective validation
             </div>
           </div>
         ) : (

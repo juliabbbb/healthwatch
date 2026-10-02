@@ -4,8 +4,7 @@ import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
-const ACCESSIBLE_DISEASE = (disease: string) =>
-  disease === "all" ? "Dengue" : disease;
+const ACCESSIBLE_DISEASE = (disease: string) => (disease === "all" ? "Dengue" : disease);
 
 const insightCache = new Map<string, { narrative: string; model?: string }>();
 
@@ -52,9 +51,7 @@ export function AiInsightLine({
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">(
     insightCache.has(key) ? "done" : "idle",
   );
-  const [text, setText] = useState<string | null>(
-    insightCache.get(key)?.narrative ?? null,
-  );
+  const [text, setText] = useState<string | null>(insightCache.get(key)?.narrative ?? null);
 
   const load = useCallback(
     async (signal?: AbortSignal) => {

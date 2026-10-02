@@ -33,11 +33,12 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
 
   // ── Top navigation & header tools ─────────────────────────────────────────
   {
-    selector: "input[aria-label='Search regions'], .hw-search-input, [data-explain='region-search']",
+    selector:
+      "input[aria-label='Search regions'], .hw-search-input, [data-explain='region-search']",
     title: "Region Search",
     icon: "Search",
     description:
-      "Type a region name or PSGC code (e.g. \"NCR\", \"Davao\", \"Region III\") to instantly fly the map to that region and open its detailed forecast panel.",
+      'Type a region name or PSGC code (e.g. "NCR", "Davao", "Region III") to instantly fly the map to that region and open its detailed forecast panel.',
   },
   {
     selector: "nav.glass-panel a, nav.glass-panel button, [data-explain='nav-links']",
@@ -47,10 +48,12 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
       "Switch between the primary views: Map (outbreak risk choropleth), Seasonality (monthly cycle charts per region), Compare (side-by-side region analysis), and Methodology (how forecasts are built).",
   },
   {
-    selector: "button[aria-label='Switch to light mode'], button[aria-label='Switch to dark mode'], [data-explain='theme-toggle']",
+    selector:
+      "button[aria-label='Switch to light mode'], button[aria-label='Switch to dark mode'], [data-explain='theme-toggle']",
     title: "Theme Toggle",
     icon: "Sun",
-    description: "Switch between Dark and Light color themes. Your preference is saved locally in your browser.",
+    description:
+      "Switch between Dark and Light color themes. Your preference is saved locally in your browser.",
   },
   {
     selector: "button[aria-label='Settings'], [data-explain='settings-btn']",
@@ -79,7 +82,8 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     selector: ".leaflet-control-zoom, [data-explain='zoom-controls']",
     title: "Map Zoom Controls",
     icon: "ZoomIn",
-    description: "Zoom the interactive map in or out. You can also pinch to zoom or drag with your mouse/finger to pan across islands.",
+    description:
+      "Zoom the interactive map in or out. You can also pinch to zoom or drag with your mouse/finger to pan across islands.",
   },
   {
     selector: "#hw-legend-card, [data-explain='national-snapshot']",
@@ -280,7 +284,8 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
       "The calendar month when reported transmission reaches its highest volume in this region. Critical for timing response interventions.",
   },
   {
-    selector: "button[title='Export a seasonal pattern analysis PDF'], [data-explain='pdf-export-btn']",
+    selector:
+      "button[title='Export a seasonal pattern analysis PDF'], [data-explain='pdf-export-btn']",
     title: "Export Seasonal Analysis PDF",
     icon: "FileDown",
     description:

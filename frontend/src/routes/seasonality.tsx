@@ -45,7 +45,7 @@ import {
   TOTAL_MONTHS,
   acf,
   decompose,
-  getThresholds,
+  resolveThresholds,
   getOutbreak,
   monthMeta,
   OUTBREAK_TRIGGER_LABEL,
@@ -58,12 +58,7 @@ import {
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
-import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { BackToTop } from "@/components/BackToTop";
 import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
@@ -91,13 +86,15 @@ const DECOMP_TABS: {
     id: "seasonal",
     label: "Seasonal",
     dotClass: "bg-amber-400",
-    takeaway: "The predictable yearly rise and fall that repeats at the same times every calendar year.",
+    takeaway:
+      "The predictable yearly rise and fall that repeats at the same times every calendar year.",
   },
   {
     id: "residual",
     label: "Residual",
     dotClass: "bg-slate-400",
-    takeaway: "Random noise and unexpected fluctuations left over after removing trend and seasonality.",
+    takeaway:
+      "Random noise and unexpected fluctuations left over after removing trend and seasonality.",
   },
 ];
 
@@ -210,7 +207,9 @@ function SeasonalityPage() {
   };
 
   // Active decomposition chart tab
-  const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">("observed");
+  const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">(
+    "observed",
+  );
 
   // Right-click or CTA button tap -> AI explanation workflow. When the setting is off,
   // choosing an AI action opens Settings instead and makes zero requests.
@@ -414,8 +413,15 @@ function SeasonalityPage() {
 
       const illnessLabel = illness === "all" ? "all illnesses" : illness;
 
-      // Risk tier classification
-      const riskThresholds = getThresholds(illness, assessment.point.month, "percapita");
+      // Risk tier classification. The exported report states the basis it used,
+      // so it must tier the same way the screen does: the region's own seasonal
+      // percentile for a single illness, the pooled national distribution for the
+      // All Illnesses aggregate.
+      const resolved = resolveThresholds(code, illness, assessment.point.month, "percapita");
+      const riskThresholds = resolved.thresholds;
+      const riskBasisLabel = resolved.pooled
+        ? "pooled national distribution (the hotspot basis is unavailable here)"
+        : "region's own seasonal history";
 
       // Outbreak indicator
       const outbreakData = getOutbreak(code, illness);
@@ -427,11 +433,7 @@ function SeasonalityPage() {
 
       // The summary sentence is the corpus row for this region's headline
       // figure, so the exported report reads the same as the screen.
-      const narrative = await loadNarrative(
-        region.short,
-        illness,
-        "report_summary",
-      );
+      const narrative = await loadNarrative(region.short, illness, "report_summary");
 
       const [{ pdf }, { SeasonalityPdfDocument }] = await Promise.all([
         import("@react-pdf/renderer"),
@@ -464,6 +466,7 @@ function SeasonalityPage() {
             p50: riskThresholds.p50,
             p75: riskThresholds.p75,
             cases: Math.round(assessment.point.cases),
+            basisLabel: riskBasisLabel,
           }}
           outbreak={
             outbreakEntry
@@ -600,7 +603,10 @@ function SeasonalityPage() {
   const wetMonths = 6;
 
   return (
-    <main className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8" data-explain="seasonality-page">
+    <main
+      className="mx-auto min-h-screen w-full max-w-7xl px-4 sm:px-6 py-8"
+      data-explain="seasonality-page"
+    >
       <Link
         to="/"
         className="mb-3 inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -941,7 +947,10 @@ function SeasonalityPage() {
 
         {/* In Simple View: Plain-language seasonal summary banner */}
         {viewMode === "simple" && (
-          <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="simple-summary">
+          <div
+            className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5"
+            data-explain="simple-summary"
+          >
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-primary/15 p-2 text-primary shrink-0 mt-0.5">
                 <Sparkles className="size-4" />
@@ -997,7 +1006,10 @@ function SeasonalityPage() {
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/40 border border-transparent",
                     )}
                   >
-                    <span className={cn("size-2 rounded-full shrink-0", tab.dotClass)} aria-hidden="true" />
+                    <span
+                      className={cn("size-2 rounded-full shrink-0", tab.dotClass)}
+                      aria-hidden="true"
+                    />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -1048,7 +1060,10 @@ function SeasonalityPage() {
               component="observed"
               title="Observed series"
               subtitle="Raw monthly surveillance records (shared 2019–2026 calendar)"
-              statBadge={{ label: "Latest", value: `${stats.latestObserved.toLocaleString()} cases` }}
+              statBadge={{
+                label: "Latest",
+                value: `${stats.latestObserved.toLocaleString()} cases`,
+              }}
               height={220}
               endIndex={monthIndex}
               onRequestAI={requestExplain}
@@ -1140,9 +1155,7 @@ function SeasonalityPage() {
       <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
-            <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Yearly rhythm
-            </h2>
+            <h2 className="text-lg font-semibold tracking-tight text-foreground">Yearly rhythm</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {illness === "all"
                 ? "Average all-illness cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically declared."
@@ -1157,11 +1170,7 @@ function SeasonalityPage() {
             </div>
           }
         >
-          <MonthOfYearChart
-            regionCode={code}
-            illness={illness}
-            mode={assessment.mode}
-          />
+          <MonthOfYearChart regionCode={code} illness={illness} mode={assessment.mode} />
         </Suspense>
       </section>
 

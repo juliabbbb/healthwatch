@@ -1,39 +1,189 @@
-disease,region,season,flag_national,trigger_national,flag_override,trigger_override,flip
-Dengue,Bangsamoro (BARMM),dry,True,both,True,both,False
-Dengue,Bangsamoro (BARMM),wet,True,both,True,both,False
-Dengue,Bicol Region,dry,False,none,False,none,False
-Dengue,Bicol Region,wet,False,none,False,none,False
-Dengue,CALABARZON,dry,True,both,True,both,False
-Dengue,CALABARZON,wet,True,both,True,both,False
-Dengue,Cagayan Valley,dry,False,none,False,none,False
-Dengue,Cagayan Valley,wet,True,season_p75,True,season_p75,False
-Dengue,Caraga,dry,True,both,True,both,False
-Dengue,Caraga,wet,True,both,True,both,False
-Dengue,Central Luzon,dry,False,none,False,none,False
-Dengue,Central Luzon,wet,True,season_p75,True,season_p75,False
-Dengue,Central Visayas,dry,True,both,True,both,False
-Dengue,Central Visayas,wet,True,season_p75,True,season_p75,False
-Dengue,Cordillera Administrative Region,dry,False,none,False,none,False
-Dengue,Cordillera Administrative Region,wet,True,both,True,both,False
-Dengue,Davao Region,dry,True,both,True,both,False
-Dengue,Davao Region,wet,True,both,True,both,False
-Dengue,Eastern Visayas,dry,False,none,False,none,False
-Dengue,Eastern Visayas,wet,False,none,False,none,False
-Dengue,Ilocos Region,dry,True,both,True,both,False
-Dengue,Ilocos Region,wet,True,season_p75,True,season_p75,False
-Dengue,MIMAROPA,dry,True,both,True,both,False
-Dengue,MIMAROPA,wet,True,season_p75,True,season_p75,False
-Dengue,National,dry,True,both,True,both,False
-Dengue,National,wet,True,season_p75,True,season_p75,False
-Dengue,National Capital Region,dry,True,both,True,both,False
-Dengue,National Capital Region,wet,False,none,False,none,False
-Dengue,Negros Island Region,dry,False,none,False,none,False
-Dengue,Negros Island Region,wet,True,both,True,both,False
-Dengue,Northern Mindanao,dry,True,both,True,both,False
-Dengue,Northern Mindanao,wet,True,season_p75,True,season_p75,False
-Dengue,SOCCSKSARGEN,dry,True,both,True,both,False
-Dengue,SOCCSKSARGEN,wet,True,both,True,both,False
-Dengue,Western Visayas,dry,False,none,False,none,False
-Dengue,Western Visayas,wet,True,both,True,both,False
-Dengue,Zamboanga Peninsula,dry,True,both,True,both,False
-Dengue,Zamboanga Peninsula,wet,True,season_p75,True,season_p75,False
+disease,region,season,probe_anchor_x,season_start_x,season_end_x,history_status_x,flag_national,trigger_national,probe_anchor_y,season_start_y,season_end_y,history_status_y,flag_override,trigger_override,flip
+Acute Bloody Diarrhea,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Bloody Diarrhea,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Bloody Diarrhea,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Bloody Diarrhea,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Bloody Diarrhea,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Acute Bloody Diarrhea,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Acute Bloody Diarrhea,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Bloody Diarrhea,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Bloody Diarrhea,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Acute Bloody Diarrhea,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Bloody Diarrhea,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Bloody Diarrhea,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Bloody Diarrhea,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Bloody Diarrhea,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Bloody Diarrhea,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Bloody Diarrhea,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Viral Hepatitis,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Acute Viral Hepatitis,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Viral Hepatitis,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Viral Hepatitis,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Viral Hepatitis,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Viral Hepatitis,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Acute Viral Hepatitis,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Acute Viral Hepatitis,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Acute Viral Hepatitis,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Acute Viral Hepatitis,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Acute Viral Hepatitis,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Acute Viral Hepatitis,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Acute Viral Hepatitis,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Cholera,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Cholera,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Cholera,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Cholera,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Cholera,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Cholera,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Cholera,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Cholera,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,True,both,True
+Cholera,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,False,none,True
+Cholera,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Cholera,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Cholera,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Cholera,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Cholera,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Cholera,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Cholera,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Cholera,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Cholera,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Dengue,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Dengue,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Dengue,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Dengue,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,True,both,True
+Dengue,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,False,none,True
+Dengue,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Dengue,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Dengue,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Dengue,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,True
+Dengue,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,False,none,True
+Dengue,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Dengue,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Dengue,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Dengue,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Dengue,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Dengue,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Typhoid Fever,Bangsamoro (BARMM),dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Typhoid Fever,Bangsamoro (BARMM),wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Bicol Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Bicol Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,CALABARZON,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,CALABARZON,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Cagayan Valley,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Cagayan Valley,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Caraga,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,False,none,True
+Typhoid Fever,Caraga,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,True
+Typhoid Fever,Central Luzon,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Central Luzon,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Central Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Central Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Cordillera Administrative Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,Cordillera Administrative Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Davao Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Davao Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Eastern Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Eastern Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,Ilocos Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,Ilocos Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,MIMAROPA,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,MIMAROPA,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,National,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Typhoid Fever,National,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,National Capital Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,National Capital Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Negros Island Region,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Negros Island Region,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Northern Mindanao,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,Northern Mindanao,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,2025-07-01,2025-07-01,2025-09-01,observed,True,season_p75,False
+Typhoid Fever,SOCCSKSARGEN,dry,2025-01-01,2025-01-01,2025-03-01,observed,False,none,2025-01-01,2025-01-01,2025-03-01,observed,False,none,False
+Typhoid Fever,SOCCSKSARGEN,wet,2025-07-01,2025-07-01,2025-09-01,observed,False,none,2025-07-01,2025-07-01,2025-09-01,observed,False,none,False
+Typhoid Fever,Western Visayas,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,2025-01-01,2025-01-01,2025-03-01,observed,True,season_p75,False
+Typhoid Fever,Western Visayas,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False
+Typhoid Fever,Zamboanga Peninsula,dry,2025-01-01,2025-01-01,2025-03-01,observed,True,both,2025-01-01,2025-01-01,2025-03-01,observed,True,both,False
+Typhoid Fever,Zamboanga Peninsula,wet,2025-07-01,2025-07-01,2025-09-01,observed,True,both,2025-07-01,2025-07-01,2025-09-01,observed,True,both,False

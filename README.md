@@ -121,7 +121,7 @@ re-run the pipeline modules in `src/` to regenerate everything in `data/processe
 .venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak            # season-level outbreak flags
 .venv\Scripts\python -m src.validate_2025       # prospective check of the 2025 flags (real data)
-.venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check (line-list 2019 monthly cross-check)
+.venv\Scripts\python -m src.validate_2019_consistency # 2019 consistency check (production rule on real 2019 line-list rows)
 .venv\Scripts\python -m src.db                  # mirrors processed CSVs into PostgreSQL (required)
 ```
 
@@ -144,7 +144,7 @@ new artifacts.
 https://mermaid.ai/d/607a617f-271b-4e42-b4d3-380c41741d1d
 
 
-### Relational database (12 tables)
+### Relational database (14 tables)
 
 PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgres server.
 
@@ -160,6 +160,17 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 - `risk_escalation` — regional ranking by upward tier-climbs across the forecast horizon.
 - `outbreak_validation` — 2025 prospective season flags vs observed (per-row tp/fp/fn/tn).
 - `pipeline_runs` — provenance: build time, data-through date, version, model, notes.
+- `narratives` — the pre-generated AI narrative corpus, keyed by (region, disease, surface, component).
+- `dengue_case_records` and `fwbd_case_records` — the two raw line-lists, described below.
+
+Season-probe tiers, per-season P75s and the monthly tier backtest are **not** in
+Postgres; they ship as `data/processed/season_classification.csv`,
+`seasonal_thresholds.csv` and `tier_accuracy.csv` only.
+
+The two raw line-lists, `dengue_case_records` (749,683 rows) and `fwbd_case_records` (179,034
+rows), are also loaded but are grouped in Postgres on demand rather than hot-loaded. A legacy
+`subscriptions` table may exist on a deployed database from the removed email-report feature; it is
+not part of the schema.
 
 ## Locked scope
 
@@ -172,10 +183,11 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 - Risk classes: percentile thresholds (&lt; 50 Low, 50–75 Moderate, &gt; 75 High) per region-month and
   per region-calendar-month (month-of-year P75 alert line)
 - Outbreak indicator: Rule A (≥ 3 consecutive High **months** in the 3-month probe window) or
-  Rule B (upcoming season forecast average > seasonal P75); locked without tuning after 2025
-  prospective validation — precision 0.316, recall 0.300, F1 0.308 across all 38 rows
-  (6 true positives, 13 false positives, 14 false negatives, 5 true negatives)
+  Rule B (upcoming season forecast forecast average > seasonal P75); locked without tuning after 2025
+  prospective validation — precision 0.580, recall 0.480, F1 0.525 across 174 region-seasons
+  (47 true positives, 34 false positives, 51 false negatives, 42 true negatives)
 - Rules: deterministic post-processing only (non-negativity clipping, dry/wet season regressor)
 - Training data: 92 observed months (2019-01…2026-08); holdout windows `last_12m` and
-  `2025_prospective` (fits through 2024-12-31); known-epidemic cross-check on the 2019 weekly
-  fixture (7/7 weeks High) plus a line-list 2019 monthly cross-check (Aug-Oct 2019 High)
+  `2025_prospective` (fits through 2024-12-31); 2019 consistency check on the real line-list rows
+  (Aug-Oct 2019 High). A partial in-progress reporting month is excluded from every fit but is
+  retained in `data/processed` and in the database.

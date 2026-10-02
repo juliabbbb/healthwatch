@@ -1,0 +1,184 @@
+disease,region,window,tier_accuracy_pct,severe_miss_pct,months
+Acute Bloody Diarrhea,Bangsamoro (BARMM),2025_prospective,25.0,33.3,12
+Acute Bloody Diarrhea,Bangsamoro (BARMM),last_12m,83.3,0.0,12
+Acute Bloody Diarrhea,Bicol Region,2025_prospective,50.0,16.7,12
+Acute Bloody Diarrhea,Bicol Region,last_12m,50.0,8.3,12
+Acute Bloody Diarrhea,CALABARZON,2025_prospective,50.0,16.7,12
+Acute Bloody Diarrhea,CALABARZON,last_12m,16.7,25.0,12
+Acute Bloody Diarrhea,Cagayan Valley,2025_prospective,41.7,8.3,12
+Acute Bloody Diarrhea,Cagayan Valley,last_12m,66.7,8.3,12
+Acute Bloody Diarrhea,Caraga,2025_prospective,75.0,8.3,12
+Acute Bloody Diarrhea,Caraga,last_12m,66.7,8.3,12
+Acute Bloody Diarrhea,Central Luzon,2025_prospective,58.3,25.0,12
+Acute Bloody Diarrhea,Central Luzon,last_12m,50.0,16.7,12
+Acute Bloody Diarrhea,Central Visayas,2025_prospective,50.0,25.0,12
+Acute Bloody Diarrhea,Central Visayas,last_12m,58.3,16.7,12
+Acute Bloody Diarrhea,Cordillera Administrative Region,2025_prospective,66.7,8.3,12
+Acute Bloody Diarrhea,Cordillera Administrative Region,last_12m,91.7,0.0,12
+Acute Bloody Diarrhea,Davao Region,2025_prospective,16.7,16.7,12
+Acute Bloody Diarrhea,Davao Region,last_12m,33.3,0.0,12
+Acute Bloody Diarrhea,Eastern Visayas,2025_prospective,8.3,16.7,12
+Acute Bloody Diarrhea,Eastern Visayas,last_12m,16.7,8.3,12
+Acute Bloody Diarrhea,Ilocos Region,2025_prospective,41.7,8.3,12
+Acute Bloody Diarrhea,Ilocos Region,last_12m,66.7,0.0,12
+Acute Bloody Diarrhea,MIMAROPA,2025_prospective,8.3,41.7,12
+Acute Bloody Diarrhea,MIMAROPA,last_12m,66.7,16.7,12
+Acute Bloody Diarrhea,National,2025_prospective,50.0,0.0,12
+Acute Bloody Diarrhea,National,last_12m,25.0,33.3,12
+Acute Bloody Diarrhea,National Capital Region,2025_prospective,91.7,0.0,12
+Acute Bloody Diarrhea,National Capital Region,last_12m,100.0,0.0,12
+Acute Bloody Diarrhea,Negros Island Region,2025_prospective,50.0,16.7,12
+Acute Bloody Diarrhea,Negros Island Region,last_12m,75.0,0.0,12
+Acute Bloody Diarrhea,Northern Mindanao,2025_prospective,50.0,0.0,12
+Acute Bloody Diarrhea,Northern Mindanao,last_12m,16.7,41.7,12
+Acute Bloody Diarrhea,SOCCSKSARGEN,2025_prospective,25.0,41.7,12
+Acute Bloody Diarrhea,SOCCSKSARGEN,last_12m,16.7,58.3,12
+Acute Bloody Diarrhea,Western Visayas,2025_prospective,66.7,0.0,12
+Acute Bloody Diarrhea,Western Visayas,last_12m,83.3,0.0,12
+Acute Bloody Diarrhea,Zamboanga Peninsula,2025_prospective,16.7,41.7,12
+Acute Bloody Diarrhea,Zamboanga Peninsula,last_12m,0.0,66.7,12
+Acute Viral Hepatitis,Bangsamoro (BARMM),2025_prospective,25.0,8.3,12
+Acute Viral Hepatitis,Bangsamoro (BARMM),last_12m,25.0,8.3,12
+Acute Viral Hepatitis,Bicol Region,2025_prospective,25.0,0.0,12
+Acute Viral Hepatitis,Bicol Region,last_12m,25.0,0.0,12
+Acute Viral Hepatitis,CALABARZON,2025_prospective,50.0,25.0,12
+Acute Viral Hepatitis,CALABARZON,last_12m,41.7,33.3,12
+Acute Viral Hepatitis,Cagayan Valley,2025_prospective,83.3,0.0,12
+Acute Viral Hepatitis,Cagayan Valley,last_12m,83.3,0.0,12
+Acute Viral Hepatitis,Caraga,2025_prospective,100.0,0.0,12
+Acute Viral Hepatitis,Caraga,last_12m,91.7,0.0,12
+Acute Viral Hepatitis,Central Luzon,2025_prospective,50.0,0.0,12
+Acute Viral Hepatitis,Central Luzon,last_12m,50.0,0.0,12
+Acute Viral Hepatitis,Central Visayas,2025_prospective,41.7,8.3,12
+Acute Viral Hepatitis,Central Visayas,last_12m,41.7,16.7,12
+Acute Viral Hepatitis,Cordillera Administrative Region,2025_prospective,100.0,0.0,12
+Acute Viral Hepatitis,Cordillera Administrative Region,last_12m,91.7,0.0,12
+Acute Viral Hepatitis,Davao Region,2025_prospective,33.3,0.0,12
+Acute Viral Hepatitis,Davao Region,last_12m,41.7,0.0,12
+Acute Viral Hepatitis,Eastern Visayas,2025_prospective,0.0,8.3,12
+Acute Viral Hepatitis,Eastern Visayas,last_12m,33.3,0.0,12
+Acute Viral Hepatitis,Ilocos Region,2025_prospective,83.3,0.0,12
+Acute Viral Hepatitis,Ilocos Region,last_12m,83.3,0.0,12
+Acute Viral Hepatitis,MIMAROPA,2025_prospective,91.7,0.0,12
+Acute Viral Hepatitis,MIMAROPA,last_12m,91.7,0.0,12
+Acute Viral Hepatitis,National,2025_prospective,25.0,41.7,12
+Acute Viral Hepatitis,National,last_12m,50.0,33.3,12
+Acute Viral Hepatitis,National Capital Region,2025_prospective,50.0,0.0,12
+Acute Viral Hepatitis,National Capital Region,last_12m,33.3,16.7,12
+Acute Viral Hepatitis,Northern Mindanao,2025_prospective,83.3,0.0,12
+Acute Viral Hepatitis,Northern Mindanao,last_12m,66.7,8.3,12
+Acute Viral Hepatitis,SOCCSKSARGEN,2025_prospective,100.0,0.0,12
+Acute Viral Hepatitis,SOCCSKSARGEN,last_12m,75.0,0.0,12
+Acute Viral Hepatitis,Western Visayas,2025_prospective,66.7,16.7,12
+Acute Viral Hepatitis,Western Visayas,last_12m,50.0,16.7,12
+Acute Viral Hepatitis,Zamboanga Peninsula,2025_prospective,58.3,8.3,12
+Acute Viral Hepatitis,Zamboanga Peninsula,last_12m,16.7,58.3,12
+Cholera,Bangsamoro (BARMM),2025_prospective,58.3,8.3,12
+Cholera,Bangsamoro (BARMM),last_12m,75.0,0.0,12
+Cholera,Bicol Region,2025_prospective,100.0,0.0,12
+Cholera,Bicol Region,last_12m,100.0,0.0,12
+Cholera,CALABARZON,2025_prospective,50.0,0.0,12
+Cholera,CALABARZON,last_12m,75.0,0.0,12
+Cholera,Caraga,2025_prospective,100.0,0.0,12
+Cholera,Caraga,last_12m,100.0,0.0,12
+Cholera,Central Luzon,2025_prospective,41.7,0.0,12
+Cholera,Central Luzon,last_12m,58.3,0.0,12
+Cholera,Central Visayas,2025_prospective,25.0,0.0,12
+Cholera,Central Visayas,last_12m,25.0,16.7,12
+Cholera,Cordillera Administrative Region,2025_prospective,33.3,0.0,12
+Cholera,Cordillera Administrative Region,last_12m,58.3,0.0,12
+Cholera,Davao Region,2025_prospective,33.3,25.0,12
+Cholera,Davao Region,last_12m,16.7,8.3,12
+Cholera,Eastern Visayas,2025_prospective,16.7,83.3,12
+Cholera,Eastern Visayas,last_12m,0.0,50.0,12
+Cholera,MIMAROPA,2025_prospective,58.3,0.0,12
+Cholera,MIMAROPA,last_12m,58.3,0.0,12
+Cholera,National,2025_prospective,8.3,91.7,12
+Cholera,National,last_12m,33.3,50.0,12
+Cholera,National Capital Region,2025_prospective,25.0,8.3,12
+Cholera,National Capital Region,last_12m,41.7,8.3,12
+Cholera,Negros Island Region,2025_prospective,75.0,8.3,12
+Cholera,Negros Island Region,last_12m,58.3,25.0,12
+Cholera,Northern Mindanao,2025_prospective,50.0,8.3,12
+Cholera,Northern Mindanao,last_12m,50.0,25.0,12
+Cholera,SOCCSKSARGEN,2025_prospective,75.0,0.0,12
+Cholera,SOCCSKSARGEN,last_12m,100.0,0.0,12
+Cholera,Western Visayas,last_12m,91.7,0.0,12
+Cholera,Zamboanga Peninsula,2025_prospective,58.3,8.3,12
+Cholera,Zamboanga Peninsula,last_12m,75.0,0.0,12
+Dengue,Bangsamoro (BARMM),2025_prospective,58.3,8.3,12
+Dengue,Bangsamoro (BARMM),last_12m,75.0,16.7,12
+Dengue,Bicol Region,2025_prospective,50.0,16.7,12
+Dengue,Bicol Region,last_12m,41.7,16.7,12
+Dengue,CALABARZON,2025_prospective,8.3,33.3,12
+Dengue,CALABARZON,last_12m,25.0,50.0,12
+Dengue,Cagayan Valley,2025_prospective,33.3,25.0,12
+Dengue,Cagayan Valley,last_12m,58.3,8.3,12
+Dengue,Caraga,2025_prospective,16.7,58.3,12
+Dengue,Caraga,last_12m,33.3,50.0,12
+Dengue,Central Luzon,2025_prospective,25.0,41.7,12
+Dengue,Central Luzon,last_12m,66.7,25.0,12
+Dengue,Central Visayas,2025_prospective,16.7,25.0,12
+Dengue,Central Visayas,last_12m,25.0,25.0,12
+Dengue,Cordillera Administrative Region,2025_prospective,41.7,33.3,12
+Dengue,Cordillera Administrative Region,last_12m,50.0,41.7,12
+Dengue,Davao Region,2025_prospective,100.0,0.0,12
+Dengue,Davao Region,last_12m,75.0,8.3,12
+Dengue,Eastern Visayas,2025_prospective,41.7,16.7,12
+Dengue,Eastern Visayas,last_12m,33.3,25.0,12
+Dengue,Ilocos Region,2025_prospective,58.3,25.0,12
+Dengue,Ilocos Region,last_12m,41.7,33.3,12
+Dengue,MIMAROPA,2025_prospective,41.7,16.7,12
+Dengue,MIMAROPA,last_12m,58.3,8.3,12
+Dengue,National,2025_prospective,16.7,41.7,12
+Dengue,National,last_12m,33.3,41.7,12
+Dengue,National Capital Region,2025_prospective,25.0,33.3,12
+Dengue,National Capital Region,last_12m,58.3,25.0,12
+Dengue,Negros Island Region,2025_prospective,25.0,41.7,12
+Dengue,Negros Island Region,last_12m,25.0,50.0,12
+Dengue,Northern Mindanao,2025_prospective,16.7,41.7,12
+Dengue,Northern Mindanao,last_12m,33.3,16.7,12
+Dengue,SOCCSKSARGEN,2025_prospective,33.3,33.3,12
+Dengue,SOCCSKSARGEN,last_12m,75.0,8.3,12
+Dengue,Western Visayas,2025_prospective,25.0,50.0,12
+Dengue,Western Visayas,last_12m,41.7,50.0,12
+Dengue,Zamboanga Peninsula,2025_prospective,25.0,25.0,12
+Dengue,Zamboanga Peninsula,last_12m,50.0,33.3,12
+Typhoid Fever,Bangsamoro (BARMM),2025_prospective,41.7,16.7,12
+Typhoid Fever,Bangsamoro (BARMM),last_12m,50.0,0.0,12
+Typhoid Fever,Bicol Region,2025_prospective,58.3,8.3,12
+Typhoid Fever,Bicol Region,last_12m,33.3,50.0,12
+Typhoid Fever,CALABARZON,2025_prospective,33.3,8.3,12
+Typhoid Fever,CALABARZON,last_12m,33.3,16.7,12
+Typhoid Fever,Cagayan Valley,2025_prospective,33.3,41.7,12
+Typhoid Fever,Cagayan Valley,last_12m,100.0,0.0,12
+Typhoid Fever,Caraga,2025_prospective,41.7,16.7,12
+Typhoid Fever,Caraga,last_12m,91.7,0.0,12
+Typhoid Fever,Central Luzon,2025_prospective,91.7,0.0,12
+Typhoid Fever,Central Luzon,last_12m,83.3,0.0,12
+Typhoid Fever,Central Visayas,2025_prospective,91.7,0.0,12
+Typhoid Fever,Central Visayas,last_12m,66.7,16.7,12
+Typhoid Fever,Cordillera Administrative Region,2025_prospective,25.0,25.0,12
+Typhoid Fever,Cordillera Administrative Region,last_12m,25.0,25.0,12
+Typhoid Fever,Davao Region,2025_prospective,100.0,0.0,12
+Typhoid Fever,Davao Region,last_12m,41.7,16.7,12
+Typhoid Fever,Eastern Visayas,2025_prospective,33.3,41.7,12
+Typhoid Fever,Eastern Visayas,last_12m,8.3,16.7,12
+Typhoid Fever,Ilocos Region,2025_prospective,25.0,16.7,12
+Typhoid Fever,Ilocos Region,last_12m,50.0,0.0,12
+Typhoid Fever,MIMAROPA,2025_prospective,100.0,0.0,12
+Typhoid Fever,MIMAROPA,last_12m,100.0,0.0,12
+Typhoid Fever,National,2025_prospective,33.3,58.3,12
+Typhoid Fever,National,last_12m,58.3,8.3,12
+Typhoid Fever,National Capital Region,2025_prospective,33.3,16.7,12
+Typhoid Fever,National Capital Region,last_12m,58.3,8.3,12
+Typhoid Fever,Negros Island Region,2025_prospective,50.0,16.7,12
+Typhoid Fever,Negros Island Region,last_12m,83.3,8.3,12
+Typhoid Fever,Northern Mindanao,2025_prospective,33.3,33.3,12
+Typhoid Fever,Northern Mindanao,last_12m,66.7,8.3,12
+Typhoid Fever,SOCCSKSARGEN,2025_prospective,0.0,50.0,12
+Typhoid Fever,SOCCSKSARGEN,last_12m,33.3,8.3,12
+Typhoid Fever,Western Visayas,2025_prospective,41.7,33.3,12
+Typhoid Fever,Western Visayas,last_12m,91.7,0.0,12
+Typhoid Fever,Zamboanga Peninsula,2025_prospective,25.0,58.3,12
+Typhoid Fever,Zamboanga Peninsula,last_12m,66.7,8.3,12

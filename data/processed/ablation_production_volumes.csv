@@ -1,58 +1,58 @@
-region,config,y5,wet,mean_yhat_12mo
-Bangsamoro (BARMM),A,True,False,592.19
-Bangsamoro (BARMM),B,False,True,512.55
-Bangsamoro (BARMM),C,True,True,551.76
-Bicol Region,A,True,False,193.61
-Bicol Region,B,False,True,202.17
-Bicol Region,C,True,True,192.72
-CALABARZON,A,True,False,3840.13
-CALABARZON,B,False,True,3409.63
-CALABARZON,C,True,True,3835.74
-Cagayan Valley,A,True,False,451.8
-Cagayan Valley,B,False,True,441.37
-Cagayan Valley,C,True,True,447.07
-Caraga,A,True,False,688.81
-Caraga,B,False,True,681.84
-Caraga,C,True,True,696.66
-Central Luzon,A,True,False,4050.33
-Central Luzon,B,False,True,3928.69
-Central Luzon,C,True,True,4032.53
-Central Visayas,A,True,False,1383.77
-Central Visayas,B,False,True,1343.14
-Central Visayas,C,True,True,1348.88
-Cordillera Administrative Region,A,True,False,77.3
-Cordillera Administrative Region,B,False,True,765.27
-Cordillera Administrative Region,C,True,True,699.13
-Davao Region,A,True,False,700.54
-Davao Region,B,False,True,929.56
-Davao Region,C,True,True,1599.55
-Eastern Visayas,A,True,False,42.48
-Eastern Visayas,B,False,True,142.34
-Eastern Visayas,C,True,True,7.95
-Ilocos Region,A,True,False,626.77
-Ilocos Region,B,False,True,1180.44
-Ilocos Region,C,True,True,461.76
-MIMAROPA,A,True,False,156.03
-MIMAROPA,B,False,True,761.52
-MIMAROPA,C,True,True,218.52
-National,A,True,False,14422.81
-National,B,False,True,18872.04
-National,C,True,True,8978.88
-National Capital Region,A,True,False,3161.23
-National Capital Region,B,False,True,2609.24
-National Capital Region,C,True,True,3160.71
-Negros Island Region,A,True,False,491.3
-Negros Island Region,B,False,True,705.29
-Negros Island Region,C,True,True,618.54
-Northern Mindanao,A,True,False,62.91
-Northern Mindanao,B,False,True,202.88
-Northern Mindanao,C,True,True,399.09
-SOCCSKSARGEN,A,True,False,1227.18
-SOCCSKSARGEN,B,False,True,1288.16
-SOCCSKSARGEN,C,True,True,996.16
-Western Visayas,A,True,False,173.39
-Western Visayas,B,False,True,156.04
-Western Visayas,C,True,True,576.86
-Zamboanga Peninsula,A,True,False,813.81
-Zamboanga Peninsula,B,False,True,876.01
-Zamboanga Peninsula,C,True,True,816.21
+disease,region,config,y5,wet,mean_yhat_12mo
+Dengue,Bangsamoro (BARMM),A,True,False,759.0
+Dengue,Bangsamoro (BARMM),B,False,True,780.9
+Dengue,Bangsamoro (BARMM),C,True,True,756.96
+Dengue,Bicol Region,A,True,False,334.56
+Dengue,Bicol Region,B,False,True,331.05
+Dengue,Bicol Region,C,True,True,378.89
+Dengue,CALABARZON,A,True,False,3349.53
+Dengue,CALABARZON,B,False,True,1449.24
+Dengue,CALABARZON,C,True,True,332.26
+Dengue,Cagayan Valley,A,True,False,1081.93
+Dengue,Cagayan Valley,B,False,True,1059.32
+Dengue,Cagayan Valley,C,True,True,1075.44
+Dengue,Caraga,A,True,False,626.66
+Dengue,Caraga,B,False,True,686.32
+Dengue,Caraga,C,True,True,619.0
+Dengue,Central Luzon,A,True,False,4658.08
+Dengue,Central Luzon,B,False,True,4652.24
+Dengue,Central Luzon,C,True,True,4651.1
+Dengue,Central Visayas,A,True,False,1548.02
+Dengue,Central Visayas,B,False,True,1510.8
+Dengue,Central Visayas,C,True,True,1536.8
+Dengue,Cordillera Administrative Region,A,True,False,191.02
+Dengue,Cordillera Administrative Region,B,False,True,1026.97
+Dengue,Cordillera Administrative Region,C,True,True,903.27
+Dengue,Davao Region,A,True,False,2004.52
+Dengue,Davao Region,B,False,True,2029.23
+Dengue,Davao Region,C,True,True,2001.4
+Dengue,Eastern Visayas,A,True,False,23.66
+Dengue,Eastern Visayas,B,False,True,35.46
+Dengue,Eastern Visayas,C,True,True,49.84
+Dengue,Ilocos Region,A,True,False,1349.41
+Dengue,Ilocos Region,B,False,True,1305.12
+Dengue,Ilocos Region,C,True,True,906.11
+Dengue,MIMAROPA,A,True,False,988.31
+Dengue,MIMAROPA,B,False,True,1338.25
+Dengue,MIMAROPA,C,True,True,171.72
+Dengue,National,A,True,False,23225.15
+Dengue,National,B,False,True,28176.58
+Dengue,National,C,True,True,7352.51
+Dengue,National Capital Region,A,True,False,3017.1
+Dengue,National Capital Region,B,False,True,2952.07
+Dengue,National Capital Region,C,True,True,3006.14
+Dengue,Negros Island Region,A,True,False,806.51
+Dengue,Negros Island Region,B,False,True,120.35
+Dengue,Negros Island Region,C,True,True,258.59
+Dengue,Northern Mindanao,A,True,False,964.15
+Dengue,Northern Mindanao,B,False,True,1023.13
+Dengue,Northern Mindanao,C,True,True,198.44
+Dengue,SOCCSKSARGEN,A,True,False,1168.15
+Dengue,SOCCSKSARGEN,B,False,True,1244.0
+Dengue,SOCCSKSARGEN,C,True,True,525.17
+Dengue,Western Visayas,A,True,False,70.26
+Dengue,Western Visayas,B,False,True,207.62
+Dengue,Western Visayas,C,True,True,335.22
+Dengue,Zamboanga Peninsula,A,True,False,840.3
+Dengue,Zamboanga Peninsula,B,False,True,719.75
+Dengue,Zamboanga Peninsula,C,True,True,842.62
