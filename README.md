@@ -19,7 +19,11 @@ consistent.
 |---|---|
 | Git | any recent |
 | Python | 3.10+ (3.12 recommended) |
-| Node.js | 20.19+ or 22.12+ (required by Vite 8) |
+| Node.js | `^20.19.0 \|\| >=22.12.0` (Vite 8 needs `^20.19 \|\| ^22.13 \|\| >=23.5`) |
+
+**No separate CmdStan install.** `prophet` 1.4 wheels bundle prebuilt Stan binaries, so
+`Prophet().fit()` works straight after `pip install`. (`cmdstanpy` may log a
+"No CmdStan installation found" warning — it is harmless for this pipeline.)
 
 ## One-time setup
 
@@ -27,10 +31,9 @@ consistent.
 git clone https://github.com/juliabbbb/healthwatch.git
 cd healthwatch
 
-# Backend
+# Backend — requirements-ml.txt is a superset (it includes requirements.txt) and
+# adds Prophet. Use requirements.txt alone if you only want the API, never the pipeline.
 python -m venv .venv
-.venv\Scripts\pip install -r requirements.txt
-# ML pipeline (Prophet) — only needed to re-run forecasting locally; the API serves prebuilt data
 .venv\Scripts\pip install -r requirements-ml.txt
 
 # Frontend
@@ -46,8 +49,12 @@ required to start the backend.
 
 ### Database (required)
 
-Create a repo-root `.env` (git-ignored) with the SaaS/cloud connection string — the API will not
-start without it (no SQLite fallback):
+The API **cannot run without Postgres** — there is no SQLite fallback. `lifespan` calls
+`db.ensure_tables()` unguarded, so a missing `DATABASE_URL` (`RuntimeError`) or an
+unreachable host (`OperationalError`) aborts startup: uvicorn prints the traceback and the
+process exits, and `/health` never comes up.
+
+Create a repo-root `.env` (git-ignored) with the SaaS/cloud connection string:
 
 ```powershell
 DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
@@ -56,21 +63,40 @@ DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
 The backend (`src/db.py`) parses `.env` itself and always prefers an environment variable already
 set in the shell. On Render, set `DATABASE_URL` in the service's environment. After first setup,
 populate the schema once: `.venv\Scripts\python -m src.db` (or let `db.ensure_tables()` bootstrap
-empty tables at startup — but without a rebuild the API has no rows).
+empty tables at startup — but without a rebuild the API has no rows and endpoints return `503`
+until data exists).
 
 ### Environment variables
 
 | Variable | Needed for | Default |
 |---|---|---|
 | `DATABASE_URL` | **Required** — Postgres connection string; the API will not boot without it | — |
-| `ALLOWED_ORIGINS` | Extra CORS origins (comma-separated) | `localhost` + `*.onrender.com` |
+| `ALLOWED_ORIGINS` | Extra CORS origins (comma-separated) | `http://localhost:5173,http://localhost:4173,http://127.0.0.1:5173` |
 | `GROQ_API_KEY` | Only to (re)generate the offline narrative corpus. The dashboard serves the stored corpus and needs no key | — |
 | `GROQ_MODEL` | Groq model override | `openai/gpt-oss-120b` |
 | `OPENAI_API_KEY` | Fallback provider when Groq rate-limits/quotas are reached | — |
 | `OPENAI_MODEL` | Fallback model override | `gpt-4o-mini` |
+| `GEMINI_API_KEY` | Legacy third AI fallback (`src/api.py`) | — |
 
 See `.env.example`. `src/db.py` parses a repo-root `.env` itself and always prefers an
 environment variable already set in the shell.
+
+With no AI key at all, every AI surface still renders: it falls back to the stored corpus,
+then to deterministic static text. Only the explicitly live endpoints error out.
+
+### Frontend environment variables
+
+Vite inlines these at build time, from files inside `frontend/`:
+
+| Variable | Default | Effect if unset |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:8000` (every consumer falls back to this) | dashboard requests the wrong host |
+| `VITE_CARTO_API_KEY` | none | basemap tiles render **watermarked** |
+
+Put machine-local values in **`frontend/.env.development.local`**, not
+`frontend/.env.development`. The `.local` layer is git-ignored by both Vite and
+`frontend/.gitignore` (`.env.*`), so a personal key can never be committed by accident;
+`.env.development` is meant to be tracked. `frontend/.env.example` documents both names.
 
 ## Running the app
 
@@ -91,8 +117,23 @@ cd frontend
 npm run dev
 ```
 
-Open whichever URL Vite prints (`localhost:5173`, `8080`, `8081`… — any localhost port works).
-Interactive API docs: <http://localhost:8000/docs>
+Open whichever URL Vite prints (`localhost:5173`, `8080`, `8081`… — no port is pinned in
+`vite.config.ts`). Interactive API docs: <http://localhost:8000/docs>.
+
+**Start the API first.** The dashboard fetches `/dashboard?disease=…` once per disease at load
+and retries with backoff, so with the API down the page sits on "Loading surveillance data."
+
+### Is it working?
+
+1. **<http://localhost:8000/health>** → `{"status":"ok","data_ready":true}`. `data_ready:false`
+   means still hot-loading (a few seconds); a connection error or no response means the
+   database is the problem.
+2. **The URL Vite printed** → the 18-region choropleth renders and clicking a region opens its
+   panel. Stuck on "Loading surveillance data." = API down or on a different port than
+   `VITE_API_URL`.
+3. **Look at the map attribution** → it should read *CARTO* with no watermark. Watermarked
+   means `VITE_CARTO_API_KEY` was not picked up: confirm the file is
+   `frontend/.env.development.local`, then restart `npm run dev` so Vite re-reads env files.
 
 ## Troubleshooting
 
@@ -106,7 +147,9 @@ Interactive API docs: <http://localhost:8000/docs>
   from Postgres at boot; check the `DATABASE_URL` string in `.env` (or Render → Environment) is the
   correct Postgres URL and the schema is populated (`python -m src.db`). There is no SQLite
   fallback anymore.
-- **`npm install` fails on Node version** — check `node -v`; Vite 8 needs 20.19+/22.12+.
+- **`npm install` fails on Node version** — check `node -v`; Vite 8 needs `^20.19 || ^22.13 || >=23.5`.
+- **Map tiles are watermarked** — `VITE_CARTO_API_KEY` is unset or unread. It must be in
+  `frontend/.env.development.local`; restart `npm run dev` after changing any `.env` file.
 - **Cold start is slow** — the backend hot-loads every modelling table into memory at process
   startup. `/health` returns `data_ready:false` until it finishes; fast after.
 - **A key set with `setx` isn't visible in an already-open shell** — `run-dev.ps1` reads
@@ -120,6 +163,10 @@ Interactive API docs: <http://localhost:8000/docs>
   validation steps above and inspecting `data/processed/`.
 
 ## Updating / rebuilding data
+
+> ⚠️ **Optional, and destructive.** Only run this when `data/raw/` changes. It **overwrites every
+> file in `data/processed/`** and **writes to your PostgreSQL database**. Every number the
+> dashboard shows is replaced. It also runs Prophet over all 19 series, so it is slow.
 
 One-shot: drop the updated export in `data/raw/`, then run the whole pipeline and sync to Postgres:
 
