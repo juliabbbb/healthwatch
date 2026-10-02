@@ -2,13 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChevronDown, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import {
-  METRIC_META,
-  assessRegion,
-  formatMetric,
-  type MetricMode,
-  type TierBasis,
-} from "@/lib/healthwatch/data";
+import { METRIC_META, assessRegion, formatMetric, type MetricMode } from "@/lib/healthwatch/data";
 import { RiskBadge } from "./RiskBadge";
 import { ForecastCard } from "./ForecastCard";
 
@@ -18,8 +12,6 @@ export interface MobileBottomSheetProps {
   monthIndex: number;
   mode?: MetricMode;
   onModeChange?: (m: MetricMode) => void;
-  basis?: TierBasis;
-  onBasisChange?: (b: TierBasis) => void;
   onClose?: () => void;
 }
 
@@ -29,8 +21,6 @@ export function MobileBottomSheet({
   monthIndex,
   mode = "percapita",
   onModeChange,
-  basis = "hotspot",
-  onBasisChange,
   onClose,
 }: MobileBottomSheetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -63,7 +53,7 @@ export function MobileBottomSheet({
   // If no region has ever been selected, render nothing
   if (!activeCode) return null;
 
-  const a = assessRegion(activeCode, illness, monthIndex, mode, basis);
+  const a = assessRegion(activeCode, illness, monthIndex, mode);
   const unit = METRIC_META[mode].unit;
 
   // Touch & Pointer Gesture Handlers
@@ -324,8 +314,6 @@ export function MobileBottomSheet({
               monthIndex={monthIndex}
               mode={mode}
               {...(onModeChange ? { onModeChange } : {})}
-              {...(onBasisChange ? { onBasisChange } : {})}
-              basis={basis}
               variant="sheet"
               showHeader={false}
               className="rounded-none border-none shadow-none bg-transparent"

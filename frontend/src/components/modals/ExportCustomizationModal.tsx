@@ -11,6 +11,7 @@ import {
   classify,
   formatPHTDateTime,
   metricValue,
+  DEFAULT_TIER_BASIS,
   modelMetrics,
   monthMeta,
   resolveThresholds,
@@ -19,7 +20,6 @@ import {
   type MonthPoint,
   type Region,
   type RiskLevel,
-  type TierBasis,
 } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -39,11 +39,6 @@ export interface ExportCustomizationModalProps {
   illness: string;
   monthIndex: number;
   mode: MetricMode;
-  /**
-   * The yardstick the tiers in this export are cut against. Must match what the
-   * page is showing, otherwise the CSV disagrees with the screen it came from.
-   */
-  basis: TierBasis;
 }
 
 type SectionKey =
@@ -88,17 +83,18 @@ const csvMetric = (cases: number, region: Region, mode: MetricMode): string =>
   mode === "raw" ? String(Math.round(cases)) : ((cases / region.population) * 100000).toFixed(2);
 
 /** Tier for a single month point, using the same yardstick as assessRegion(). */
-const pointRisk = (
-  code: string,
-  illness: string,
-  p: MonthPoint,
-  mode: MetricMode,
-  basis: TierBasis,
-): RiskLevel =>
+const pointRisk = (code: string, illness: string, p: MonthPoint, mode: MetricMode): RiskLevel =>
   classify(
     metricValue(p.cases, REGION_BY_CODE[code]!, mode),
-    resolveThresholds(code, illness, p.month, mode, basis).thresholds,
+    resolveThresholds(code, illness, p.month, mode).thresholds,
   );
+
+/**
+ * Every exported tier is cut against the per-region hotspot yardstick, so the
+ * `tier_basis` column carries a constant. It stays in the schema so a reader can
+ * tell which yardstick produced the tiers without consulting the code.
+ */
+const TIER_BASIS_LABEL = DEFAULT_TIER_BASIS;
 
 const downloadCsv = (header: string[], body: (string | number)[][], filename: string) => {
   const content =
@@ -121,7 +117,6 @@ export function ExportCustomizationModal({
   illness,
   monthIndex,
   mode,
-  basis,
 }: ExportCustomizationModalProps) {
   useBodyScrollLock(open);
 
@@ -176,7 +171,7 @@ export function ExportCustomizationModal({
     const regions = [];
     for (let i = 0; i < codes.length; i++) {
       const code = codes[i]!;
-      const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
+      const a = assessRegion(code, illness, exportMonthIndex, mode);
       const metrics = modelMetrics(code, illness);
       const region = REGION_BY_CODE[code]!;
 
@@ -271,7 +266,7 @@ export function ExportCustomizationModal({
     } finally {
       setPhase(0);
     }
-  }, [illness, regionCodes, exportMonthIndex, mode, basis, unit, sections, baselineLabel]);
+  }, [illness, regionCodes, exportMonthIndex, mode, unit, sections, baselineLabel]);
 
   const buildCSV = useCallback(() => {
     if (regionCodes.length === 0) return;
@@ -294,7 +289,7 @@ export function ExportCustomizationModal({
         "baseline_is_forecast",
       ];
       const body = regionCodes.map((code) => {
-        const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
+        const a = assessRegion(code, illness, exportMonthIndex, mode);
         const region = REGION_BY_CODE[code]!;
         const lastObserved = [...seriesFor(code, illness)].reverse().find((p) => !p.forecast);
         const reported = lastObserved ? metricValue(lastObserved.cases, region, mode) : a.value;
@@ -304,7 +299,7 @@ export function ExportCustomizationModal({
           region.short,
           unit,
           a.risk,
-          basis,
+          TIER_BASIS_LABEL,
           csvMetric(reported, region, mode),
           csvMetric(a.value, region, mode),
           csvMetric(a.point.lower, region, mode),
@@ -337,7 +332,7 @@ export function ExportCustomizationModal({
       ];
       const body: (string | number)[][] = [];
       for (const code of regionCodes) {
-        const a = assessRegion(code, illness, exportMonthIndex, mode, basis);
+        const a = assessRegion(code, illness, exportMonthIndex, mode);
         const region = REGION_BY_CODE[code]!;
         for (const p of a.forecastWindow) {
           body.push([
@@ -352,13 +347,13 @@ export function ExportCustomizationModal({
             csvMetric(p.cases, region, mode),
             csvMetric(p.lower, region, mode),
             csvMetric(p.upper, region, mode),
-            pointRisk(code, illness, p, mode, basis),
-            basis,
+            pointRisk(code, illness, p, mode),
+            TIER_BASIS_LABEL,
           ]);
         }
       }
       const fw = regionCodes.length
-        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode, basis).forecastWindow
+        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode).forecastWindow
         : [];
       const start = fw[0]?.label ?? baselineLabel;
       const end = fw.at(-1)?.label ?? baselineLabel;
@@ -399,8 +394,8 @@ export function ExportCustomizationModal({
           csvMetric(p.cases, region, mode),
           csvMetric(p.lower, region, mode),
           csvMetric(p.upper, region, mode),
-          pointRisk(code, illness, p, mode, basis),
-          basis,
+          pointRisk(code, illness, p, mode),
+          TIER_BASIS_LABEL,
         ]);
       }
     }
@@ -409,7 +404,7 @@ export function ExportCustomizationModal({
       body,
       `TimeSeries_${monthMeta(0).label}_${monthMeta(TOTAL_MONTHS - 1).label}.csv`,
     );
-  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, basis, unit, baselineLabel]);
+  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, unit, baselineLabel]);
 
   if (!open) return null;
 

@@ -825,10 +825,19 @@ export const METRIC_META: Record<MetricMode, { label: string; short: string; uni
   percapita: { label: "Cases per 100,000 population", short: "Per 100k", unit: "per 100k/month" },
 };
 
-/** Convert a case count into the active metric for a region. */
+/**
+ * Convert a case count into the active metric for a region.
+ *
+ * The per-100k result is deliberately NOT rounded. Tiering compares a value
+ * against a P50/P75 pair, and dividing both sides by the same population is
+ * order-preserving, so rounding can only destroy the ordering: a region with
+ * p50=1.0 and p75=1.5 cases becomes 0.0074 and 0.0111 per-100k, and rounding
+ * both to 0.01 collapses a strict inequality into a tie. Display rounding
+ * belongs to `formatMetric`, not here.
+ */
 export function metricValue(cases: number, region: Region, mode: MetricMode): number {
   if (mode === "raw") return cases;
-  return Number(((cases / region.population) * 100000).toFixed(2));
+  return (cases / region.population) * 100000;
 }
 
 export function formatMetric(value: number, mode: MetricMode): string {
@@ -999,7 +1008,7 @@ function toMetric(t: Thresholds, region: Region | undefined, mode: MetricMode): 
   if (mode === "raw") return t;
   const population = region?.population;
   if (!population || population <= 0) return null;
-  const per100k = (cases: number) => Number(((cases / population) * 100000).toFixed(2));
+  const per100k = (cases: number) => (cases / population) * 100000;
   return { p50: per100k(t.p50), p75: per100k(t.p75) };
 }
 

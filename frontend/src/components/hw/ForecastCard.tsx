@@ -3,7 +3,6 @@ import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   METRIC_META,
-  TIER_BASIS_META,
   assessRegion,
   classify,
   forecastCategoryMix,
@@ -20,7 +19,6 @@ import {
   type ForecastCategoryMix,
   type MetricMode,
   type Season,
-  type TierBasis,
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
 import { groupForIllness, illnessDisplayName } from "@/lib/illnessGroups";
@@ -65,8 +63,6 @@ export interface ForecastCardProps {
   monthIndex: number;
   mode?: MetricMode;
   onModeChange?: (m: MetricMode) => void;
-  basis?: TierBasis;
-  onBasisChange?: (b: TierBasis) => void;
   onClose?: () => void;
   variant?: "panel" | "sheet";
   className?: string;
@@ -83,8 +79,6 @@ export function ForecastCard({
   mode = "percapita",
   onModeChange,
   onClose,
-  basis = "hotspot",
-  onBasisChange,
   variant = "panel",
   className,
   showHeader = true,
@@ -92,7 +86,7 @@ export function ForecastCard({
   outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
   onOutbreakSeasonChange: _onOutbreakSeasonChange,
 }: ForecastCardProps) {
-  const a = assessRegion(regionCode, illness, monthIndex, mode, basis);
+  const a = assessRegion(regionCode, illness, monthIndex, mode);
   const meta = monthMeta(a.monthIndex);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
@@ -283,33 +277,6 @@ export function ForecastCard({
           <div className="flex flex-col items-end gap-1.5 shrink-0">
             <RiskBadge risk={a.risk} />
             <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
-            {onBasisChange && (
-              <div
-                role="radiogroup"
-                aria-label="Tier basis"
-                title={TIER_BASIS_META[basis].basisNote}
-                className="mt-1 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30"
-              >
-                {(["hotspot", "burden"] as TierBasis[]).map((b) => (
-                  <button
-                    key={b}
-                    type="button"
-                    role="radio"
-                    aria-checked={basis === b}
-                    title={TIER_BASIS_META[b].label}
-                    onClick={() => onBasisChange(b)}
-                    className={cn(
-                      "rounded-md px-1.5 py-0.5 text-[10px] font-medium transition-colors text-center",
-                      basis === b
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {TIER_BASIS_META[b].short}
-                  </button>
-                ))}
-              </div>
-            )}
             {a.pooledFallback && a.pooledFallbackReason === "all_illnesses" && (
               <p className="max-w-[13rem] text-right text-[10px] leading-tight text-muted-foreground">
                 All Illnesses has no per-disease percentile; tiers use the pooled national

@@ -415,12 +415,12 @@ function SeasonalityPage() {
 
       // Risk tier classification. The exported report states the basis it used,
       // so it must tier the same way the screen does: the region's own seasonal
-      // percentile for a single illness, the pooled national distribution for the
-      // All Illnesses aggregate.
+      // percentile for a single illness, the national distribution for the
+      // All Illnesses aggregate (which has no per-disease percentile).
       const resolved = resolveThresholds(code, illness, assessment.point.month, "percapita");
       const riskThresholds = resolved.thresholds;
       const riskBasisLabel = resolved.pooled
-        ? "pooled national distribution (the hotspot basis is unavailable here)"
+        ? "national distribution (the All Illnesses aggregate has no per-region percentile)"
         : "region's own seasonal history";
 
       // Outbreak indicator

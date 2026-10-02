@@ -18,7 +18,6 @@ import {
   RISK_META,
   type MetricMode,
   type Region,
-  type TierBasis,
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
 
@@ -26,8 +25,6 @@ interface Props {
   illness: string;
   monthIndex: number;
   mode: MetricMode;
-  /** Yardstick the region fills are tiered against (own seasonal norm vs national). */
-  basis?: TierBasis;
   selectedCode: string | null;
   onSelect: (code: string | null) => void;
   flyToCode?: string | null;
@@ -57,22 +54,16 @@ function prefersDark(): boolean {
 const OUTBREAK_MARKER_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.4" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="1.6"/><circle cx="7" cy="7" r="5.4" fill="color-mix(in oklab, var(--risk-high) 32%, transparent)" stroke="var(--risk-high)" stroke-width="1.4"/></svg>';
 
-function fillFor(
-  region: Region,
-  illness: string,
-  monthIndex: number,
-  mode: MetricMode,
-  basis: TierBasis,
-): string {
+function fillFor(region: Region, illness: string, monthIndex: number, mode: MetricMode): string {
   // Region fill always reflects the risk tier, whatever is overlaid on top.
-  return RISK_META[assessRegion(region.code, illness, monthIndex, mode, basis).risk].color;
+  // Tiers are always the per-region hotspot yardstick (DEFAULT_TIER_BASIS).
+  return RISK_META[assessRegion(region.code, illness, monthIndex, mode).risk].color;
 }
 
 export default function MapCanvas({
   illness,
   monthIndex,
   mode,
-  basis = "hotspot",
   selectedCode,
   onSelect,
   flyToCode,
@@ -87,8 +78,8 @@ export default function MapCanvas({
   const markerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const alertIconRef = useRef<import("leaflet").DivIcon | null>(null);
   const [mapReady, setMapReady] = useState(false);
-  const stateRef = useRef({ illness, monthIndex, mode, basis, selectedCode, onSelect });
-  stateRef.current = { illness, monthIndex, mode, basis, selectedCode, onSelect };
+  const stateRef = useRef({ illness, monthIndex, mode, selectedCode, onSelect });
+  stateRef.current = { illness, monthIndex, mode, selectedCode, onSelect };
 
   useEffect(() => {
     let cancelled = false;
@@ -158,7 +149,7 @@ export default function MapCanvas({
           ? { stroke: selected ? "oklch(0.98 0 0 / 90%)" : "oklch(0.98 0 0 / 35%)" }
           : { stroke: selected ? "oklch(0.24 0.008 85 / 85%)" : "oklch(0.24 0.008 85 / 25%)" };
         return {
-          fillColor: fillFor(region, s.illness, s.monthIndex, s.mode, s.basis),
+          fillColor: fillFor(region, s.illness, s.monthIndex, s.mode),
           fillOpacity: selected ? 0.78 : 0.55,
           color: border.stroke,
           weight: selected ? 2 : 0.8,
@@ -240,10 +231,10 @@ export default function MapCanvas({
     const geoLayer = geoRef.current;
     if (!geoLayer) return;
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
-  }, [illness, monthIndex, mode, basis, selectedCode]);
+  }, [illness, monthIndex, mode, selectedCode]);
 
   // Outbreak-likelihood markers, opt-in. Rebuilt whenever the toggle, illness,
-  // baseline month, metric or tier basis changes; the off state leaves the
+  // baseline month or metric changes; the off state leaves the
   // risk-tier fill as the only layer. Markers pin to the next projected month
   // after the currently displayed baseline (never earlier than the forecast
   // horizon) so they always reflect forecast data, and appear only when that
@@ -260,7 +251,7 @@ export default function MapCanvas({
       if (!showOutbreakMarkers) return;
       const nextIdx = Math.min(Math.max(CURRENT_MONTH_INDEX, monthIndex) + 1, TOTAL_MONTHS - 1);
       for (const r of REGIONS) {
-        const next = assessRegion(r.code, illness, nextIdx, mode, basis);
+        const next = assessRegion(r.code, illness, nextIdx, mode);
         if (next.risk !== "high") continue;
 
         const targetMonth = formatMonthYear(next.point.label);
@@ -307,7 +298,7 @@ export default function MapCanvas({
     return () => {
       cancelled = true;
     };
-  }, [illness, monthIndex, mode, basis, showOutbreakMarkers, mapReady, dataReady]);
+  }, [illness, monthIndex, mode, showOutbreakMarkers, mapReady, dataReady]);
 
   // Fly to a searched/selected region
   useEffect(() => {

@@ -114,9 +114,11 @@ export default function ComparePage() {
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Single source of truth for the tier yardstick on this page, so the table, the
-  // explanation panel and the exported CSVs can never disagree. "All Illnesses"
-  // has no single disease's percentile, so it falls back to pooled national burden.
-  const tierBasis: TierBasis = illness === "all" ? "burden" : "hotspot";
+  // explanation panel and the exported CSVs can never disagree. Tiers are always
+  // the per-region hotspot yardstick; "All Illnesses" has no per-disease
+  // percentile, so resolveThresholds falls it back to the pooled national
+  // distribution and the UI discloses that.
+  const tierBasis: TierBasis = "hotspot";
 
   // Lock background scroll while either custom portal overlay is open
   // (Radix dialogs and ExportCustomizationModal lock themselves).
@@ -247,9 +249,7 @@ export default function ComparePage() {
           <ClassificationInfo
             mode={mode}
             thresholds={rows[0]?.thresholds}
-            basis={tierBasis}
             pooledFallback={rows[0]?.pooledFallback ?? false}
-            pooledFallbackReason={rows[0]?.pooledFallbackReason ?? null}
           />
           <button
             type="button"
@@ -994,7 +994,6 @@ export default function ComparePage() {
         illness={illness}
         monthIndex={monthIndex}
         mode={mode}
-        basis={tierBasis}
       />
     </main>
   );
