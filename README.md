@@ -58,6 +58,20 @@ set in the shell. On Render, set `DATABASE_URL` in the service's environment. Af
 populate the schema once: `.venv\Scripts\python -m src.db` (or let `db.ensure_tables()` bootstrap
 empty tables at startup — but without a rebuild the API has no rows).
 
+### Environment variables
+
+| Variable | Needed for | Default |
+|---|---|---|
+| `DATABASE_URL` | **Required** — Postgres connection string; the API will not boot without it | — |
+| `ALLOWED_ORIGINS` | Extra CORS origins (comma-separated) | `localhost` + `*.onrender.com` |
+| `GROQ_API_KEY` | Only to (re)generate the offline narrative corpus. The dashboard serves the stored corpus and needs no key | — |
+| `GROQ_MODEL` | Groq model override | `openai/gpt-oss-120b` |
+| `OPENAI_API_KEY` | Fallback provider when Groq rate-limits/quotas are reached | — |
+| `OPENAI_MODEL` | Fallback model override | `gpt-4o-mini` |
+
+See `.env.example`. `src/db.py` parses a repo-root `.env` itself and always prefers an
+environment variable already set in the shell.
+
 ## Running the app
 
 One-shot launcher (opens two windows: API + dashboard):
@@ -93,6 +107,17 @@ Interactive API docs: <http://localhost:8000/docs>
   correct Postgres URL and the schema is populated (`python -m src.db`). There is no SQLite
   fallback anymore.
 - **`npm install` fails on Node version** — check `node -v`; Vite 8 needs 20.19+/22.12+.
+- **Cold start is slow** — the backend hot-loads every modelling table into memory at process
+  startup. `/health` returns `data_ready:false` until it finishes; fast after.
+- **A key set with `setx` isn't visible in an already-open shell** — `run-dev.ps1` reads
+  user-scope environment variables and re-exports them, so it works in a shell opened before
+  `setx` ran.
+- **Deploying to Render** — the API installs `requirements.txt` and the frontend
+  `npm ci && npm run build`; `DATABASE_URL`, `ALLOWED_ORIGINS`, `GROQ_API_KEY` and
+  `OPENAI_API_KEY` are service env vars (`sync: false` in `render.yaml`). The ML pipeline never
+  runs on Render — `requirements-ml.txt` is local-only.
+- **There is no automated test suite** — correctness is checked by running the pipeline
+  validation steps above and inspecting `data/processed/`.
 
 ## Updating / rebuilding data
 
@@ -130,6 +155,73 @@ transaction against PostgreSQL (requires `DATABASE_URL`). `data/processed/` is p
 hand-placed inputs go in `data/raw/`. Commit the regenerated `data/processed/*.csv` to version the
 new artifacts.
 
+## AI narrative corpus
+
+Every AI surface that interprets a chart or data table is generated **offline** and served
+from Postgres, so the dashboard needs no provider key at page load.
+`src/generate_narratives.py` writes `data/processed/narratives.csv`, keyed by
+`(region_code, disease, surface, component)`; `src.db` mirrors it into the `narratives`
+table and the API exposes it read-only at `GET /narratives`. The keyable endpoints
+(`/ai-insight`, `/analysis/seasonality`, `/analysis/{region}`) read the corpus first and fall
+back to a live provider call only when no row exists.
+
+Nine surfaces, all per (region, disease) unless noted:
+
+| surface | renders on |
+|---|---|
+| `ai_insight` | map-panel one-liner (`AiInsightLine`) |
+| `analysis` | regional analysis panel |
+| `chart_takeaway` | Seasonality — `observed`/`trend`/`seasonal`/`residual`/`acf` |
+| `compare` | Compare page, region vs national |
+| `reported` | reported-case breakdown (age/sex split) |
+| `kpi_takeaway` | `ForecastCard` KPI strip (headline figure, thresholds, direction) |
+| `escalation` | `HotspotTimeline` (12-month tier-climb ordering) |
+| `report_summary` | exported PDFs — surveillance and seasonality reports |
+| `national` | `NationalSnapshot`, one per disease, no per-region split |
+
+```powershell
+.venv\Scripts\python -m src.generate_narratives --dry-run    # plan only, no API calls
+.venv\Scripts\python -m src.generate_narratives              # append to narratives.csv (resumable)
+.venv\Scripts\python -m src.generate_narratives --force      # ignore the existing corpus
+.venv\Scripts\python -m src.generate_narratives --limit 20 --disease Dengue
+.venv\Scripts\python -m src.generate_narratives --surface chart_takeaway
+```
+
+`update-data.ps1` runs this automatically between the pipeline and `src.db`, falling back to a
+dry run when no provider key is present.
+
+**Contract.** AI analysis is **on by default** (`use-ai-analysis-setting.ts`: an absent
+`localStorage` key means enabled), with an opt-out in Settings. Because the corpus is
+pre-generated, being on costs no provider key, no quota and no per-request latency — until the
+corpus is generated, surfaces simply render their static fallback. Grounding is derived from
+the pipeline's own numbers and passes the same deterministic guards as the live path
+(`_weather_violation`, `_numeric_violation`). Only model-written text is stored: when the model
+breaks a rule the generator retries with the rule restated, and if it still fails it writes
+**no row** for that key rather than persisting a template. `fallback_fired` is therefore always
+`false` in a shipped corpus — a `true` value means a template leaked in and the corpus should
+be regenerated with `--force`.
+
+`/analysis/explain-element` is the one live surface: its grounding is whatever the user
+clicked, so it is unkeyed and cannot be pre-generated.
+
+**Static text stays static.** Formulas, definitions, confidence methodology, provenance,
+disclaimers, headers, accessibility strings and `InterventionPanel` guidance are never
+generated. Operational health guidance in `data.ts` `recommendations()`, `OutbreakBanner`, the
+PDF intervention tables and the alert `detail` strings stay rule-based — a model should not
+author or soften a recommended response.
+
+## Verification studies
+
+Analyst-facing and slow; run detached rather than in the foreground.
+
+```powershell
+# Seasonality ablation (configs A/B/C), ~1.4k Prophet fits, ~50 min
+Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList "-m","src.ablation" -RedirectStandardOutput "ablation_out.log" -RedirectStandardError "ablation_err.log" -WindowStyle Hidden
+
+# Type II climate-type sensitivity (Bicol / Eastern Visayas / Caraga local seasons)
+.venv\Scripts\python -m src.sensitivity
+```
+
 ## Structure
 
 | Path | Purpose |
@@ -160,6 +252,16 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 - `risk_escalation` — regional ranking by upward tier-climbs across the forecast horizon.
 - `outbreak_validation` — 2025 prospective season flags vs observed (per-row tp/fp/fn/tn).
 - `pipeline_runs` — provenance: build time, data-through date, version, model, notes.
+
+## Contributing
+
+This project is connected to [Lovable](https://lovable.dev) via
+`frontend/.lovable/project.json` and the `@lovable.dev/vite-tanstack-config` build preset.
+Commits pushed to the connected branch sync back to Lovable and appear in the editor.
+
+> **Do not rewrite published git history** — no force-pushing, rebasing, or amending already-pushed
+> commits. That rewrites history on Lovable's side and can lose project history. Keep the branch in
+> a working state.
 
 ## Locked scope
 
