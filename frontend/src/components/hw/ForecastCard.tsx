@@ -30,6 +30,7 @@ import { KpiStrip, type KpiStripData } from "./KpiStrip";
 import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
 import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
 import { AiInsightLine } from "./AiInsightLine";
+import { LiveWeatherCard } from "./LiveWeatherCard";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -350,7 +351,12 @@ export function ForecastCard({
         </section>
       )}
 
-      {/* 6. Model Info (unchanged) */}
+      {/* 6. Live PAGASA Daily Weather Nowcast & Disease Transmission Alerts */}
+      <section className="border-b border-border/70 px-5 py-3 shrink-0">
+        <LiveWeatherCard regionCode={regionCode} illness={illness} />
+      </section>
+
+      {/* 7. Model Info (unchanged) */}
       <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
         <div className="flex items-center justify-between py-0.5 text-xs">
           <span className="label-caps text-[10px] text-muted-foreground tracking-wider">

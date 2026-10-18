@@ -16,7 +16,7 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from . import config, db
+from . import config, db, weather_live
 
 SUPPORTED_DISEASES = [
     "Dengue",
@@ -1714,3 +1714,41 @@ def explain_element(request: Request, payload: ExplainElementPayload):
         "numeric_violations": list(numeric_violations),
         "model": model,
     }
+
+
+@app.get("/weather/live", tags=["objective_4_dashboard"])
+@limiter.limit("60/minute")
+def live_weather_overview(request: Request, refresh: bool = Query(default=False)):
+    """Fetch live PAGASA daily weather bulletin, synoptic weather systems,
+    and regional flood & disease transmission nowcast risk tiers."""
+    return weather_live.get_live_weather(force_refresh=refresh)
+
+
+@app.get("/weather/live/{region}", tags=["objective_4_dashboard"])
+@limiter.limit("60/minute")
+def live_weather_region(request: Request, region: str, refresh: bool = Query(default=False)):
+    """Fetch live PAGASA weather parameters and disease-specific risk alerts
+    (Leptospirosis flood hazard and post-rain Dengue vector proliferation)
+    for a single region."""
+    code = _resolve_region(region)
+    if code is None:
+        raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+
+    data = weather_live.get_live_weather(force_refresh=refresh)
+    if code == db.NATIONAL_CODE:
+        return data["national"]
+
+    reg_data = data["regions"].get(code)
+    if not reg_data:
+        raise HTTPException(status_code=404, detail=f"No weather mapping for region '{region}'")
+
+    return {
+        **reg_data,
+        "national_context": {
+            "issued_at": data["national"]["issued_at"],
+            "synopsis": data["national"]["synopsis"],
+            "tropical_cyclone": data["national"]["tropical_cyclone"],
+            "source": data["national"]["source"],
+            "source_url": data["national"]["source_url"],
+        },
+    }
