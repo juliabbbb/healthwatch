@@ -189,13 +189,13 @@ export function ForecastCard({
 
       {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
       <section className="border-b border-border/70 px-5 py-3.5">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
+        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2.5">
           CURRENT STATUS
         </p>
 
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="label-caps text-[10px]">
+            <p className="label-caps text-xs">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
             <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
@@ -225,7 +225,7 @@ export function ForecastCard({
                       aria-checked={isActive}
                       onClick={() => onModeChange(m)}
                       className={cn(
-                        "relative z-10 flex-1 text-center text-[10px] font-semibold transition-colors duration-200 py-0.5",
+                        "relative z-10 flex-1 text-center text-xs font-semibold transition-colors duration-200 py-0.5",
                         isActive
                           ? "text-primary-foreground"
                           : "text-muted-foreground hover:text-foreground",
@@ -250,7 +250,7 @@ export function ForecastCard({
                     type="button"
                     onClick={() => onLayerChange(l)}
                     className={cn(
-                      "rounded-md px-1.5 py-0.5 text-[9px] font-medium capitalize transition-colors text-center",
+                      "rounded-md px-2 py-0.5 text-[11px] font-medium capitalize transition-colors text-center",
                       layer === l
                         ? "bg-primary/20 text-primary font-semibold shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
@@ -267,27 +267,27 @@ export function ForecastCard({
         {/* Stat Chips */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Period</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Period</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {formatMonthYear(meta.label)}
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Cases</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Cases</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {a.point.cases.toLocaleString()}
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">3-Mo Trend</span>
+            <span className="label-caps text-[11px] block">3-Mo Trend</span>
             <span
-              className="inline-flex min-w-0 items-center gap-1 font-mono text-xs font-semibold"
+              className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
               style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
             >
               {a.changePct >= 0 ? (
-                <TrendingUp className="size-3 shrink-0" />
+                <TrendingUp className="size-3.5 shrink-0" />
               ) : (
-                <TrendingDown className="size-3 shrink-0" />
+                <TrendingDown className="size-3.5 shrink-0" />
               )}
               <span className="truncate">
                 {a.changePct >= 0 ? "+" : ""}
@@ -296,14 +296,14 @@ export function ForecastCard({
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Nat'l Rank</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Nat'l Rank</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {a.percentileRank}th %ile
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="label-caps text-[9px] block">Data Source</span>
-            <span className="text-[11px] font-medium text-muted-foreground truncate block">
+            <span className="label-caps text-[11px] block">Data Source</span>
+            <span className="text-xs font-medium text-muted-foreground truncate block">
               {meta.forecast
                 ? `Prophet Forecast · 95% CI ${formatMetric(
                     metricValue(a.point.lower, a.region, mode),
@@ -322,7 +322,7 @@ export function ForecastCard({
 
       {/* 4. Compact 6-Month Forecast + Risk Pills */}
       <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
+        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2">
           NEXT 6 MONTHS
         </p>
         <ForecastSparkline data={sparkData} />
@@ -331,7 +331,7 @@ export function ForecastCard({
         </div>
         {mix.total > 0 && (
           <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
-            <p className="label-caps text-[9px] text-muted-foreground tracking-wider mb-2">
+            <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2">
               TRANSMISSION SPLIT · NEXT 6 MONTHS
             </p>
             <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
@@ -359,10 +359,10 @@ export function ForecastCard({
       {/* 7. Model Info (unchanged) */}
       <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
         <div className="flex items-center justify-between py-0.5 text-xs">
-          <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
+          <span className="label-caps text-xs text-muted-foreground tracking-wider">
             MODEL INFO
           </span>
-          <StatusChip className="text-[10px] py-0.5 px-2 text-muted-foreground">
+          <StatusChip className="text-xs py-0.5 px-2.5 text-muted-foreground">
             {validation.label} · MAPE {validation.mape}%
           </StatusChip>
         </div>
@@ -375,30 +375,30 @@ export function ForecastCard({
             ].map((m) => (
               <div
                 key={m.k}
-                className="rounded-lg bg-secondary/40 px-2 py-1 border border-border/40"
+                className="rounded-lg bg-secondary/40 px-2 py-1.5 border border-border/40"
               >
-                <p className="label-caps text-[9px] text-muted-foreground">{m.k}</p>
-                <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
+                <p className="label-caps text-[11px] text-muted-foreground">{m.k}</p>
+                <p className="font-mono text-sm font-bold tabular-nums text-foreground mt-0.5">
                   {m.v}
                 </p>
               </div>
             ))}
           </div>
-          <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
+          <p className="text-xs leading-relaxed text-muted-foreground">{validation.note}</p>
         </div>
       </section>
 
-      {/* 7. Illness Information (classification of the active illness only) */}
+      {/* 8. Illness Information (classification of the active illness only) */}
       <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-1.5">
+        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-1.5">
           INFORMATION
         </p>
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-foreground">
+          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2.5 py-1 text-xs font-semibold text-foreground">
             {illnessDisplayName(illness)}
           </span>
           {groupForIllness(illness) && (
-            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-muted-foreground">
+            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
               {groupForIllness(illness)}
             </span>
           )}

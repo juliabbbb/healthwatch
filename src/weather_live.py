@@ -90,7 +90,7 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
         lepto_tier = "HIGH ALERT"
         lepto_desc = (
             "Active Flash Flood / Heavy Rain Warning: Severe risk of Leptospira exposure "
-            "from wading in floodwaters and urban/rural runoff. Recommend prophylaxis advisories."
+            "from wading in floodwaters, overflowing canals, and agricultural runoff. Recommend LGU prophylaxis advisories."
         )
         dengue_tier = "ELEVATED"
         dengue_desc = (
@@ -98,6 +98,16 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
             "natural containers within 7-14 days post-rain. Accelerate 4S fogging and source reduction."
         )
         fwbd_desc = "Flood runoff elevates risk of drinking water contamination; recommend boiling/chlorination."
+        timeline = {
+            "immediate_days_1_3": "High floodwater wading contact risk; urgent Leptospira infection hazard and drinking water infiltration.",
+            "short_term_weeks_2_4": "Stagnant pools from receding rains mature into vector breeding sites; Dengue case surge expected in 7-14 days.",
+        }
+        actions = [
+            "Issue public warning against wading in urban/rural floodwaters; deploy Doxycycline prophylaxis for responders & exposed residents.",
+            "Inspect and treat flooded municipal drainage, gutters, and low-lying perimeter puddles.",
+            "Schedule intensive 4S vector search-and-destroy campaigns before Day 7 to eliminate mosquito larvae before pupation.",
+            "Distribute chlorine water purification kits in flooded barangays; issue boil-water advisories.",
+        ]
     elif is_cyclone_monsoon or "scattered" in c_lower:
         tier = "ELEVATED"
         multiplier = 1.15
@@ -112,6 +122,15 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
             "Inspect standing water around residences."
         )
         fwbd_desc = "Heightened humidity and surface runoff; maintain food and drinking water hygiene."
+        timeline = {
+            "immediate_days_1_3": "Scattered rainshowers create temporary puddles and damp soil; avoid direct runoff contact.",
+            "short_term_weeks_2_4": "High atmospheric humidity (>80%) shortens mosquito gonotrophic cycle, increasing biting frequency.",
+        }
+        actions = [
+            "Empty water-collecting outdoor receptacles (tires, plastic bottles, plant saucers).",
+            "Ensure health centers maintain diagnostic test kits (Dengue NS1 / Leptospira RDT) in stock.",
+            "Advise communities to seek immediate medical consult for febrile illness lasting over 2 days.",
+        ]
     elif "isolated" in c_lower or "rainshower" in c_lower:
         tier = "MODERATE"
         multiplier = 1.05
@@ -120,6 +139,13 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
         dengue_tier = "BASELINE"
         dengue_desc = "Localized showers; standard seasonal baseline vector management applies."
         fwbd_desc = "Normal baseline conditions."
+        timeline = {
+            "immediate_days_1_3": "Localized showers with dry intervals; minimal flood inundation threat.",
+            "short_term_weeks_2_4": "Normal seasonal baseline vector density; no climate-induced surge detected.",
+        }
+        actions = [
+            "Maintain standard community sanitation and vector awareness programs.",
+        ]
     else:
         tier = "NORMAL"
         multiplier = 1.00
@@ -128,11 +154,20 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
         dengue_tier = "BASELINE"
         dengue_desc = "Fair weather; baseline seasonal activity."
         fwbd_desc = "Baseline surveillance."
+        timeline = {
+            "immediate_days_1_3": "Dry conditions prevailing; low waterborne risk.",
+            "short_term_weeks_2_4": "Baseline seasonal parameters.",
+        }
+        actions = [
+            "Standard routine epidemiological surveillance.",
+        ]
 
     return {
         "risk_tier": tier,
         "flood_warning": is_flood,
         "multiplier": multiplier,
+        "transmission_timeline": timeline,
+        "recommended_actions": actions,
         "disease_advisories": {
             "leptospirosis": {
                 "alert_level": lepto_tier,
@@ -253,7 +288,10 @@ def _parse_pagasa_html(html_text: str) -> dict[str, Any]:
             "flood_warning": risk["flood_warning"],
             "risk_tier": risk["risk_tier"],
             "multiplier": risk["multiplier"],
+            "transmission_timeline": risk["transmission_timeline"],
+            "recommended_actions": risk["recommended_actions"],
             "disease_advisories": risk["disease_advisories"],
+            "extremes": extremes,
         }
 
     # Build national overview summary

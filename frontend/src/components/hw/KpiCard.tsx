@@ -31,7 +31,7 @@ export function KpiCard({
       )}
     >
       <div className="min-w-0">
-        <p className="label-caps text-[9px] leading-tight text-muted-foreground">{label}</p>
+        <p className="label-caps text-[11px] leading-tight text-muted-foreground">{label}</p>
         <p
           className="mt-1 truncate font-mono text-base font-bold leading-tight tracking-tight tabular-nums text-foreground"
           style={valueColor ? { color: valueColor } : undefined}
@@ -40,7 +40,7 @@ export function KpiCard({
           {value}
         </p>
         {sub && (
-          <p className="mt-1 truncate text-[10px] leading-snug text-muted-foreground" title={sub}>
+          <p className="mt-1 truncate text-xs leading-snug text-muted-foreground" title={sub}>
             {sub}
           </p>
         )}
