@@ -2,93 +2,10 @@ from pathlib import Path
 
 import pandas as pd
 
+from . import config
+
 RAW_DIR = Path("data/raw")
 PROCESSED_DIR = Path("data/processed")
-
-COLUMN_ALIASES = {
-    "date": ("date", "week", "report_date", "admission_date", "morbid_week"),
-    "region": ("region", "region_res", "regions", "psgc_region", "admin_region"),
-    "disease": ("disease", "illness", "case_type", "notifiable_disease", "diagnosis"),
-    "cases": ("cases", "case_count", "number_of_cases", "count", "total_cases", "value"),
-}
-
-
-def _match_columns(df):
-    rename = {}
-    for col in df.columns:
-        key = str(col).strip().lower()
-        for canonical, aliases in COLUMN_ALIASES.items():
-            if key in aliases:
-                rename[col] = canonical
-                break
-    return df.rename(columns=rename)
-
-
-def load_raw(path):
-    path = Path(path)
-    if path.suffix.lower() in {".xlsx", ".xls"}:
-        df = pd.read_excel(path)
-    else:
-        df = pd.read_csv(path)
-    return _match_columns(df)
-
-
-def clean(df, disease=None):
-    """Normalise an imported table: coerce types, group to one row per
-    (date, region, disease), summing cases and (if present) deaths."""
-    missing = [c for c in ("date", "region", "cases") if c not in df.columns]
-    if missing:
-        raise ValueError(
-            f"Missing required columns after alias matching: {missing}. "
-            f"Found columns: {list(df.columns)}"
-        )
-    out = df.copy()
-    if "disease" not in out.columns:
-        if disease is None:
-            raise ValueError("No 'disease' column found; pass disease='Dengue' for single-disease files.")
-        out["disease"] = disease
-    out["date"] = pd.to_datetime(out["date"], errors="coerce")
-    out["cases"] = pd.to_numeric(out["cases"], errors="coerce")
-    out["region"] = out["region"].astype(str).str.strip()
-    out["disease"] = out["disease"].astype(str).str.strip()
-    sum_cols = ["cases"]
-    if "deaths" in out.columns:
-        out["deaths"] = pd.to_numeric(out["deaths"], errors="coerce")
-        sum_cols.append("deaths")
-    out = out.dropna(subset=["date", "cases"])
-    out = (
-        out.groupby(["date", "region", "disease"], as_index=False)[sum_cols]
-        .sum()
-        .sort_values(["disease", "region", "date"], ignore_index=True)
-    )
-    return out
-
-
-def to_weekly(df, fill_missing="zero"):
-    weekly = (
-        df.set_index("date")
-        .groupby(["disease", "region"])["cases"]
-        .resample("W-SUN")
-        .sum()
-        .reset_index()
-    )
-    if fill_missing == "zero":
-        idx = pd.date_range(weekly["date"].min(), weekly["date"].max(), freq="W-SUN")
-        parts = []
-        for (disease, region), group in weekly.groupby(["disease", "region"]):
-            g = (
-                group.set_index("date")
-                .reindex(idx, fill_value=0)
-                .rename_axis("date")
-                .reset_index()
-            )
-            g["disease"] = disease
-            g["region"] = region
-            parts.append(g)
-        weekly = pd.concat(parts, ignore_index=True)[["date", "region", "disease", "cases"]]
-    elif fill_missing != "drop":
-        raise ValueError(f"fill_missing must be 'zero' or 'drop', got '{fill_missing}'")
-    return weekly
 
 
 def to_monthly(df, fill_missing="zero"):
@@ -133,6 +50,41 @@ def save_processed(df, name):
     path = PROCESSED_DIR / name
     df.to_csv(path, index=False)
     return path
+
+
+# Monthly series CSVs across disease groups. Existence-guarded so a partial
+# pipeline (e.g. a dengue-only reprocess) still runs.
+MONTHLY_FILES = (
+    "national_monthly.csv",
+    "regional_dengue_monthly.csv",
+    "national_fwbd_monthly.csv",
+    "regional_fwbd_monthly.csv",
+)
+
+
+def load_monthly_series():
+    """Concatenate every monthly series CSV (dengue + food/waterborne).
+
+    Shared chokepoint: the raw FWD line-lists open in 2018 and the shared
+    lower bound (2019-2026, src/config.py) is enforced and asserted here so
+    every consumer (Prophet, thresholds, validation, API hot-load) inherits
+    it even from stale on-disk CSVs.
+    """
+    frames = []
+    for name in MONTHLY_FILES:
+        path = PROCESSED_DIR / name
+        if path.exists():
+            frames.append(pd.read_csv(path, parse_dates=["date"]))
+    if not frames:
+        raise FileNotFoundError(
+            f"No monthly series CSVs in {PROCESSED_DIR}; run the ingest first."
+        )
+    combined = pd.concat(frames, ignore_index=True)
+    return config.assert_data_window(
+        config.at_or_after_data_start(combined),
+        date_col="date",
+        context="load_monthly_series: ",
+    )
 
 
 def load_latest_processed():

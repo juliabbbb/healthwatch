@@ -6,6 +6,7 @@
 
 import {
   METRIC_META,
+  OUTBREAK_BENCHMARK_WINDOW,
   TOTAL_MONTHS,
   classify,
   formatMetric,
@@ -30,18 +31,13 @@ export interface AlertItem {
 
 const HORIZON = 12;
 
-const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Jan–Mar",
-  wet: "Jul–Sep",
-};
-
 /**
  * Builds the active-alert list for the selected illness/month:
  *  - "high-now": regions classified High at the currently scrubbed month.
  *  - "crossing": regions whose 12-month forecast first crosses into High.
  *  - "outbreak": regions with a Rule A/B seasonal outbreak flag on the active
- *    (upcoming) probe window. Monthly risk and seasonal outbreak phrasing stay
- *    deliberately separate — never combined in one sentence.
+ *    validated 2025 benchmark window. Monthly risk and seasonal outbreak
+ *    phrasing stay deliberately separate — never combined in one sentence.
  */
 export function deriveAlerts(
   assessments: RegionAssessment[],
@@ -49,10 +45,17 @@ export function deriveAlerts(
   activeSeason: Season,
 ): AlertItem[] {
   const out: AlertItem[] = [];
+  const seen = new Set<string>();
+
+  const pushAlert = (item: AlertItem) => {
+    if (seen.has(item.id)) return;
+    seen.add(item.id);
+    out.push(item);
+  };
 
   for (const a of assessments) {
     if (a.risk === "high") {
-      out.push({
+      pushAlert({
         id: `high-${a.region.code}`,
         kind: "high-now",
         regionCode: a.region.code,
@@ -63,17 +66,18 @@ export function deriveAlerts(
       });
     }
 
-    const flag = getOutbreak(a.region.code)[activeSeason];
+    const flag = getOutbreak(a.region.code, illnessId)[activeSeason];
     if (flag?.outbreak) {
       const avg = Math.round(flag.season_avg);
       const p75 = Math.round(flag.season_p75);
-      out.push({
+      const window = OUTBREAK_BENCHMARK_WINDOW[activeSeason] ?? activeSeason;
+      pushAlert({
         id: `outbreak-${a.region.code}`,
         kind: "outbreak",
         regionCode: a.region.code,
         title: `${a.region.short} — Seasonal outbreak alert`,
-        detail: `${SEASON_WINDOW[activeSeason]} window: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
-        month: SEASON_WINDOW[activeSeason],
+        detail: `${window} benchmark: expected ${avg.toLocaleString()} cases/month vs the region's seasonal P75 (${p75.toLocaleString()}).`,
+        month: window,
         // busiest seasons (highest avg/P75 ratio) rank first within this kind
         order: (flag.season_avg / Math.max(0.01, flag.season_p75)) * 100,
       });
@@ -87,7 +91,7 @@ export function deriveAlerts(
       if (!p) break;
       const risk = classify(metricValue(p.cases, a.region, a.mode), a.thresholds);
       if (risk === "high" && prevRisk !== "high") {
-        out.push({
+        pushAlert({
           id: `cross-${a.region.code}`,
           kind: "crossing",
           regionCode: a.region.code,
@@ -108,10 +112,7 @@ export function deriveAlerts(
     outbreak: 1,
     crossing: 2,
   };
-  return out.sort(
-    (x, y) =>
-      weight[x.kind] !== weight[y.kind]
-        ? weight[x.kind] - weight[y.kind]
-        : y.order - x.order,
+  return out.sort((x, y) =>
+    weight[x.kind] !== weight[y.kind] ? weight[x.kind] - weight[y.kind] : y.order - x.order,
   );
 }

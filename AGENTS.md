@@ -1,0 +1,149 @@
+# AGENTS.md
+
+## Project Overview
+
+Regional time-series analysis system for seasonal illness outbreak prediction (Philippines; dengue + food/waterborne diseases). Backend: FastAPI + SQLAlchemy + PostgreSQL (Postgres-only, no SQLite). Frontend: React + Vite + TanStack Router + Leaflet choropleth. LLM narration layer (Groq) for interpretability.
+
+## Quick Commands
+
+```powershell
+# Backend (from repo root)
+python -m venv .venv
+.venv\Scripts\pip install -r requirements.txt
+.venv\Scripts\python -m uvicorn src.api:app --port 8000
+
+# Frontend (from frontend/)
+cd frontend
+npm install
+npm run dev          # Vite dev server
+
+# One-shot launcher
+powershell -ExecutionPolicy Bypass -File run-dev.ps1
+
+# One-shot data update (raw → processed → Postgres)
+powershell -ExecutionPolicy Bypass -File update-data.ps1
+```
+
+## Data Pipeline (only if raw data changes)
+
+```powershell
+.venv\Scripts\python -m src.fwbd_ingest         # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> 4 monthly series
+.venv\Scripts\python -m src.doh_eb_ingest       # canonical DOH-EB file -> monthly series
+.venv\Scripts\python -m src.forecast            # Prophet fits + 12-month forecasts
+.venv\Scripts\python -m src.classify            # risk + probe classification
+.venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
+.venv\Scripts\python -m src.outbreak            # season-level outbreak flags
+.venv\Scripts\python -m src.validate_2025       # prospective 2025 validation
+.venv\Scripts\python -m src.validate_known_epidemic # independent 2019 outbreak check
+.venv\Scripts\python -m src.db                  # rebuild relational DB from processed CSVs
+
+# LLM narrative fidelity corpus (methodology 3.5.3; live, needs GROQ_API_KEY)
+# 152 narratives: 19 series x {ai_insight, analysis, seasonality x5, explain_element}.
+.venv\Scripts\python -m src.validate_narratives --skip-live  # dry run (no API calls)
+.venv\Scripts\python -m src.validate_narratives              # full live corpus
+```
+
+# Verification studies (analyst-facing; slow, run detached)
+
+```powershell
+# Seasonality ablation (configs A/B/C), ~1.4k Prophet fits, ~50 min.
+# Launch detached and poll for data/processed/ablation_*.csv:
+Start-Process -FilePath ".venv\Scripts\python.exe" -ArgumentList "-m","src.ablation" -RedirectStandardOutput "ablation_out.log" -RedirectStandardError "ablation_err.log" -WindowStyle Hidden
+
+# Type II climate-type sensitivity (Bicol / Eastern Visayas / Caraga local
+# seasons vs national Jun-Nov calendar). Fast, reuses shipped CSVs.
+.venv\Scripts\python -m src.sensitivity
+```
+
+## Environment Variables
+
+Create `.env` at repo root (git-ignored):
+
+```
+DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/postgres?sslmode=require
+GEMINI_API_KEY=      # Removed — replaced by GROQ_API_KEY
+GROQ_API_KEY=        # Primary AI-assisted analysis (free at console.groq.com)
+GROQ_MODEL=          # Optional Groq model override (default: openai/gpt-oss-120b)
+OPENAI_API_KEY=      # Fallback AI provider when Groq rate limits/quotas are reached
+OPENAI_MODEL=        # Optional fallback model override (default: gpt-4o-mini)
+```
+
+Postgres-only: `DATABASE_URL` is **required** to start the API and is parsed by
+`db.py`. The API reads every table from the database at startup (the SQLite
+fallback was removed). The schema is auto-created by `db.ensure_tables()` on
+startup and rebuilt from the processed CSVs with `.venv\Scripts\python -m src.db`
+(which drops/recreates only the 11 pipeline tables; the `subscriptions` table was
+removed with the email-report feature).
+
+## Design Tooling (Impeccable)
+
+The UI is governed by a documented design system: `PRODUCT.md` (product truth) and
+`DESIGN.md` (rules/tokens) at repo root, with a machine-readable sidecar in
+`.impeccable/design.json` (schema v2). UI work must stay consistent with these docs;
+after editing UI files, run the mechanical checker from the Impeccable CLI (installed
+for all harnesses via `npx impeccable install`, https://impeccable.style):
+
+```powershell
+# Review resolved context (PRODUCT.md + DESIGN.md)
+& "$env:USERPROFILE\.config\opencode\skills\impeccable\scripts\impeccable.cmd" context
+
+# Check changed UI files for detected deviations
+& "$env:USERPROFILE\.config\opencode\skills\impeccable\scripts\impeccable.cmd" detect --json <changed targets>
+```
+
+Repo utilities in `.impeccable/`:
+
+```powershell
+.venv\Scripts\python .impeccable\gen_design_json.py   # regenerate design.json from DESIGN.md tokens
+.venv\Scripts\python .impeccable\contrast_audit.py    # WCAG contrast audit of the oklch token pairs
+```
+
+Key rules enforced: one coral accent (`One Stamp`), green/amber/red reserved for risk data
+(`Risk Reservation`), mono `label-caps` for metadata (`Instrument Label`), and glass panels,
+never body text, carrying shadow (`Glass Floor`).
+
+## Architecture
+
+- `src/` — Python pipeline (ingest → forecast → classify → outbreak → db) + FastAPI app (`api.py`)
+- `frontend/` — React + Vite + TanStack Router dashboard
+- `data/raw/` — canonical DOH dengue case line-list CSV (2019-2026, 749,683 rows) plus the four DOH FWD line-lists (2018-2026, 210,140 rows)
+- `data/processed/` — pipeline output CSVs (checkpoints; mirrored into Postgres by `src.db`)
+- `frontend/public/geo/` — PSGC region GeoJSON for choropleth
+
+The API hot-loads the 8 modelling tables at startup; `dengue_case_records`
+and `fwbd_case_records` (the raw 959,823-row line-lists) are **not** part of
+that snapshot. Their reported-data breakdowns
+(`GET /reported/{region}?disease=&year=&month=`) are grouped in Postgres on
+demand by `db.case_breakdown()` — totals are guaranteed to equal the monthly
+reported series (`month` bucket: dengue = same Thursday epi-week rule, FWD =
+the files' explicit Morbidity Month).
+
+## Key Constraints
+
+- **Disease: dengue + four FWD diseases** (Acute Bloody Diarrhea, Cholera, Typhoid Fever, Acute Viral Hepatitis), each run fully independently (own forecast/risk tiers/outbreak/escalation); `disease_group: Food and Waterborne Diseases` is a presentation tag for UI grouping only.
+- **Prediction: Prophet only** (monthly, `freq="MS"`).
+- **National series is derived** (sum of 18 regions) per disease, never raw.
+- **Data ships in repo** — the pipeline runs offline from `data/raw` and writes
+  `data/processed`; a DB rebuild (`-m src.db`) pushes those artifacts to
+  Postgres. The API itself is Postgres-only and requires `DATABASE_URL`.
+
+## Testing / Validation
+
+No formal test suite. Validation scripts are run manually:
+- `src.validate_2025` — prospective check of 2025 outbreak flags
+- `src.validate_known_epidemic` — independent 2019 outbreak check (line-list 2019 monthly cross-check)
+
+## Lovable Connection
+
+This project is connected to [Lovable](https://lovable.dev). Avoid rewriting published git history — force pushing, rebasing, or amending pushed commits — as it rewrites Lovable's history and the user will lose project history.
+
+Commits pushed to the connected branch sync back to Lovable and show up in the editor, so keep the branch in a working state.
+
+## Gotchas
+
+- Backend loads all data at startup into memory (pandas DataFrames). Slow cold start, fast after.
+- CORS allows localhost and `*.onrender.com` by default. Set `ALLOWED_ORIGINS` in `.env` for custom origins.
+- `run-dev.ps1` surfaces user-scope env vars (e.g., `GROQ_API_KEY`) even if shell was opened before `setx`.
+- Port 8000 conflicts: close old uvicorn window before restarting.
+- Node 20.19+ or 22.12+ required (Vite 8).
+- Render deploy: API uses `requirements.txt`, frontend uses `npm ci && npm run build`.

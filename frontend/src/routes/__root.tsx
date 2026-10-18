@@ -11,7 +11,9 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { dataReady, fetchPipelineStatus } from "@/lib/healthwatch/data";
+import { dataReady } from "@/lib/healthwatch/data";
+import { Toaster } from "@/components/ui/sonner";
+import { useTheme } from "@/hooks/use-theme";
 
 function NotFoundComponent() {
   return (
@@ -92,13 +94,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "preconnect", href: "https://api.fontshare.com" },
-      { rel: "preconnect", href: "https://cdn.fontshare.com", crossOrigin: "anonymous" },
       {
-        // General Sans (body/display) — Fontshare's closest open analogue to
-        // Aeonik. One sans family at different weights; no separate display face.
+        // Schibsted Grotesk — digital-first grotesque for UI. Clean, precise,
+        // Notion × Apple polish: humanist warmth without decorative weight.
         rel: "stylesheet",
-        href: "https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;450;500;600;700&display=swap",
       },
       {
         // JetBrains Mono — technical/numeric UI (codes, metrics, timestamps).
@@ -139,23 +139,66 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function DataGate({ children }: { children: ReactNode }) {
   const [state, setState] = useState<"loading" | "ready" | "error">("loading");
+  const [progress, setProgress] = useState(0);
+  const [fading, setFading] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
+    const start = performance.now();
+    let raf: number;
+    let done = false;
+
+    const tick = (now: number) => {
+      if (done) return;
+      const elapsed = now - start;
+      // ease-out: fast start, slows toward 92%
+      const raw = 1 - Math.exp(-elapsed / 2000);
+      const pct = Math.min(Math.round(raw * 92), 92);
+      setProgress(pct);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+
     dataReady
-      .then(() => setState("ready"))
+      .then(() => {
+        done = true;
+        cancelAnimationFrame(raf);
+        setProgress(100);
+        setFading(true);
+        setTimeout(() => setState("ready"), 350);
+      })
       .catch((err: unknown) => {
+        done = true;
+        cancelAnimationFrame(raf);
         console.error("Failed to load HEALTHWATCH data from API", err);
         setState("error");
       });
-  }, []);
+
+    return () => {
+      done = true;
+      cancelAnimationFrame(raf);
+    };
+  }, [attempt]);
 
   if (state === "loading") {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
-        <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-          Loading surveillance data…
-        </p>
+      <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background">
+        <div className="w-64">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+              Loading HealthWatch
+            </span>
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              {progress}%
+            </span>
+          </div>
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-300 ease-out"
+              style={{ width: `${progress}%`, opacity: fading ? 0 : 1 }}
+            />
+          </div>
+        </div>
       </div>
     );
   }
@@ -169,8 +212,19 @@ function DataGate({ children }: { children: ReactNode }) {
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             HEALTHWATCH could not load case data. Make sure the backend is running (uvicorn
-            src.api:app --port 8000) and reload.
+            src.api:app --port 8000).
           </p>
+          <button
+            type="button"
+            onClick={() => {
+              setState("loading");
+              setProgress(0);
+              setAttempt((a) => a + 1);
+            }}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary shadow-xs transition-colors hover:bg-primary/20"
+          >
+            Retry connection
+          </button>
         </div>
       </div>
     );
@@ -179,54 +233,17 @@ function DataGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-function StatusChip() {
-  const [status, setStatus] = useState<{ through: string; built: string } | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    fetchPipelineStatus()
-      .then((s) => {
-        if (!alive) return;
-        const day = new Date(s.data_through.date + "T00:00:00");
-        setStatus({
-          through: day.toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          }),
-          built: new Date(s.generated_at).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "short",
-            day: "numeric",
-          }),
-        });
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-  if (!status) return null;
-  return (
-    <div className="pointer-events-none fixed right-3 bottom-3 z-40 glass-panel rounded-full px-3 py-1.5 font-mono text-[10px] tracking-widest text-muted-foreground uppercase">
-      Case data through {status.through} · Forecasts built {status.built}
-    </div>
-  );
-}
-
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const [theme] = useTheme();
 
   return (
     <QueryClientProvider client={queryClient}>
       <DataGate>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-        <>
-          <Outlet />
-          <StatusChip />
-        </>
+        <Outlet />
       </DataGate>
+      <Toaster theme={theme} position="top-center" toastOptions={{ duration: 3000 }} />
     </QueryClientProvider>
   );
 }

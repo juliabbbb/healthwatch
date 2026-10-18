@@ -17,4 +17,16 @@ export default defineConfig({
   nitro: {
     preset: "node-server",
   },
+  vite: {
+    ssr: {
+      // @react-pdf/renderer uses Node.js subpath imports (#standard-fonts/Helvetica)
+      // that break when Nitro bundles them for SSR. Externalise the entire package
+      // tree so Nitro leaves them as runtime requires instead.
+      external: [
+        "@react-pdf/renderer",
+        "@react-pdf/font",
+        "@react-pdf/standard-fonts",
+      ],
+    },
+  },
 });

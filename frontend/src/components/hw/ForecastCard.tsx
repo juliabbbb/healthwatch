@@ -1,29 +1,48 @@
-import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronDown, TrendingDown, TrendingUp, X } from "lucide-react";
+import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
 import {
   METRIC_META,
-  RISK_META,
   assessRegion,
   classify,
+  forecastCategoryMix,
   formatMetric,
   getOutbreak,
   metricValue,
   modelMetrics,
-  recommendations,
-  REPORT_DATE,
-  REPORT_UPCOMING_SEASON,
-  SEASON_START_MONTH,
   monthMeta,
+  seriesFor,
+  OUTBREAK_BENCHMARK_SEASON,
+  OUTBREAK_TRIGGER_LABEL,
+  REGION_BY_CODE,
+  upcomingSeasonForMonth,
+  type ForecastCategoryMix,
   type MetricMode,
-  type OutbreakIndicator,
-  type RiskLevel,
   type Season,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
+import { groupForIllness, illnessDisplayName } from "@/lib/illnessGroups";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
 import { StatusChip } from "./StatusChip";
+import { OutbreakBanner } from "./OutbreakBanner";
+import { KpiStrip, type KpiStripData } from "./KpiStrip";
+import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
+import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
+import { AiInsightLine } from "./AiInsightLine";
+import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+
+const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+export const SEASON_CONFIG: Record<Season, { label: string; months: string; display: string }> = {
+  dry: { label: "Dry", months: "Dec–May", display: "Dry · Dec–May" },
+  wet: { label: "Wet", months: "Jun–Nov", display: "Wet · Jun–Nov" },
+};
+
+export const SEASON_WINDOW: Record<Season, string> = {
+  dry: "Dry · Dec–May",
+  wet: "Wet · Jun–Nov",
+};
 
 export interface ForecastCardProps {
   regionCode: string;
@@ -37,6 +56,7 @@ export interface ForecastCardProps {
   variant?: "panel" | "sheet";
   className?: string;
   showHeader?: boolean;
+  /** Kept for prop-compat; map-season comparison moved to /seasonality */
   outbreakSeason?: Season;
   onOutbreakSeasonChange?: (s: Season) => void;
 }
@@ -53,35 +73,95 @@ export function ForecastCard({
   variant = "panel",
   className,
   showHeader = true,
-  outbreakSeason = REPORT_UPCOMING_SEASON,
-  onOutbreakSeasonChange,
+  // Kept to avoid breaking index.tsx; comparison now lives on /seasonality
+  outbreakSeason = OUTBREAK_BENCHMARK_SEASON,
+  onOutbreakSeasonChange: _onOutbreakSeasonChange,
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
-  const meta = monthMeta(monthIndex);
-  const recs = recommendations(a);
+  const meta = monthMeta(a.monthIndex);
   const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
-  const outlookData = getOutbreak(regionCode);
-  const flagged = Boolean(outlookData[outbreakSeason]?.outbreak);
-  const [compareOpen, setCompareOpen] = useState(false);
-
+  const outlookData = getOutbreak(regionCode, illness);
+  const upcoming = upcomingSeasonForMonth(meta.month);
+  const upcomingInd = outlookData[upcoming];
+  const [aiEnabled] = useAiAnalysisSetting();
   const isSheet = variant === "sheet";
+
+  /* ---------- Derived KPI data ---------- */
+
+  const nextPt = a.forecastWindow[0];
+  const nextMonthKpi = nextPt
+    ? {
+        value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
+        sub: `95% CI ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
+          metricValue(nextPt.upper, a.region, mode),
+          mode,
+        )}`,
+      }
+    : { value: "—", sub: "No forecast" };
+
+  const seasonKpi = upcomingInd
+    ? {
+        label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May",
+        sub: upcomingInd.outbreak
+          ? `Outbreak signal — ${OUTBREAK_TRIGGER_LABEL[upcomingInd.trigger] ?? upcomingInd.trigger}`
+          : "Normal seasonal range",
+      }
+    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "Normal seasonal range" };
+
+  const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast);
+  const peakPt = histPts.length
+    ? histPts.reduce((best, p) => (p.cases > best.cases ? p : best))
+    : undefined;
+  const peakKpi = peakPt
+    ? {
+        value: formatMetric(metricValue(peakPt.cases, a.region, mode), mode),
+        sub: `${formatMonthYear(peakPt.label)} — highest on record`,
+      }
+    : { value: "—", sub: "No historical data" };
+
+  const kpi: KpiStripData = {
+    nextMonth: nextMonthKpi,
+    currentRisk: { level: a.risk, sub: `${a.percentileRank}th %ile of nat'l pool` },
+    season: seasonKpi,
+    peak: peakKpi,
+  };
+
+  const sparkData: SparklinePoint[] = a.forecastWindow.slice(0, 6).map((p) => {
+    const val = metricValue(p.cases, a.region, mode);
+    return {
+      label: MONTH_ABBR[p.month - 1] ?? String(p.month),
+      month: formatMonthYear(p.label),
+      yhat: val,
+      lower: metricValue(p.lower, a.region, mode),
+      upper: metricValue(p.upper, a.region, mode),
+      risk: classify(val, a.thresholds),
+    };
+  });
+
+  const riskCounts = riskCountsFor(
+    a.forecastWindow.slice(0, 6).map((p) => classify(metricValue(p.cases, a.region, mode), a.thresholds)),
+  );
+
+  const mix = forecastCategoryMix(regionCode, a.monthIndex, 6);
 
   return (
     <div
       className={cn(
         isSheet
-          ? "w-full"
-          : "glass-panel w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl",
+          ? "w-full space-y-3"
+          : "glass-panel w-[22rem] xl:w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
         className,
       )}
     >
-      {/* Header Row */}
+      {/* 1. Region Header */}
       {showHeader && (
-        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-4 py-3">
+        <div className="flex items-start justify-between gap-2 border-b border-border/70 px-5 py-3 bg-card/40">
           <div className="min-w-0 flex-1">
             <p className="label-caps">{a.region.short}</p>
-            <h2 className="text-lg font-semibold leading-tight text-foreground truncate">{a.region.name}</h2>
+            <h2 className="text-xl font-semibold leading-tight tracking-tight text-foreground truncate">
+              {a.region.name}
+            </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
             </p>
@@ -98,274 +178,239 @@ export function ForecastCard({
         </div>
       )}
 
-      {/* Primary Key Metric Readout */}
-      <div className="px-4 py-3">
-        <div className="flex items-end justify-between gap-2">
-          <div>
-            <p className="label-caps">
+      {/* Outbreak Alert (conditional) */}
+      <OutbreakBanner
+        regionName={a.region.name}
+        season={upcoming}
+        indicator={upcomingInd}
+        className="mx-5 mt-3 shrink-0"
+      />
+
+      {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
+      <section className="border-b border-border/70 px-5 py-3.5">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
+          CURRENT STATUS
+        </p>
+
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="label-caps text-[10px]">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
-            <p className="font-mono text-3xl font-bold leading-none tracking-tight tabular-nums text-foreground">
+            <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
               {formatMetric(a.value, mode)}
             </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              {meta.label}
-              {mode === "percapita" ? ` · ${a.point.cases.toLocaleString()} cases` : ""}
-              {meta.forecast
-                ? ` · CI ${formatMetric(metricValue(a.point.lower, a.region, mode), mode)}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
-                : " · PIDSR reported"}
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <RiskBadge risk={a.risk} />
-            <SeasonTag season={meta.season} />
-            <OutbreakChip flagged={flagged} season={outbreakSeason} />
-          </div>
-        </div>
 
-        <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-          {a.changePct >= 0 ? (
-            <TrendingUp className="size-3.5 shrink-0" style={{ color: "var(--risk-high)" }} />
-          ) : (
-            <TrendingDown className="size-3.5 shrink-0" style={{ color: "var(--risk-low)" }} />
-          )}
-          <span>
-            <strong className="text-foreground font-medium">
-              {a.changePct >= 0 ? "+" : ""}
-              {a.changePct}%
-            </strong>{" "}
-            vs 3 months ago · <strong className="text-foreground font-medium">{a.percentileRank}th</strong> national percentile
-          </span>
-        </div>
-      </div>
-
-      {/* Streamlined Data Controls: Data Layers & Classification Metric */}
-      {(onLayerChange || onModeChange) && (
-        <div className="border-t border-border/70 px-4 py-2.5 space-y-2">
-          <div className="grid grid-cols-2 gap-2">
-            {onLayerChange && (
-              <div>
-                <p className="label-caps mb-1 text-[10px]">Data Layer</p>
-                <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
-                  <button
-                    onClick={() => onLayerChange("hotspot")}
-                    className={cn(
-                      "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                      layer === "hotspot"
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    Hotspot
-                  </button>
-                  <button
-                    onClick={() => onLayerChange("density")}
-                    className={cn(
-                      "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                      layer === "density"
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    Density
-                  </button>
-                </div>
-              </div>
-            )}
             {onModeChange && (
-              <div>
-                <p className="label-caps mb-1 text-[10px]">Metric</p>
-                <div className="flex rounded-lg border border-border/80 p-0.5 bg-secondary/30">
-                  {(["percapita", "raw"] as MetricMode[]).map((m) => (
+              <div
+                role="radiogroup"
+                aria-label="Metric representation"
+                className="relative mt-2.5 inline-flex h-7 w-44 items-center rounded-full border border-border/80 bg-secondary/50 p-0.5 shadow-inner select-none"
+              >
+                <div
+                  className={cn(
+                    "absolute top-0.5 bottom-0.5 w-[calc(50%-3px)] rounded-full bg-primary shadow-xs transition-all duration-200 ease-out",
+                    mode === "percapita" ? "left-0.5" : "left-[calc(50%+1.5px)]",
+                  )}
+                  aria-hidden="true"
+                />
+                {(["percapita", "raw"] as MetricMode[]).map((m) => {
+                  const isActive = mode === m;
+                  return (
                     <button
                       key={m}
+                      type="button"
+                      role="radio"
+                      aria-checked={isActive}
                       onClick={() => onModeChange(m)}
-                      aria-pressed={mode === m}
                       className={cn(
-                        "flex-1 rounded-md px-2 py-1 text-[11px] font-medium transition-colors text-center",
-                        mode === m
-                          ? "bg-primary/20 text-primary font-semibold shadow-xs"
+                        "relative z-10 flex-1 text-center text-[10px] font-semibold transition-colors duration-200 py-0.5",
+                        isActive
+                          ? "text-primary-foreground"
                           : "text-muted-foreground hover:text-foreground",
                       )}
                     >
                       {METRIC_META[m].short}
                     </button>
-                  ))}
-                </div>
+                  );
+                })}
               </div>
             )}
           </div>
-          <p className="text-[10px] leading-tight text-muted-foreground">
-            Hotspots ranked on <span className="text-foreground">{METRIC_META[mode].label.toLowerCase()}</span>.
-          </p>
-        </div>
-      )}
 
-      {/* Outbreak outlook */}
-      {outlookData[outbreakSeason] && (
-        <div className="border-t border-border/70 px-4 py-3">
-          <p className="label-caps mb-1.5 text-[10px]">Outbreak outlook</p>
-          <OutbreakHeadline season={outbreakSeason} ind={outlookData[outbreakSeason]} />
-          <SeasonBasis isManual={outbreakSeason !== REPORT_UPCOMING_SEASON} />
-          <button
-            onClick={() => setCompareOpen((o) => !o)}
-            aria-expanded={compareOpen}
-            className="mt-2 flex w-full items-center justify-between rounded-lg border border-border/80 px-2.5 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground"
-          >
-            Compare seasons
-            <ChevronDown
-              className={cn("size-3.5 transition-transform", compareOpen && "rotate-180")}
-            />
-          </button>
-          {compareOpen && (
-            <div className="mt-2">
-              <div className="mb-2 grid grid-cols-2 gap-1.5 text-[11px]">
-                <button
-                  onClick={() => onOutbreakSeasonChange?.("dry")}
-                  aria-pressed={outbreakSeason === "dry"}
-                  className={cn(
-                    "rounded-lg border px-2 py-1 text-left transition-colors",
-                    outbreakSeason === "dry"
-                      ? "border-primary/50 bg-primary/15 text-primary"
-                      : "border-border/80 text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  Dry · Jan–Mar
-                </button>
-                <button
-                  onClick={() => onOutbreakSeasonChange?.("wet")}
-                  aria-pressed={outbreakSeason === "wet"}
-                  className={cn(
-                    "rounded-lg border px-2 py-1 text-left transition-colors",
-                    outbreakSeason === "wet"
-                      ? "border-primary/50 bg-primary/15 text-primary"
-                      : "border-border/80 text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  Wet · Jul–Sep
-                </button>
-              </div>
-              {(["dry", "wet"] as Season[]).map((s) => {
-                const ind = outlookData[s];
-                if (!ind) return null;
-                const ratio = ind.season_avg / Math.max(0.01, ind.season_p75);
-                const width = Math.min(100, Math.round((ratio / 1.5) * 100));
-                return (
-                  <div
-                    key={s}
+          <div className="flex flex-col items-end gap-1.5 shrink-0">
+            <RiskBadge risk={a.risk} />
+            <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
+            {onLayerChange && (
+              <div className="mt-1 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30">
+                {(["hotspot", "density"] as const).map((l) => (
+                  <button
+                    key={l}
+                    type="button"
+                    onClick={() => onLayerChange(l)}
                     className={cn(
-                      "mt-1.5 rounded-lg bg-secondary/50 px-2.5 py-2 transition-opacity",
-                      s !== outbreakSeason && "opacity-45",
+                      "rounded-md px-1.5 py-0.5 text-[9px] font-medium capitalize transition-colors text-center",
+                      layer === l
+                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="label-caps capitalize">{s} window</span>
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
-                        style={
-                          ind.outbreak
-                            ? { color: "oklch(0.99 0.003 95)", backgroundColor: "var(--risk-high-solid)" }
-                            : { color: "var(--risk-low)", backgroundColor: "color-mix(in oklab, var(--risk-low), transparent 85%)" }
-                        }
-                      >
-                        {ind.outbreak ? "Alert" : "Clear"}
-                      </span>
-                    </div>
-                    <p className="mt-1 font-mono tabular-nums text-foreground">
-                      {Math.round(ind.season_avg).toLocaleString()} / {Math.round(ind.season_p75).toLocaleString()} P75
-                    </p>
-                    <div className="relative mt-1 h-1.5 overflow-hidden rounded-full bg-secondary">
-                      <div
-                        className="absolute inset-y-0 left-0 rounded-full"
-                        style={{ width: `${width}%`, backgroundColor: "var(--risk-high)" }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
+                    {l}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Stat Chips */}
+        <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="label-caps text-[9px] block">Period</span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {formatMonthYear(meta.label)}
+            </span>
+          </div>
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="label-caps text-[9px] block">Cases</span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {a.point.cases.toLocaleString()}
+            </span>
+          </div>
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="label-caps text-[9px] block">3-Mo Trend</span>
+            <span
+              className="inline-flex min-w-0 items-center gap-1 font-mono text-xs font-semibold"
+              style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+            >
+              {a.changePct >= 0 ? (
+                <TrendingUp className="size-3 shrink-0" />
+              ) : (
+                <TrendingDown className="size-3 shrink-0" />
+              )}
+              <span className="truncate">
+                {a.changePct >= 0 ? "+" : ""}
+                {a.changePct}%
+              </span>
+            </span>
+          </div>
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+            <span className="label-caps text-[9px] block">Nat'l Rank</span>
+            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+              {a.percentileRank}th %ile
+            </span>
+          </div>
+          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
+            <span className="label-caps text-[9px] block">Data Source</span>
+            <span className="text-[11px] font-medium text-muted-foreground truncate block">
+              {meta.forecast
+                ? `Prophet Forecast · 95% CI ${formatMetric(
+                    metricValue(a.point.lower, a.region, mode),
+                    mode,
+                  )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
+                : "DOH Epidemiology Bureau PIDSR Surveillance"}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. Epicentra-style KPI Strip */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+        <KpiStrip data={kpi} />
+      </section>
+
+      {/* 4. Compact 6-Month Forecast + Risk Pills */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
+          NEXT 6 MONTHS
+        </p>
+        <ForecastSparkline data={sparkData} />
+        <div className="mt-2">
+          <RiskDistributionRow counts={riskCounts} />
+        </div>
+        {mix.total > 0 && (
+          <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
+            <p className="label-caps text-[9px] text-muted-foreground tracking-wider mb-2">
+              TRANSMISSION SPLIT · NEXT 6 MONTHS
+            </p>
+            <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
+          </div>
+        )}
+      </section>
+
+      {/* 5. Compact AI Insight (gated) */}
+      {aiEnabled && (
+        <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
+          <AiInsightLine
+            regionShort={a.region.short}
+            regionName={a.region.name}
+            monthLabel={meta.label}
+            illness={illness}
+          />
+        </section>
       )}
 
-      {/* Progressive Disclosure: Collapsible Model Validation */}
-      <div className="border-t border-border/70 px-4 py-2.5">
-        <details className="group [&_summary::-webkit-details-marker]:hidden">
-          <summary className="flex cursor-pointer items-center justify-between py-1 text-xs select-none">
-            <span className="label-caps text-[10px]">Model validation</span>
-            <div className="flex items-center gap-1.5">
-              <StatusChip className="text-[10px] py-0.5 px-2">
-                {validation.label} · MAPE {validation.mape}%
-              </StatusChip>
-              <ChevronDown className="size-3.5 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
-            </div>
-          </summary>
-          <div className="mt-2.5 space-y-2 pt-1 animate-in fade-in-50 duration-200">
-            <div className="grid grid-cols-3 gap-2 text-center">
-              {[
-                { k: "MAE", v: validation.mae.toLocaleString() },
-                { k: "RMSE", v: validation.rmse.toLocaleString() },
-                { k: "MAPE", v: `${validation.mape}%` },
-              ].map((m) => (
-                <div key={m.k} className="rounded-lg bg-secondary/50 px-2 py-1.5 border border-border/40">
-                  <p className="label-caps text-[9px]">{m.k}</p>
-                  <p className="font-mono text-xs font-semibold tabular-nums mt-0.5">{m.v}</p>
-                </div>
-              ))}
-            </div>
-            <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
+      {/* 6. Model Info (unchanged) */}
+      <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
+        <div className="flex items-center justify-between py-0.5 text-xs">
+          <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
+            MODEL INFO
+          </span>
+          <StatusChip className="text-[10px] py-0.5 px-2 text-muted-foreground">
+            {validation.label} · MAPE {validation.mape}%
+          </StatusChip>
+        </div>
+        <div className="mt-2 space-y-1.5 pt-0.5">
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[
+              { k: "MAE", v: validation.mae.toLocaleString() },
+              { k: "RMSE", v: validation.rmse.toLocaleString() },
+              { k: "MAPE", v: `${validation.mape}%` },
+            ].map((m) => (
+              <div
+                key={m.k}
+                className="rounded-lg bg-secondary/40 px-2 py-1 border border-border/40"
+              >
+                <p className="label-caps text-[9px] text-muted-foreground">{m.k}</p>
+                <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
+                  {m.v}
+                </p>
+              </div>
+            ))}
           </div>
-        </details>
-      </div>
+          <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
+        </div>
+      </section>
 
-      {/* 12-Month Forecast Horizon */}
-      <div className="border-t border-border/70 px-4 py-3">
-        <p className="label-caps mb-2 text-[10px]">12-month forecast</p>
-        <ul className="space-y-2">
-          {a.forecastWindow.map((p) => {
-            const v = metricValue(p.cases, a.region, mode);
-            const risk: RiskLevel = classify(v, a.thresholds);
-            return (
-              <li key={p.index} className="flex items-center gap-2.5 text-xs">
-                <span className="w-16 font-mono text-[11px] text-muted-foreground">{p.label}</span>
-                <span className="relative h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-                  <span
-                    className="absolute inset-y-0 left-0 rounded-full transition-all duration-300"
-                    style={{
-                      width: `${Math.min(100, (v / Math.max(0.01, a.thresholds.p75 * 1.6)) * 100)}%`,
-                      backgroundColor: RISK_META[risk].color,
-                    }}
-                  />
-                </span>
-                <span className="w-24 text-right font-mono text-[11px] tabular-nums text-foreground/90">
-                  {formatMetric(metricValue(p.lower, a.region, mode), mode)}–
-                  {formatMetric(metricValue(p.upper, a.region, mode), mode)}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-
-      {/* Dominant Illness & Recommended Intervention */}
-      <div className="border-t border-border/70 px-4 py-3">
-        <p className="label-caps mb-1 text-[10px]">Dominant illness</p>
-        <p className="text-sm font-semibold text-foreground">{a.dominantIllness.name}</p>
-        <p className="mt-0.5 text-[11px] text-muted-foreground">{a.dominantIllness.driver}</p>
-        <p className="label-caps mt-3 mb-1 text-[10px]">Recommended intervention</p>
-        <p className="text-xs leading-relaxed text-foreground/90">
-          <span className="font-semibold text-primary">{recs[0]!.title}.</span> {recs[0]!.detail}
+      {/* 7. Illness Information (classification of the active illness only) */}
+      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-1.5">
+          INFORMATION
         </p>
-      </div>
+        <div className="flex items-center gap-2">
+          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-foreground">
+            {illnessDisplayName(illness)}
+          </span>
+          {groupForIllness(illness) && (
+            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-muted-foreground">
+              {groupForIllness(illness)}
+            </span>
+          )}
+        </div>
+      </section>
 
-      {/* Action CTA */}
-      <div className={cn(
-        "border-t border-border/70 px-4 py-3",
-        isSheet ? "sticky bottom-0 bg-card/95 backdrop-blur-md pb-6 pt-3" : "sticky bottom-0 bg-card/95 backdrop-blur-md rounded-b-xl z-10"
-      )}>
+      {/* 8. Pinned CTA */}
+      <div
+        className={cn(
+          "px-5 py-3",
+          isSheet
+            ? "sticky bottom-0 bg-card pb-6 pt-3 border-t border-border/70"
+            : "sticky bottom-0 bg-card rounded-b-xl z-10 border-t border-border/70",
+        )}
+      >
         <Link
-          to="/region/$code"
-          params={{ code: regionCode }}
+          to="/seasonality"
+          search={{ region: regionCode }}
           className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-95 hover:shadow active:scale-[0.99]"
         >
           Open region analysis <ArrowUpRight className="size-3.5" />
@@ -375,65 +420,73 @@ export function ForecastCard({
   );
 }
 
-const SEASON_WINDOW: Record<Season, string> = {
-  dry: "Dry · Jan–Mar",
-  wet: "Wet · Jul–Sep",
-};
-
-function SeasonBasis({ isManual }: { isManual: boolean }) {
-  const start = SEASON_START_MONTH[REPORT_UPCOMING_SEASON];
-  return (
-    <p
-      className={cn(
-        "mt-1.5 text-[10px] leading-relaxed",
-        isManual ? "text-muted-foreground/70" : "text-muted-foreground",
-      )}
-    >
-      Based on the current report date ({REPORT_DATE}) — upcoming season derived
-      from a fixed calendar rule (wet: Jun–Nov, dry: Dec–May), starting {start}.{" "}
-      {isManual && "Showing the other season for comparison."}
-    </p>
-  );
+interface CategoryMixBarProps {
+  mix: ForecastCategoryMix;
+  regionCode: string;
+  mode: MetricMode;
+  illness: string;
 }
 
-function OutbreakHeadline({ season, ind }: { season: Season; ind: OutbreakIndicator }) {
-  const cap = season === "dry" ? "Dry" : "Wet";
-  const avg = Math.round(ind.season_avg).toLocaleString();
-  const p75 = Math.round(ind.season_p75).toLocaleString();
-  return ind.outbreak ? (
-    <p className="text-xs leading-relaxed text-foreground/90">
-      <span className="font-semibold text-foreground">
-        Next season ({SEASON_WINDOW[season]}): outbreak alert.
-      </span>{" "}
-      Expected cases ({avg}) exceed this region's historical {cap}-season P75 threshold ({p75}).
-    </p>
-  ) : (
-    <p className="text-xs leading-relaxed text-foreground/90">
-      <span className="font-semibold text-foreground">
-        Next season ({SEASON_WINDOW[season]}): no outbreak alert.
-      </span>{" "}
-      Expected cases within this region's normal seasonal range.
-    </p>
-  );
-}
+function CategoryMixBar({ mix, regionCode, mode, illness }: CategoryMixBarProps) {
+  const region = REGION_BY_CODE[regionCode]!;
+  const conv = (v: number) => formatMetric(metricValue(v, region, mode), mode);
+  const isDengue = illness === "Dengue";
+  const segs = [
+    { key: "Dengue", value: mix.dengue, color: "var(--chart-1)", show: true },
+    {
+      key: "Food-Borne",
+      value: mix.foodBorne,
+      color: "var(--chart-2)",
+      show: !isDengue,
+    },
+    {
+      key: "Water-Borne",
+      value: mix.waterBorne,
+      color: "var(--chart-3)",
+      show: !isDengue,
+    },
+  ].filter((s) => s.show && s.value > 0);
+  if (!segs.length) return null;
+  const shares = segs.map((s) => s.value);
+  const denominator = shares.reduce((a, b) => a + b, 0);
+  if (!denominator) return null;
+  const pct = (v: number) => ((v / denominator) * 100).toFixed(0);
 
-function OutbreakChip({ flagged, season }: { flagged: boolean; season: Season }) {
-  if (!flagged) {
-    return (
-      <span className="inline-flex items-center gap-1 uppercase tracking-wider rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-        {season} outbreak · no alert
-      </span>
-    );
-  }
   return (
-    <span
-      className="inline-flex items-center gap-1 uppercase tracking-wider rounded-full px-2 py-0.5 text-[10px] font-medium"
-      style={{
-        color: "oklch(0.99 0.003 95)",
-        backgroundColor: RISK_META.high.solidColor,
-      }}
-    >
-      {season} outbreak alert
-    </span>
+    <div>
+      <div
+        className="flex h-2 w-full overflow-hidden rounded-full bg-secondary"
+        role="figure"
+        aria-label={`Forecast split: ${segs
+          .map((s) => `${s.key} ${pct(s.value)}%`)
+          .join(", ")}`}
+      >
+        {segs.map((s) => (
+          <div
+            key={s.key}
+            className="h-full shrink-0 transition-[width] duration-500"
+            style={{ width: `${pct(s.value)}%`, background: s.color }}
+          />
+        ))}
+      </div>
+      <div className="mt-2 flex flex-col gap-1">
+        {segs.map((s) => (
+          <div key={s.key} className="flex items-center justify-between gap-2 text-[10px]">
+            <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+              <span
+                className="size-1.5 shrink-0 rounded-full"
+                style={{ background: s.color }}
+                aria-hidden="true"
+              />
+              <span className="truncate">{s.key}</span>
+            </span>
+            <span className="font-mono tabular-nums text-foreground">
+              {conv(s.value)}
+              <span className="ml-1 text-muted-foreground">({pct(s.value)}%)</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

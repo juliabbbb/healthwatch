@@ -1,0 +1,6 @@
+[population] applied 18 region populations (2024 census).
+Connected to Supabase PostgreSQL
+Database connection verified.
+Backend data loaded in 7.0s
+INFO:     127.0.0.1:61263 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61265 - "GET /escalation?disease=Dengue&top=5 HTTP/1.1" 200 OK

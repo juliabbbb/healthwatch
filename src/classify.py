@@ -2,60 +2,63 @@ import numpy as np
 import pandas as pd
 
 from . import ingest
+from .doh_eb_ingest import DATA_END
 
+# Validation pool end (invariant): every walk-forward/2025-prospective check and
+# the 2025 prospective validation reuse percentiles computed ONLY from history
+# through 2024-12-31, so the validated months were never in the baseline.
 HISTORY_END = pd.Timestamp("2024-12-31")
+# Production pool end (Option A): the dashboard risk tiers (risk_thresholds,
+# risk_classification, seasonal thresholds) observe the FULL observed monthly
+# series (2019-01..2026-08), i.e. up to the last reported month — no lookahead
+# past the forecast horizon's anchor, and never touches the validation pools.
+PROD_HISTORY_END = DATA_END
 TIER_ORDER = {"Low": 0, "Moderate": 1, "High": 2}
+
+# Companion validation-pool files written by run() so the 2025 prospective
+# check can keep using pre-2025 thresholds even though the production risk
+# tiers moved to the full 2019-2026 baseline.
+VALIDATION_THRESHOLDS = "validation_thresholds.csv"
+VALIDATION_SEASONAL = "validation_seasonal_thresholds.csv"
 
 # Calendar wet/dry season mapping used by the outbreak indicator, matching
 # features.py: wet = Jun-Nov (months 6-11), dry = Dec-May (12,1-5). The month
 # (not the date-week) decides the season, so months never split across seasons.
-def season_of(date):
-    """Return 'wet' | 'dry' for a date-like, matching features.py wet/dry flag."""
+#
+# PAGASA Modified Corona Climate Classification overrides: Type II regions
+# (Bicol Region, Eastern Visayas, Caraga) receive their maximum rainfall during
+# Dec-Feb, inverting the national monsoon-driven wet window. The production
+# pipeline keeps the national calendar (Type I generalization); SEASON_RULES
+# exists so the regional sensitivity study can re-run Rule B and the seasonal
+# probes under each region's local calendar without touching the month-anchored
+# percentile tiers (which are climate-agnostic by construction).
+SEASON_RULES = {
+    "Bicol Region": {12, 1, 2, 3, 4, 5},     # Type II
+    "Eastern Visayas": {12, 1, 2, 3, 4, 5},  # Type II
+    "Caraga": {12, 1, 2, 3, 4, 5},           # Type II
+}
+
+
+def wet_months_of(region):
+    return SEASON_RULES.get(region) or set(range(6, 12))
+
+
+def season_of(date, region=None):
+    """Return 'wet' | 'dry' for a date-like. Defaults to the national calendar
+    (features.py wet/dry flag); honours SEASON_RULES when a region is given."""
     m = pd.Timestamp(date).month
-    return "wet" if 6 <= m <= 11 else "dry"
+    return "wet" if m in wet_months_of(region) else "dry"
 
 
-def load_history():
-    national = pd.read_csv(
-        ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
-    )
-    regional = pd.read_csv(
-        ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]
-    )
-    df = pd.concat([national, regional], ignore_index=True)
-    return df[df["date"] <= HISTORY_END].copy()
+def load_history(end=HISTORY_END):
+    df = ingest.load_monthly_series()
+    return df[df["date"] <= end].copy()
 
 
 def with_month_of_year(df, date_col="date"):
     out = df.copy()
     out["month"] = pd.to_datetime(out[date_col]).dt.month.astype(int)
     return out
-
-
-def with_iso_week(df, date_col="date"):
-    """ISO-week bucketing used only by the standalone known-epidemic check on
-    the historical weekly fixture; the live pipeline is monthly."""
-    out = df.copy()
-    out["iso_week"] = pd.to_datetime(out[date_col]).dt.isocalendar().week.astype(int)
-    out.loc[out["iso_week"] > 52, "iso_week"] = 1
-    return out
-
-
-def compute_weekly_thresholds(history):
-    """Per-(disease, region, iso_week) P50/P75 of historical weekly cases.
-
-    Weekly variant for the known-epidemic fixture (2016-2021); the monthly
-    pipeline uses `compute_thresholds` instead."""
-    h = with_iso_week(history)
-    thresholds = (
-        h.groupby(["disease", "region", "iso_week"])["cases"]
-        .quantile([0.5, 0.75])
-        .unstack()
-        .rename(columns={0.5: "p50", 0.75: "p75"})
-        .clip(lower=0)
-        .reset_index()
-    )
-    return thresholds.sort_values(["region", "iso_week"], ignore_index=True)
 
 
 def compute_thresholds(history):
@@ -71,16 +74,24 @@ def compute_thresholds(history):
     return thresholds.sort_values(["region", "month"], ignore_index=True)
 
 
-def compute_seasonal_thresholds(history):
+def compute_seasonal_thresholds(history, season_func=None):
     """Per-(disease, region, season) P75 of pre-2025 historical cases.
 
     Pools every historical monthly case count that falls within the season
     (wet = Jun-Nov, dry = Dec-May) and takes the 75th percentile. This season
     baseline backs Rule B of the outbreak indicator (season sum up-lift) and
-    reuses the same pre-2025 history as the monthly percentiles.
+    reuses the same pre-2025 history as the monthly percentiles. Pass a
+    per-region `season_func(date, region)` to apply a climate-type override.
     """
     h = history.copy()
-    h["season"] = h["date"].map(season_of)
+    if season_func is None:
+        h["season"] = np.where(
+            (h["date"].dt.month >= 6) & (h["date"].dt.month <= 11), "wet", "dry"
+        )
+    else:
+        h["season"] = h.apply(
+            lambda r: season_func(r["date"], r["region"]), axis=1
+        )
     thresholds = (
         h.groupby(["disease", "region", "season"])["cases"]
         .quantile(0.75)
@@ -126,17 +137,27 @@ def classify_forecasts(thresholds):
     return out.sort_values(["region", "date"], ignore_index=True)
 
 
-def classify_seasonal(thresholds):
+def classify_seasonal(thresholds, probes=None, season_func=None):
     """Classify the season-probe forecasts (dry + wet windows) into risk tiers.
 
     Same monthly P75 thresholding as classify_forecasts, but applied to
     season_probes.csv so each region gets a dry- and wet-season risk label for
     the outbreak indicator, without altering the dashboard's next-12-months view.
+    Pass `season_func(date, region)` to relabel probes under a regional
+    climate-type override (Type II regions: the Jan-Mar 'dry' probe is actually
+    their local wet peak).
     """
-    probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
-        columns={"target_date": "date"}
-    )
+    if probes is None:
+        probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv").rename(
+            columns={"target_date": "date"}
+        )
+    else:
+        probes = probes.rename(columns={"target_date": "date"})
     probes["date"] = pd.to_datetime(probes["date"])
+    if season_func is not None:
+        probes["season"] = probes.apply(
+            lambda r: season_func(r["date"], r["region"]), axis=1
+        )
     merged = _apply_tiers(probes, thresholds)
     out = merged[
         ["disease", "region", "season", "date", "yhat", "p50", "p75", "risk_level"]
@@ -175,11 +196,11 @@ def tier_backtest(thresholds):
 
 
 def run():
-    history = load_history()
-    thresholds = compute_thresholds(history)
+    prod_history = load_history(PROD_HISTORY_END)
+    thresholds = compute_thresholds(prod_history)
     thresholds_path = ingest.save_processed(thresholds, "risk_thresholds.csv")
 
-    seasonal_thr = compute_seasonal_thresholds(history)
+    seasonal_thr = compute_seasonal_thresholds(prod_history)
     seasonal_thr_path = ingest.save_processed(seasonal_thr, "seasonal_thresholds.csv")
 
     classification = classify_forecasts(thresholds)
@@ -188,11 +209,22 @@ def run():
     seasonal_cls = classify_seasonal(thresholds)
     seasonal_cls_path = ingest.save_processed(seasonal_cls, "seasonal_classification.csv")
 
-    accuracy = tier_backtest(thresholds)
+    # Validation artifacts stay on the pre-2025 pool (see HISTORY_END). Companion
+    # threshold files are written for validate_2025, which must not read the
+    # extended production baselines (2019-2026) that would leak 2025 itself.
+    val_history = load_history(HISTORY_END)
+    val_thresholds = compute_thresholds(val_history)
+    val_seasonal = compute_seasonal_thresholds(val_history)
+    ingest.save_processed(val_thresholds, VALIDATION_THRESHOLDS)
+    ingest.save_processed(val_seasonal, VALIDATION_SEASONAL)
+
+    accuracy = tier_backtest(val_thresholds)
     accuracy_path = ingest.save_processed(accuracy, "tier_accuracy.csv")
 
-    print(f"History used: {history['date'].min().year}-{HISTORY_END.year} "
-          f"({len(history)} rows, pre-2025 baseline)")
+    print(f"Production history used: {prod_history['date'].min().year}-"
+          f"{PROD_HISTORY_END.year} ({len(prod_history)} rows, full baseline)")
+    print(f"Validation history used: {val_history['date'].min().year}-"
+          f"{HISTORY_END.year} ({len(val_history)} rows, pre-2025 baseline)")
     print(f"Saved {len(thresholds)} region-month thresholds -> {thresholds_path}")
     print(f"Saved {len(seasonal_thr)} region-season thresholds -> {seasonal_thr_path}")
     print(f"Saved {len(classification)} classified forecasts -> {classification_path}")

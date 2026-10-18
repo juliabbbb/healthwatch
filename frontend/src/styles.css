@@ -5,14 +5,15 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * HEALTHWATCH design system — warm light theme.
+ * HEALTHWATCH design system — Notion × Apple polish.
+ * Schibsted Grotesk body/display, JetBrains Mono instrument labels.
  * All colors are oklch semantic tokens. Never hardcode colors in components.
  * Risk colors are reserved exclusively for risk data.
  */
 
 @theme inline {
-  --font-sans: "General Sans", ui-sans-serif, system-ui, sans-serif;
-    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -69,118 +70,133 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  font-size: 16px;
 
-  --background: oklch(0.98 0.007 81);        /* warm cream, not white */
-  --foreground: oklch(0.24 0.008 85);         /* near-black ink, not pure black */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.24 0.008 85);
+  --font-size-xs: 0.75rem; /* 12px — badges, fine print only */
+  --font-size-sm: 0.875rem; /* 14px — secondary labels */
+  --font-size-base: 1rem; /* 16px — body default */
+  --font-size-md: 1.0625rem; /* 17px — comfortable reading */
+  --font-size-lg: 1.125rem; /* 18px — section labels */
+  --font-size-xl: 1.25rem; /* 20px — card titles */
+  --font-size-2xl: 1.5rem; /* 24px — page titles */
+  --font-size-3xl: 1.875rem; /* 30px — hero numbers */
+
+  --radius: 0.5rem;
+
+  /* ——— Light: Notion × Apple polish ——— */
+  --background: oklch(0.99 0.002 260); /* clean cool white, never warm cream */
+  --foreground: oklch(0.15 0.005 260); /* near-black with cool undertone */
+  --card: oklch(1 0 0); /* pure white surfaces */
+  --card-foreground: oklch(0.15 0.005 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.24 0.008 85);
+  --popover-foreground: oklch(0.15 0.005 260);
 
-  --primary: oklch(0.70 0.19 35);             /* warm coral — the one accent */
+  --primary: oklch(0.63 0.19 45); /* warm coral — the single interaction accent in light mode */
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.96 0.019 256);         /* pale sky blue */
-  --secondary-foreground: oklch(0.34 0.063 249);
-  --muted: oklch(0.94 0.013 82);
-  --muted-foreground: oklch(0.51 0.019 79);
-  --accent: oklch(0.91 0.111 90);             /* pale sun yellow, sparing use */
-  --accent-foreground: oklch(0.31 0.058 92);
-  --destructive: oklch(0.59 0.188 32);
+  --secondary: oklch(0.96 0.005 260); /* pale cool gray wash */
+  --secondary-foreground: oklch(0.30 0.01 260);
+  --muted: oklch(0.96 0.004 260); /* barely-there surface tint */
+  --muted-foreground: oklch(0.50 0.01 260); /* medium gray caption */
+  --accent: oklch(0.95 0.015 55); /* subtle warm highlight */
+  --accent-foreground: oklch(0.30 0.02 48);
+  --destructive: oklch(0.55 0.20 25); /* crisp red */
   --destructive-foreground: oklch(1 0 0);
 
-  --border: oklch(0.24 0.008 85 / 10%);
-  --input: oklch(0.24 0.008 85 / 14%);
-  --ring: oklch(0.70 0.19 35 / 55%);
+  --border: oklch(0.18 0.005 260 / 10%); /* hairline, barely visible */
+  --input: oklch(0.18 0.005 260 / 14%); /* slightly stronger for fields */
+  --ring: oklch(0.63 0.19 45 / 40%); /* coral focus ring */
 
-  /* risk semantics — green/amber/red at a glance, tuned for light bg */
-  --risk-low: oklch(0.62 0.129 162);
-  --risk-moderate: oklch(0.75 0.152 80);
-  --risk-high: oklch(0.59 0.188 32);
-  /* deeper variants for solid badges carrying white text (WCAG AA ≥4.5:1);
-     maps/legends keep the brighter tokens above */
-  --risk-low-solid: oklch(0.508 0.118 165);    /* ≈ emerald-700 */
-  --risk-moderate-solid: oklch(0.555 0.116 66); /* ≈ amber-700 */
-  --risk-high-solid: oklch(0.517 0.176 27);     /* ≈ red-700 */
-  --wet: oklch(0.64 0.117 234);
-  --dry: oklch(0.68 0.129 72);
+  /* risk semantics — muted warm ramp (sage -> amber -> brick), desaturated
+     so the map is calm and the tiers still separate at a glance */
+  --risk-low: oklch(0.62 0.09 145);
+  --risk-moderate: oklch(0.70 0.105 75);
+  --risk-high: oklch(0.58 0.135 32);
+  /* deeper variants for solid badges carrying white text (WCAG AA >= 4.5:1);
+     maps/legends keep the base tokens above */
+  --risk-low-solid: oklch(0.478 0.08 145);
+  --risk-moderate-solid: oklch(0.525 0.09 70);
+  --risk-high-solid: oklch(0.49 0.12 30);
+  --wet: oklch(0.58 0.12 240); /* cool blue for wet season */
+  --dry: oklch(0.62 0.12 75); /* warm amber for dry season */
 
-  --panel: oklch(1 0 0 / 88%);
-  --panel-border: oklch(0.24 0.008 85 / 10%);
+  --panel: oklch(1 0 0 / 92%); /* cleaner glass: higher opacity, less tint */
+  --panel-border: oklch(0.18 0.005 260 / 8%); /* refined hairline */
 
-  --chart-1: oklch(0.70 0.19 35);   /* coral */
-  --chart-2: oklch(0.64 0.117 234); /* teal/sky */
-  --chart-3: oklch(0.62 0.129 162); /* green */
-  --chart-4: oklch(0.75 0.152 80);  /* amber */
-  --chart-5: oklch(0.56 0.129 307); /* plum, last resort */
+  --chart-1: oklch(0.55 0.17 260); /* blue — independent of the coral primary accent */
+  --chart-2: oklch(0.58 0.12 240); /* wet-season teal */
+  --chart-3: oklch(0.62 0.09 145); /* sage — risk low, muted */
+  --chart-4: oklch(0.70 0.105 75); /* amber — risk moderate, muted */
+  --chart-5: oklch(0.52 0.13 307); /* plum, last resort */
 
-  --sidebar: oklch(0.24 0.008 85);           /* one dark surface kept for contrast */
-  --sidebar-foreground: oklch(0.96 0.013 87);
-  --sidebar-primary: oklch(0.70 0.19 35);
+  --sidebar: oklch(0.15 0.005 260); /* dark surface for contrast */
+  --sidebar-foreground: oklch(0.96 0.005 260);
+  --sidebar-primary: oklch(0.63 0.19 45);
   --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.30 0.01 85);
-  --sidebar-accent-foreground: oklch(0.96 0.013 87);
+  --sidebar-accent: oklch(0.22 0.015 48);
+  --sidebar-accent-foreground: oklch(0.96 0.005 260);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.70 0.19 35 / 55%);
+  --sidebar-ring: oklch(0.63 0.19 45 / 40%);
 }
 
 /*
- * Dark theme — the original operations-console palette, kept intact and
- * activated by the theme toggle (`.dark` on <html>, persisted per browser).
+ * Dark theme — operations-console navy, Apple-clean clarity.
+ * Activated by the theme toggle (.dark on <html>, persisted per browser).
  */
 .dark {
   color-scheme: dark;
 
-  --background: oklch(0.16 0.014 248);
-  --foreground: oklch(0.96 0.005 248);
-  --card: oklch(0.21 0.016 248);
-  --card-foreground: oklch(0.96 0.005 248);
-  --popover: oklch(0.19 0.016 248);
-  --popover-foreground: oklch(0.96 0.005 248);
-  --primary: oklch(0.78 0.14 196);
-  --primary-foreground: oklch(0.18 0.02 240);
-  --secondary: oklch(0.27 0.018 248);
-  --secondary-foreground: oklch(0.94 0.005 248);
-  --muted: oklch(0.25 0.015 248);
-  --muted-foreground: oklch(0.68 0.014 248);
-  --accent: oklch(0.3 0.03 210);
-  --accent-foreground: oklch(0.96 0.005 248);
-  --destructive: oklch(0.63 0.22 25);
-  --destructive-foreground: oklch(0.98 0.005 248);
-  --border: oklch(0.98 0 0 / 12%);
-  --input: oklch(0.98 0 0 / 16%);
-  --ring: oklch(0.78 0.14 196 / 60%);
+  --background: oklch(0.14 0.012 260); /* deep navy, Notion-dark depth */
+  --foreground: oklch(0.96 0.004 260); /* near-white, cool */
+  --card: oklch(0.19 0.014 260);
+  --card-foreground: oklch(0.96 0.004 260);
+  --popover: oklch(0.17 0.013 260);
+  --popover-foreground: oklch(0.96 0.004 260);
 
-  --risk-low: oklch(0.74 0.17 152);
-  --risk-moderate: oklch(0.79 0.16 78);
-  --risk-high: oklch(0.64 0.22 27);
-  --wet: oklch(0.7 0.13 236);
-  --dry: oklch(0.8 0.13 68);
+  --primary: oklch(0.72 0.15 250); /* lighter blue for dark bg readability */
+  --primary-foreground: oklch(0.16 0.015 260);
+  --secondary: oklch(0.24 0.014 260);
+  --secondary-foreground: oklch(0.94 0.004 260);
+  --muted: oklch(0.22 0.012 260);
+  --muted-foreground: oklch(0.72 0.01 260);
+  --accent: oklch(0.26 0.018 260);
+  --accent-foreground: oklch(0.96 0.004 260);
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.98 0.004 260);
 
-  --panel: oklch(0.19 0.016 248 / 82%);
-  --panel-border: oklch(0.98 0 0 / 14%);
+  --border: oklch(0.98 0 0 / 10%);
+  --input: oklch(0.98 0 0 / 14%);
+  --ring: oklch(0.72 0.15 250 / 50%);
 
-  --chart-1: oklch(0.78 0.14 196);
-  --chart-2: oklch(0.74 0.17 152);
-  --chart-3: oklch(0.79 0.16 78);
-  --chart-4: oklch(0.64 0.22 27);
-  --chart-5: oklch(0.7 0.12 300);
+  --risk-low: oklch(0.76 0.115 145);
+  --risk-moderate: oklch(0.80 0.11 72);
+  --risk-high: oklch(0.68 0.15 30);
+  --wet: oklch(0.72 0.13 240);
+  --dry: oklch(0.76 0.13 72);
 
-  --sidebar: oklch(0.18 0.016 248);
-  --sidebar-foreground: oklch(0.94 0.005 248);
-  --sidebar-primary: oklch(0.78 0.14 196);
-  --sidebar-primary-foreground: oklch(0.18 0.02 240);
-  --sidebar-accent: oklch(0.26 0.018 248);
-  --sidebar-accent-foreground: oklch(0.96 0.005 248);
-  --sidebar-border: oklch(0.98 0 0 / 12%);
-  --sidebar-ring: oklch(0.78 0.14 196 / 60%);
+  --panel: oklch(0.17 0.013 260 / 85%);
+  --panel-border: oklch(0.98 0 0 / 10%);
+
+  --chart-1: oklch(0.72 0.15 250);
+  --chart-2: oklch(0.72 0.13 240);
+  --chart-3: oklch(0.76 0.115 145);
+  --chart-4: oklch(0.80 0.11 72);
+  --chart-5: oklch(0.68 0.12 300);
+
+  --sidebar: oklch(0.16 0.012 260);
+  --sidebar-foreground: oklch(0.94 0.004 260);
+  --sidebar-primary: oklch(0.72 0.15 250);
+  --sidebar-primary-foreground: oklch(0.16 0.015 260);
+  --sidebar-accent: oklch(0.23 0.013 260);
+  --sidebar-accent-foreground: oklch(0.96 0.004 260);
+  --sidebar-border: oklch(0.98 0 0 / 10%);
+  --sidebar-ring: oklch(0.72 0.15 250 / 50%);
 }
 
 .dark .glass-panel {
-  backdrop-filter: blur(12px) saturate(140%);
+  backdrop-filter: blur(16px) saturate(130%);
   box-shadow:
-    0 18px 50px -20px oklch(0 0 0 / 70%),
-    inset 0 1px 0 oklch(1 0 0 / 6%);
+    0 16px 48px -16px oklch(0 0 0 / 65%),
+    inset 0 1px 0 oklch(1 0 0 / 5%);
 }
 
 @layer base {
@@ -193,24 +209,27 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    font-weight: 450;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1,
   h2,
   h3 {
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
 }
 
 @utility glass-panel {
   background-color: var(--panel);
-  backdrop-filter: blur(10px) saturate(120%);
+  backdrop-filter: blur(12px) saturate(125%);
   border: 1px solid var(--panel-border);
   box-shadow:
-    0 1px 2px oklch(0.24 0.008 85 / 6%),
-    0 8px 24px -12px oklch(0.24 0.008 85 / 12%);
+    0 1px 3px oklch(0.15 0.005 260 / 5%),
+    0 6px 20px -10px oklch(0.15 0.005 260 / 10%);
 }
 
 @utility hw-scroll {
@@ -226,6 +245,14 @@
   color: var(--color-muted-foreground);
 }
 
+/* Icon treatment — Lucide, one uniform stroke weight across the console.
+   Refined below the stock 2 so controls stay quiet at 16px and below.
+   Size rhythm: 16px controls, 14px inline-with-text, 12px compact rows,
+   20px brand/status glyphs. Icons inherit color; never hardcode a fill. */
+svg.lucide {
+  stroke-width: 1.75;
+}
+
 /* Leaflet — CartoDB raster basemaps (Positron light / Dark Matter dark) */
 .leaflet-container {
   background: var(--color-muted);
@@ -235,21 +262,21 @@
 
 /* Basemaps arrive well-tuned; only a gentle calm-down is needed. */
 .leaflet-tile-pane {
-  filter: saturate(0.9) brightness(1.02);
+  filter: saturate(0.88) brightness(1.02);
 }
 
 .dark .leaflet-tile-pane {
-  filter: brightness(0.94) saturate(0.92);
+  filter: brightness(0.92) saturate(0.90);
 }
 
 .leaflet-control-attribution {
-  background: oklch(1 0 0 / 70%) !important;
+  background: oklch(1 0 0 / 75%) !important;
   color: var(--color-muted-foreground) !important;
   font-size: 10px !important;
 }
 
 .dark .leaflet-control-attribution {
-  background: oklch(0.16 0.014 248 / 75%) !important;
+  background: oklch(0.14 0.012 260 / 75%) !important;
 }
 
 .leaflet-control-attribution a {
@@ -264,17 +291,17 @@
   background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
   font-family: var(--font-mono);
   font-size: 10px !important;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 6px !important;
-  box-shadow: 0 4px 12px oklch(0.24 0.008 85 / 12%) !important;
+  box-shadow: 0 4px 12px oklch(0.15 0.005 260 / 10%) !important;
 }
 
 .dark .hw-tooltip {
-  box-shadow: 0 4px 12px oklch(0 0 0 / 45%) !important;
+  box-shadow: 0 4px 12px oklch(0 0 0 / 40%) !important;
 }
 
 .hw-tooltip::before {
@@ -284,5 +311,391 @@
 .hw-outbreak-marker {
   background: transparent;
   border: none;
-  pointer-events: none;
+  pointer-events: auto;
 }
+
+.hw-outbreak-tooltip {
+  background: var(--panel) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--color-foreground) !important;
+  backdrop-filter: blur(12px);
+  font-family: inherit;
+  border-radius: 8px !important;
+  padding: 8px 10px !important;
+  box-shadow: 0 8px 24px oklch(0.15 0.005 260 / 18%) !important;
+  pointer-events: none;
+  min-width: 190px;
+  max-width: 260px;
+  white-space: normal !important;
+}
+
+.dark .hw-outbreak-tooltip {
+  background: color-mix(in oklab, var(--card) 94%, black) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 8px 24px oklch(0 0 0 / 50%) !important;
+}
+
+.hw-outbreak-tooltip::before {
+  display: none !important;
+}
+
+.hw-outbreak-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.hw-outbreak-tip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hw-outbreak-tip-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.hw-outbreak-tip-month {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-region {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-foreground);
+  line-height: 1.25;
+}
+
+.hw-outbreak-tip-stat {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 1px;
+}
+
+.hw-outbreak-tip-val {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-foreground);
+  line-height: 1;
+}
+
+.hw-outbreak-tip-unit {
+  font-size: 11px;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-subval {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-muted-foreground);
+}
+
+.hw-outbreak-tip-footer {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+  padding-top: 4px;
+  border-top: 1px solid var(--panel-border);
+}
+
+.hw-outbreak-tip-pill {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background-color: color-mix(in oklab, var(--risk-high) 20%, transparent);
+  color: var(--risk-high);
+  white-space: nowrap;
+}
+
+.hw-outbreak-tip-note {
+  font-size: 9.5px;
+  color: var(--color-muted-foreground);
+  line-height: 1.2;
+}
+
+/* Range slider thumb styling — consistent across browsers */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 1px 4px oklch(0.15 0.005 260 / 25%);
+  cursor: pointer;
+  border: 2px solid oklch(1 0 0);
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  box-shadow: 0 1px 4px oklch(0.15 0.005 260 / 25%);
+  cursor: pointer;
+  border: 2px solid oklch(1 0 0);
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 9999px;
+}
+
+/* Selection color */
+::selection {
+  background-color: color-mix(in oklab, var(--color-primary), transparent 70%);
+  color: var(--color-foreground);
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* ─── Explain Mode Inspector Overlay ────────────────────────────────────────
+   Inspector mode triggered by the ? button: highlights hovered elements and
+   shows an informative popover card upon click.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Full-screen dim overlay */
+.hw-explain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9990;
+  cursor: crosshair;
+  background: oklch(0 0 0 / 0.35);
+  backdrop-filter: blur(0.5px);
+  -webkit-backdrop-filter: blur(0.5px);
+}
+
+/* Highlight box that follows hovered element */
+.hw-explain-hover {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9991;
+  border: 2px solid var(--primary);
+  box-shadow: 0 0 0 4px oklch(from var(--primary) l c h / 0.2),
+              inset 0 0 0 9999px oklch(from var(--primary) l c h / 0.08);
+  border-radius: 8px;
+  transition: top 0.05s ease-out, left 0.05s ease-out, width 0.05s ease-out, height 0.05s ease-out;
+}
+
+/* Top-center mode banner */
+.hw-explain-banner {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9992;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 8px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--foreground);
+  box-shadow: 0 8px 32px oklch(0 0 0 / 0.35), 0 2px 8px oklch(0 0 0 / 0.2);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+
+.hw-explain-banner-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--muted-foreground);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.hw-explain-banner-close:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Floating explanation popover card */
+.hw-explain-popover {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 24px 64px -12px oklch(0 0 0 / 0.55), 0 8px 32px -8px oklch(0 0 0 / 0.3);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  padding: 18px;
+  pointer-events: auto;
+  animation: hw-popover-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes hw-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hw-explain-popover-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hw-explain-popover-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.hw-explain-popover-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.1s, color 0.1s;
+}
+.hw-explain-popover-close:hover {
+  background: var(--secondary);
+  color: var(--foreground);
+}
+
+.hw-explain-popover-body {
+  font-size: 13px;
+  color: var(--muted-foreground);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.hw-explain-popover-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  gap: 8px;
+}
+
+.hw-explain-popover-footer > span {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hw-explain-exit-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--foreground);
+  border: none;
+  cursor: pointer;
+  transition: background 0.1s;
+  white-space: nowrap;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+}
+.hw-explain-exit-btn:hover {
+  background: var(--foreground);
+  color: var(--background);
+}
+
+/* Mobile: reposition popover to bottom-sheet style with touch safe areas */
+@media (max-width: 640px) {
+  .hw-explain-popover {
+    position: fixed !important;
+    bottom: max(16px, env(safe-area-inset-bottom, 16px)) !important;
+    left: 16px !important;
+    right: 16px !important;
+    top: auto !important;
+    width: auto !important;
+    max-height: 80vh !important;
+    overflow-y: auto !important;
+    border-radius: 20px !important;
+    box-shadow: 0 -12px 48px oklch(0 0 0 / 0.5) !important;
+  }
+  .hw-explain-banner {
+    font-size: 11px;
+    padding: 6px 12px;
+    max-width: calc(100vw - 32px);
+    white-space: normal;
+    text-align: center;
+  }
+  .hw-explain-exit-btn,
+  .hw-explain-popover-close,
+  .hw-explain-banner-close {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}
+

@@ -7,17 +7,19 @@ import type {
   TileLayer,
 } from "leaflet";
 import {
+  CURRENT_MONTH_INDEX,
   REGION_BY_GEONAME,
   REGIONS,
-  REPORT_UPCOMING_SEASON,
+  TOTAL_MONTHS,
   assessRegion,
   dataReady,
-  getOutbreak,
+  formatMetric,
+  metricValue,
   RISK_META,
   type MetricMode,
   type Region,
-  type Season,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 
 export type DataLayer = "hotspot" | "density";
 
@@ -26,9 +28,8 @@ interface Props {
   monthIndex: number;
   mode: MetricMode;
   selectedCode: string | null;
-  onSelect: (code: string) => void;
+  onSelect: (code: string | null) => void;
   flyToCode?: string | null;
-  outbreakSeason?: Season;
   showOutbreakMarkers?: boolean;
 }
 
@@ -55,12 +56,7 @@ function prefersDark(): boolean {
 const OUTBREAK_MARKER_SVG =
   '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6.4" fill="none" stroke="#ffffff" stroke-opacity="0.9" stroke-width="1.6"/><circle cx="7" cy="7" r="5.4" fill="color-mix(in oklab, var(--risk-high) 32%, transparent)" stroke="var(--risk-high)" stroke-width="1.4"/></svg>';
 
-function fillFor(
-  region: Region,
-  illness: string,
-  monthIndex: number,
-  mode: MetricMode,
-): string {
+function fillFor(region: Region, illness: string, monthIndex: number, mode: MetricMode): string {
   // Region fill always reflects the risk tier, whatever is overlaid on top.
   return RISK_META[assessRegion(region.code, illness, monthIndex, mode).risk].color;
 }
@@ -72,7 +68,6 @@ export default function MapCanvas({
   selectedCode,
   onSelect,
   flyToCode,
-  outbreakSeason = REPORT_UPCOMING_SEASON,
   showOutbreakMarkers = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -109,13 +104,16 @@ export default function MapCanvas({
       });
       mapRef.current = map;
 
-      tileRef.current = L.tileLayer(
-        darkRef.current ? TILE_URLS.dark : TILE_URLS.light,
-        {
-          attribution: CARTO_ATTRIBUTION,
-          maxZoom: 12,
-        },
-      ).addTo(map);
+      // Tap on empty map background dismisses selected region
+      map.on("click", () => {
+        stateRef.current.onSelect(null);
+      });
+
+      tileRef.current = L.tileLayer(darkRef.current ? TILE_URLS.dark : TILE_URLS.light, {
+        attribution: CARTO_ATTRIBUTION,
+        maxZoom: 12,
+        crossOrigin: "anonymous",
+      }).addTo(map);
 
       const res = await fetch("/geo/ph-regions.geojson");
       const geo = await res.json();
@@ -148,7 +146,10 @@ export default function MapCanvas({
             className: "hw-tooltip",
             opacity: 0.9,
           });
-          lyr.on("click", () => stateRef.current.onSelect(region.code));
+          lyr.on("click", (e: import("leaflet").LeafletMouseEvent) => {
+            if (e?.originalEvent) L.DomEvent.stopPropagation(e);
+            stateRef.current.onSelect(region.code);
+          });
           lyr.on("mouseover", () =>
             (lyr as unknown as { setStyle: (o: PathOptions) => void }).setStyle({
               fillOpacity: 0.85,
@@ -162,7 +163,8 @@ export default function MapCanvas({
 
       // Outbreak markers: small ring glyphs at region centroids, above the
       // risk-tier fill. Opt-in (showOutbreakMarkers) — the basemap loads with
-      // fill only; markers are rebuilt when the toggle or season changes.
+      // fill only; markers are rebuilt when the toggle, illness, baseline month,
+      // or metric changes.
       leafletRef.current = L;
       alertIconRef.current = L.divIcon({
         className: "hw-outbreak-marker",
@@ -210,8 +212,12 @@ export default function MapCanvas({
     geoLayer.eachLayer((lyr) => geoLayer.resetStyle(lyr as never));
   }, [illness, monthIndex, mode, selectedCode]);
 
-  // Seasonal outbreak markers, opt-in. Rebuilt when the toggle or active
-  // season changes; the off state leaves the risk-tier fill as the only layer.
+  // Outbreak-likelihood markers, opt-in. Rebuilt whenever the toggle, illness,
+  // baseline month, or metric changes; the off state leaves the risk-tier fill
+  // as the only layer. Markers pin to the next projected month after the
+  // currently displayed baseline (never earlier than the forecast horizon) so
+  // they always reflect forecast data, and appear only when that projected
+  // load classifies as high risk (above the seasonal P75 threshold).
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -222,16 +228,53 @@ export default function MapCanvas({
       if (cancelled || !Lf || !group || !icon) return;
       group.clearLayers();
       if (!showOutbreakMarkers) return;
+      const nextIdx = Math.min(Math.max(CURRENT_MONTH_INDEX, monthIndex) + 1, TOTAL_MONTHS - 1);
       for (const r of REGIONS) {
-        if (getOutbreak(r.code)[outbreakSeason]?.outbreak) {
-          Lf.marker([r.lat, r.lng], { icon, interactive: false }).addTo(group);
-        }
+        const next = assessRegion(r.code, illness, nextIdx, mode);
+        if (next.risk !== "high") continue;
+
+        const targetMonth = formatMonthYear(next.point.label);
+        const casesCount = next.point.cases.toLocaleString();
+        const perCapitaVal = formatMetric(metricValue(next.point.cases, r, "percapita"), "percapita");
+
+        const tooltipHtml = `
+          <div class="hw-outbreak-tip">
+            <div class="hw-outbreak-tip-header">
+              <span class="hw-outbreak-tip-badge">Next Month Forecast</span>
+              <span class="hw-outbreak-tip-month">${targetMonth}</span>
+            </div>
+            <div class="hw-outbreak-tip-region">${r.short} · ${r.name}</div>
+            <div class="hw-outbreak-tip-stat">
+              <span class="hw-outbreak-tip-val">${mode === "percapita" ? perCapitaVal : casesCount}</span>
+              <span class="hw-outbreak-tip-unit">${mode === "percapita" ? "per 100k/mo" : "cases"}</span>
+              ${mode === "percapita" ? `<span class="hw-outbreak-tip-subval">(${casesCount} cases)</span>` : ""}
+            </div>
+            <div class="hw-outbreak-tip-footer">
+              <span class="hw-outbreak-tip-pill">High Risk Alert</span>
+              <span class="hw-outbreak-tip-note">Exceeds seasonal P75 threshold</span>
+            </div>
+          </div>
+        `;
+
+        const m = Lf.marker([r.lat, r.lng], { icon, interactive: true })
+          .addTo(group)
+          .bindTooltip(tooltipHtml, {
+            direction: "top",
+            offset: [0, -8],
+            className: "hw-outbreak-tooltip",
+            opacity: 1,
+          });
+
+        m.on("click", (e: import("leaflet").LeafletMouseEvent) => {
+          if (e?.originalEvent) Lf.DomEvent.stopPropagation(e);
+          stateRef.current.onSelect(r.code);
+        });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [outbreakSeason, showOutbreakMarkers, mapReady, dataReady]);
+  }, [illness, monthIndex, mode, showOutbreakMarkers, mapReady, dataReady]);
 
   // Fly to a searched/selected region
   useEffect(() => {

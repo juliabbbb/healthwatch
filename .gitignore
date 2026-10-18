@@ -5,5 +5,5 @@ __pycache__/
 
 .env
 
-uvicorn.out.log
-uvicorn.err.log
+*.log
+error.txt

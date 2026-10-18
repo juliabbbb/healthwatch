@@ -1,12 +1,21 @@
 /**
  * HEALTHWATCH data layer.
  *
- * Sources real DOH Epidemiology Bureau monthly dengue surveillance
- * (2022-01 .. 2026-08, 18 regions incl. NIR) served by the FastAPI backend
- * (src/api.py) over the relational DB (Supabase Postgres / local SQLite).
- * Series and validation metrics are fetched once at startup via
- * `loadHealthwatchData()`; every component then reads the caches
- * synchronously, keeping render output stable across renders/SSR.
+ * Sources real DOH surveillance served by the FastAPI backend (src/api.py)
+ * over the relational DB (Supabase Postgres) — the dengue case line-list
+ * (2019-01 .. 2026-08) plus the four DOH FWD line-lists (raw files run to a
+ * partial 2026-09; the reported window ends at the last complete month,
+ * 2026-08, and the API trims the in-progress month at hot-load). Dengue and
+ * FWD both cover 18 regions incl. NIR; acute viral hepatitis stops at
+ * 2025-09. Every disease runs its own independent monthly
+ * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
+ * presentation tag only.
+ *
+ * Series, validation metrics and outbreak probes are fetched once at startup
+ * via `loadHealthwatchData()` (one /dashboard call per disease); every
+ * component then reads the caches synchronously, keeping render output stable
+ * across renders/SSR. The shared calendar spans 2019-01 .. 2027-08 so the
+ * "All Illnesses" view is a genuine per-month sum of the five diseases.
  */
 
 export type RiskLevel = "low" | "moderate" | "high";
@@ -248,9 +257,12 @@ export const REGION_BY_CODE = Object.fromEntries(REGIONS.map((r) => [r.code, r])
 export const REGION_BY_GEONAME = Object.fromEntries(REGIONS.map((r) => [r.geoName, r]));
 
 export interface Illness {
-  id: string;
+  id: string; // canonical API disease label (backend SUPPORTED_DISEASES)
   name: string;
   shortName: string;
+  group: "Dengue" | "Food and Waterborne Diseases";
+  /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
+  transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
   peakMonth: number; // month-of-year of climatological peak
   season: Season;
@@ -259,16 +271,21 @@ export interface Illness {
   trend: number; // yearly multiplicative drift
 }
 
-/**
- * Scope note (capstone): the pipeline currently ingests Dengue only. The
- * Illness shape is kept so additional DOH Epidemiology Bureau disease tables
- * can be added to the backend without UI changes.
- */
+/** Presentation grouping only — the pipeline runs each disease independently. */
+export const DISEASE_GROUPS = {
+  "Dengue": "Dengue",
+  "Acute Bloody Diarrhea": "Food and Waterborne Diseases",
+  "Cholera": "Food and Waterborne Diseases",
+  "Typhoid Fever": "Food and Waterborne Diseases",
+  "Acute Viral Hepatitis": "Food and Waterborne Diseases",
+} as const;
+
 export const ILLNESSES: Illness[] = [
   {
-    id: "dengue",
+    id: "Dengue",
     name: "Dengue",
     shortName: "Dengue",
+    group: "Dengue",
     driver: "Aedes vector density after sustained rainfall",
     peakMonth: 8,
     season: "wet",
@@ -276,24 +293,168 @@ export const ILLNESSES: Illness[] = [
     baseRate: 1.6,
     trend: 0.045,
   },
+  {
+    id: "Acute Bloody Diarrhea",
+    name: "Acute Bloody Diarrhea",
+    shortName: "ABD",
+    group: "Food and Waterborne Diseases",
+    transmission: "Food-Borne",
+    driver: "Fecal-oral contamination of water and food",
+    peakMonth: 9,
+    season: "wet",
+    amplitude: 0.55,
+    baseRate: 0.08,
+    trend: -0.01,
+  },
+  {
+    id: "Cholera",
+    name: "Cholera",
+    shortName: "Cholera",
+    group: "Food and Waterborne Diseases",
+    transmission: "Water-Borne",
+    driver: "Contaminated drinking water and poor sanitation",
+    peakMonth: 9,
+    season: "wet",
+    amplitude: 0.8,
+    baseRate: 0.02,
+    trend: -0.05,
+  },
+  {
+    id: "Typhoid Fever",
+    name: "Typhoid Fever",
+    shortName: "Typhoid",
+    group: "Food and Waterborne Diseases",
+    transmission: "Food-Borne",
+    driver: "Food and water contaminated with Salmonella Typhi",
+    peakMonth: 9,
+    season: "wet",
+    amplitude: 0.5,
+    baseRate: 0.06,
+    trend: -0.02,
+  },
+  {
+    id: "Acute Viral Hepatitis",
+    name: "Acute Viral Hepatitis",
+    shortName: "Hep A",
+    group: "Food and Waterborne Diseases",
+    transmission: "Water-Borne",
+    driver: "Fecal-oral transmission linked to hygiene and sanitation",
+    peakMonth: 9,
+    season: "wet",
+    amplitude: 0.4,
+    baseRate: 0.03,
+    trend: -0.03,
+  },
 ];
+
+/**
+ * DOH definitions behind the reported-cases breakdown. Keyed by the canonical
+ * disease id so each disease surfaces its own classification rules — dengue
+ * uses the final/clinical split from the case line-lists, FWD line-lists carry
+ * a single Suspect / Probable / Confirmed class. Shared by the methodology
+ * "Diseases covered" disclosure and the compare module's dimension tooltip.
+ * Source: DOH dengue line-list; DOH FWD line-lists.
+ */
+export interface ReportedCaseNotes {
+  disclaimer: readonly string[];
+  heading: string;
+  classes: readonly { label: string; definition: string }[];
+  source: string;
+}
+
+const DENGUE_CASE_NOTES: ReportedCaseNotes = {
+  disclaimer: [
+    "Reported cases included in this request consist of suspect, probable, and confirmed cases (see definition below).",
+    "Reported deaths are unofficial and are used for surveillance purposes only. The official source of mortality data is the Philippine Statistics Authority (PSA).",
+  ],
+  heading: "Dengue Case Classification",
+  classes: [
+    {
+      label: "Suspect",
+      definition:
+        "A previously well person with acute febrile illness of 2-7 days duration with clinical signs and symptoms of dengue.",
+    },
+    {
+      label: "Probable",
+      definition: "A suspect case with positive dengue IgM antibody test.",
+    },
+    {
+      label: "Confirmed",
+      definition:
+        "A suspected case with positive results for viral culture isolation, Polymerase Chain Reaction, or Dengue NS1 antigen test.",
+    },
+  ],
+  source: "Source: DOH DM No. 2024-0333; DOH dengue case line-list",
+};
+
+const FWD_CASE_NOTES: ReportedCaseNotes = {
+  disclaimer: [
+    "Reported cases included in this request consist of suspect, probable, and confirmed cases (see definition below).",
+    "Reported deaths are unofficial and are used for surveillance purposes only. The official source of mortality data is the Philippine Statistics Authority (PSA).",
+  ],
+  heading: "DOH FWD Case Classification",
+  classes: [
+    {
+      label: "Suspect",
+      definition:
+        "A patient meeting the clinical case definition for the food/waterborne disease, reported through the field surveillance network.",
+    },
+    {
+      label: "Probable",
+      definition: "A suspect case with a positive rapid diagnostic result or an epidemiological link to a confirmed case.",
+    },
+    {
+      label: "Confirmed",
+      definition: "A suspect or probable case with positive laboratory confirmation (culture, serology, or molecular test).",
+    },
+  ],
+  source: "Source: DOH FWD line-list",
+};
+
+/** Reported-case classification notes per canonical disease id. */
+export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
+  "Dengue": DENGUE_CASE_NOTES,
+  "Acute Bloody Diarrhea": FWD_CASE_NOTES,
+  "Cholera": FWD_CASE_NOTES,
+  "Typhoid Fever": FWD_CASE_NOTES,
+  "Acute Viral Hepatitis": FWD_CASE_NOTES,
+};
+
+/** One-line source attribution per disease for the reported-case tables. */
+export const REPORTED_SOURCE: Record<string, string> = {
+  "Dengue": "Source: DOH dengue case line-list (2019-2026)",
+  "Acute Bloody Diarrhea": "Source: DOH FWD line-list (2019-2026)",
+  "Cholera": "Source: DOH FWD line-list (2019-2026)",
+  "Typhoid Fever": "Source: DOH FWD line-list (2019-2026)",
+  "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
+};
+
+/** Resolve display notes (and source) for any illness selection, incl. "all". */
+export function caseNotesFor(illness: string): ReportedCaseNotes {
+  return REPORTED_CASE_NOTES[illness] ?? DENGUE_CASE_NOTES;
+}
 
 export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
 
 export const MONTHS_PER_YEAR = 12;
 /**
- * Observed monthly rows per region served by the backend: 2022-01 through
- * 2026-08 (DOH Epidemiology Bureau monthly surveillance, 18 regions incl. NIR).
+ * Observed monthly rows per region served by the backend on the shared
+ * calendar: 2019-01 through 2026-08 (92 months) — the last COMPLETE month.
+ * The in-progress current month (2026-09) is never served as reported (the
+ * API trims it at hot-load), so the reported window ends at the previous
+ * complete month. Dengue runs the same span; acute viral hepatitis stops at
+ * 2025-09.
  */
-export const HIST_MONTHS = 56;
+export const HIST_MONTHS = 92;
+/** Shared forecast months on the axis: 2026-09 through 2027-08 (12 months). */
 export const FORECAST_MONTHS = 12;
 export const TOTAL_MONTHS = HIST_MONTHS + FORECAST_MONTHS;
 
-const ANCHOR_MONTH = Date.UTC(2022, 0, 1);
+/** First calendar year of the shared axis (2019-01 corresponds to index 0). */
+export const ANCHOR_YEAR = 2019;
 
 export function monthMeta(index: number) {
-  const date = new Date(ANCHOR_MONTH + index * 31 * 24 * 3600 * 1000);
-  const y = 2022 + Math.floor(index / 12);
+  const y = ANCHOR_YEAR + Math.floor(index / 12);
   const m = (index % 12) + 1;
   return {
     year: y,
@@ -303,6 +464,15 @@ export function monthMeta(index: number) {
     season: seasonForMonth(m),
     forecast: index >= HIST_MONTHS,
   };
+}
+
+/**
+ * Global month index for a "YYYY-MM" label (shared-calendar anchor). Returns
+ * -1 for labels outside the axis.
+ */
+export function indexForYearMonth(year: number, month: number): number {
+  const i = (year - ANCHOR_YEAR) * 12 + (month - 1);
+  return i >= 0 && i < TOTAL_MONTHS ? i : -1;
 }
 
 export interface MonthPoint {
@@ -345,79 +515,216 @@ export function upcomingSeasonForMonth(month: number): Season {
 /* ------------------------------------------------------------------ */
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-const DISEASE = "dengue";
 
 const seriesCache = new Map<string, MonthPoint[]>();
 const metricsCache = new Map<string, ModelMetrics>();
+const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
 
-async function fetchJson<T>(path: string, attempts = 10): Promise<T> {
+async function fetchJson<T>(path: string, attempts = 3): Promise<T> {
   let lastErr: unknown;
   for (let i = 0; i < attempts; i++) {
     try {
-      const res = await fetch(`${API_BASE}${path}`);
+      const res = await fetch(`${API_BASE}${path}`, {
+        signal: AbortSignal.timeout(15000),
+      });
       if (!res.ok) throw new Error(`API ${path} failed: HTTP ${res.status}`);
       return (await res.json()) as T;
     } catch (err) {
       lastErr = err;
-      // Back off and retry: tolerates the backend still booting when the
-      // dev page first loads, and free-tier hosts that sleep between demos
-      // (Render cold starts can take ~60s).
-      await new Promise((r) => setTimeout(r, 1200 * Math.min(i + 1, 6)));
+      await new Promise((r) => setTimeout(r, 800 * Math.min(i + 1, 3)));
     }
   }
   throw lastErr;
 }
 
-interface ApiMetrics {
-  region: string;
-  mae: number;
-  rmse: number;
-  mape: number;
-  months: number;
-  confidence: { label: string; tone: "low" | "moderate" | "high" };
-  skill_vs_naive: { pre_covid_52w: number; pre_2025_52w: number } | null;
+/**
+ * Overrides the static REGIONS population fields with latest figures served
+ * by GET /regions (REGION_META, itself sourced from the PSA census CSV).
+ * Mutating the region objects in place propagates through REGION_BY_CODE /
+ * REGION_BY_GEONAME because they hold the same references. Falls back to the
+ * static values when the API is unreachable.
+ */
+async function hydratePopulations(): Promise<void> {
+  try {
+    const regions = await fetchJson<Region[]>("/regions");
+    const byCode = new Map(regions.map((r) => [r.code, r.population]));
+    for (const region of REGIONS) {
+      const pop = byCode.get(region.code);
+      if (typeof pop === "number") region.population = pop;
+    }
+  } catch (err) {
+    console.warn("[healthwatch] population hydration failed; using static values.", err);
+  }
 }
 
 /**
- * Fetches every region's series and validation metrics from the API once.
- * Resolves before the router renders any route (gated in __root.tsx) so all
- * downstream components can keep reading caches synchronously.
+ * Fetches every region's series, validation metrics and outbreak data for each
+ * disease (one /dashboard call per disease, run in parallel) plus the static
+ * region populations. Resolves before the router renders any route (gated in
+ * __root.tsx) so all downstream components can keep reading caches
+ * synchronously. The "all" aggregate (true per-month sum of the five
+ * diseases) is derived client-side after every disease series lands.
  */
 export async function loadHealthwatchData(): Promise<void> {
-  const jobs: Promise<void>[] = [];
+  interface DashboardResponse {
+    disease: string;
+    series: Record<string, MonthPoint[]>;
+    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
+    outbreak: OutbreakIndicator[];
+  }
+
+  await hydratePopulations();
+
+  const diseases = ILLNESSES.map((i) => i.id);
+  const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
+
+  await Promise.all(
+    diseases.map(async (disease) => {
+      try {
+        const res = await fetchJson<DashboardResponse>(
+          `/dashboard?disease=${encodeURIComponent(disease)}`,
+        );
+
+        for (const [short, points] of Object.entries(res.series)) {
+          const code = codeByShort[short];
+          if (!code) continue;
+          seriesCache.set(`${code}:${disease}`, normalizeSeries(points));
+        }
+
+        for (const [short, m] of Object.entries(res.metrics)) {
+          const code = codeByShort[short];
+          if (!code) continue;
+          metricsCache.set(`${code}:${disease}`, {
+            folds: m.months,
+            label: m.confidence.label,
+            tone: m.confidence.tone,
+            note:
+              m.confidence.tone === "low"
+                ? "Model error is small relative to monthly case counts."
+                : m.confidence.tone === "moderate"
+                  ? "Reasonable accuracy on holdout months."
+                  : "Volatile series inflates error metrics.",
+            mae: m.mae,
+            rmse: m.rmse,
+            mape: m.mape,
+          });
+        }
+
+        for (const item of res.outbreak) {
+          const code = regionCodeForApiLabel(item.region);
+          if (!code) continue;
+          const entry = outbreakCache.get(`${code}:${disease}`) ?? {};
+          entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
+          outbreakCache.set(`${code}:${disease}`, entry);
+        }
+      } catch (err) {
+        console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
+      }
+    }),
+  );
+
+  // Derive the "all" aggregate: per-month sum across the five diseases, plus
+  // an outbreak probe that fires for a season when any member disease flags.
   for (const region of REGIONS) {
-    jobs.push(
-      fetchJson<{ points: MonthPoint[] }>(`/series/${region.short}`).then((res) => {
-        seriesCache.set(`${region.code}:${DISEASE}`, res.points);
-        seriesCache.set(`${region.code}:__all`, res.points);
-      }),
-    );
-    jobs.push(
-      fetchJson<ApiMetrics>(`/metrics/${region.short}`).then((m) => {
-        metricsCache.set(region.code, {
-          folds: m.months,
-          label: m.confidence.label,
-          tone: m.confidence.tone,
-          note: m.confidence.tone === "low"
-            ? "Model error is small relative to monthly case counts."
-            : m.confidence.tone === "moderate"
-              ? "Reasonable accuracy on holdout months."
-              : "Volatile series inflates error metrics.",
-          mae: m.mae,
-          rmse: m.rmse,
-          mape: m.mape,
-        });
-      }),
-    );
+    buildAllSeries(region.code);
+    buildAllOutbreak(region.code);
   }
-  await Promise.all(jobs);
-  try {
-    await loadOutbreakData();
-  } catch (err) {
-    // Outbreak layer is additive; a backend without /outbreak (older deploy or
-    // a not-yet-restarted uvicorn) must not take the whole dashboard down.
-    console.warn("Seasonal outbreak indicator unavailable:", err);
+}
+
+/** Sentinel raw value on fabricated no-data months of the shared axis. */
+const NO_DATA_RAW = -1;
+
+/**
+ * Aligns a backend series (native per-disease anchor) onto the global shared
+ * calendar. Months before a disease's line-list began are represented by
+ * zero-case sentinel points (raw < 0) so arrays stay dense and indexable, but
+ * pools/decomposition exclude them. Trailing months are never appended: each
+ * disease's series ends at its own last real (observed or forecast) month —
+ * "All Illnesses" still spans the widest window because it sums whatever
+ * exists per index. Returns [] when the region has no real data for the
+ * disease at all.
+ */
+export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
+  if (!points.length) return [];
+  const dest: MonthPoint[] = [];
+  let last = -1;
+  for (const p of points) {
+    const gi = indexForYearMonth(p.year, p.month);
+    if (gi < 0) continue;
+    while (dest.length < gi) dest.push(emptyMonth(dest.length));
+    dest[gi] = p;
+    last = gi;
   }
+  if (last < 0) return [];
+  return dest;
+}
+
+function emptyMonth(index: number): MonthPoint {
+  const meta = monthMeta(index);
+  return {
+    index,
+    year: meta.year,
+    month: meta.month,
+    label: meta.label,
+    date: meta.date,
+    season: meta.season,
+    forecast: index >= HIST_MONTHS,
+    cases: 0,
+    lower: 0,
+    upper: 0,
+    raw: NO_DATA_RAW,
+    adjusted: false,
+  };
+}
+
+function buildAllSeries(code: string): void {
+  const diseases = ILLNESSES.map((i) => i.id);
+  let any = false;
+  const out: MonthPoint[] = [];
+  for (let i = 0; i < TOTAL_MONTHS; i++) {
+    let cases = 0;
+    let lower = 0;
+    let upper = 0;
+    let raw = 0;
+    let forecast = true;
+    for (const d of diseases) {
+      const p = seriesCache.get(`${code}:${d}`)?.[i];
+      if (!p) continue;
+      any = true;
+      cases += p.cases;
+      lower += p.lower;
+      upper += p.upper;
+      if (p.raw >= 0) raw += p.raw;
+      if (!p.forecast) forecast = false;
+    }
+    const meta = monthMeta(i);
+    out[i] = {
+      index: i,
+      year: meta.year,
+      month: meta.month,
+      label: meta.label,
+      date: meta.date,
+      season: meta.season,
+      forecast,
+      cases: Math.round(cases),
+      lower,
+      upper,
+      raw: Math.round(raw),
+      adjusted: false,
+    };
+  }
+  if (any) seriesCache.set(`${code}:__all`, out);
+}
+
+function buildAllOutbreak(code: string): void {
+  const diseases = ILLNESSES.map((i) => i.id);
+  const union: Partial<Record<Season, OutbreakIndicator>> = {};
+  for (const d of diseases) {
+    for (const [season, ind] of Object.entries(outbreakCache.get(`${code}:${d}`) ?? {})) {
+      if (ind?.outbreak && !union[season as Season]) union[season as Season] = ind;
+    }
+  }
+  if (Object.keys(union).length) outbreakCache.set(`${code}:__all`, union);
 }
 
 /** Starts loading immediately on module import. */
@@ -425,15 +732,59 @@ export const dataReady = loadHealthwatchData();
 
 /** Cached per region+illness so charts and the map share one source of truth. */
 export function getSeries(regionCode: string, illnessId: string): MonthPoint[] {
-  return seriesCache.get(`${regionCode}:${illnessId}`) ?? [];
+  const key = illnessId === "all" ? "__all" : illnessId === "" ? undefined : illnessId;
+  if (!key) return [];
+  return seriesCache.get(`${regionCode}:${key}`) ?? [];
 }
 
 function getTotalSeries(regionCode: string): MonthPoint[] {
-  return getSeries(regionCode, DISEASE);
+  return getSeries(regionCode, "__all");
 }
 
 export function seriesFor(regionCode: string, illnessId: string | "all"): MonthPoint[] {
   return illnessId === "all" ? getTotalSeries(regionCode) : getSeries(regionCode, illnessId);
+}
+
+/* ------------------------------------------------------------------ */
+/* Forecast transmission mix (NEXT 6 MONTHS breakdown)                 */
+/* ------------------------------------------------------------------ */
+
+export interface ForecastCategoryMix {
+  /** Summed next-6-month forecast raw case counts, per transmission category. */
+  dengue: number;
+  foodBorne: number;
+  waterBorne: number;
+  total: number;
+}
+
+/**
+ * Sums each disease's own forecast window (next `months` forecast points from
+ * `monthIndex`, or fewer near a series' natural end) grouped by transmission
+ * category. Reads the per-disease series directly so the sum respects each
+ * disease's real terminal month instead of the shared calendar tail.
+ */
+export function forecastCategoryMix(
+  regionCode: string,
+  monthIndex: number,
+  months: number = FORECAST_MONTHS,
+): ForecastCategoryMix {
+  const mix: ForecastCategoryMix = { dengue: 0, foodBorne: 0, waterBorne: 0, total: 0 };
+  for (const disease of ILLNESSES) {
+    const series = getSeries(regionCode, disease.id);
+    for (let i = monthIndex + 1; i <= monthIndex + months; i++) {
+      const p = series[i];
+      if (!p || !p.forecast || p.raw < 0) continue;
+      if (disease.group === "Dengue") mix.dengue += p.cases;
+      else if (disease.transmission === "Food-Borne") mix.foodBorne += p.cases;
+      else if (disease.transmission === "Water-Borne") mix.waterBorne += p.cases;
+      mix.total += p.cases;
+    }
+  }
+  mix.total = Math.round(mix.total);
+  mix.dengue = Math.round(mix.dengue);
+  mix.foodBorne = Math.round(mix.foodBorne);
+  mix.waterBorne = Math.round(mix.waterBorne);
+  return mix;
 }
 
 /* ------------------------------------------------------------------ */
@@ -469,9 +820,9 @@ export function metricValue(cases: number, region: Region, mode: MetricMode): nu
 }
 
 export function formatMetric(value: number, mode: MetricMode): string {
-  return mode === "raw"
-    ? Math.round(value).toLocaleString()
-    : value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+  if (mode === "raw") return Math.round(value).toLocaleString();
+  if (value > 0 && value < 0.1) return "<0.1";
+  return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
 }
 
 /** Circular month distance; within ±1 month counts as the same seasonal window. */
@@ -503,7 +854,7 @@ export function pooledValues(
   const pooled: number[] = [];
   for (const region of REGIONS) {
     for (const p of seriesFor(region.code, illnessId)) {
-      if (p.forecast || !inSeasonWindow(p.month, monthOfYear)) continue;
+      if (p.forecast || p.raw < 0 || !inSeasonWindow(p.month, monthOfYear)) continue;
       pooled.push(metricValue(p.cases, region, mode));
     }
   }
@@ -638,6 +989,48 @@ export function assessAll(
   return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
 }
 
+export interface NationalDominant {
+  illness: Illness;
+  /** Summed raw national cases at the month across all regions. */
+  cases: number;
+  /** National case load expressed in the active metric. */
+  metric: number;
+}
+
+/**
+ * National dominant illness at a month. When `illnessId` is "all" it ranks all
+ * five diseases by summed raw national cases (the true primary case driver);
+ * when a single illness is selected it returns that illness with its own
+ * national load, so the National Snapshot card tracks the active filter.
+ */
+export function nationalDominant(
+  illnessId: string | "all",
+  monthIndex: number,
+  mode: MetricMode = "percapita",
+): NationalDominant {
+  const pool = illnessId === "all" ? ILLNESSES : ILLNESSES.filter((i) => i.id === illnessId);
+  let best: Illness = ILLNESSES[0]!;
+  let bestCases = -1;
+  for (const ill of pool) {
+    let cases = 0;
+    for (const region of REGIONS) {
+      const p = getSeries(region.code, ill.id)[monthIndex];
+      if (p && p.raw >= 0) cases += p.cases;
+    }
+    if (cases > bestCases) {
+      bestCases = cases;
+      best = ill;
+    }
+  }
+  const cases = Math.max(0, bestCases);
+  const population = REGIONS.reduce((s, r) => s + r.population, 0);
+  return {
+    illness: best,
+    cases,
+    metric: mode === "raw" ? cases : (cases / population) * 100000,
+  };
+}
+
 /* ------------------------------------------------------------------ */
 /* Walk-forward validation metrics                                     */
 /* ------------------------------------------------------------------ */
@@ -657,9 +1050,10 @@ export interface ModelMetrics {
  * is refit every month and scored on holdout months it never saw (two windows,
  * each up to 12 months), reported per region by /metrics/{region}.
  */
-export function modelMetrics(regionCode: string, _illnessId: string | "all"): ModelMetrics {
+export function modelMetrics(regionCode: string, illnessId: string | "all"): ModelMetrics {
+  const key = illnessId === "all" ? "Dengue" : illnessId;
   return (
-    metricsCache.get(regionCode) ?? {
+    metricsCache.get(`${regionCode}:${key}`) ?? {
       folds: 0,
       label: "No data",
       tone: "moderate",
@@ -685,8 +1079,14 @@ export interface DecompPoint {
   season: Season;
 }
 
-export function decompose(regionCode: string, illnessId: string | "all"): DecompPoint[] {
-  const series = seriesFor(regionCode, illnessId).filter((p) => !p.forecast);
+export function decompose(
+  regionCode: string,
+  illnessId: string | "all",
+  endIndex?: number,
+): DecompPoint[] {
+  const series = seriesFor(regionCode, illnessId).filter((p) =>
+    (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+  );
   const values = series.map((p) => p.cases);
   const half = 6;
   const trend = values.map((_, i) => {
@@ -721,9 +1121,12 @@ export function decompose(regionCode: string, illnessId: string | "all"): Decomp
 }
 
 /** Autocorrelation function up to `maxLag` months — reveals the 12-month cycle. */
-export function acf(regionCode: string, illnessId: string | "all", maxLag = 24) {
+export function acf(regionCode: string, illnessId: string | "all", maxLag = 24, endIndex?: number) {
   const values = seriesFor(regionCode, illnessId)
-    .filter((p) => !p.forecast)
+    .filter(
+      (p) =>
+        (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+    )
     .map((p) => p.cases);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const denom = values.reduce((a, v) => a + (v - mean) ** 2, 0) || 1;
@@ -779,14 +1182,39 @@ export function recommendations(a: RegionAssessment): Recommendation[] {
   }
 
   const byIllness: Record<string, Recommendation> = {
-    dengue: {
+    Dengue: {
       title: "Deploy vector-control teams",
       detail:
         "Search-and-destroy of breeding sites, targeted fogging in barangays with clustered cases, and 4S campaign amplification.",
       urgency: a.risk,
     },
+    "Acute Bloody Diarrhea": {
+      title: "Scale safe-water and handwashing interventions",
+      detail:
+        "Chlorinate communal water points, promote handwashing with soap, and expand ORS availability at rehydration posts.",
+      urgency: a.risk,
+    },
+    Cholera: {
+      title: "Augment WASH response",
+      detail:
+        "Distribute water purification agents, deploy emergency water trucking where supplies are interrupted, and stand up oral rehydration corners.",
+      urgency: a.risk,
+    },
+    "Typhoid Fever": {
+      title: "Target food-handler hygiene",
+      detail:
+        "Inspect food and water outlets, promote safe food-handling, and consider selective typhoid vaccination where transmission is clustered.",
+      urgency: a.risk,
+    },
+    "Acute Viral Hepatitis": {
+      title: "Reinforce safe water and sanitation",
+      detail:
+        "Harden drinking-water sources, reinforce carrier hygiene through handwashing education, and support supportive-care case management.",
+      urgency: a.risk,
+    },
   };
-  base.push(byIllness[ill.id]!);
+  const diseaseRec = byIllness[ill.id];
+  if (diseaseRec) base.push(diseaseRec);
 
   if (a.region.classification === "Highly urban") {
     base.push({
@@ -826,38 +1254,85 @@ export const RISK_META: Record<
   },
 };
 
-export const CURRENT_MONTH_INDEX = HIST_MONTHS - 1; // last reported month (2026-08)
+export const getCurrentMonthPHT = (): string => {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+  });
+  return formatter.format(new Date()); // Outputs "YYYY-MM" (e.g., "2026-09")
+};
 
-/** The single deterministic "now" the dashboard reasons from: the last reported month. */
-export const REPORT_MONTH_INDEX = CURRENT_MONTH_INDEX;
-export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-08-01"
 /**
- * Real-time-derived default for the outbreak outlook: the season that starts
- * after the report date, computed from the fixed calendar boundary — never
- * hardcoded, never a weather feed.
+ * Shift the active baseline month by `months` (e.g. -12 .. +12 for the compare
+ * slider) and clamp to the valid series range [0, TOTAL_MONTHS - 1]. The
+ * baseline itself is always derived from Asia/Manila (PHT, UTC+8).
  */
-export const REPORT_UPCOMING_SEASON: Season = upcomingSeasonForMonth(
-  monthMeta(CURRENT_MONTH_INDEX).month,
+export function shiftBaselineMonth(months: number): number {
+  return Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + months));
+}
+
+/** Formatted PHT date string for the active baseline (e.g. "2026-09"). */
+export function formatBaseLinePHT(monthIndex: number = CURRENT_MONTH_INDEX): string {
+  return monthMeta(monthIndex).label;
+}
+
+/** Human-readable PHT timestamp, e.g. "2026-09-09 14:32 (PHT)". */
+export function formatPHTDateTime(date: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).formatToParts(date);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("year")}-${get("month")}-${get("day")} ${get("hour")}:${get("minute")} (PHT)`;
+}
+
+export type SeasonalityComponent = "observed" | "trend" | "seasonal" | "residual" | "acf";
+
+export function getMonthIndexFromLabel(label: string): number {
+  const parts = label.split("-");
+  const yStr = parts[0];
+  const mStr = parts[1];
+  if (!yStr || !mStr) return HIST_MONTHS - 1;
+  const y = parseInt(yStr, 10);
+  const m = parseInt(mStr, 10);
+  if (isNaN(y) || isNaN(m)) return HIST_MONTHS - 1;
+  const i = indexForYearMonth(y, m);
+  return i >= 0 ? i : HIST_MONTHS - 1;
+}
+
+/** Active surveillance baseline date locked to Asia/Manila (PHT, UTC+8). */
+export const CURRENT_BASELINE_DATE = getCurrentMonthPHT();
+export const CURRENT_MONTH_INDEX = Math.max(
+  0,
+  Math.min(TOTAL_MONTHS - 1, getMonthIndexFromLabel(CURRENT_BASELINE_DATE)),
 );
-/** Display label for the month an upcoming season starts (for "starts [date]"). */
-export const SEASON_START_MONTH: Record<Season, string> = { dry: "Dec", wet: "Jun" };
+
+/** The single dynamic "now" the dashboard reasons from: Asia/Manila current month (e.g. 2026-09). */
+export const REPORT_MONTH_INDEX = CURRENT_MONTH_INDEX;
+export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-09-01"
+/**
+ * Fixed validation benchmark for the seasonal outbreak indicator. The panel is
+ * NOT derived from the current clock: it always shows the frozen 2025-dated
+ * probes from outbreak_indicators.csv (fit through 2024-12-31, checked
+ * prospectively against observed 2025).
+ */
+export const OUTBREAK_BENCHMARK_SEASON: Season = "wet";
+export const OUTBREAK_BENCHMARK_LABEL = "Validated Outbreak Signal (Jul–Sep 2025 benchmark)";
+/** Calendar window each season's benchmark probe describes (2025 validation). */
+export const OUTBREAK_BENCHMARK_WINDOW: Record<Season, string> = {
+  dry: "Jan–Mar 2025",
+  wet: "Jul–Sep 2025",
+};
 
 export function monthLabel(index: number) {
   return monthMeta(index).label;
-}
-
-/* ------------------------------------------------------------------ */
-/* Pipeline freshness                                                  */
-/* ------------------------------------------------------------------ */
-
-export interface PipelineStatus {
-  generated_at: string;
-  data_through: { date: string; month: string };
-  supported_diseases: string[];
-}
-
-export async function fetchPipelineStatus(): Promise<PipelineStatus> {
-  return fetchJson(`${API_BASE}/status`);
 }
 
 /* ------------------------------------------------------------------ */
@@ -875,13 +1350,10 @@ export interface OutbreakIndicator {
   n_forecast_months: number;
 }
 
-const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
-
 function regionCodeForApiLabel(label: string): string | null {
   const lowered = label.toLowerCase();
-  const direct = REGIONS.find(
-    (r) =>
-      [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
+  const direct = REGIONS.find((r) =>
+    [r.short, r.name, r.geoName].some((k) => k.toLowerCase() === lowered),
   );
   if (direct) return direct.code;
   const prefix = label.split(" (")[0]!.toLowerCase();
@@ -891,22 +1363,16 @@ function regionCodeForApiLabel(label: string): string | null {
   return byPrefix ? byPrefix.code : null;
 }
 
-async function loadOutbreakData(): Promise<void> {
-  const res = await fetchJson<{ items: OutbreakIndicator[] }>("/outbreak");
-  for (const item of res.items) {
-    const code = regionCodeForApiLabel(item.region);
-    if (!code) continue; // "National" and any non-map rows
-    const entry = outbreakCache.get(code) ?? {};
-    entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
-    outbreakCache.set(code, entry);
-  }
-}
-
-/** Per-season outbreak outlook for a region code (dengue pilot). */
+/**
+ * Per-season outbreak outlook for a region code, scoped to the selected
+ * illness (canonical disease id or "all", in which case the probe fires for a
+ * season when any member disease flagged).
+ */
 export function getOutbreak(
   regionCode: string,
+  illnessId: string = "Dengue",
 ): Partial<Record<Season, OutbreakIndicator>> {
-  return outbreakCache.get(regionCode) ?? {};
+  return outbreakCache.get(`${regionCode}:${illnessId === "all" ? "__all" : illnessId}`) ?? {};
 }
 
 const CONSECUTIVE_HIGH_N = 3;

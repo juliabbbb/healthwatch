@@ -41,9 +41,7 @@ export function useTheme(): [Theme, () => void] {
 
   const toggle = React.useCallback(() => {
     // documentElement holds the applied truth, so rapid clicks stay correct.
-    const next: Theme = document.documentElement.classList.contains("dark")
-      ? "light"
-      : "dark";
+    const next: Theme = document.documentElement.classList.contains("dark") ? "light" : "dark";
     try {
       window.localStorage.setItem(THEME_KEY, next);
     } catch {

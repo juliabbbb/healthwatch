@@ -3,8 +3,10 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
+  Cell,
   ComposedChart,
   Line,
+  LineChart,
   ReferenceArea,
   ReferenceLine,
   ResponsiveContainer,
@@ -12,41 +14,50 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { ChartType } from "@/hooks/useChartType";
+import { CHART_COLORS } from "@/lib/chartConfig";
 import {
   HIST_MONTHS,
   METRIC_META,
   REGION_BY_CODE,
   acf,
   decompose,
+  getThresholds,
   metricValue,
   monthMeta,
   seriesFor,
   type MetricMode,
 } from "@/lib/healthwatch/data";
+import { formatMonthYear } from "@/utils/formatDate";
 
 const axis = {
   stroke: "var(--color-muted-foreground)",
-  fontSize: 10,
+  fontSize: 12,
   tickLine: false,
   axisLine: false,
 };
+
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const tooltipStyle = {
   contentStyle: {
     background: "var(--popover)",
     border: "1px solid var(--border)",
     borderRadius: "8px",
-    fontSize: "11px",
+    fontSize: "13px",
     color: "var(--foreground)",
   },
-  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "10px" },
+  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "13px" },
 };
 
 interface Row {
   label: string;
   reported: number | null;
   predicted: number | null;
-  band: [number, number] | null;
+  bandBase: number | null;
+  bandFill: number | null;
+  yhatUpper: number | null;
+  yhatLower: number | null;
   adjustedPoint: number | null;
   adjustReason?: string;
   season: string;
@@ -68,18 +79,18 @@ function ForecastTooltip({
   const row = payload[0]!.payload;
   const value = row.reported ?? row.predicted ?? 0;
   return (
-    <div className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2 text-[11px]">
+    <div className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2" style={{ fontSize: "13px" }}>
       <p className="text-muted-foreground">
-        {label} · {row.season} season
+        {formatMonthYear(label ?? "")} · {row.season} season
       </p>
       <p className="mt-0.5 font-medium">
         {row.reported !== null ? "Reported" : "Predicted"}{" "}
         {value.toLocaleString(undefined, { maximumFractionDigits: 1 })} {unit}
       </p>
-      {row.band && (
+      {row.yhatLower !== null && row.yhatUpper !== null && (
         <p className="text-muted-foreground">
-          95% CI {row.band[0].toLocaleString(undefined, { maximumFractionDigits: 1 })}–
-          {row.band[1].toLocaleString(undefined, { maximumFractionDigits: 1 })}
+          95% CI {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
+          {row.yhatUpper.toLocaleString(undefined, { maximumFractionDigits: 1 })}
         </p>
       )}
       {row.adjustReason && (
@@ -99,6 +110,7 @@ export function ForecastChart({
   monthsBack = 36,
   height = 300,
   mode = "raw",
+  chartType = "line",
 }: {
   regionCode: string;
   illness: string;
@@ -106,21 +118,48 @@ export function ForecastChart({
   monthsBack?: number;
   height?: number;
   mode?: MetricMode;
+  chartType?: ChartType;
 }) {
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : ComposedChart;
   const series = seriesFor(regionCode, illness);
+
+  if (!series.length) {
+    return (
+      <div
+        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
+        style={{ height }}
+      >
+        No forecast data available
+      </div>
+    );
+  }
+
   const region = REGION_BY_CODE[regionCode]!;
   const conv = (v: number) => metricValue(v, region, mode);
+  const clip = (v: number) => Math.max(0, v);
   const start = Math.max(0, HIST_MONTHS - monthsBack);
-  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => ({
-    label: p.label,
-    reported: p.forecast ? null : conv(p.cases),
-    predicted: p.forecast ? conv(p.cases) : null,
-    band: p.forecast ? [conv(p.lower), conv(p.upper)] : null,
-    adjustedPoint: p.adjusted ? conv(p.cases) : null,
-    ...(p.adjustReason ? { adjustReason: p.adjustReason } : {}),
-    season: p.season,
-    index: p.index,
-  }));
+  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => {
+    const reported = p.forecast ? null : clip(conv(p.cases));
+    const predicted = p.forecast ? clip(conv(p.cases)) : null;
+    const yhatUpper = p.forecast ? clip(conv(p.upper)) : null;
+    const yhatLower = p.forecast ? clip(conv(p.lower)) : null;
+    const bandBase = yhatLower;
+    const bandFill = yhatUpper !== null && yhatLower !== null ? yhatUpper - yhatLower : null;
+    return {
+      label: p.label,
+      reported,
+      predicted,
+      bandBase,
+      bandFill,
+      yhatUpper,
+      yhatLower,
+      adjustedPoint: p.adjusted ? clip(conv(p.cases)) : null,
+      ...(p.adjustReason ? { adjustReason: p.adjustReason } : {}),
+      season: p.season,
+      index: p.index,
+    };
+  });
 
   const wetBands: { x1: string; x2: string }[] = [];
   let open: string | null = null;
@@ -134,7 +173,7 @@ export function ForecastChart({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <ComposedChart data={slice} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
+      <ChartComponent data={slice} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
         {wetBands.map((b, i) => (
           <ReferenceArea
@@ -146,61 +185,128 @@ export function ForecastChart({
             ifOverflow="extendDomain"
           />
         ))}
-        <XAxis dataKey="label" {...axis} minTickGap={40} />
+        <XAxis dataKey="label" {...axis} minTickGap={40} tickFormatter={formatMonthYear} />
         <YAxis {...axis} width={52} domain={[0, "auto"]} />
         <Tooltip
           content={<ForecastTooltip unit={METRIC_META[mode].unit} />}
-          cursor={{ stroke: "var(--border)" }}
+          {...(isBar ? {} : { cursor: { stroke: "var(--border)" } })}
         />
 
-        <Area
-          dataKey="band"
-          stroke="none"
-          fill="var(--chart-3)"
-          fillOpacity={0.22}
-          isAnimationActive={false}
-          name="95% CI"
-        />
-        <Line
-          dataKey="reported"
-          stroke="var(--chart-1)"
-          strokeWidth={1.6}
-          dot={false}
-          connectNulls
-          name="Reported"
-          isAnimationActive={false}
-        />
-        <Line
-          dataKey="predicted"
-          stroke="var(--chart-3)"
-          strokeWidth={2}
-          strokeDasharray="4 3"
-          dot={false}
-          connectNulls
-          name="Predicted"
-          isAnimationActive={false}
-        />
-        {/* Rule-adjusted points: hollow markers, reason shown in the tooltip. */}
-        <Line
-          dataKey="adjustedPoint"
-          stroke="none"
-          name="Rule-adjusted"
-          isAnimationActive={false}
-          dot={{ r: 3.4, fill: "var(--background)", stroke: "var(--risk-high)", strokeWidth: 1.4 }}
-        />
+        {isBar
+          ? [
+              <Bar
+                key="reported"
+                dataKey="reported"
+                fill="var(--chart-1)"
+                radius={[4, 4, 0, 0]}
+                name="Reported"
+                isAnimationActive={false}
+              />,
+              <Bar
+                key="predicted"
+                dataKey="predicted"
+                fill="var(--chart-3)"
+                radius={[4, 4, 0, 0]}
+                name="Predicted"
+                isAnimationActive={false}
+              />,
+            ]
+          : [
+              <Area
+                key="bandBase"
+                type="monotone"
+                dataKey="bandBase"
+                stroke="none"
+                fill="transparent"
+                isAnimationActive={false}
+                name="95% CI"
+                stackId="band"
+              />,
+              <Area
+                key="bandFill"
+                type="monotone"
+                dataKey="bandFill"
+                stroke="none"
+                fill="var(--chart-3)"
+                fillOpacity={0.22}
+                isAnimationActive={false}
+                name="95% CI"
+                stackId="band"
+              />,
+              <Line
+                key="reported"
+                dataKey="reported"
+                stroke="var(--chart-1)"
+                strokeWidth={1.6}
+                dot={{
+                  r: 2.5,
+                  strokeWidth: 1.2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-1)",
+                }}
+                activeDot={{
+                  r: 5,
+                  strokeWidth: 2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-1)",
+                }}
+                connectNulls
+                name="Reported"
+                isAnimationActive={false}
+              />,
+              <Line
+                key="predicted"
+                dataKey="predicted"
+                stroke="var(--chart-3)"
+                strokeWidth={2}
+                strokeDasharray="4 3"
+                dot={{
+                  r: 2.5,
+                  strokeWidth: 1.2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-3)",
+                }}
+                activeDot={{
+                  r: 5,
+                  strokeWidth: 2,
+                  fill: "var(--background)",
+                  stroke: "var(--chart-3)",
+                }}
+                connectNulls
+                name="Predicted"
+                isAnimationActive={false}
+              />,
+              // Rule-adjusted points: hollow markers, reason shown in the tooltip.
+              <Line
+                key="adjustedPoint"
+                dataKey="adjustedPoint"
+                stroke="none"
+                name="Rule-adjusted"
+                isAnimationActive={false}
+                dot={{
+                  r: 3.4,
+                  fill: "var(--background)",
+                  stroke: "var(--risk-high)",
+                  strokeWidth: 1.4,
+                }}
+              />,
+            ]}
 
         <ReferenceLine
-          x={monthMeta(HIST_MONTHS - 1).label}
+          x={
+            series.find((p) => p.forecast)?.label ??
+            monthMeta(HIST_MONTHS - 1).label
+          }
           stroke="var(--color-muted-foreground)"
           strokeDasharray="3 3"
           label={{
             value: "Forecast start",
             fill: "var(--color-muted-foreground)",
-            fontSize: 9,
+            fontSize: 12,
             position: "insideTopRight",
           }}
         />
-      </ComposedChart>
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }
@@ -211,66 +317,213 @@ export function DecompositionChart({
   illness,
   component,
   height = 150,
+  endIndex,
+  chartType = "line",
 }: {
   regionCode: string;
   illness: string;
   component: "observed" | "trend" | "seasonal" | "residual";
   height?: number;
+  endIndex?: number | undefined;
+  chartType?: ChartType;
 }) {
-  const data = decompose(regionCode, illness);
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : ComposedChart;
+  const data = decompose(regionCode, illness, endIndex);
   const color =
     component === "trend"
-      ? "var(--chart-2)"
+      ? "var(--risk-low)"
       : component === "seasonal"
-        ? "var(--chart-3)"
+        ? "var(--dry)"
         : component === "residual"
-          ? "var(--chart-4)"
+          ? "var(--color-muted-foreground)"
           : "var(--chart-1)";
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <ComposedChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -14 }}>
+      <ChartComponent data={data} margin={{ top: 4, right: 8, bottom: 0, left: -14 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
-        <XAxis dataKey="label" {...axis} minTickGap={60} />
+        <XAxis dataKey="label" {...axis} minTickGap={60} tickFormatter={formatMonthYear} />
         <YAxis {...axis} width={52} />
         <Tooltip {...tooltipStyle} />
         {component === "residual" && (
           <ReferenceLine y={0} stroke="var(--color-muted-foreground)" strokeDasharray="3 3" />
         )}
-        <Line
-          dataKey={component}
-          stroke={color}
-          strokeWidth={component === "observed" ? 1 : 1.8}
-          dot={false}
-          isAnimationActive={false}
-        />
-      </ComposedChart>
+        {isBar ? (
+          <Bar dataKey={component} fill={color} radius={[4, 4, 0, 0]} isAnimationActive={false} />
+        ) : (
+          <Line
+            dataKey={component}
+            stroke={color}
+            strokeWidth={component === "observed" ? 1 : 1.8}
+            dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: color }}
+            activeDot={{ r: 5, strokeWidth: 2, fill: "var(--background)", stroke: color }}
+            isAnimationActive={false}
+          />
+        )}
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }
 
-/** Autocorrelation bars — the spike near lag 12 is the annual cycle. */
+/** Yearly rhythm: 12 bars of average cases per calendar month, tinted wet/dry,
+ * with the pooled p50/p75 alert baselines as reference lines. */
+export function MonthOfYearChart({
+  regionCode,
+  illness,
+  monthsBack = 36,
+  height = 260,
+  mode = "raw",
+}: {
+  regionCode: string;
+  illness: string;
+  monthsBack?: number;
+  height?: number;
+  mode?: MetricMode;
+}) {
+  const series = seriesFor(regionCode, illness).filter((p) => !p.forecast);
+  const region = REGION_BY_CODE[regionCode];
+  if (!region || !series.length) {
+    return (
+      <div
+        className="glass-panel flex items-center justify-center rounded-lg text-muted-foreground text-sm"
+        style={{ height }}
+      >
+        No historical data available
+      </div>
+    );
+  }
+
+  const conv = (v: number) => metricValue(v, region, mode);
+  const start = Math.max(0, HIST_MONTHS - monthsBack);
+  const buckets: number[][] = Array.from({ length: 12 }, () => []);
+  series.slice(start).forEach((p) => buckets[p.month - 1]!.push(conv(p.cases)));
+
+  const rows: { month: string; value: number; wet: boolean }[] = buckets.map((arr, i) => {
+    const avg = arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+    return {
+      month: MONTH_NAMES[i]!,
+      value: Math.round(avg),
+      wet: i >= 5 && i <= 10, // Jun–Nov
+    };
+  });
+  const yearMean = rows.reduce((a, r) => a + r.value, 0) / 12 || 0;
+  const thresholds = getThresholds(illness, undefined, mode);
+
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <BarChart data={rows} margin={{ top: 8, right: 8, bottom: 0, left: -14 }}>
+        <CartesianGrid stroke="var(--border)" vertical={false} />
+        <XAxis dataKey="month" {...axis} />
+        <YAxis {...axis} width={52} />
+        <Tooltip
+          content={({ active, payload }) => {
+            if (!active || !payload?.length) return null;
+            const row = payload[0]!.payload as { month: string; value: number; wet: boolean };
+            return (
+              <div
+                className="glass-panel max-w-[15rem] rounded-md px-2.5 py-2"
+                style={{ fontSize: "13px" }}
+              >
+                <p className="text-muted-foreground">
+                  {row.month} · {row.wet ? "wet" : "dry"} season
+                </p>
+                <p className="mt-0.5 font-medium">
+                  {row.value.toLocaleString(undefined, { maximumFractionDigits: 0 })} avg cases
+                </p>
+              </div>
+            );
+          }}
+        />
+        <ReferenceLine
+          y={yearMean}
+          stroke="var(--color-muted-foreground)"
+          strokeDasharray="3 3"
+          label={{
+            value: "Year avg",
+            fill: "var(--color-muted-foreground)",
+            fontSize: 12,
+            position: "insideTopRight",
+          }}
+        />
+        <ReferenceLine
+          y={thresholds.p50}
+          stroke={CHART_COLORS.moderate}
+          strokeDasharray="4 4"
+          label={{
+            value: "P50",
+            fill: CHART_COLORS.moderateSolid,
+            fontSize: 11,
+            position: "insideBottomRight",
+          }}
+        />
+        <ReferenceLine
+          y={thresholds.p75}
+          stroke={CHART_COLORS.high}
+          strokeDasharray="4 4"
+          label={{
+            value: "P75",
+            fill: CHART_COLORS.highSolid,
+            fontSize: 11,
+            position: "insideTopRight",
+          }}
+        />
+        <Bar dataKey="value" radius={[4, 4, 0, 0]} isAnimationActive={false}>
+          {rows.map((r, i) => (
+            <Cell
+              key={i}
+              fill={r.wet ? CHART_COLORS.wet : CHART_COLORS.dry}
+              fillOpacity={0.85}
+            />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  );
+}
 export function AcfChart({
   regionCode,
   illness,
   height = 160,
+  endIndex,
+  chartType = "bar",
 }: {
   regionCode: string;
   illness: string;
   height?: number;
+  endIndex?: number | undefined;
+  chartType?: ChartType;
 }) {
-  const data = acf(regionCode, illness, 24);
+  const isBar = chartType === "bar";
+  const ChartComponent = isBar ? BarChart : LineChart;
+  const data = acf(regionCode, illness, 24, endIndex);
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
+      <ChartComponent data={data} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
         <CartesianGrid stroke="var(--border)" vertical={false} />
         <XAxis dataKey="lag" {...axis} minTickGap={14} />
         <YAxis {...axis} width={46} domain={[-1, 1]} />
         <Tooltip {...tooltipStyle} />
         <ReferenceLine y={0} stroke="var(--color-muted-foreground)" />
         <ReferenceLine x={12} stroke="var(--chart-3)" strokeDasharray="3 3" />
-        <Bar dataKey="value" fill="var(--chart-1)" isAnimationActive={false} />
-      </BarChart>
+        {isBar ? (
+          <Bar dataKey="value" fill="var(--chart-1)" isAnimationActive={false} />
+        ) : (
+          <Line
+            dataKey="value"
+            stroke="var(--chart-1)"
+            strokeWidth={1.8}
+            dot={{ r: 2.5, strokeWidth: 1.2, fill: "var(--background)", stroke: "var(--chart-1)" }}
+            activeDot={{
+              r: 5,
+              strokeWidth: 2,
+              fill: "var(--background)",
+              stroke: "var(--chart-1)",
+            }}
+            isAnimationActive={false}
+          />
+        )}
+      </ChartComponent>
     </ResponsiveContainer>
   );
 }

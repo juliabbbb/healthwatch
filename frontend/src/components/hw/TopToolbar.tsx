@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "@tanstack/react-router";
 import {
-  Download,
+  HelpCircle,
   Menu,
   Minus,
   Moon,
@@ -17,9 +17,11 @@ import {
   GitCompare,
   BookOpen,
 } from "lucide-react";
+import { toast } from "sonner";
 import { SettingsModal } from "@/components/hw/SettingsModal";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
-import { REGIONS } from "@/lib/healthwatch/data";
+import { REGION_BY_CODE, REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 export interface TopToolbarProps {
@@ -27,17 +29,26 @@ export interface TopToolbarProps {
   onZoom?: (dir: 1 | -1) => void;
   /** Extra icon affordances (e.g. the notification bell) shown first in the actions cluster. */
   trailing?: React.ReactNode;
+  /** Currently selected region on the map; carried as ?region= into Seasonality links. */
+  selectedRegionCode?: string | null;
+  /** Callback to toggle the Explain Mode inspector. */
+  onStartTour?: () => void;
+  /** Whether Explain Mode is currently active (highlights the ? button). */
+  explainActive?: boolean;
 }
 
-export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
+export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onStartTour, explainActive }: TopToolbarProps) {
   const [q, setQ] = useState("");
   const [focused, setFocused] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [theme, toggleTheme] = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  // Lock background scroll while either mobile portal overlay is open
+  // (SettingsModal locks itself).
+  useBodyScrollLock(mobileSearchOpen || mobileMenuOpen);
 
   useEffect(() => {
     setMounted(true);
@@ -54,13 +65,81 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
     ).slice(0, 6);
   }, [q]);
 
-  const handleShare = () => {
-    if (typeof navigator !== "undefined" && navigator.clipboard) {
-      void navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+  const copyFallback = (text: string): boolean => {
+    const input = document.createElement("textarea");
+    input.value = text;
+    input.setAttribute("readonly", "");
+    input.style.position = "fixed";
+    input.style.inset = "0 auto auto 0";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    input.setSelectionRange(0, text.length);
+    let ok = false;
+    try {
+      ok = document.execCommand("copy");
+    } catch {
+      ok = false;
+    }
+    document.body.removeChild(input);
+    return ok;
+  };
+
+  const handleCopy = async (text: string): Promise<boolean> => {
+    if (document.hasFocus() && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        // secure-context/permission failure — fall through to legacy path
+      }
+    } else {
+      try {
+        await navigator.clipboard?.writeText?.(text);
+        return true;
+      } catch {
+        // fall through to legacy path
+      }
+    }
+    return copyFallback(text);
+  };
+
+  const shareUrl = () => {
+    try {
+      const host = window.location.hostname;
+      const isDevHost =
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        host.endsWith(".local") ||
+        host.endsWith(".localhost") ||
+        host.endsWith(".test") ||
+        /^\d{1,3}(\.\d{1,3}){3}$/.test(host);
+      if (isDevHost) return "https://healthwatch-ui.onrender.com/";
+    } catch {
+      // fall back to the current URL below
+    }
+    return window.location.href;
+  };
+
+  const handleShare = async () => {
+    const url = shareUrl();
+    const ok = await handleCopy(url);
+    if (ok) {
+      toast.success("Link copied!", {
+        description: url,
+      });
+    } else {
+      toast.error("Copying the link failed", {
+        description:
+          "Your browser blocked clipboard access — paste permission or allow it in site settings.",
+      });
     }
   };
+
+  const seasonalitySearch =
+    selectedRegionCode && REGION_BY_CODE[selectedRegionCode]
+      ? { region: selectedRegionCode }
+      : undefined;
 
   return (
     <>
@@ -110,15 +189,28 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
         </div>
 
         {/* Primary Desktop Nav Links */}
-        <nav className="glass-panel flex items-center gap-1 rounded-xl p-1">
+        <nav className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <NavLink to="/">Map</NavLink>
-          <NavLink to="/seasonality">Seasonality</NavLink>
+          <NavLink to="/seasonality" {...(seasonalitySearch ? { search: seasonalitySearch } : {})}>
+            Seasonality
+          </NavLink>
           <NavLink to="/compare">Compare</NavLink>
           <NavLink to="/methodology">Methodology</NavLink>
         </nav>
 
         {/* Action icons */}
-        <div className="glass-panel flex items-center gap-0.5 rounded-xl p-1">
+        <div className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
+          <IconButton
+            id="hw-tour-btn"
+            label={explainActive ? "Exit Explain Mode" : "Explain Mode — click anything to learn what it does"}
+            {...(onStartTour ? { onClick: onStartTour } : {})}
+            className={explainActive
+              ? "text-primary bg-primary/15 ring-1 ring-primary/50 hover:bg-primary/20 hover:text-primary"
+              : "text-primary hover:text-primary"
+            }
+          >
+            <HelpCircle className="size-4" />
+          </IconButton>
           {trailing}
           <IconButton
             label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -129,15 +221,8 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
           <IconButton label="Settings" onClick={() => setSettingsOpen(true)}>
             <Settings className="size-4" />
           </IconButton>
-          <IconButton
-            label={copied ? "Link copied!" : "Share view"}
-            onClick={handleShare}
-            className={copied ? "text-primary" : ""}
-          >
+          <IconButton label="Share this view" onClick={() => void handleShare()}>
             <Share2 className="size-4" />
-          </IconButton>
-          <IconButton label="Export snapshot" onClick={() => window.print()}>
-            <Download className="size-4" />
           </IconButton>
           {onZoom && (
             <>
@@ -175,12 +260,13 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
           className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary active:scale-95"
         >
           <Menu className="size-4" />
-          <span className="hidden xs:inline font-semibold">Menu</span>
+          <span className="hidden min-[420px]:inline font-semibold">Menu</span>
         </button>
       </div>
 
       {/* ===================== MOBILE SEARCH OVERLAY MODAL ===================== */}
-      {mounted && mobileSearchOpen &&
+      {mounted &&
+        mobileSearchOpen &&
         createPortal(
           <div
             style={{ zIndex: 9960 }}
@@ -266,11 +352,11 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
             </div>
           </div>,
           document.body,
-        )
-      }
+        )}
 
       {/* ===================== MOBILE HAMBURGER MENU MODAL (VERTICALLY CENTERED & TOP OF CARDS) ===================== */}
-      {mounted && mobileMenuOpen &&
+      {mounted &&
+        mobileMenuOpen &&
         createPortal(
           <div
             style={{ zIndex: 9950 }}
@@ -290,14 +376,16 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
               <div className="flex items-center justify-between border-b border-border/70 pb-3">
                 <div>
                   <h2 className="text-base font-bold text-foreground">HEALTHWATCH</h2>
-                  <p className="text-[10px] text-muted-foreground font-medium">Outbreak Decision Support</p>
+                  <p className="text-[10px] text-muted-foreground font-medium">
+                    Regional Outbreak Hotspot Map & Forecasts
+                  </p>
                 </div>
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground"
                   aria-label="Close navigation menu"
                 >
-                  <X className="size-5" />
+                  <X className="size-4" />
                 </button>
               </div>
 
@@ -313,6 +401,7 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                 <MobileNavLink
                   to="/seasonality"
                   icon={Waves}
+                  {...(seasonalitySearch ? { search: seasonalitySearch } : {})}
                   label="Seasonality &amp; Cycles"
                   onClick={() => setMobileMenuOpen(false)}
                 />
@@ -338,7 +427,11 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                     onClick={toggleTheme}
                     className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
-                    {theme === "dark" ? <Sun className="size-4 text-primary" /> : <Moon className="size-4 text-primary" />}
+                    {theme === "dark" ? (
+                      <Sun className="size-4 text-primary" />
+                    ) : (
+                      <Moon className="size-4 text-primary" />
+                    )}
                     <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
                   </button>
                   <button
@@ -356,38 +449,50 @@ export function TopToolbar({ onPick, onZoom, trailing }: TopToolbarProps) {
                     className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
                     <Share2 className="size-4 text-primary" />
-                    <span>{copied ? "Link Copied!" : "Share Link"}</span>
+                    <span>Share Link</span>
                   </button>
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
-                      window.print();
+                      onStartTour?.();
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    className={`col-span-2 flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors active:scale-98 ${
+                      explainActive
+                        ? "border-primary/60 bg-primary/20 text-primary hover:bg-primary/30"
+                        : "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
+                    }`}
                   >
-                    <Download className="size-4 text-primary" />
-                    <span>Export View</span>
+                    <HelpCircle className="size-4" />
+                    <span>{explainActive ? "Exit Explain Mode" : "Explain Mode"}</span>
                   </button>
                 </div>
               </div>
             </div>
           </div>,
           document.body,
-        )
-      }
+        )}
 
       <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
   );
 }
 
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+function NavLink({
+  to,
+  search,
+  children,
+}: {
+  to: string;
+  search?: { region: string };
+  children: React.ReactNode;
+}) {
   return (
     <Link
       to={to}
+      {...(search ? { search } : {})}
       activeOptions={{ exact: to === "/" }}
       className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
-      activeProps={{ className: "bg-secondary text-foreground font-semibold" }}
+      activeProps={{ className: "bg-secondary/80 text-foreground font-medium" }}
     >
       {children}
     </Link>
@@ -399,15 +504,18 @@ function MobileNavLink({
   icon: Icon,
   label,
   onClick,
+  search,
 }: {
   to: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   onClick: () => void;
+  search?: { region: string };
 }) {
   return (
     <Link
       to={to}
+      {...(search ? { search } : {})}
       onClick={onClick}
       activeOptions={{ exact: to === "/" }}
       className="flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
@@ -424,19 +532,25 @@ function IconButton({
   onClick,
   children,
   className,
+  disabled,
+  id,
 }: {
   label: string;
   onClick?: () => void;
   children: React.ReactNode;
   className?: string;
+  disabled?: boolean;
+  id?: string;
 }) {
   return (
     <button
+      id={id}
       title={label}
       aria-label={label}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
-        "rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95",
+        "rounded-lg p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
     >

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, Siren, TrendingUp, TriangleAlert } from "lucide-react";
 import type { AlertItem } from "@/lib/healthwatch/alerts";
 import { cn } from "@/lib/utils";
+import { formatMonthYear } from "@/utils/formatDate";
 
 /**
  * Bantay-style stacked alert list. Entries are derived client-side from the
@@ -40,17 +41,18 @@ export function AlertsPanel({
           style={{ color: severe ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
         <span className="label-caps flex-1 text-xs font-bold text-foreground">Active alerts</span>
-        {alerts.length > 0 && (
-          <span
-            className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums"
-            style={{
-              color: severe ? "var(--risk-high)" : "var(--risk-moderate)",
-              backgroundColor: `color-mix(in oklab, ${severe ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
-            }}
-          >
-            {alerts.length}
-          </span>
-        )}
+{alerts.length > 0 && (
+              <span
+                className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tabular-nums"
+                style={{
+                  color: severe ? "var(--risk-high)" : "var(--risk-moderate)",
+                  backgroundColor: `color-mix(in oklab, ${severe ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
+                }}
+                title={`${alerts.length} active alerts`}
+              >
+                {alerts.length > 99 ? "99+" : alerts.length}
+              </span>
+            )}
         {open ? (
           <ChevronUp className="size-4 text-muted-foreground" />
         ) : (
@@ -60,7 +62,7 @@ export function AlertsPanel({
 
       {open && (
         <>
-          <ul className="hw-scroll max-h-[36vh] sm:max-h-72 divide-y divide-border/60 overflow-y-auto border-t border-border/70">
+          <ul className="hw-scroll max-h-[36vh] sm:max-h-60 divide-y divide-border/60 overflow-y-auto border-t border-border/70">
             {alerts.length === 0 && (
               <li className="px-4 py-6 text-center text-xs text-muted-foreground">
                 No active alerts — every region is within its seasonal range.
@@ -75,8 +77,7 @@ export function AlertsPanel({
                   <span
                     className="mt-0.5 shrink-0 rounded-md p-1.5"
                     style={{
-                      color:
-                        a.kind === "outbreak" ? "var(--risk-moderate)" : "var(--risk-high)",
+                      color: a.kind === "outbreak" ? "var(--risk-moderate)" : "var(--risk-high)",
                       backgroundColor: `color-mix(in oklab, ${
                         a.kind === "outbreak" ? "var(--risk-moderate)" : "var(--risk-high)"
                       }, transparent 86%)`,
@@ -92,7 +93,7 @@ export function AlertsPanel({
                     )}
                   </span>
                   <span className="min-w-0 flex-1">
-<span
+                    <span
                       className={
                         a.kind === "outbreak"
                           ? "block text-xs font-semibold text-foreground"
@@ -106,18 +107,18 @@ export function AlertsPanel({
                     </span>
                   </span>
                   <span className="shrink-0 pt-0.5 font-mono text-[10px] font-medium tabular-nums text-muted-foreground">
-                    {a.month}
+                    {formatMonthYear(a.month)}
                   </span>
                 </button>
               </li>
             ))}
           </ul>
           {alerts.length > 0 && (
-<div className="border-t border-border/70 px-4 py-2 bg-secondary/15">
+            <div className="border-t border-border/70 px-4 py-2 bg-secondary/15">
               <p className="text-[10px] leading-relaxed text-muted-foreground">
-                Monthly risk alerts come from the current classification; seasonal outbreak alerts come
-                from Rule A/B on the active season window. Click an alert to locate the region on the
-                map.
+                Monthly risk alerts come from the current classification; seasonal outbreak alerts
+                come from Rule A/B on the active season window. Click an alert to locate the region
+                on the map.
               </p>
             </div>
           )}
