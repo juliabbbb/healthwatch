@@ -320,24 +320,8 @@ export function ForecastCard({
         <KpiStrip data={kpi} />
       </section>
 
-      {/* 4. Compact 6-Month Forecast + Risk Pills */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2">
-          NEXT 6 MONTHS
-        </p>
-        <ForecastSparkline data={sparkData} />
-        <div className="mt-2">
-          <RiskDistributionRow counts={riskCounts} />
-        </div>
-        {mix.total > 0 && (
-          <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
-            <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2">
-              TRANSMISSION SPLIT · NEXT 6 MONTHS
-            </p>
-            <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
-          </div>
-        )}
-      </section>
+
+
 
       {/* 5. Compact AI Insight (gated) */}
       {aiEnabled && (
@@ -353,7 +337,18 @@ export function ForecastCard({
 
       {/* 6. Live PAGASA Daily Weather Nowcast & Disease Transmission Alerts */}
       <section className="border-b border-border/70 px-5 py-3 shrink-0">
-        <LiveWeatherCard regionCode={regionCode} illness={illness} />
+        <LiveWeatherCard
+          regionCode={regionCode}
+          illness={illness}
+          nextForecast={nextPt ? {
+            value: metricValue(nextPt.cases, a.region, mode),
+            lower: metricValue(nextPt.lower, a.region, mode),
+            upper: metricValue(nextPt.upper, a.region, mode),
+            label: nextPt.label,
+            unit,
+            mode,
+          } : undefined}
+        />
       </section>
 
       {/* 7. Model Info (unchanged) */}
@@ -388,22 +383,7 @@ export function ForecastCard({
         </div>
       </section>
 
-      {/* 8. Illness Information (classification of the active illness only) */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-1.5">
-          INFORMATION
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2.5 py-1 text-xs font-semibold text-foreground">
-            {illnessDisplayName(illness)}
-          </span>
-          {groupForIllness(illness) && (
-            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2.5 py-1 text-xs font-medium text-muted-foreground">
-              {groupForIllness(illness)}
-            </span>
-          )}
-        </div>
-      </section>
+
 
       {/* 8. Pinned CTA */}
       <div

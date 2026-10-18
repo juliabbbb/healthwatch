@@ -68,12 +68,19 @@ SPECIFIC_MAPPINGS = {
 
 
 def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, Any]:
-    """Evaluate weather parameters into disease-specific nowcast alerts."""
+    """Evaluate weather parameters into per-illness disease nowcast alerts.
+
+    Returns differentiated advisories for all 5 SUPPORTED_DISEASES:
+      - Dengue              (vector ecology: rain → breeding sites)
+      - Acute Bloody Diarrhea (fastest responder to flood water contamination)
+      - Cholera             (highest weather sensitivity; flood → V. cholerae)
+      - Typhoid Fever       (moderate; 7-14 day incubation lag)
+      - Acute Viral Hepatitis (lowest sensitivity; 15-50 day incubation lag)
+    """
     c_lower = condition.lower()
     i_lower = impacts.lower()
     cb_lower = caused_by.lower()
 
-    # Distinguish active heavy rains from isolated boilerplate
     has_heavy_rain = any(
         kw in i_lower or kw in c_lower
         for kw in ("heavy rain", "moderate to at times heavy", "widespread rain", "torrential")
@@ -86,101 +93,193 @@ def _classify_risk(condition: str, caused_by: str, impacts: str) -> dict[str, An
 
     if is_flood or "typhoon" in cb_lower or has_heavy_rain:
         tier = "HIGH"
-        multiplier = 1.25
-        lepto_tier = "HIGH ALERT"
-        lepto_desc = (
-            "Active Flash Flood / Heavy Rain Warning: Severe risk of Leptospira exposure "
-            "from wading in floodwaters, overflowing canals, and agricultural runoff. Recommend LGU prophylaxis advisories."
-        )
-        dengue_tier = "ELEVATED"
-        dengue_desc = (
-            "Heavy rainfall event: Vector breeding habitats expand rapidly in artificial and "
-            "natural containers within 7-14 days post-rain. Accelerate 4S fogging and source reduction."
-        )
-        fwbd_desc = "Flood runoff elevates risk of drinking water contamination; recommend boiling/chlorination."
         timeline = {
-            "immediate_days_1_3": "High floodwater wading contact risk; urgent Leptospira infection hazard and drinking water infiltration.",
-            "short_term_weeks_2_4": "Stagnant pools from receding rains mature into vector breeding sites; Dengue case surge expected in 7-14 days.",
+            "immediate_days_1_3": "Active flood/heavy rain: drinking water infiltration risk and direct waterborne exposure are immediate.",
+            "short_term_weeks_2_4": "Receding floodwaters leave stagnant pools — Dengue vector surge expected in 7–14 days; FWD case spike in 3–7 days.",
         }
         actions = [
-            "Issue public warning against wading in urban/rural floodwaters; deploy Doxycycline prophylaxis for responders & exposed residents.",
-            "Inspect and treat flooded municipal drainage, gutters, and low-lying perimeter puddles.",
-            "Schedule intensive 4S vector search-and-destroy campaigns before Day 7 to eliminate mosquito larvae before pupation.",
-            "Distribute chlorine water purification kits in flooded barangays; issue boil-water advisories.",
+            "Issue boil-water and water disinfection advisories in flooded barangays.",
+            "Deploy chlorine purification kits and distribute oral rehydration salts (ORS) to affected communities.",
+            "Schedule 4S vector search-and-destroy campaigns before Day 7 to break the larval breeding cycle.",
+            "Alert health centers to increase inventory of Dengue NS1 RDTs and oral rehydration stocks.",
+            "Issue public advisory to avoid contact with floodwater and consume only treated water.",
         ]
+        disease_advisories = {
+            "Dengue": {
+                "alert_level": "ELEVATED",
+                "multiplier": 1.20,
+                "guidance": (
+                    "Heavy rainfall creates flood pools and container water accumulation — ideal Aedes aegypti breeding conditions. "
+                    "Expect a Dengue case surge 7–14 days post-event. Accelerate 4S fogging and larval source reduction now."
+                ),
+            },
+            "Acute Bloody Diarrhea": {
+                "alert_level": "HIGH",
+                "multiplier": 1.30,
+                "guidance": (
+                    "Floodwater carries fecal-oral pathogens directly into drinking water sources. "
+                    "ABD responds fastest (3–7 days) to contamination events. Issue immediate boil-water advisory and ORS distribution."
+                ),
+            },
+            "Cholera": {
+                "alert_level": "HIGH",
+                "multiplier": 1.35,
+                "guidance": (
+                    "Cholera is the most weather-sensitive disease in this system. Flooding displaces sanitation infrastructure and "
+                    "creates warm, brackish standing water where Vibrio cholerae thrives. Alert surveillance teams for early case detection."
+                ),
+            },
+            "Typhoid Fever": {
+                "alert_level": "MODERATE",
+                "multiplier": 1.15,
+                "guidance": (
+                    "Typhoid incubation is 7–14 days; expect delayed case increase after flooding events. "
+                    "Flooding of sewage and water supply infrastructure is the primary risk pathway. Enforce food and water hygiene."
+                ),
+            },
+            "Acute Viral Hepatitis": {
+                "alert_level": "MODERATE",
+                "multiplier": 1.10,
+                "guidance": (
+                    "Hepatitis A follows a fecal-oral route and has a 15–50 day incubation period. "
+                    "Flooding of sewage infrastructure elevates risk; the case rise will appear weeks after the event. Enforce safe water and food handling."
+                ),
+            },
+        }
     elif is_cyclone_monsoon or "scattered" in c_lower:
         tier = "ELEVATED"
-        multiplier = 1.15
-        lepto_tier = "MODERATE"
-        lepto_desc = (
-            "Wet conditions with scattered rains: Standing water hazards in low-lying and "
-            "poorly-drained localities. Avoid wading in murky puddles."
-        )
-        dengue_tier = "MODERATE"
-        dengue_desc = (
-            "Persistent moisture and humidity accelerate mosquito egg-laying cycles. "
-            "Inspect standing water around residences."
-        )
-        fwbd_desc = "Heightened humidity and surface runoff; maintain food and drinking water hygiene."
         timeline = {
-            "immediate_days_1_3": "Scattered rainshowers create temporary puddles and damp soil; avoid direct runoff contact.",
-            "short_term_weeks_2_4": "High atmospheric humidity (>80%) shortens mosquito gonotrophic cycle, increasing biting frequency.",
+            "immediate_days_1_3": "Scattered rains produce temporary puddles and damp soil; surface runoff may reach water sources.",
+            "short_term_weeks_2_4": "Sustained humidity (>80%) shortens mosquito gonotrophic cycle; elevated biting frequency expected.",
         }
         actions = [
             "Empty water-collecting outdoor receptacles (tires, plastic bottles, plant saucers).",
-            "Ensure health centers maintain diagnostic test kits (Dengue NS1 / Leptospira RDT) in stock.",
-            "Advise communities to seek immediate medical consult for febrile illness lasting over 2 days.",
+            "Ensure health centers maintain adequate diagnostic test kits (Dengue NS1 RDT) in stock.",
+            "Advise communities to seek medical consult for febrile illness lasting more than 2 days.",
         ]
+        disease_advisories = {
+            "Dengue": {
+                "alert_level": "MODERATE",
+                "multiplier": 1.15,
+                "guidance": (
+                    "Persistent moisture and high humidity accelerate mosquito egg-laying and hatching cycles. "
+                    "Inspect and eliminate standing water around residences; sustained vector management required."
+                ),
+            },
+            "Acute Bloody Diarrhea": {
+                "alert_level": "MODERATE",
+                "multiplier": 1.15,
+                "guidance": (
+                    "Heightened surface runoff under scattered rains increases contamination risk for open water sources. "
+                    "Enforce food and water hygiene; monitor for case clusters in flood-prone barangays."
+                ),
+            },
+            "Cholera": {
+                "alert_level": "MODERATE",
+                "multiplier": 1.18,
+                "guidance": (
+                    "Wet conditions support Vibrio cholerae persistence in surface water and coastal areas. "
+                    "Maintain active surveillance in coastal and low-lying communities; enforce safe water access."
+                ),
+            },
+            "Typhoid Fever": {
+                "alert_level": "LOW",
+                "multiplier": 1.10,
+                "guidance": (
+                    "Wet season conditions moderately elevate contamination pathways for Typhoid. "
+                    "Standard water and food hygiene protocols are sufficient; no immediate surge expected."
+                ),
+            },
+            "Acute Viral Hepatitis": {
+                "alert_level": "LOW",
+                "multiplier": 1.08,
+                "guidance": (
+                    "Scattered rains present low incremental risk for Hepatitis A given its long incubation window. "
+                    "Maintain routine food handling and hand hygiene advisories."
+                ),
+            },
+        }
     elif "isolated" in c_lower or "rainshower" in c_lower:
         tier = "MODERATE"
-        multiplier = 1.05
-        lepto_tier = "LOW"
-        lepto_desc = "Isolated rainshowers: minimal flood accumulation risk."
-        dengue_tier = "BASELINE"
-        dengue_desc = "Localized showers; standard seasonal baseline vector management applies."
-        fwbd_desc = "Normal baseline conditions."
         timeline = {
-            "immediate_days_1_3": "Localized showers with dry intervals; minimal flood inundation threat.",
-            "short_term_weeks_2_4": "Normal seasonal baseline vector density; no climate-induced surge detected.",
+            "immediate_days_1_3": "Isolated showers with dry intervals; minimal flood accumulation expected.",
+            "short_term_weeks_2_4": "Normal seasonal baseline vector density; no weather-driven surge detected.",
         }
         actions = [
             "Maintain standard community sanitation and vector awareness programs.",
         ]
+        disease_advisories = {
+            "Dengue": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.05,
+                "guidance": "Localized showers; standard seasonal baseline vector management applies.",
+            },
+            "Acute Bloody Diarrhea": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.03,
+                "guidance": "Minimal runoff risk. Standard water and food hygiene monitoring is sufficient.",
+            },
+            "Cholera": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.03,
+                "guidance": "No active weather amplifier. Routine surveillance and safe water access protocols apply.",
+            },
+            "Typhoid Fever": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.02,
+                "guidance": "Baseline risk. Standard sanitation and food safety measures are adequate.",
+            },
+            "Acute Viral Hepatitis": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.01,
+                "guidance": "Baseline conditions. Routine hand hygiene and safe food handling advisories apply.",
+            },
+        }
     else:
         tier = "NORMAL"
-        multiplier = 1.00
-        lepto_tier = "LOW"
-        lepto_desc = "Fair weather; negligible flood exposure risk."
-        dengue_tier = "BASELINE"
-        dengue_desc = "Fair weather; baseline seasonal activity."
-        fwbd_desc = "Baseline surveillance."
         timeline = {
-            "immediate_days_1_3": "Dry conditions prevailing; low waterborne risk.",
-            "short_term_weeks_2_4": "Baseline seasonal parameters.",
+            "immediate_days_1_3": "Dry / fair weather prevailing; low waterborne and vector risk.",
+            "short_term_weeks_2_4": "Baseline seasonal parameters; no weather-driven amplification.",
         }
         actions = [
             "Standard routine epidemiological surveillance.",
         ]
+        disease_advisories = {
+            "Dengue": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.00,
+                "guidance": "Fair weather; baseline seasonal Dengue activity. Routine vector monitoring applies.",
+            },
+            "Acute Bloody Diarrhea": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.00,
+                "guidance": "Fair weather; no weather-driven contamination amplification. Baseline food and water hygiene.",
+            },
+            "Cholera": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.00,
+                "guidance": "Dry conditions reduce waterborne transmission risk significantly. Routine surveillance applies.",
+            },
+            "Typhoid Fever": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.00,
+                "guidance": "Fair weather; no precipitation-driven amplification of Typhoid pathways. Baseline surveillance.",
+            },
+            "Acute Viral Hepatitis": {
+                "alert_level": "BASELINE",
+                "multiplier": 1.00,
+                "guidance": "Baseline conditions. Standard sanitation and Hepatitis A surveillance apply.",
+            },
+        }
 
     return {
         "risk_tier": tier,
         "flood_warning": is_flood,
-        "multiplier": multiplier,
+        # Overall multiplier kept for backward compat (max across diseases)
+        "multiplier": max(v["multiplier"] for v in disease_advisories.values()),
         "transmission_timeline": timeline,
         "recommended_actions": actions,
-        "disease_advisories": {
-            "leptospirosis": {
-                "alert_level": lepto_tier,
-                "guidance": lepto_desc,
-            },
-            "dengue": {
-                "alert_level": dengue_tier,
-                "guidance": dengue_desc,
-            },
-            "fwbd": {
-                "guidance": fwbd_desc,
-            },
-        },
+        "disease_advisories": disease_advisories,
     }
 
 
@@ -363,9 +462,11 @@ def _build_fallback_payload() -> dict[str, Any]:
             "risk_tier": "NORMAL",
             "multiplier": 1.00,
             "disease_advisories": {
-                "leptospirosis": {"alert_level": "LOW", "guidance": "Standard baseline risk. No active flood advisory."},
-                "dengue": {"alert_level": "BASELINE", "guidance": "Standard seasonal baseline conditions apply."},
-                "fwbd": {"guidance": "Baseline food/water hygiene surveillance."},
+                "Dengue": {"alert_level": "BASELINE", "multiplier": 1.00, "guidance": "Standard seasonal baseline conditions apply."},
+                "Acute Bloody Diarrhea": {"alert_level": "BASELINE", "multiplier": 1.00, "guidance": "Baseline food and water hygiene surveillance."},
+                "Cholera": {"alert_level": "BASELINE", "multiplier": 1.00, "guidance": "Routine surveillance applies. No active weather amplifier."},
+                "Typhoid Fever": {"alert_level": "BASELINE", "multiplier": 1.00, "guidance": "Baseline sanitation and food safety measures are adequate."},
+                "Acute Viral Hepatitis": {"alert_level": "BASELINE", "multiplier": 1.00, "guidance": "Routine hand hygiene and safe food handling advisories apply."},
             },
         }
 
