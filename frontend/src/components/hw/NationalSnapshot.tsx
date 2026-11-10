@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Info, X } from "lucide-react";
+import { Info, X, Stethoscope, Users } from "lucide-react";
 import {
   ILLNESSES,
   METRIC_META,
@@ -12,6 +12,7 @@ import {
 import { formatMonthYear } from "@/utils/formatDate";
 import { cn } from "@/lib/utils";
 import { LiveClock } from "./LiveClock";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 
 /**
  * National snapshot readout containing headline stats, unified hotspot legend,
@@ -53,6 +54,7 @@ export function NationalSnapshot({
 }) {
   const [legendOpen, setLegendOpen] = useState(false);
   const legendRef = useRef<HTMLDivElement>(null);
+  const { mode: audienceMode } = useAudienceMode();
 
   // Close legend popover on outside click
   useEffect(() => {
@@ -98,6 +100,19 @@ export function NationalSnapshot({
             }}
           >
             {isForecast ? "Predicted" : "Reported"}
+          </span>
+          <span className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider flex items-center gap-1 border border-border/60 bg-secondary/60 text-foreground">
+            {audienceMode === "clinical" ? (
+              <>
+                <Stethoscope className="size-3 text-primary" />
+                <span>Clinical</span>
+              </>
+            ) : (
+              <>
+                <Users className="size-3 text-primary" />
+                <span>Public</span>
+              </>
+            )}
           </span>
         </div>
         <LiveClock />

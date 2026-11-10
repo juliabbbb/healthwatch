@@ -629,6 +629,10 @@ export async function loadHealthwatchData(): Promise<void> {
     buildAllSeries(region.code);
     buildAllOutbreak(region.code);
   }
+
+  if (seriesCache.size === 0) {
+    throw new Error("No epidemiological series loaded from backend API. Please ensure the backend is running.");
+  }
 }
 
 /** Sentinel raw value on fabricated no-data months of the shared axis. */
@@ -727,8 +731,15 @@ function buildAllOutbreak(code: string): void {
   if (Object.keys(union).length) outbreakCache.set(`${code}:__all`, union);
 }
 
+let loadPromise: Promise<void> | null = null;
+
+export function reloadHealthwatchData(): Promise<void> {
+  loadPromise = loadHealthwatchData();
+  return loadPromise;
+}
+
 /** Starts loading immediately on module import. */
-export const dataReady = loadHealthwatchData();
+export const dataReady = reloadHealthwatchData();
 
 /** Cached per region+illness so charts and the map share one source of truth. */
 export function getSeries(regionCode: string, illnessId: string): MonthPoint[] {

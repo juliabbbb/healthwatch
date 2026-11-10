@@ -8,12 +8,18 @@ import {
   ExternalLink,
   Info,
   RefreshCw,
+  Table as TableIcon,
   Thermometer,
   Waves,
   Wind,
   Zap,
+  Calculator,
+  ShieldAlert,
+  Stethoscope,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
@@ -22,6 +28,13 @@ interface IllnessAdvisory {
   alert_level: string;
   multiplier: number;
   guidance: string;
+}
+
+export interface PagasaTableRow {
+  place: string;
+  condition: string;
+  caused_by: string;
+  impacts: string;
 }
 
 interface LiveWeatherResponse {
@@ -46,6 +59,7 @@ interface LiveWeatherResponse {
     temperature?: { max: string; min: string };
     relative_humidity?: { max: string; min: string };
   };
+  raw_table?: PagasaTableRow[];
   national_context?: {
     issued_at: string;
     synopsis: string;
@@ -118,11 +132,14 @@ export function LiveWeatherCard({
   nextForecast?: NextForecastSnapshot;
   className?: string;
 }) {
+  const { mode: audienceMode } = useAudienceMode();
   const [data, setData] = useState<LiveWeatherResponse | null>(null);
   const [fetchedAt, setFetchedAt] = useState<number | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   const [showActions, setShowActions] = useState(false);
   const [showSynopsis, setShowSynopsis] = useState(false);
+  const [showPagasaTable, setShowPagasaTable] = useState(false);
+  const [showModelBasis, setShowModelBasis] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const load = useCallback(
@@ -193,14 +210,17 @@ export function LiveWeatherCard({
   const timeline = data.transmission_timeline;
   const actions = data.recommended_actions ?? [];
   const ctx = data.national_context;
+  const rawTable = data.raw_table ?? [];
 
   // Illness-specific advisory keyed by exact SUPPORTED_DISEASES name
   const illnessAdvisory: IllnessAdvisory | undefined = data.disease_advisories[illness];
   const alertLevel = illnessAdvisory?.alert_level ?? tier;
   const alertColor = ALERT_COLORS[alertLevel] ?? ALERT_COLORS.BASELINE;
+  const multiplier = illnessAdvisory?.multiplier ?? data.multiplier ?? 1.0;
 
   return (
     <div
+      data-explain="live-weather"
       className={cn(
         "rounded-xl border border-border/80 overflow-hidden transition-all shadow-xs text-left",
         isFlood ? "border-l-4" : "",
@@ -241,7 +261,7 @@ export function LiveWeatherCard({
           {/* Manual refresh */}
           <button
             type="button"
-            title="Refresh bulletin"
+            title="Refresh PAGASA bulletin"
             onClick={() => {
               weatherCache.delete(regionCode);
               const ctrl = new AbortController();
@@ -255,7 +275,7 @@ export function LiveWeatherCard({
       </div>
 
       <div className="px-4 py-3 space-y-3 bg-secondary/10">
-        {/* ── Bulletin Timestamp (live ticking clock) ────────── */}
+        {/* ── Bulletin Timestamp & Station Info ─────────────── */}
         <div className="flex items-center justify-between text-[11px] text-muted-foreground">
           <span>
             Bulletin:{" "}
@@ -273,16 +293,30 @@ export function LiveWeatherCard({
           )}
         </div>
 
-        {/* ── Ground Truth Conditions ─────────────────────────── */}
+        {/* ── Ground Truth PAGASA Conditions ─────────────────── */}
         <div className="rounded-lg border border-border/50 bg-card/60 p-3 space-y-1.5">
-          <p className="text-sm font-semibold text-foreground leading-snug">{data.condition}</p>
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <span className="label-caps text-[10px] text-muted-foreground block mb-0.5">
+                PAGASA REGIONAL FORECAST ({data.place_covered})
+              </span>
+              <p className="text-sm font-semibold text-foreground leading-snug">{data.condition}</p>
+            </div>
+            {isFlood && (
+              <span className="inline-flex items-center gap-1 rounded bg-destructive/15 text-destructive px-2 py-0.5 text-[10px] font-bold shrink-0">
+                <ShieldAlert className="size-3" /> Flood Hazard
+              </span>
+            )}
+          </div>
+
           <p className="text-xs text-muted-foreground">
             Weather System:{" "}
-            <span className="font-medium text-foreground/80">{data.caused_by}</span>
+            <span className="font-semibold text-foreground/90">{data.caused_by}</span>
           </p>
+
           {data.impacts && (
-            <p className="text-xs text-foreground/75 leading-relaxed italic border-t border-border/40 pt-1.5 mt-1.5">
-              ⚠️ {data.impacts}
+            <p className="text-xs text-foreground/80 leading-relaxed italic border-t border-border/40 pt-1.5 mt-1.5">
+              ⚠️ <strong>Impacts:</strong> {data.impacts}
             </p>
           )}
         </div>
@@ -294,7 +328,7 @@ export function LiveWeatherCard({
               <div className="rounded-lg border border-border/50 bg-card/60 p-2.5 flex items-center gap-2">
                 <Thermometer className="size-3.5 text-primary shrink-0" />
                 <div>
-                  <span className="label-caps text-[10px] text-muted-foreground block">Temp</span>
+                  <span className="label-caps text-[10px] text-muted-foreground block">Recorded Temp</span>
                   <span className="font-mono text-xs font-bold text-foreground">
                     {temp.min} – {temp.max}
                   </span>
@@ -305,7 +339,7 @@ export function LiveWeatherCard({
               <div className="rounded-lg border border-border/50 bg-card/60 p-2.5 flex items-center gap-2">
                 <Waves className="size-3.5 text-primary shrink-0" />
                 <div>
-                  <span className="label-caps text-[10px] text-muted-foreground block">Humidity</span>
+                  <span className="label-caps text-[10px] text-muted-foreground block">Relative Humidity</span>
                   <span className="font-mono text-xs font-bold text-foreground">
                     {rh.min} – {rh.max}
                   </span>
@@ -336,21 +370,146 @@ export function LiveWeatherCard({
             <button
               type="button"
               onClick={() => setShowSynopsis((p) => !p)}
-              className="flex w-full items-center justify-between text-xs text-muted-foreground hover:text-foreground transition-colors py-0.5"
+              className="flex w-full items-center justify-between text-xs text-muted-foreground hover:text-foreground transition-colors py-0.5 cursor-pointer"
             >
               <span className="flex items-center gap-1.5 font-semibold">
-                <Info className="size-3" />
-                Synoptic Synopsis
+                <Info className="size-3 text-primary" />
+                National Synoptic Synopsis
               </span>
               {showSynopsis ? <ChevronUp className="size-3" /> : <ChevronDown className="size-3" />}
             </button>
             {showSynopsis && (
-              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed border-l-2 border-border/60 pl-2.5">
+              <p className="mt-1.5 text-xs text-muted-foreground leading-relaxed border-l-2 border-primary/40 pl-2.5 bg-card/40 p-2 rounded-r-lg">
                 {ctx.synopsis}
               </p>
             )}
           </div>
         )}
+
+        {/* ── RAW PAGASA DAILY FORECAST TABLE (Collapsible) ──── */}
+        {rawTable.length > 0 && (
+          <div className="border-t border-border/50 pt-2.5">
+            <button
+              type="button"
+              onClick={() => setShowPagasaTable((p) => !p)}
+              className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <TableIcon className="size-3.5 text-primary" />
+                Official PAGASA Forecast Table ({rawTable.length} areas)
+              </span>
+              {showPagasaTable ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+            </button>
+
+            {showPagasaTable && (
+              <div className="mt-2 space-y-2 overflow-hidden rounded-lg border border-border/70 bg-card/80 p-2">
+                <p className="text-[11px] text-muted-foreground leading-tight">
+                  Ground-truth 24-hour weather forecast condition table parsed directly from the official PAGASA Daily Synoptic Weather Bulletin:
+                </p>
+                <div className="max-h-60 overflow-y-auto hw-scroll text-[11px] divide-y divide-border/50">
+                  {rawTable.map((row, idx) => {
+                    const isCurrent =
+                      data.place_covered &&
+                      row.place.toLowerCase().includes(data.place_covered.toLowerCase().slice(0, 8));
+                    return (
+                      <div
+                        key={idx}
+                        className={cn(
+                          "py-2 px-1.5 space-y-1 transition-colors",
+                          isCurrent ? "bg-primary/10 rounded-md font-medium" : "",
+                        )}
+                      >
+                        <div className="flex items-baseline justify-between gap-1">
+                          <span className="font-semibold text-foreground">
+                            {row.place}
+                          </span>
+                          {isCurrent && (
+                            <span className="rounded bg-primary/20 text-primary text-[9px] font-mono px-1 py-0.2">
+                              ACTIVE REGION
+                            </span>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 text-[11px] text-muted-foreground">
+                          <div>
+                            <span className="text-foreground/70 font-medium">Condition:</span>{" "}
+                            {row.condition}
+                          </div>
+                          <div>
+                            <span className="text-foreground/70 font-medium">Caused by:</span>{" "}
+                            <span className="text-foreground/90 font-semibold">{row.caused_by}</span>
+                          </div>
+                        </div>
+                        {row.impacts && (
+                          <div className="text-[10px] text-foreground/75 italic">
+                            ⚠️ {row.impacts}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── PREDICTION MODEL BASIS TRANSPARENCY PANEL ──────── */}
+        <div data-explain="prediction-model" className="border-t border-border/50 pt-2.5">
+          <button
+            type="button"
+            onClick={() => setShowModelBasis((p) => !p)}
+            className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
+          >
+            <span className="flex items-center gap-1.5">
+              <Calculator className="size-3.5 text-primary" />
+              Prediction Model &amp; Weather Basis
+            </span>
+            {showModelBasis ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+          </button>
+
+          {showModelBasis && (
+            <div className="mt-2 space-y-2 rounded-lg border border-primary/30 bg-card/80 p-3 text-xs leading-relaxed">
+              <div className="border-b border-border/50 pb-2">
+                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                  1. STATISTICAL BASELINE (PROPHET MODEL)
+                </span>
+                <p className="text-muted-foreground text-[11px]">
+                  Fitted onto canonical DOH surveillance data (2019–2026). The model decomposes the regional monthly time-series into:
+                  <code className="mx-1 rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px]">
+                    y(t) = Trend(t) + MonthlySeasonality(t) + ε
+                  </code>
+                  generating the baseline expected case trajectory and 95% uncertainty interval.
+                </p>
+              </div>
+
+              <div className="border-b border-border/50 pb-2">
+                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                  2. METEOROLOGICAL FORCING (PAGASA NOWCAST)
+                </span>
+                <p className="text-muted-foreground text-[11px]">
+                  Live meteorological conditions act as physical amplifiers on transmission vectors:
+                </p>
+                <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground pl-3 list-disc">
+                  <li>
+                    <strong>Dengue:</strong> Rainfall accumulation generates outdoor standing water, expanding <em>Aedes aegypti</em> breeding pools with a characteristic <strong>2–4 week incubation lag</strong>.
+                  </li>
+                  <li>
+                    <strong>Diarrheal &amp; Waterborne:</strong> Heavy precipitation and flood run-off inundate open wells and disrupt water pipelines, triggering waterborne pathogen transmission within <strong>1–3 days</strong>.
+                  </li>
+                </ul>
+              </div>
+
+              <div>
+                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                  3. INTEGRATED FORMULATION
+                </span>
+                <div className="rounded bg-secondary/60 p-2 font-mono text-[11px] text-center font-bold text-foreground">
+                  Operational Projection = Prophet Baseline × Weather Modifier ({multiplier.toFixed(2)}×)
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ── Illness-Specific Advisory ──────────────────────── */}
         {illnessAdvisory && (
@@ -366,7 +525,7 @@ export function LiveWeatherCard({
                 className="label-caps text-[11px] font-bold tracking-wider"
                 style={{ color: alertColor }}
               >
-                {illness} · Weather Risk
+                {illness} · Meteorological Risk Tier
               </span>
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-mono font-bold"
@@ -393,85 +552,89 @@ export function LiveWeatherCard({
         )}
 
         {/* ── Weather-Adjusted Forecast Impact ─────────────────── */}
-        {illnessAdvisory && nextForecast && illnessAdvisory.multiplier > 1.01 && (() => {
-          const m = illnessAdvisory.multiplier;
-          const isRaw = nextForecast.mode === "raw";
-          const adjValue  = isRaw ? Math.round(nextForecast.value * m)  : Math.round(nextForecast.value * m * 10) / 10;
-          const adjLower  = isRaw ? Math.round(nextForecast.lower * m)  : Math.round(nextForecast.lower * m * 10) / 10;
-          const adjUpper  = isRaw ? Math.round(nextForecast.upper * m)  : Math.round(nextForecast.upper * m * 10) / 10;
-          const baseStr   = isRaw ? nextForecast.value.toLocaleString() : nextForecast.value.toLocaleString(undefined, { maximumFractionDigits: 1 });
-          const adjStr    = isRaw ? adjValue.toLocaleString()            : adjValue.toLocaleString(undefined, { maximumFractionDigits: 1 });
-          const adjLoStr  = isRaw ? adjLower.toLocaleString()            : adjLower.toLocaleString(undefined, { maximumFractionDigits: 1 });
-          const adjHiStr  = isRaw ? adjUpper.toLocaleString()            : adjUpper.toLocaleString(undefined, { maximumFractionDigits: 1 });
-          const monthLabel = nextForecast.label
-            ? new Date(nextForecast.label + "-01").toLocaleDateString("en-PH", { month: "long", year: "numeric" })
-            : "Next month";
-          return (
-            <div className="rounded-lg border border-border/60 bg-card/70 p-3 space-y-2">
-              <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
-                WEATHER-ADJUSTED FORECAST · {monthLabel.toUpperCase()}
-              </p>
-              {/* Baseline → Adjusted comparison row */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="flex flex-col items-center rounded-md bg-secondary/50 border border-border/50 px-2.5 py-1.5 min-w-0">
-                  <span className="label-caps text-[9px] text-muted-foreground">Prophet Baseline</span>
-                  <span className="font-mono text-sm font-bold text-foreground tabular-nums">
-                    {baseStr}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground">{nextForecast.unit}</span>
-                </div>
+        {illnessAdvisory && nextForecast && (
+          (() => {
+            const m = illnessAdvisory.multiplier;
+            const isRaw = nextForecast.mode === "raw";
+            const adjValue  = isRaw ? Math.round(nextForecast.value * m)  : Math.round(nextForecast.value * m * 10) / 10;
+            const adjLower  = isRaw ? Math.round(nextForecast.lower * m)  : Math.round(nextForecast.lower * m * 10) / 10;
+            const adjUpper  = isRaw ? Math.round(nextForecast.upper * m)  : Math.round(nextForecast.upper * m * 10) / 10;
+            const baseStr   = isRaw ? nextForecast.value.toLocaleString() : nextForecast.value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+            const adjStr    = isRaw ? adjValue.toLocaleString()            : adjValue.toLocaleString(undefined, { maximumFractionDigits: 1 });
+            const adjLoStr  = isRaw ? adjLower.toLocaleString()            : adjLower.toLocaleString(undefined, { maximumFractionDigits: 1 });
+            const adjHiStr  = isRaw ? adjUpper.toLocaleString()            : adjUpper.toLocaleString(undefined, { maximumFractionDigits: 1 });
+            const monthLabel = nextForecast.label
+              ? new Date(nextForecast.label + "-01").toLocaleDateString("en-PH", { month: "long", year: "numeric" })
+              : "Next month";
+            return (
+              <div className="rounded-lg border border-border/60 bg-card/70 p-3 space-y-2">
+                <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
+                  WEATHER-ADJUSTED FORECAST · {monthLabel.toUpperCase()}
+                </p>
+                {/* Baseline → Adjusted comparison row */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="flex flex-col items-center rounded-md bg-secondary/50 border border-border/50 px-2.5 py-1.5 min-w-0">
+                    <span className="label-caps text-[9px] text-muted-foreground">Prophet Baseline</span>
+                    <span className="font-mono text-sm font-bold text-foreground tabular-nums">
+                      {baseStr}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">{nextForecast.unit}</span>
+                  </div>
 
-                <div className="flex flex-col items-center gap-0.5">
-                  <ArrowRight className="size-4" style={{ color: alertColor }} />
-                  <span
-                    className="text-[10px] font-mono font-bold"
-                    style={{ color: alertColor }}
+                  <div className="flex flex-col items-center gap-0.5">
+                    <ArrowRight className="size-4" style={{ color: alertColor }} />
+                    <span
+                      className="text-[10px] font-mono font-bold"
+                      style={{ color: alertColor }}
+                    >
+                      ×{m.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div
+                    className="flex flex-col items-center rounded-md border px-2.5 py-1.5 min-w-0"
+                    style={{
+                      borderColor: `color-mix(in oklab, ${alertColor}, transparent 55%)`,
+                      background: `color-mix(in oklab, ${alertColor}, transparent 88%)`,
+                    }}
                   >
-                    ×{m.toFixed(2)}
-                  </span>
+                    <span className="label-caps text-[9px]" style={{ color: alertColor }}>Weather-Adjusted</span>
+                    <span className="font-mono text-sm font-bold tabular-nums" style={{ color: alertColor }}>
+                      {adjStr}
+                    </span>
+                    <span className="text-[10px]" style={{ color: alertColor }}>{nextForecast.unit}</span>
+                  </div>
                 </div>
 
-                <div
-                  className="flex flex-col items-center rounded-md border px-2.5 py-1.5 min-w-0"
-                  style={{
-                    borderColor: `color-mix(in oklab, ${alertColor}, transparent 55%)`,
-                    background: `color-mix(in oklab, ${alertColor}, transparent 88%)`,
-                  }}
-                >
-                  <span className="label-caps text-[9px]" style={{ color: alertColor }}>Weather-Adjusted</span>
-                  <span className="font-mono text-sm font-bold tabular-nums" style={{ color: alertColor }}>
-                    {adjStr}
-                  </span>
-                  <span className="text-[10px]" style={{ color: alertColor }}>{nextForecast.unit}</span>
-                </div>
+                {/* Adjusted CI */}
+                <p className="text-[11px] text-muted-foreground">
+                  Adjusted 95% CI:{" "}
+                  <span className="font-mono tabular-nums text-foreground/75">{adjLoStr} – {adjHiStr}</span>
+                  {" "}{nextForecast.unit}
+                </p>
+
+                {/* Disclaimer */}
+                <p className="text-[10px] text-muted-foreground/70 leading-relaxed border-t border-border/40 pt-1.5">
+                  ⚠️ This is an operational nowcast adjustment applied to the Prophet model output.
+                  It reflects current weather conditions only — not a re-run of the forecasting model.
+                </p>
               </div>
+            );
+          })()
+        )}
 
-              {/* Adjusted CI */}
-              <p className="text-[11px] text-muted-foreground">
-                Adjusted 95% CI:{" "}
-                <span className="font-mono tabular-nums text-foreground/75">{adjLoStr} – {adjHiStr}</span>
-                {" "}{nextForecast.unit}
-              </p>
-
-              {/* Disclaimer */}
-              <p className="text-[10px] text-muted-foreground/70 leading-relaxed border-t border-border/40 pt-1.5">
-                ⚠️ This is an operational nowcast adjustment applied to the Prophet model output.
-                It reflects current weather conditions only — not a re-run of the forecasting model.
-              </p>
-            </div>
-          );
-        })()}
-
-        {/* ── Transmission Timeline ──────────────────────────── */}
+        {/* ── Transmission Timeline (Clinical vs Public perspective) ── */}
         {timeline && (
           <div className="space-y-2 border-t border-border/50 pt-3">
             <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
-              WHAT TO EXPECT
+              {audienceMode === "clinical" ? "CLINICAL TRANSMISSION HORIZON" : "WHAT TO EXPECT THIS MONTH"}
             </p>
             <div className="rounded-lg bg-card/60 border border-border/50 p-2.5 space-y-1">
               <div className="flex items-center gap-1.5">
                 <Waves className="size-3 text-primary shrink-0" />
-                <span className="text-[11px] font-bold text-foreground">Days 1–3</span>
+                <span className="text-[11px] font-bold text-foreground">
+                  {audienceMode === "clinical" ? "Immediate Run-off (Days 1–3)" : "Short-term (Next few days)"}
+                </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
                 {timeline.immediate_days_1_3}
@@ -480,7 +643,9 @@ export function LiveWeatherCard({
             <div className="rounded-lg bg-card/60 border border-border/50 p-2.5 space-y-1">
               <div className="flex items-center gap-1.5">
                 <Wind className="size-3 text-muted-foreground shrink-0" />
-                <span className="text-[11px] font-bold text-foreground">Weeks 2–4</span>
+                <span className="text-[11px] font-bold text-foreground">
+                  {audienceMode === "clinical" ? "Vector Proliferation Window (Weeks 2–4)" : "Medium-term (Next 2-4 weeks)"}
+                </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
                 {timeline.short_term_weeks_2_4}
@@ -495,11 +660,11 @@ export function LiveWeatherCard({
             <button
               type="button"
               onClick={() => setShowActions((p) => !p)}
-              className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1"
+              className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
             >
               <span className="flex items-center gap-1.5">
                 <CheckCircle2 className="size-3.5 text-primary" />
-                Recommended Actions ({actions.length})
+                {audienceMode === "clinical" ? "Clinical & Surveillance Directives" : "Recommended Public Precautions"} ({actions.length})
               </span>
               {showActions ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
             </button>

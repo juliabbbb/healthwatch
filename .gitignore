@@ -7,3 +7,5 @@ __pycache__/
 
 *.log
 error.txt
+*.db
+data/*.db

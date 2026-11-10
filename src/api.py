@@ -1736,7 +1736,10 @@ def live_weather_region(request: Request, region: str, refresh: bool = Query(def
 
     data = weather_live.get_live_weather(force_refresh=refresh)
     if code == db.NATIONAL_CODE:
-        return data["national"]
+        return {
+            **data["national"],
+            "raw_table": data.get("raw_table", []),
+        }
 
     reg_data = data["regions"].get(code)
     if not reg_data:
@@ -1744,6 +1747,7 @@ def live_weather_region(request: Request, region: str, refresh: bool = Query(def
 
     return {
         **reg_data,
+        "raw_table": data.get("raw_table", []),
         "national_context": {
             "issued_at": data["national"]["issued_at"],
             "synopsis": data["national"]["synopsis"],

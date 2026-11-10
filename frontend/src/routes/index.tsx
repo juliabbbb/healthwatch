@@ -9,6 +9,7 @@ import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
 import { ExplainOverlay } from "@/components/hw/ExplainOverlay";
+import { ExplainModeBanner } from "@/components/hw/ExplainModeBanner";
 import {
   CURRENT_MONTH_INDEX,
   OUTBREAK_BENCHMARK_SEASON,
@@ -195,6 +196,7 @@ function MapView() {
 
       {/* Explain Mode Inspector Overlay */}
       <ExplainOverlay active={explainActive} onExit={exitExplain} />
+      <ExplainModeBanner active={explainActive} onStart={toggleExplain} onExit={exitExplain} />
 
       {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}
       <MobileBottomSheet

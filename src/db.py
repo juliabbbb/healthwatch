@@ -235,7 +235,7 @@ validation_metrics = Table(
     Column("window", String(32), primary_key=True),
     Column("MAE", Float, nullable=False),
     Column("RMSE", Float, nullable=False),
-    Column("MAPE", Float, nullable=False),
+    Column("MAPE", Float, nullable=True),
     Column("months", Integer, nullable=False),
     Column("excluded_zero_actual", Integer, nullable=False, default=0),
     Column("naive_MAE", Float),
@@ -377,25 +377,62 @@ def _engine():
     return eng
 
 
+LOCAL_SQLITE_PATH = Path(__file__).resolve().parent.parent / "data" / "healthwatch_local.db"
+
+
+def _ensure_sqlite_data(eng):
+    """Seed local SQLite database if empty."""
+    with eng.connect() as conn:
+        try:
+            count = conn.execute(text("SELECT COUNT(*) FROM monthly_observations")).scalar()
+            if count and count > 0:
+                return
+        except Exception:
+            pass
+
+    print("[db] SQLite database empty or unseeded; auto-populating from processed CSVs...")
+    build_db()
+    print("[db] SQLite database seeded successfully.")
+
+
 def engine():
-    """Accessor for the shared PostgreSQL engine. Requires DATABASE_URL to be
-    set in the environment — see module docstring."""
+    """Accessor for the shared database engine.
+
+    Prefers PostgreSQL if DATABASE_URL is configured and reachable.
+    If DATABASE_URL is missing or fails (e.g. Supabase paused, network offline),
+    seamlessly falls back to local SQLite so the system never fails to start."""
     if not hasattr(_engine, "_cached"):
-        _engine._cached = _engine()
-        with _engine._cached.connect() as conn:
-            conn.execute(text("SELECT 1"))
-            print("Connected to Supabase PostgreSQL")
-            print("Database connection verified.")
+        eng = None
+        db_url = os.environ.get("DATABASE_URL")
+        if db_url and not db_url.startswith("sqlite"):
+            try:
+                candidate = _engine()
+                with candidate.connect() as conn:
+                    conn.execute(text("SELECT 1"))
+                print("[db] Connected to PostgreSQL database.")
+                eng = candidate
+            except Exception as exc:
+                print(f"[db] PostgreSQL connection failed ({exc}).")
+                print(f"[db] Falling back to local SQLite at {LOCAL_SQLITE_PATH}.")
+        elif db_url and db_url.startswith("sqlite"):
+            eng = create_engine(db_url)
+
+        if eng is None:
+            LOCAL_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
+            eng = create_engine(f"sqlite:///{LOCAL_SQLITE_PATH}")
+
+        _engine._cached = eng
     return _engine._cached
 
 
 def ensure_tables():
     """Idempotent schema bootstrap (create-if-absent, never drops).
 
-    Safe to call on every API startup: keeps tables from drifting on deploy
-    hosts where `python -m src.db` was never run directly."""
+    Safe to call on every API startup: keeps tables from drifting on deploy."""
     eng = engine()
     metadata.create_all(eng)
+    if eng.dialect.name == "sqlite":
+        _ensure_sqlite_data(eng)
     return eng
 
 
@@ -499,6 +536,7 @@ def build_db():
 
         vm = _remap(_load_csv("validation_metrics.csv"), "region_code")
         if vm is not None and not vm.empty:
+            vm["MAPE"] = vm["MAPE"].where(pd.notna(vm["MAPE"]), None)
             conn.execute(validation_metrics.insert(), vm.to_dict(orient="records"))
 
         folds = _load_csv("validation_predictions.csv")
@@ -598,6 +636,17 @@ def _seed_case_records(conn):
         "cases", "deaths",
     ]
     payload = recs[cols]
+    if conn.dialect.name == "sqlite":
+        payload.to_sql("dengue_case_records", conn.connection, if_exists="replace", index=False)
+        try:
+            conn.connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_dengue_cases ON dengue_case_records(year, month, region_code)"
+            )
+        except Exception:
+            pass
+        print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records (SQLite)")
+        return
+
     stmt = (
         "COPY dengue_case_records (" + ", ".join(cols) + ") "
         "FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '\\N', QUOTE E'\"')"
@@ -640,6 +689,17 @@ def _seed_fwbd_case_records(conn):
         "organism", "cases", "deaths",
     ]
     payload = recs[cols]
+    if conn.dialect.name == "sqlite":
+        payload.to_sql("fwbd_case_records", conn.connection, if_exists="replace", index=False)
+        try:
+            conn.connection.execute(
+                "CREATE INDEX IF NOT EXISTS idx_fwbd_cases ON fwbd_case_records(year, month, region_code, disease)"
+            )
+        except Exception:
+            pass
+        print(f"[db] seeded {len(payload)} FWD case records -> fwbd_case_records (SQLite)")
+        return
+
     stmt = (
         "COPY fwbd_case_records (" + ", ".join(cols) + ") "
         "FROM STDIN WITH (FORMAT csv, DELIMITER E'\\t', NULL '\\N', QUOTE E'\"')"

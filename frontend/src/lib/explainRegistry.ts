@@ -30,6 +30,27 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
     description:
       "That's this button! Click it to enter Explain Mode, then click anything on screen to learn what it does in plain language. Click it again or press Esc to exit.",
   },
+  {
+    selector: "[data-explain='audience-mode']",
+    title: "Audience Perspective Switcher",
+    icon: "Activity",
+    description:
+      "Switches the entire platform between Healthcare Worker Mode (clinical demographics, admission rates, Prophet 95% confidence intervals, and hospital surge preparations) and General Public Mode (simplified risk levels, household 4S prevention guides, and emergency warning signs).",
+  },
+  {
+    selector: "[data-explain='live-weather']",
+    title: "PAGASA Live Weather Bulletin & Meteorological Nowcast",
+    icon: "CloudRain",
+    description:
+      "Fetches official daily weather bulletins directly from PAGASA. Displays current synoptic weather systems (Monsoon, Easterlies, Cyclones), rainfall impacts, and temperature/humidity extremes that act as physical amplifiers for vector breeding and water contamination.",
+  },
+  {
+    selector: "[data-explain='prediction-model']",
+    title: "Prophet Baseline × Weather Nowcast Prediction Formulation",
+    icon: "TrendingUp",
+    description:
+      "Shows how our operational projection is derived: Prophet statistical baseline (capturing 2019-2026 historical trends and monthly seasonality) multiplied by real-time PAGASA meteorological surge modifiers (accounting for post-rain vector breeding and flood runoff risks).",
+  },
 
   // ── Top navigation & header tools ─────────────────────────────────────────
   {
