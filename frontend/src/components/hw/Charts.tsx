@@ -32,7 +32,7 @@ import { formatMonthYear } from "@/utils/formatDate";
 
 const axis = {
   stroke: "var(--color-muted-foreground)",
-  fontSize: 12,
+  fontSize: 12.5,
   tickLine: false,
   axisLine: false,
 };
@@ -44,10 +44,10 @@ const tooltipStyle = {
     background: "var(--popover)",
     border: "1px solid var(--border)",
     borderRadius: "8px",
-    fontSize: "13px",
+    fontSize: "13.5px",
     color: "var(--foreground)",
   },
-  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "13px" },
+  labelStyle: { color: "var(--color-muted-foreground)", fontSize: "13.5px" },
 };
 
 interface Row {

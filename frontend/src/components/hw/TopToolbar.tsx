@@ -16,11 +16,15 @@ import {
   Waves,
   GitCompare,
   BookOpen,
+  Stethoscope,
+  Users,
+  Eye,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SettingsModal } from "@/components/hw/SettingsModal";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 import { useTheme } from "@/hooks/use-theme";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 import { REGION_BY_CODE, REGIONS } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +48,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, toggleTheme] = useTheme();
+  const { mode: audienceMode, setMode: setAudienceMode } = useAudienceMode();
   const [mounted, setMounted] = useState(false);
 
   // Lock background scroll while either mobile portal overlay is open
@@ -198,19 +203,72 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           <NavLink to="/methodology">Methodology</NavLink>
         </nav>
 
+        {/* Audience Mode Switcher (Healthcare Worker vs General Public) */}
+        <div
+          data-explain="audience-mode"
+          className="glass-panel flex items-center p-0.5 rounded-xl border border-border/80 text-xs shadow-xs"
+        >
+          <button
+            type="button"
+            onClick={() => setAudienceMode("clinical")}
+            aria-pressed={audienceMode === "clinical"}
+            className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              audienceMode === "clinical"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+            )}
+            title="Healthcare Worker Mode: Comprehensive surveillance, admission rates, Prophet 95% CIs, and clinical response protocols"
+          >
+            <Stethoscope className="size-3.5 shrink-0" />
+            <span className="hidden lg:inline">Healthcare</span>
+            <span className="lg:hidden">Clinical</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setAudienceMode("public")}
+            aria-pressed={audienceMode === "public"}
+            className={cn(
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              audienceMode === "public"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+            )}
+            title="General Public Mode: Simplified risk level, plain-language advisory, household 4S guide, and warning signs"
+          >
+            <Users className="size-3.5 shrink-0" />
+            <span className="hidden lg:inline">Public</span>
+            <span className="lg:hidden">Citizen</span>
+          </button>
+        </div>
+
+        {/* Explain Mode Button - Prominent pill affordance */}
+        <button
+          type="button"
+          id="hw-tour-btn"
+          onClick={onStartTour}
+          aria-pressed={explainActive}
+          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
+          title={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
+          className={cn(
+            "glass-panel flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-xs transition-all cursor-pointer border",
+            explainActive
+              ? "border-primary bg-primary text-primary-foreground ring-2 ring-primary/40 shadow-sm"
+              : "border-primary/50 text-primary hover:bg-primary/15 hover:border-primary",
+          )}
+        >
+          <HelpCircle className="size-4 shrink-0" />
+          <span>{explainActive ? "Exit Explain" : "Explain Mode"}</span>
+          {!explainActive && (
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex size-2 rounded-full bg-primary" />
+            </span>
+          )}
+        </button>
+
         {/* Action icons */}
         <div className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
-          <IconButton
-            id="hw-tour-btn"
-            label={explainActive ? "Exit Explain Mode" : "Explain Mode — click anything to learn what it does"}
-            {...(onStartTour ? { onClick: onStartTour } : {})}
-            className={explainActive
-              ? "text-primary bg-primary/15 ring-1 ring-primary/50 hover:bg-primary/20 hover:text-primary"
-              : "text-primary hover:text-primary"
-            }
-          >
-            <HelpCircle className="size-4" />
-          </IconButton>
           {trailing}
           <IconButton
             label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
@@ -247,6 +305,21 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           className="glass-panel rounded-xl p-2.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground active:scale-95"
         >
           <Search className="size-4" />
+        </button>
+
+        {/* Mobile Explain trigger button */}
+        <button
+          onClick={onStartTour}
+          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode"}
+          className={cn(
+            "glass-panel flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors border",
+            explainActive
+              ? "border-primary bg-primary text-primary-foreground"
+              : "border-primary/40 text-primary hover:bg-primary/10",
+          )}
+        >
+          <HelpCircle className="size-3.5" />
+          <span>{explainActive ? "Exit" : "Explain"}</span>
         </button>
 
         {/* Trailing item (Notification bell) */}
@@ -389,6 +462,49 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                 </button>
               </div>
 
+              {/* Audience Mode Switcher (Mobile) */}
+              <div className="py-2.5 border-b border-border/70">
+                <p className="label-caps mb-1.5 text-[10px]">Audience Mode</p>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setAudienceMode("clinical")}
+                    className={cn(
+                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-xs transition-all",
+                      audienceMode === "clinical"
+                        ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/40 font-semibold"
+                        : "border-border/80 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    )}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-foreground">
+                      <Stethoscope className="size-3.5 text-primary shrink-0" />
+                      <span>Healthcare</span>
+                    </div>
+                    <span className="text-[10px] leading-tight opacity-75">
+                      Epidemiological metrics &amp; surge preparation
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAudienceMode("public")}
+                    className={cn(
+                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-xs transition-all",
+                      audienceMode === "public"
+                        ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/40 font-semibold"
+                        : "border-border/80 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground",
+                    )}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-foreground">
+                      <Users className="size-3.5 text-primary shrink-0" />
+                      <span>General Public</span>
+                    </div>
+                    <span className="text-[10px] leading-tight opacity-75">
+                      Simplified risk &amp; household 4S guide
+                    </span>
+                  </button>
+                </div>
+              </div>
+
               {/* Nav Links */}
               <div className="py-3 space-y-1">
                 <p className="label-caps mb-1.5 text-[10px]">Views &amp; Tools</p>
@@ -420,8 +536,30 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
               </div>
 
               {/* Quick Actions / Preferences */}
-              <div className="border-t border-border/70 py-3">
-                <p className="label-caps mb-2 text-[10px]">Preferences &amp; Actions</p>
+              <div className="border-t border-border/70 py-3 space-y-2">
+                <p className="label-caps mb-1 text-[10px]">Preferences &amp; Actions</p>
+
+                {/* Explain Mode Trigger */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onStartTour?.();
+                  }}
+                  className={cn(
+                    "w-full flex items-center justify-between rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors",
+                    explainActive
+                      ? "border-primary bg-primary text-primary-foreground shadow-xs"
+                      : "border-primary/50 bg-primary/10 text-primary hover:bg-primary/20",
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <HelpCircle className="size-4 shrink-0" />
+                    <span>{explainActive ? "Exit Explain Mode" : "Activate Explain Mode"}</span>
+                  </div>
+                  <span className="text-[10px] opacity-80">Click-to-inspect UI</span>
+                </button>
+
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={toggleTheme}

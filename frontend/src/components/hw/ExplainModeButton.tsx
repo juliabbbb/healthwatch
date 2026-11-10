@@ -45,6 +45,12 @@ export function ExplainModeButton({ className }: ExplainModeButtonProps) {
       >
         <HelpCircle className="size-3.5 shrink-0" aria-hidden="true" />
         <span>{explainActive ? "Exit Explain" : "Explain"}</span>
+        {!explainActive && (
+          <span className="relative flex size-2 ml-0.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
+            <span className="relative inline-flex size-2 rounded-full bg-primary" />
+          </span>
+        )}
       </button>
 
       <ExplainOverlay active={explainActive} onExit={exitExplain} />

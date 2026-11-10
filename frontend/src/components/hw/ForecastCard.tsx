@@ -1,7 +1,18 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowUpRight, TrendingDown, TrendingUp, X } from "lucide-react";
+import {
+  ArrowUpRight,
+  TrendingDown,
+  TrendingUp,
+  X,
+  Stethoscope,
+  Users,
+  CheckCircle2,
+  AlertTriangle,
+  ShieldAlert,
+} from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 import {
   METRIC_META,
   assessRegion,
@@ -30,6 +41,7 @@ import { KpiStrip, type KpiStripData } from "./KpiStrip";
 import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
 import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
 import { AiInsightLine } from "./AiInsightLine";
+import { LiveWeatherCard } from "./LiveWeatherCard";
 import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -85,6 +97,7 @@ export function ForecastCard({
   const upcoming = upcomingSeasonForMonth(meta.month);
   const upcomingInd = outlookData[upcoming];
   const [aiEnabled] = useAiAnalysisSetting();
+  const { mode: audienceMode } = useAudienceMode();
   const isSheet = variant === "sheet";
 
   /* ---------- Derived KPI data ---------- */
@@ -165,6 +178,21 @@ export function ForecastCard({
             <p className="mt-0.5 text-[11px] text-muted-foreground">
               {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
             </p>
+            <div className="flex items-center gap-1.5 mt-1.5">
+              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border border-border/70 bg-secondary/50">
+                {audienceMode === "clinical" ? (
+                  <>
+                    <Stethoscope className="size-3 text-primary shrink-0" />
+                    <span>Healthcare Worker Mode</span>
+                  </>
+                ) : (
+                  <>
+                    <Users className="size-3 text-primary shrink-0" />
+                    <span>General Public Mode</span>
+                  </>
+                )}
+              </span>
+            </div>
           </div>
           {onClose && (
             <button
@@ -188,13 +216,13 @@ export function ForecastCard({
 
       {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
       <section className="border-b border-border/70 px-5 py-3.5">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2.5">
+        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2.5">
           CURRENT STATUS
         </p>
 
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="label-caps text-[10px]">
+            <p className="label-caps text-xs">
               {meta.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
             <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
@@ -224,7 +252,7 @@ export function ForecastCard({
                       aria-checked={isActive}
                       onClick={() => onModeChange(m)}
                       className={cn(
-                        "relative z-10 flex-1 text-center text-[10px] font-semibold transition-colors duration-200 py-0.5",
+                        "relative z-10 flex-1 text-center text-xs font-semibold transition-colors duration-200 py-0.5",
                         isActive
                           ? "text-primary-foreground"
                           : "text-muted-foreground hover:text-foreground",
@@ -249,7 +277,7 @@ export function ForecastCard({
                     type="button"
                     onClick={() => onLayerChange(l)}
                     className={cn(
-                      "rounded-md px-1.5 py-0.5 text-[9px] font-medium capitalize transition-colors text-center",
+                      "rounded-md px-2 py-0.5 text-[11px] font-medium capitalize transition-colors text-center",
                       layer === l
                         ? "bg-primary/20 text-primary font-semibold shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
@@ -266,27 +294,27 @@ export function ForecastCard({
         {/* Stat Chips */}
         <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Period</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Period</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {formatMonthYear(meta.label)}
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Cases</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Cases</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {a.point.cases.toLocaleString()}
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">3-Mo Trend</span>
+            <span className="label-caps text-[11px] block">3-Mo Trend</span>
             <span
-              className="inline-flex min-w-0 items-center gap-1 font-mono text-xs font-semibold"
+              className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
               style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
             >
               {a.changePct >= 0 ? (
-                <TrendingUp className="size-3 shrink-0" />
+                <TrendingUp className="size-3.5 shrink-0" />
               ) : (
-                <TrendingDown className="size-3 shrink-0" />
+                <TrendingDown className="size-3.5 shrink-0" />
               )}
               <span className="truncate">
                 {a.changePct >= 0 ? "+" : ""}
@@ -295,14 +323,14 @@ export function ForecastCard({
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[9px] block">Nat'l Rank</span>
-            <span className="font-mono text-xs font-semibold text-foreground truncate block">
+            <span className="label-caps text-[11px] block">Nat'l Rank</span>
+            <span className="font-mono text-sm font-bold text-foreground truncate block">
               {a.percentileRank}th %ile
             </span>
           </div>
           <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="label-caps text-[9px] block">Data Source</span>
-            <span className="text-[11px] font-medium text-muted-foreground truncate block">
+            <span className="label-caps text-[11px] block">Data Source</span>
+            <span className="text-xs font-medium text-muted-foreground truncate block">
               {meta.forecast
                 ? `Prophet Forecast · 95% CI ${formatMetric(
                     metricValue(a.point.lower, a.region, mode),
@@ -319,24 +347,8 @@ export function ForecastCard({
         <KpiStrip data={kpi} />
       </section>
 
-      {/* 4. Compact 6-Month Forecast + Risk Pills */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-2">
-          NEXT 6 MONTHS
-        </p>
-        <ForecastSparkline data={sparkData} />
-        <div className="mt-2">
-          <RiskDistributionRow counts={riskCounts} />
-        </div>
-        {mix.total > 0 && (
-          <div className="mt-3 rounded-lg border border-border/50 bg-secondary/30 p-2.5">
-            <p className="label-caps text-[9px] text-muted-foreground tracking-wider mb-2">
-              TRANSMISSION SPLIT · NEXT 6 MONTHS
-            </p>
-            <CategoryMixBar mix={mix} regionCode={regionCode} mode={mode} illness={illness} />
-          </div>
-        )}
-      </section>
+
+
 
       {/* 5. Compact AI Insight (gated) */}
       {aiEnabled && (
@@ -350,54 +362,159 @@ export function ForecastCard({
         </section>
       )}
 
-      {/* 6. Model Info (unchanged) */}
-      <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
-        <div className="flex items-center justify-between py-0.5 text-xs">
-          <span className="label-caps text-[10px] text-muted-foreground tracking-wider">
-            MODEL INFO
-          </span>
-          <StatusChip className="text-[10px] py-0.5 px-2 text-muted-foreground">
-            {validation.label} · MAPE {validation.mape}%
-          </StatusChip>
-        </div>
-        <div className="mt-2 space-y-1.5 pt-0.5">
-          <div className="grid grid-cols-3 gap-2 text-center">
-            {[
-              { k: "MAE", v: validation.mae.toLocaleString() },
-              { k: "RMSE", v: validation.rmse.toLocaleString() },
-              { k: "MAPE", v: `${validation.mape}%` },
-            ].map((m) => (
-              <div
-                key={m.k}
-                className="rounded-lg bg-secondary/40 px-2 py-1 border border-border/40"
-              >
-                <p className="label-caps text-[9px] text-muted-foreground">{m.k}</p>
-                <p className="font-mono text-xs font-semibold tabular-nums text-muted-foreground mt-0.5">
-                  {m.v}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="text-[10px] leading-relaxed text-muted-foreground">{validation.note}</p>
-        </div>
+      {/* 6. Live PAGASA Daily Weather Nowcast & Disease Transmission Alerts */}
+      <section className="border-b border-border/70 px-5 py-3 shrink-0">
+        <LiveWeatherCard
+          regionCode={regionCode}
+          illness={illness}
+          nextForecast={nextPt ? {
+            value: metricValue(nextPt.cases, a.region, mode),
+            lower: metricValue(nextPt.lower, a.region, mode),
+            upper: metricValue(nextPt.upper, a.region, mode),
+            label: nextPt.label,
+            unit,
+            mode,
+          } : undefined}
+        />
       </section>
 
-      {/* 7. Illness Information (classification of the active illness only) */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <p className="label-caps text-[10px] text-muted-foreground tracking-wider mb-1.5">
-          INFORMATION
-        </p>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-foreground">
-            {illnessDisplayName(illness)}
-          </span>
-          {groupForIllness(illness) && (
-            <span className="inline-flex items-center rounded-md border border-border/50 bg-secondary/40 px-2 py-1 text-[11px] font-medium text-muted-foreground">
-              {groupForIllness(illness)}
+      {/* 7. Clinical Surge Decision Support (Healthcare Worker Mode) */}
+      {audienceMode === "clinical" ? (
+        <>
+          <section className="border-b border-border/70 px-5 py-3 shrink-0 bg-secondary/15">
+            <div className="flex items-center justify-between mb-2">
+              <span className="label-caps text-xs text-primary font-bold tracking-wider flex items-center gap-1.5">
+                <Stethoscope className="size-3.5 text-primary" /> CLINICAL SURGE &amp; TRIAGE PROTOCOL
+              </span>
+              <span className="text-[10px] font-mono text-muted-foreground uppercase">
+                {a.risk} Risk Protocol
+              </span>
+            </div>
+            <div className="space-y-2 text-xs">
+              <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 space-y-1">
+                <p className="font-semibold text-foreground flex items-center gap-1.5">
+                  <ShieldAlert className="size-3.5 text-primary" /> Hospital Capacity &amp; Logistics Buffer
+                </p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  {a.risk === "high"
+                    ? "Surge threshold exceeded. Buffer 20%+ hospital bed capacity, pre-position 100+ L IV fluids/ORS, and notify provincial blood centers for platelet concentrate readiness."
+                    : a.risk === "moderate"
+                      ? "Elevated caseload. Inspect hydration stock buffers, review triage algorithms, and audit clinical diagnostic supplies."
+                      : "Baseline operational status. Standard PIDSR weekly reporting; maintain routine buffer supplies."}
+                </p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 space-y-1">
+                <p className="font-semibold text-foreground flex items-center gap-1.5">
+                  <CheckCircle2 className="size-3.5 text-primary" /> Diagnostic &amp; Sentinel Directives
+                </p>
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                  Ensure Dengue NS1 / IgM rapid diagnostic test (RDT) kits and water sampling culture media are distributed to Rural Health Units (RHUs).
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Model Statistical Validation Panel */}
+          <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
+            <div className="flex items-center justify-between py-0.5 text-xs">
+              <span className="label-caps text-xs text-muted-foreground tracking-wider">
+                MODEL VALIDATION (PROPHET)
+              </span>
+              <StatusChip className="text-xs py-0.5 px-2.5 text-muted-foreground">
+                {validation.label} · MAPE {validation.mape}%
+              </StatusChip>
+            </div>
+            <div className="mt-2 space-y-1.5 pt-0.5">
+              <div className="grid grid-cols-3 gap-2 text-center">
+                {[
+                  { k: "MAE", v: validation.mae.toLocaleString() },
+                  { k: "RMSE", v: validation.rmse.toLocaleString() },
+                  { k: "MAPE", v: `${validation.mape}%` },
+                ].map((m) => (
+                  <div
+                    key={m.k}
+                    className="rounded-lg bg-secondary/40 px-2 py-1.5 border border-border/40"
+                  >
+                    <p className="label-caps text-[11px] text-muted-foreground">{m.k}</p>
+                    <p className="font-mono text-sm font-bold tabular-nums text-foreground mt-0.5">
+                      {m.v}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs leading-relaxed text-muted-foreground">{validation.note}</p>
+            </div>
+          </section>
+        </>
+      ) : (
+        /* General Public Mode: Household 4S Guide & Emergency Warning Signs */
+        <section className="border-b border-border/70 px-5 py-3.5 shrink-0 bg-secondary/15">
+          <div className="flex items-center justify-between mb-2">
+            <span className="label-caps text-xs text-primary font-bold tracking-wider flex items-center gap-1.5">
+              <Users className="size-3.5 text-primary" /> COMMUNITY HEALTH &amp; FAMILY GUIDE
             </span>
-          )}
-        </div>
-      </section>
+            <span className="text-[10px] font-mono text-muted-foreground uppercase font-semibold">
+              {a.risk} Alert
+            </span>
+          </div>
+
+          <div className="space-y-2.5 text-xs">
+            {/* Action Checklist */}
+            <div className="rounded-lg border border-border/60 bg-card/80 p-3 space-y-2">
+              <p className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
+                <CheckCircle2 className="size-3.5 text-primary shrink-0" />
+                {illness === "Dengue" ? "DOH 4S Strategy to Protect Your Family" : "Safe Water & Hygiene Precautions"}
+              </p>
+              {illness === "Dengue" ? (
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">1. Search &amp; Destroy:</strong> Empty water drums, buckets, tires, and flower pot plates where mosquitoes breed.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">2. Self-Protection:</strong> Apply DEET/citronella insect repellent and wear long-sleeved clothing.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">3. Seek Early Consultation:</strong> If fever lasts &gt;2 days, visit your nearest Barangay Health Center immediately.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">4. Say Yes to Fogging:</strong> Support localized misting during declared hotspot cluster outbreaks.
+                  </li>
+                </ul>
+              ) : (
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">1. Boil Drinking Water:</strong> Roll-boil tap or well water for at least 1–2 minutes before drinking.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">2. Food Safety:</strong> Eat thoroughly cooked meals while still warm; avoid questionable raw street foods.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">3. Hand Hygiene:</strong> Wash hands thoroughly with soap for 20 seconds before eating and after using the restroom.
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            {/* Red-Flag Symptoms / Emergency Warning Signs */}
+            <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-2.5 space-y-1 text-destructive">
+              <p className="font-bold text-xs flex items-center gap-1.5 text-destructive">
+                <AlertTriangle className="size-3.5 shrink-0" /> When to Rush to the Hospital / ER
+              </p>
+              <p className="text-[11px] leading-relaxed opacity-90">
+                Go to the nearest emergency clinic if you experience: severe abdominal pain, persistent vomiting, bleeding gums or nose, blood in stool, or sudden extreme weakness.
+              </p>
+            </div>
+
+            {/* Simplified Confidence Note */}
+            <div className="rounded-md bg-secondary/40 border border-border/40 p-2 text-[11px] text-muted-foreground flex items-center justify-between">
+              <span>Model Reliability:</span>
+              <span className="font-semibold text-foreground">High (Validated over 7 years of DOH records)</span>
+            </div>
+          </div>
+        </section>
+      )}
+
+
 
       {/* 8. Pinned CTA */}
       <div

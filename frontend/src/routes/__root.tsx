@@ -11,7 +11,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { dataReady } from "@/lib/healthwatch/data";
+import { reloadHealthwatchData } from "@/lib/healthwatch/data";
 import { Toaster } from "@/components/ui/sonner";
 import { useTheme } from "@/hooks/use-theme";
 
@@ -159,7 +159,7 @@ function DataGate({ children }: { children: ReactNode }) {
     };
     raf = requestAnimationFrame(tick);
 
-    dataReady
+    reloadHealthwatchData()
       .then(() => {
         done = true;
         cancelAnimationFrame(raf);
