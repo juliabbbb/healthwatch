@@ -321,8 +321,8 @@ export function LiveWeatherCard({
           )}
         </div>
 
-        {/* ── Temperature & Humidity Extremes ────────────────── */}
-        {(temp || rh) && (
+        {/* ── Temperature & Humidity Extremes (Healthcare Worker Mode only) ── */}
+        {audienceMode === "clinical" && (temp || rh) && (
           <div className="grid grid-cols-2 gap-2">
             {temp && (
               <div className="rounded-lg border border-border/50 bg-card/60 p-2.5 flex items-center gap-2">
@@ -364,8 +364,8 @@ export function LiveWeatherCard({
           </div>
         )}
 
-        {/* ── Synoptic Synopsis (collapsible) ────────────────── */}
-        {ctx?.synopsis && (
+        {/* ── Synoptic Synopsis (collapsible, Healthcare Worker Mode only) ── */}
+        {audienceMode === "clinical" && ctx?.synopsis && (
           <div>
             <button
               type="button"
@@ -386,8 +386,8 @@ export function LiveWeatherCard({
           </div>
         )}
 
-        {/* ── RAW PAGASA DAILY FORECAST TABLE (Collapsible) ──── */}
-        {rawTable.length > 0 && (
+        {/* ── RAW PAGASA DAILY FORECAST TABLE (Collapsible, Healthcare Worker Mode only) ──── */}
+        {audienceMode === "clinical" && rawTable.length > 0 && (
           <div className="border-t border-border/50 pt-2.5">
             <button
               type="button"
@@ -453,63 +453,65 @@ export function LiveWeatherCard({
           </div>
         )}
 
-        {/* ── PREDICTION MODEL BASIS TRANSPARENCY PANEL ──────── */}
-        <div data-explain="prediction-model" className="border-t border-border/50 pt-2.5">
-          <button
-            type="button"
-            onClick={() => setShowModelBasis((p) => !p)}
-            className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Calculator className="size-3.5 text-primary" />
-              Prediction Model &amp; Weather Basis
-            </span>
-            {showModelBasis ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-          </button>
+        {/* ── PREDICTION MODEL BASIS TRANSPARENCY PANEL (Healthcare Worker Mode only) ──────── */}
+        {audienceMode === "clinical" && (
+          <div data-explain="prediction-model" className="border-t border-border/50 pt-2.5">
+            <button
+              type="button"
+              onClick={() => setShowModelBasis((p) => !p)}
+              className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
+            >
+              <span className="flex items-center gap-1.5">
+                <Calculator className="size-3.5 text-primary" />
+                Prediction Model &amp; Weather Basis
+              </span>
+              {showModelBasis ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+            </button>
 
-          {showModelBasis && (
-            <div className="mt-2 space-y-2 rounded-lg border border-primary/30 bg-card/80 p-3 text-xs leading-relaxed">
-              <div className="border-b border-border/50 pb-2">
-                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                  1. STATISTICAL BASELINE (PROPHET MODEL)
-                </span>
-                <p className="text-muted-foreground text-[11px]">
-                  Fitted onto canonical DOH surveillance data (2019–2026). The model decomposes the regional monthly time-series into:
-                  <code className="mx-1 rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px]">
-                    y(t) = Trend(t) + MonthlySeasonality(t) + ε
-                  </code>
-                  generating the baseline expected case trajectory and 95% uncertainty interval.
-                </p>
-              </div>
+            {showModelBasis && (
+              <div className="mt-2 space-y-2 rounded-lg border border-primary/30 bg-card/80 p-3 text-xs leading-relaxed">
+                <div className="border-b border-border/50 pb-2">
+                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                    1. STATISTICAL BASELINE (PROPHET MODEL)
+                  </span>
+                  <p className="text-muted-foreground text-[11px]">
+                    Fitted onto canonical DOH surveillance data (2019–2026). The model decomposes the regional monthly time-series into:
+                    <code className="mx-1 rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px]">
+                      y(t) = Trend(t) + MonthlySeasonality(t) + ε
+                    </code>
+                    generating the baseline expected case trajectory and 95% uncertainty interval.
+                  </p>
+                </div>
 
-              <div className="border-b border-border/50 pb-2">
-                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                  2. METEOROLOGICAL FORCING (PAGASA NOWCAST)
-                </span>
-                <p className="text-muted-foreground text-[11px]">
-                  Live meteorological conditions act as physical amplifiers on transmission vectors:
-                </p>
-                <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground pl-3 list-disc">
-                  <li>
-                    <strong>Dengue:</strong> Rainfall accumulation generates outdoor standing water, expanding <em>Aedes aegypti</em> breeding pools with a characteristic <strong>2–4 week incubation lag</strong>.
-                  </li>
-                  <li>
-                    <strong>Diarrheal &amp; Waterborne:</strong> Heavy precipitation and flood run-off inundate open wells and disrupt water pipelines, triggering waterborne pathogen transmission within <strong>1–3 days</strong>.
-                  </li>
-                </ul>
-              </div>
+                <div className="border-b border-border/50 pb-2">
+                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                    2. METEOROLOGICAL FORCING (PAGASA NOWCAST)
+                  </span>
+                  <p className="text-muted-foreground text-[11px]">
+                    Live meteorological conditions act as physical amplifiers on transmission vectors:
+                  </p>
+                  <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground pl-3 list-disc">
+                    <li>
+                      <strong>Dengue:</strong> Rainfall accumulation generates outdoor standing water, expanding <em>Aedes aegypti</em> breeding pools with a characteristic <strong>2–4 week incubation lag</strong>.
+                    </li>
+                    <li>
+                      <strong>Diarrheal &amp; Waterborne:</strong> Heavy precipitation and flood run-off inundate open wells and disrupt water pipelines, triggering waterborne pathogen transmission within <strong>1–3 days</strong>.
+                    </li>
+                  </ul>
+                </div>
 
-              <div>
-                <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                  3. INTEGRATED FORMULATION
-                </span>
-                <div className="rounded bg-secondary/60 p-2 font-mono text-[11px] text-center font-bold text-foreground">
-                  Operational Projection = Prophet Baseline × Weather Modifier ({multiplier.toFixed(2)}×)
+                <div>
+                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
+                    3. INTEGRATED FORMULATION
+                  </span>
+                  <div className="rounded bg-secondary/60 p-2 font-mono text-[11px] text-center font-bold text-foreground">
+                    Operational Projection = Prophet Baseline × Weather Modifier ({multiplier.toFixed(2)}×)
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
         {/* ── Illness-Specific Advisory ──────────────────────── */}
         {illnessAdvisory && (
@@ -540,7 +542,7 @@ export function LiveWeatherCard({
             <p className="text-xs text-foreground/80 leading-relaxed">
               {illnessAdvisory.guidance}
             </p>
-            {illnessAdvisory.multiplier > 1.01 && (
+            {audienceMode === "clinical" && illnessAdvisory.multiplier > 1.01 && (
               <div className="flex items-center gap-1.5 pt-0.5">
                 <Zap className="size-3 shrink-0" style={{ color: alertColor }} />
                 <span className="text-[11px] font-mono font-semibold" style={{ color: alertColor }}>
@@ -551,8 +553,8 @@ export function LiveWeatherCard({
           </div>
         )}
 
-        {/* ── Weather-Adjusted Forecast Impact ─────────────────── */}
-        {illnessAdvisory && nextForecast && (
+        {/* ── Weather-Adjusted Forecast Impact (Healthcare Worker Mode only) ── */}
+        {audienceMode === "clinical" && illnessAdvisory && nextForecast && (
           (() => {
             const m = illnessAdvisory.multiplier;
             const isRaw = nextForecast.mode === "raw";
@@ -623,17 +625,17 @@ export function LiveWeatherCard({
           })()
         )}
 
-        {/* ── Transmission Timeline (Clinical vs Public perspective) ── */}
-        {timeline && (
+        {/* ── Transmission Timeline (Healthcare Worker Mode only) ── */}
+        {audienceMode === "clinical" && timeline && (
           <div className="space-y-2 border-t border-border/50 pt-3">
             <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
-              {audienceMode === "clinical" ? "CLINICAL TRANSMISSION HORIZON" : "WHAT TO EXPECT THIS MONTH"}
+              CLINICAL TRANSMISSION HORIZON
             </p>
             <div className="rounded-lg bg-card/60 border border-border/50 p-2.5 space-y-1">
               <div className="flex items-center gap-1.5">
                 <Waves className="size-3 text-primary shrink-0" />
                 <span className="text-[11px] font-bold text-foreground">
-                  {audienceMode === "clinical" ? "Immediate Run-off (Days 1–3)" : "Short-term (Next few days)"}
+                  Immediate Run-off (Days 1–3)
                 </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
@@ -644,7 +646,7 @@ export function LiveWeatherCard({
               <div className="flex items-center gap-1.5">
                 <Wind className="size-3 text-muted-foreground shrink-0" />
                 <span className="text-[11px] font-bold text-foreground">
-                  {audienceMode === "clinical" ? "Vector Proliferation Window (Weeks 2–4)" : "Medium-term (Next 2-4 weeks)"}
+                  Vector Proliferation Window (Weeks 2–4)
                 </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
@@ -654,31 +656,49 @@ export function LiveWeatherCard({
           </div>
         )}
 
-        {/* ── Recommended Actions (collapsible) ─────────────── */}
+        {/* ── Recommended Actions ─────────────── */}
         {actions.length > 0 && (
           <div className="border-t border-border/50 pt-2.5">
-            <button
-              type="button"
-              onClick={() => setShowActions((p) => !p)}
-              className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
-            >
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="size-3.5 text-primary" />
-                {audienceMode === "clinical" ? "Clinical & Surveillance Directives" : "Recommended Public Precautions"} ({actions.length})
-              </span>
-              {showActions ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-            </button>
-            {showActions && (
-              <ul className="mt-2 space-y-1.5 pl-1 text-xs text-muted-foreground leading-relaxed">
-                {actions.map((act, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <span className="font-mono text-[11px] font-bold text-primary shrink-0 mt-0.5">
-                      {idx + 1}.
-                    </span>
-                    <span>{act}</span>
-                  </li>
-                ))}
-              </ul>
+            {audienceMode === "clinical" ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setShowActions((p) => !p)}
+                  className="flex w-full items-center justify-between text-xs font-semibold text-foreground hover:text-primary transition-colors py-1 cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <CheckCircle2 className="size-3.5 text-primary" />
+                    Clinical &amp; Surveillance Directives ({actions.length})
+                  </span>
+                  {showActions ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+                </button>
+                {showActions && (
+                  <ul className="mt-2 space-y-1.5 pl-1 text-xs text-muted-foreground leading-relaxed">
+                    {actions.map((act, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="font-mono text-[11px] font-bold text-primary shrink-0 mt-0.5">
+                          {idx + 1}.
+                        </span>
+                        <span>{act}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
+            ) : (
+              <div className="space-y-1.5">
+                <span className="label-caps text-[10px] text-muted-foreground font-bold flex items-center gap-1.5">
+                  <CheckCircle2 className="size-3.5 text-primary" /> Community Weather Safety Steps
+                </span>
+                <ul className="space-y-1 text-xs pl-1">
+                  {actions.slice(0, 3).map((act, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-[11px] text-muted-foreground">
+                      <span className="font-bold text-primary shrink-0 mt-0.5">•</span>
+                      <span>{act}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             )}
           </div>
         )}

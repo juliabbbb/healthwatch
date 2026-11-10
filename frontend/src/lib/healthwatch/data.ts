@@ -1237,6 +1237,75 @@ export function recommendations(a: RegionAssessment): Recommendation[] {
   return base;
 }
 
+export function publicRecommendations(a: RegionAssessment): Recommendation[] {
+  const ill = a.dominantIllness;
+  const base: Recommendation[] = [];
+  if (a.risk === "high") {
+    base.push(
+      {
+        title: "High Surge Warning: Protect your household",
+        detail: `Cases are significantly elevated in ${a.region.short} this season. Check your home and surroundings for mosquito breeding spots or water contamination daily.`,
+        urgency: "high",
+      },
+      {
+        title: "Seek medical consult for fever lasting >2 days",
+        detail:
+          "Do not delay seeking consultation at your nearest Barangay Health Center or hospital if anyone in your family develops high fever, weakness, or repeated vomiting.",
+        urgency: "high",
+      },
+    );
+  } else if (a.risk === "moderate") {
+    base.push({
+      title: "Elevated Alert: Exercise increased vigilance",
+      detail: `Cases are tracking above seasonal baseline. Ensure all water storage containers are covered and practice frequent handwashing.`,
+      urgency: "moderate",
+    });
+  } else {
+    base.push({
+      title: "Routine Baseline: Maintain standard hygiene",
+      detail: `Illness incidence is within normal expected historical levels. Continue routine cleanliness and food safety practices.`,
+      urgency: "low",
+    });
+  }
+
+  const byIllness: Record<string, Recommendation> = {
+    Dengue: {
+      title: "DOH 4S Strategy (Search, Protect, Consult, Fog)",
+      detail:
+        "1. Search & Destroy breeding spots (tires, cans, pots); 2. Self-Protection (repellent, long sleeves); 3. Seek Early Consultation; 4. Say Yes to Fogging during hotspots.",
+      urgency: a.risk,
+    },
+    "Acute Bloody Diarrhea": {
+      title: "Boil drinking water & wash hands",
+      detail:
+        "Vigorously roll-boil water for at least 1-2 minutes before drinking. Wash hands thoroughly with soap before preparing meals and after using the bathroom.",
+      urgency: a.risk,
+    },
+    Cholera: {
+      title: "Safe drinking water & oral rehydration",
+      detail:
+        "Use chlorinated or boiled water. At the first sign of watery diarrhea, prepare Oral Rehydration Salts (ORS) and visit the nearest health station.",
+      urgency: a.risk,
+    },
+    "Typhoid Fever": {
+      title: "Food safety & clean cooking",
+      detail:
+        "Eat well-cooked food while fresh and hot. Avoid unpasteurized juices or questionable street foods with untreated ice.",
+      urgency: a.risk,
+    },
+    "Acute Viral Hepatitis": {
+      title: "Food sanitation & Hepatitis A awareness",
+      detail:
+        "Avoid raw or partially cooked shellfish. Ensure food handlers practice strict hand hygiene.",
+      urgency: a.risk,
+    },
+  };
+  const diseaseRec = byIllness[ill.id];
+  if (diseaseRec) base.push(diseaseRec);
+
+  return base;
+}
+
 /* ------------------------------------------------------------------ */
 /* Presentation helpers                                                */
 /* ------------------------------------------------------------------ */

@@ -523,6 +523,34 @@ input[type="range"]:focus-visible {
   transition: top 0.05s ease-out, left 0.05s ease-out, width 0.05s ease-out, height 0.05s ease-out;
 }
 
+.hw-explain-hover-label {
+  position: absolute;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+  white-space: nowrap;
+  box-shadow: 0 4px 16px oklch(0 0 0 / 0.4);
+  pointer-events: none;
+  z-index: 9995;
+}
+
+.hw-explain-hover-label-top {
+  top: -26px;
+}
+
+.hw-explain-hover-label-bottom {
+  bottom: -26px;
+}
+
 /* Top-center mode banner */
 .hw-explain-banner {
   position: fixed;
