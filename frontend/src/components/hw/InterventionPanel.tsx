@@ -1,15 +1,18 @@
-import { ShieldAlert } from "lucide-react";
+import { ShieldAlert, Stethoscope, Users } from "lucide-react";
 import { RiskBadge } from "@/components/hw/RiskBadge";
 import {
   METRIC_META,
   formatMetric,
   recommendations,
+  publicRecommendations,
   type RegionAssessment,
 } from "@/lib/healthwatch/data";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 
 /**
  * Intervention recommendations derived from the region's current hotspot tier,
- * dominant illness and forecast trajectory.
+ * dominant illness and forecast trajectory. Adapts between Healthcare Worker
+ * surveillance directives and General Public household precautions.
  */
 export function InterventionPanel({
   assessment,
@@ -20,7 +23,9 @@ export function InterventionPanel({
   limit?: number;
   compact?: boolean;
 }) {
-  const recs = recommendations(assessment);
+  const { mode: audienceMode } = useAudienceMode();
+  const isClinical = audienceMode === "clinical";
+  const recs = isClinical ? recommendations(assessment) : publicRecommendations(assessment);
   const list = limit ? recs.slice(0, limit) : recs;
   const meta = METRIC_META[assessment.mode];
 
@@ -28,14 +33,22 @@ export function InterventionPanel({
     <div>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <p className="label-caps inline-flex items-center gap-1.5">
-          <ShieldAlert className="size-3.5" /> Recommended interventions
+          {isClinical ? (
+            <>
+              <Stethoscope className="size-3.5 text-primary" /> Recommended Clinical Directives
+            </>
+          ) : (
+            <>
+              <Users className="size-3.5 text-primary" /> Recommended Household Precautions
+            </>
+          )}
         </p>
         <RiskBadge risk={assessment.risk} />
       </div>
       <p className="mb-2 text-[11px] text-muted-foreground">
-        Triggered by a {assessment.risk} classification at{" "}
-        {formatMetric(assessment.value, assessment.mode)} {meta.unit} ({assessment.percentileRank}th
-        national percentile).
+        {isClinical
+          ? `Clinical surveillance directives triggered by a ${assessment.risk} classification at ${formatMetric(assessment.value, assessment.mode)} ${meta.unit} (${assessment.percentileRank}th national percentile).`
+          : `Household health guidelines for ${assessment.risk} risk conditions (${assessment.percentileRank}th percentile caseload).`}
       </p>
       <ul className={compact ? "space-y-1.5" : "space-y-3"}>
         {list.map((r) =>
