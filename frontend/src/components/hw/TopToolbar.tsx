@@ -194,7 +194,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
         </div>
 
         {/* Primary Desktop Nav Links */}
-        <nav className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
+        <nav data-explain="nav-links" className="glass-panel flex items-center gap-0.5 rounded-xl p-0.5">
           <NavLink to="/">Map</NavLink>
           <NavLink to="/seasonality" {...(seasonalitySearch ? { search: seasonalitySearch } : {})}>
             Seasonality

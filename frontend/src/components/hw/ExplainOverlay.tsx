@@ -17,6 +17,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
 import {
   X,
   HelpCircle,
@@ -128,24 +129,35 @@ interface ExplainOverlayProps {
 /** Client-side in-memory cache for Groq AI responses */
 const aiCache = new Map<string, string>();
 
-/** Walk up from `el` until we find a node matching one of the registry selectors. */
-function findExplanation(
-  el: Element,
-): { title: string; description: string; icon?: string } | null {
+interface MatchedTarget {
+  title: string;
+  description: string;
+  icon?: string;
+  container: Element;
+  rect: DOMRect;
+}
+
+/** Walk up from `el` towards document.body to find the most specific container matching the registry. */
+function findMatchingTarget(el: Element): MatchedTarget | null {
   let node: Element | null = el;
-  while (node && node !== document.body) {
+  while (node && node !== document.body && node !== document.documentElement) {
     if (node.id === "hw-explain-overlay" || node.closest("#hw-explain-popover")) {
       return null;
     }
     for (const entry of EXPLAIN_REGISTRY) {
       try {
-        if (node.matches(entry.selector) || node.closest(entry.selector)) {
-          const found: { title: string; description: string; icon?: string } = {
+        // Exclude the generic "main" selector during child tree-walking unless node is literally <main>
+        if (entry.selector === "main" && node.tagName.toLowerCase() !== "main") {
+          continue;
+        }
+        if (node.matches(entry.selector)) {
+          return {
             title: entry.title,
             description: entry.description,
+            icon: entry.icon,
+            container: node,
+            rect: node.getBoundingClientRect(),
           };
-          if (entry.icon) found.icon = entry.icon;
-          return found;
         }
       } catch {
         // ignore invalid selectors
@@ -186,6 +198,7 @@ function computePopoverStyle(
 
 export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
   const [popover, setPopover] = useState<PopoverState | null>(null);
+  const [hoverTarget, setHoverTarget] = useState<MatchedTarget | null>(null);
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
   const [aiEnabled] = useAiAnalysisSetting();
   const [aiState, setAiState] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -201,6 +214,7 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
       setAiError(null);
       if (!active) {
         setPopover(null);
+        setHoverTarget(null);
         setHoverRect(null);
       }
     } else {
@@ -238,13 +252,24 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
     const els = document.elementsFromPoint(e.clientX, e.clientY);
     for (const el of els) {
       if (el.id === "hw-explain-overlay" || el.closest("#hw-explain-popover")) continue;
-      setHoverRect(el.getBoundingClientRect());
+      const match = findMatchingTarget(el);
+      if (match) {
+        setHoverTarget(match);
+        setHoverRect(match.rect);
+      } else {
+        setHoverTarget(null);
+        setHoverRect(null);
+      }
       return;
     }
+    setHoverTarget(null);
     setHoverRect(null);
   }, []);
 
-  const handleMouseLeave = useCallback(() => setHoverRect(null), []);
+  const handleMouseLeave = useCallback(() => {
+    setHoverTarget(null);
+    setHoverRect(null);
+  }, []);
 
   // Click handler
   const handleClick = useCallback((e: React.MouseEvent) => {
@@ -255,15 +280,20 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
     for (const el of els) {
       if (el.id === "hw-explain-overlay" || el.closest("#hw-explain-popover")) continue;
 
-      const match = findExplanation(el);
+      const match = findMatchingTarget(el);
       if (match) {
-        setPopover({ ...match, anchorRect: el.getBoundingClientRect() });
+        setPopover({
+          title: match.title,
+          description: match.description,
+          icon: match.icon,
+          anchorRect: match.rect,
+        });
       } else {
         setPopover({
-          title: "UI Element",
+          title: "UI Workspace",
           icon: "Info",
           description:
-            "This element doesn't have a specific explanation yet. Try clicking a chart, card, button, or slider for detailed info.",
+            "This area doesn't have a specific explanation yet. Click a highlighted card, navigation bar, active alerts, or scrubber for detailed info.",
           anchorRect: el.getBoundingClientRect(),
         });
       }
@@ -334,8 +364,8 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
       >
-        {/* Hover highlight box */}
-        {hoverRect && (
+        {/* Hover highlight box & container label */}
+        {hoverRect && hoverTarget && (
           <div
             className="hw-explain-hover"
             style={{
@@ -344,7 +374,21 @@ export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
               width: hoverRect.width,
               height: hoverRect.height,
             }}
-          />
+          >
+            <div
+              className={cn(
+                "hw-explain-hover-label",
+                hoverRect.top < 34 ? "hw-explain-hover-label-bottom" : "hw-explain-hover-label-top",
+              )}
+            >
+              {(() => {
+                const HoverIcon = (hoverTarget.icon ? ICON_MAP[hoverTarget.icon] : undefined) ?? Info;
+                return <HoverIcon className="size-3 shrink-0 text-primary" aria-hidden="true" />;
+              })()}
+              <span className="truncate max-w-[220px]">{hoverTarget.title}</span>
+              <span className="text-[10px] text-muted-foreground font-normal ml-0.5">· Click to inspect</span>
+            </div>
+          </div>
         )}
 
         {/* Top-center banner */}

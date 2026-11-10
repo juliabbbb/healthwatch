@@ -61,7 +61,7 @@ export const EXPLAIN_REGISTRY: ExplainEntry[] = [
       "Type a region name or PSGC code (e.g. \"NCR\", \"Davao\", \"Region III\") to instantly fly the map to that region and open its detailed forecast panel.",
   },
   {
-    selector: "nav.glass-panel a, nav.glass-panel button, [data-explain='nav-links']",
+    selector: "nav.glass-panel, [data-explain='nav-links'], [data-explain='top-nav']",
     title: "Navigation Tabs",
     icon: "Navigation",
     description:

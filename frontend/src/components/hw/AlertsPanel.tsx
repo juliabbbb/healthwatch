@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, CloudRain, Siren, TrendingUp, TriangleAlert, Wa
 import type { AlertItem } from "@/lib/healthwatch/alerts";
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
+import { useAudienceMode } from "@/hooks/useAudienceMode";
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
@@ -43,6 +44,7 @@ export function AlertsPanel({
 }) {
   const [open, setOpen] = useState(false);
   const [weather, setWeather] = useState<LiveWeatherSummary | null>(weatherCache);
+  const { mode: audienceMode } = useAudienceMode();
 
   useEffect(() => {
     if (weatherCache) {
@@ -75,8 +77,9 @@ export function AlertsPanel({
 
   return (
     <div
+      data-explain="alerts-panel"
       className={cn(
-        "glass-panel pointer-events-auto w-full rounded-xl shadow-xl overflow-hidden border border-border/80",
+        "hw-alerts-panel glass-panel pointer-events-auto w-full rounded-xl shadow-xl overflow-hidden border border-border/80",
         className,
       )}
     >
@@ -91,7 +94,7 @@ export function AlertsPanel({
           style={{ color: hasSevere ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
         <span className="label-caps flex-1 text-xs font-bold text-foreground">
-          Surveillance & Weather Alerts
+          {audienceMode === "clinical" ? "Surveillance & Weather Alerts" : "Health & Weather Alerts"}
         </span>
 
         {/* Live Weather Warning Badge */}
@@ -152,7 +155,9 @@ export function AlertsPanel({
                         className="font-mono text-[11px] font-bold"
                         style={{ color: "var(--risk-high)" }}
                       >
-                        +{Math.round((fr.multiplier - 1) * 100)}% Surge
+                        {audienceMode === "clinical"
+                          ? `+${Math.round((fr.multiplier - 1) * 100)}% Surge`
+                          : "Flood Warning"}
                       </span>
                     </div>
                     <span className="text-[11px] text-muted-foreground truncate">{fr.caused_by}</span>

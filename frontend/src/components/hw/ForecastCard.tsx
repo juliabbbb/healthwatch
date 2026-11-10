@@ -176,7 +176,9 @@ export function ForecastCard({
               {a.region.name}
             </h2>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              {a.region.classification} · {a.region.density.toLocaleString()} persons/km²
+              {audienceMode === "clinical"
+                ? `${a.region.classification} · ${a.region.density.toLocaleString()} persons/km²`
+                : "Philippine Administrative Region · Community Health Outlook"}
             </p>
             <div className="flex items-center gap-1.5 mt-1.5">
               <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border border-border/70 bg-secondary/50">
@@ -214,10 +216,10 @@ export function ForecastCard({
         className="mx-5 mt-3 shrink-0"
       />
 
-      {/* 2. Current Status Card (preserved: value, mode toggle, badges, layer selector, stat chips) */}
+      {/* 2. Current Status Card */}
       <section className="border-b border-border/70 px-5 py-3.5">
         <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2.5">
-          CURRENT STATUS
+          {audienceMode === "clinical" ? "CURRENT SURVEILLANCE STATUS" : "CURRENT COMMUNITY STATUS"}
         </p>
 
         <div className="flex items-start justify-between gap-3">
@@ -229,7 +231,7 @@ export function ForecastCard({
               {formatMetric(a.value, mode)}
             </p>
 
-            {onModeChange && (
+            {audienceMode === "clinical" && onModeChange && (
               <div
                 role="radiogroup"
                 aria-label="Metric representation"
@@ -269,7 +271,7 @@ export function ForecastCard({
           <div className="flex flex-col items-end gap-1.5 shrink-0">
             <RiskBadge risk={a.risk} />
             <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
-            {onLayerChange && (
+            {audienceMode === "clinical" && onLayerChange && (
               <div className="mt-1 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30">
                 {(["hotspot", "density"] as const).map((l) => (
                   <button
@@ -291,61 +293,109 @@ export function ForecastCard({
           </div>
         </div>
 
-        {/* Stat Chips */}
-        <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[11px] block">Period</span>
-            <span className="font-mono text-sm font-bold text-foreground truncate block">
-              {formatMonthYear(meta.label)}
-            </span>
-          </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[11px] block">Cases</span>
-            <span className="font-mono text-sm font-bold text-foreground truncate block">
-              {a.point.cases.toLocaleString()}
-            </span>
-          </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[11px] block">3-Mo Trend</span>
-            <span
-              className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
-              style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
-            >
-              {a.changePct >= 0 ? (
-                <TrendingUp className="size-3.5 shrink-0" />
-              ) : (
-                <TrendingDown className="size-3.5 shrink-0" />
-              )}
-              <span className="truncate">
-                {a.changePct >= 0 ? "+" : ""}
-                {a.changePct}%
+        {/* Stat Chips: Clinical (5 detailed metrics) vs Public (simplified 2-badge summary) */}
+        {audienceMode === "clinical" ? (
+          <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+              <span className="label-caps text-[11px] block">Period</span>
+              <span className="font-mono text-sm font-bold text-foreground truncate block">
+                {formatMonthYear(meta.label)}
               </span>
-            </span>
+            </div>
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+              <span className="label-caps text-[11px] block">Cases</span>
+              <span className="font-mono text-sm font-bold text-foreground truncate block">
+                {a.point.cases.toLocaleString()}
+              </span>
+            </div>
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+              <span className="label-caps text-[11px] block">3-Mo Trend</span>
+              <span
+                className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
+                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+              >
+                {a.changePct >= 0 ? (
+                  <TrendingUp className="size-3.5 shrink-0" />
+                ) : (
+                  <TrendingDown className="size-3.5 shrink-0" />
+                )}
+                <span className="truncate">
+                  {a.changePct >= 0 ? "+" : ""}
+                  {a.changePct}%
+                </span>
+              </span>
+            </div>
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
+              <span className="label-caps text-[11px] block">Nat'l Rank</span>
+              <span className="font-mono text-sm font-bold text-foreground truncate block">
+                {a.percentileRank}th %ile
+              </span>
+            </div>
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
+              <span className="label-caps text-[11px] block">Data Source</span>
+              <span className="text-xs font-medium text-muted-foreground truncate block">
+                {meta.forecast
+                  ? `Prophet Forecast · 95% CI ${formatMetric(
+                      metricValue(a.point.lower, a.region, mode),
+                      mode,
+                    )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
+                  : "DOH Epidemiology Bureau PIDSR Surveillance"}
+              </span>
+            </div>
           </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-            <span className="label-caps text-[11px] block">Nat'l Rank</span>
-            <span className="font-mono text-sm font-bold text-foreground truncate block">
-              {a.percentileRank}th %ile
-            </span>
+        ) : (
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
+              <span className="label-caps text-[10px] text-muted-foreground block">Forecast Period</span>
+              <span className="font-mono text-sm font-bold text-foreground truncate block mt-0.5">
+                {formatMonthYear(meta.label)}
+              </span>
+            </div>
+            <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
+              <span className="label-caps text-[10px] text-muted-foreground block">Case Direction</span>
+              <span
+                className="inline-flex min-w-0 items-center gap-1.5 text-xs font-bold mt-0.5"
+                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+              >
+                {a.changePct >= 0 ? (
+                  <TrendingUp className="size-3.5 shrink-0" />
+                ) : (
+                  <TrendingDown className="size-3.5 shrink-0" />
+                )}
+                <span className="truncate">
+                  {a.changePct > 5
+                    ? `Increasing (+${a.changePct}%)`
+                    : a.changePct < -5
+                    ? `Decreasing (${a.changePct}%)`
+                    : "Stable Caseload"}
+                </span>
+              </span>
+            </div>
           </div>
-          <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-            <span className="label-caps text-[11px] block">Data Source</span>
-            <span className="text-xs font-medium text-muted-foreground truncate block">
-              {meta.forecast
-                ? `Prophet Forecast · 95% CI ${formatMetric(
-                    metricValue(a.point.lower, a.region, mode),
-                    mode,
-                  )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
-                : "DOH Epidemiology Bureau PIDSR Surveillance"}
-            </span>
-          </div>
-        </div>
+        )}
       </section>
 
-      {/* 3. Epicentra-style KPI Strip */}
-      <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-        <KpiStrip data={kpi} />
-      </section>
+      {/* 3. Epicentra-style KPI Strip (Healthcare Worker Mode only) */}
+      {audienceMode === "clinical" && (
+        <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
+          <KpiStrip data={kpi} />
+        </section>
+      )}
+
+      {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only) */}
+      {audienceMode === "clinical" && (
+        <section className="border-b border-border/70 px-5 py-3 shrink-0">
+          <div className="flex items-center justify-between mb-2">
+            <span className="label-caps text-xs text-muted-foreground tracking-wider">
+              6-MONTH PROJECTION TRAJECTORY
+            </span>
+            <span className="text-[10px] font-mono text-muted-foreground">
+              95% Confidence Bounds
+            </span>
+          </div>
+          <ForecastSparkline data={sparkData} unit={unit} height={52} />
+        </section>
+      )}
 
 
 
@@ -503,12 +553,6 @@ export function ForecastCard({
               <p className="text-[11px] leading-relaxed opacity-90">
                 Go to the nearest emergency clinic if you experience: severe abdominal pain, persistent vomiting, bleeding gums or nose, blood in stool, or sudden extreme weakness.
               </p>
-            </div>
-
-            {/* Simplified Confidence Note */}
-            <div className="rounded-md bg-secondary/40 border border-border/40 p-2 text-[11px] text-muted-foreground flex items-center justify-between">
-              <span>Model Reliability:</span>
-              <span className="font-semibold text-foreground">High (Validated over 7 years of DOH records)</span>
             </div>
           </div>
         </section>
