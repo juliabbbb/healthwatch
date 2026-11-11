@@ -1,0 +1,50 @@
+﻿dataset,column,excel_value_types_json,date_typed_cells
+FWBD Case Definitions,Disease,"{""str"": 5}",0
+FWBD Case Definitions,Case Definition,"{""str"": 5}",0
+FWBD Case Definitions,UNNAMED_COLUMN_3,"{""str"": 3, ""NoneType"": 2}",0
+FWBD ABD,Year,"{""float"": 75988}",0
+FWBD ABD,Morbidity Month,"{""float"": 75988}",0
+FWBD ABD,Morbidity Week,"{""float"": 75988}",0
+FWBD ABD,Region,"{""str"": 75988}",0
+FWBD ABD,Province/Highly Urbanized Cities,"{""str"": 75988}",0
+FWBD ABD,Age Group,"{""str"": 63464, ""datetime"": 12524}",12524
+FWBD ABD,Sex,"{""str"": 75988}",0
+FWBD ABD,Admitted,"{""str"": 75988}",0
+FWBD ABD,Outcome,"{""str"": 75988}",0
+FWBD ABD,Laboratory Result,"{""str"": 75988}",0
+FWBD ABD,Organism,"{""str"": 75927, ""NoneType"": 61}",0
+FWBD ABD,Case Classification,"{""str"": 75988}",0
+FWBD ABD,Total Cases,"{""float"": 75988}",0
+FWBD Cholera,Year,"{""float"": 13514}",0
+FWBD Cholera,Morbidity Month,"{""float"": 13514}",0
+FWBD Cholera,Morbidity Week,"{""float"": 13514}",0
+FWBD Cholera,Region,"{""str"": 13514}",0
+FWBD Cholera,Province/Highly Urbanized Cities,"{""str"": 13514}",0
+FWBD Cholera,Age Group,"{""str"": 9984, ""datetime"": 3530}",3530
+FWBD Cholera,Sex,"{""str"": 13514}",0
+FWBD Cholera,Case Classification,"{""str"": 13514}",0
+FWBD Cholera,Admitted,"{""str"": 13514}",0
+FWBD Cholera,Outcome,"{""str"": 13514}",0
+FWBD Cholera,Total Cases,"{""float"": 13514}",0
+FWBD Typhoid,Year,"{""float"": 119325}",0
+FWBD Typhoid,Morbidity Month,"{""float"": 119325}",0
+FWBD Typhoid,Morbidity Week,"{""float"": 119325}",0
+FWBD Typhoid,Region,"{""str"": 119325}",0
+FWBD Typhoid,Province/Highly Urbanized Cities,"{""str"": 119325}",0
+FWBD Typhoid,Age Group,"{""datetime"": 29601, ""str"": 89724}",29601
+FWBD Typhoid,Sex,"{""str"": 119325}",0
+FWBD Typhoid,Case Classification,"{""str"": 119325}",0
+FWBD Typhoid,Admitted,"{""str"": 119325}",0
+FWBD Typhoid,Outcome,"{""str"": 119325}",0
+FWBD Typhoid,Total Cases,"{""float"": 119325}",0
+FWBD Hep A,Year,"{""float"": 1313}",0
+FWBD Hep A,Morbidity Month,"{""float"": 1313}",0
+FWBD Hep A,Morbidity Week,"{""float"": 1138, ""NoneType"": 175}",0
+FWBD Hep A,Region,"{""float"": 999, ""str"": 314}",0
+FWBD Hep A,Province,"{""str"": 1313}",0
+FWBD Hep A,Province/City,"{""str"": 1313}",0
+FWBD Hep A,Age,"{""float"": 1271, ""NoneType"": 42}",0
+FWBD Hep A,Sex,"{""str"": 1313}",0
+FWBD Hep A,Case Classification,"{""str"": 1313}",0
+FWBD Hep A,Admitted,"{""str"": 1313}",0
+FWBD Hep A,Outcome,"{""str"": 1313}",0

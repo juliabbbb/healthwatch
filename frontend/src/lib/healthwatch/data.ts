@@ -11,11 +11,19 @@
  * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
  * presentation tag only.
  *
+ * Three additional disease sources are available with historical data only
+ * (no 12-month Prophet forecast yet):
+ * - Leptospirosis: DOH line-list (2019-2026), monthly time series
+ * - Influenza-like Illness (ILI): DOH sentinel surveillance (2019-2026), monthly
+ * - Heat-Related Illness: DOH reference data, annual aggregates only (no
+ *   monthly time series; not included in the shared calendar or "All" sum)
+ *
  * Series, validation metrics and outbreak probes are fetched once at startup
  * via `loadHealthwatchData()` (one /dashboard call per disease); every
  * component then reads the caches synchronously, keeping render output stable
  * across renders/SSR. The shared calendar spans 2019-01 .. 2027-08 so the
- * "All Illnesses" view is a genuine per-month sum of the five diseases.
+ * "All Illnesses" view is a genuine per-month sum of all diseases with
+ * monthly series data.
  */
 
 export type RiskLevel = "low" | "moderate" | "high";
@@ -260,7 +268,7 @@ export interface Illness {
   id: string; // canonical API disease label (backend SUPPORTED_DISEASES)
   name: string;
   shortName: string;
-  group: "Dengue" | "Food and Waterborne Diseases";
+  group: "Dengue" | "Food and Waterborne Diseases" | "Zoonotic Diseases" | "Respiratory Diseases" | "Environmental and Climate Hazards";
   /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
   transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
@@ -269,6 +277,13 @@ export interface Illness {
   amplitude: number; // seasonal swing strength
   baseRate: number; // cases / 100k / month
   trend: number; // yearly multiplicative drift
+  /**
+   * Whether a 12-month Prophet forecast is available for this disease.
+   * False for diseases pending model evaluation or with reference-only data.
+   */
+  forecastAvailable?: boolean;
+  /** Human-readable explanation when forecastAvailable is false. */
+  unavailableReason?: string;
 }
 
 /** Presentation grouping only — the pipeline runs each disease independently. */
@@ -278,6 +293,9 @@ export const DISEASE_GROUPS = {
   "Cholera": "Food and Waterborne Diseases",
   "Typhoid Fever": "Food and Waterborne Diseases",
   "Acute Viral Hepatitis": "Food and Waterborne Diseases",
+  "Leptospirosis": "Zoonotic Diseases",
+  "Influenza-like Illness": "Respiratory Diseases",
+  "Heat-Related Illness": "Environmental and Climate Hazards",
 } as const;
 
 export const ILLNESSES: Illness[] = [
@@ -345,6 +363,48 @@ export const ILLNESSES: Illness[] = [
     baseRate: 0.03,
     trend: -0.03,
   },
+  {
+    id: "Leptospirosis",
+    name: "Leptospirosis",
+    shortName: "Lepto",
+    group: "Zoonotic Diseases",
+    driver: "Flood-water exposure to Leptospira-contaminated animal urine",
+    peakMonth: 9,
+    season: "wet",
+    amplitude: 0.9,
+    baseRate: 0.04,
+    trend: 0.02,
+    forecastAvailable: false,
+    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
+  },
+  {
+    id: "Influenza-like Illness",
+    name: "Influenza-like Illness",
+    shortName: "ILI",
+    group: "Respiratory Diseases",
+    driver: "Respiratory droplet transmission amplified by indoor crowding",
+    peakMonth: 8,
+    season: "wet",
+    amplitude: 0.6,
+    baseRate: 0.7,
+    trend: 0.03,
+    forecastAvailable: false,
+    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
+  },
+  {
+    id: "Heat-Related Illness",
+    name: "Heat-Related Illness",
+    shortName: "Heat",
+    group: "Environmental and Climate Hazards",
+    driver: "Extreme heat events and prolonged high heat-index exposure",
+    peakMonth: 4,
+    season: "dry",
+    amplitude: 0.0,
+    baseRate: 0.0,
+    trend: 0.0,
+    forecastAvailable: false,
+    unavailableReason: "Reference-only — annual aggregate data; no monthly time series available for forecasting.",
+  },
 ];
 
 /**
@@ -411,6 +471,62 @@ const FWD_CASE_NOTES: ReportedCaseNotes = {
   source: "Source: DOH FWD line-list",
 };
 
+const LEPTO_CASE_NOTES: ReportedCaseNotes = {
+  disclaimer: [
+    "Reported cases included in this request consist of suspect, probable, and confirmed cases (see definition below).",
+    "Reported deaths are unofficial and are used for surveillance purposes only. The official source of mortality data is the Philippine Statistics Authority (PSA).",
+  ],
+  heading: "Leptospirosis Case Classification",
+  classes: [
+    {
+      label: "Suspect",
+      definition:
+        "A patient with acute febrile illness and exposure history (flooding, contact with animal urine-contaminated water or soil).",
+    },
+    {
+      label: "Probable",
+      definition: "A suspect case with a positive rapid diagnostic result (IgM ELISA or lateral flow).",
+    },
+    {
+      label: "Confirmed",
+      definition: "A suspect or probable case with positive MAT seroconversion, PCR, or culture isolation.",
+    },
+  ],
+  source: "Source: DOH leptospirosis case line-list (2019-2026)",
+};
+
+const ILI_CASE_NOTES: ReportedCaseNotes = {
+  disclaimer: [
+    "Reported cases represent influenza-like illness (ILI) sentinel surveillance aggregates.",
+    "ILI is a syndromic definition; not all cases are laboratory-confirmed influenza.",
+  ],
+  heading: "ILI Case Classification",
+  classes: [
+    {
+      label: "ILI Case",
+      definition:
+        "A person with sudden onset of fever (≥38 °C) and cough or sore throat, in the absence of other diagnosis (WHO ILI definition).",
+    },
+  ],
+  source: "Source: DOH ILI sentinel surveillance data (2019-2026)",
+};
+
+const HEAT_CASE_NOTES: ReportedCaseNotes = {
+  disclaimer: [
+    "Heat-related illness data are annual reference aggregates, not monthly time series.",
+    "Counts may include heat stroke, heat exhaustion, and heat cramp events reported to DOH.",
+  ],
+  heading: "Heat-Related Illness Events",
+  classes: [
+    {
+      label: "Heat-Related Event",
+      definition:
+        "An illness episode attributed to excessive environmental heat exposure, including heat stroke, heat exhaustion, and heat cramps.",
+    },
+  ],
+  source: "Source: DOH heat-related illness reports (reference data)",
+};
+
 /** Reported-case classification notes per canonical disease id. */
 export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Dengue": DENGUE_CASE_NOTES,
@@ -418,6 +534,9 @@ export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Cholera": FWD_CASE_NOTES,
   "Typhoid Fever": FWD_CASE_NOTES,
   "Acute Viral Hepatitis": FWD_CASE_NOTES,
+  "Leptospirosis": LEPTO_CASE_NOTES,
+  "Influenza-like Illness": ILI_CASE_NOTES,
+  "Heat-Related Illness": HEAT_CASE_NOTES,
 };
 
 /** One-line source attribution per disease for the reported-case tables. */
@@ -427,6 +546,9 @@ export const REPORTED_SOURCE: Record<string, string> = {
   "Cholera": "Source: DOH FWD line-list (2019-2026)",
   "Typhoid Fever": "Source: DOH FWD line-list (2019-2026)",
   "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
+  "Leptospirosis": "Source: DOH leptospirosis case line-list (2019-2026)",
+  "Influenza-like Illness": "Source: DOH ILI sentinel surveillance data (2019-2026)",
+  "Heat-Related Illness": "Source: DOH heat-related illness reports (reference data)",
 };
 
 /** Resolve display notes (and source) for any illness selection, incl. "all". */
@@ -562,12 +684,19 @@ async function hydratePopulations(): Promise<void> {
  * disease (one /dashboard call per disease, run in parallel) plus the static
  * region populations. Resolves before the router renders any route (gated in
  * __root.tsx) so all downstream components can keep reading caches
- * synchronously. The "all" aggregate (true per-month sum of the five
+ * synchronously. The "all" aggregate (true per-month sum of the forecast-ready
  * diseases) is derived client-side after every disease series lands.
+ *
+ * Diseases with `forecastAvailable === false` still load historical series via
+ * /dashboard but skip forecast metrics and outbreak probes. Heat-Related
+ * Illness is reference-only (annual aggregates) and is loaded separately via
+ * /reference/heat-events — it does not participate in the shared calendar or
+ * the "all" aggregate.
  */
 export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
+    forecast_available?: boolean;
     series: Record<string, MonthPoint[]>;
     metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
     outbreak: OutbreakIndicator[];
@@ -575,56 +704,76 @@ export async function loadHealthwatchData(): Promise<void> {
 
   await hydratePopulations();
 
-  const diseases = ILLNESSES.map((i) => i.id);
+  // Separate diseases into dashboard-eligible and reference-only
+  const dashboardDiseases = ILLNESSES.filter((i) => i.id !== "Heat-Related Illness").map((i) => i.id);
   const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
 
-  await Promise.all(
-    diseases.map(async (disease) => {
+  await Promise.all([
+    // Dashboard diseases (historical + optional forecast)
+    ...dashboardDiseases.map(async (disease) => {
       try {
         const res = await fetchJson<DashboardResponse>(
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        // Historical series — always loaded
         for (const [short, points] of Object.entries(res.series)) {
           const code = codeByShort[short];
           if (!code) continue;
           seriesCache.set(`${code}:${disease}`, normalizeSeries(points));
         }
 
-        for (const [short, m] of Object.entries(res.metrics)) {
-          const code = codeByShort[short];
-          if (!code) continue;
-          metricsCache.set(`${code}:${disease}`, {
-            folds: m.months,
-            label: m.confidence.label,
-            tone: m.confidence.tone,
-            note:
-              m.confidence.tone === "low"
-                ? "Model error is small relative to monthly case counts."
-                : m.confidence.tone === "moderate"
-                  ? "Reasonable accuracy on holdout months."
-                  : "Volatile series inflates error metrics.",
-            mae: m.mae,
-            rmse: m.rmse,
-            mape: m.mape,
-          });
-        }
+        // Forecast metrics — only when the backend signals forecast is available
+        const hasForecast = res.forecast_available !== false;
+        if (hasForecast) {
+          for (const [short, m] of Object.entries(res.metrics)) {
+            const code = codeByShort[short];
+            if (!code) continue;
+            metricsCache.set(`${code}:${disease}`, {
+              folds: m.months,
+              label: m.confidence.label,
+              tone: m.confidence.tone,
+              note:
+                m.confidence.tone === "low"
+                  ? "Model error is small relative to monthly case counts."
+                  : m.confidence.tone === "moderate"
+                    ? "Reasonable accuracy on holdout months."
+                    : "Volatile series inflates error metrics.",
+              mae: m.mae,
+              rmse: m.rmse,
+              mape: m.mape,
+            });
+          }
 
-        for (const item of res.outbreak) {
-          const code = regionCodeForApiLabel(item.region);
-          if (!code) continue;
-          const entry = outbreakCache.get(`${code}:${disease}`) ?? {};
-          entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
-          outbreakCache.set(`${code}:${disease}`, entry);
+          for (const item of res.outbreak) {
+            const code = regionCodeForApiLabel(item.region);
+            if (!code) continue;
+            const entry = outbreakCache.get(`${code}:${disease}`) ?? {};
+            entry[item.season] = { ...item, outbreak: Boolean(item.outbreak) };
+            outbreakCache.set(`${code}:${disease}`, entry);
+          }
         }
       } catch (err) {
         console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
       }
     }),
-  );
+    // Heat-Related Illness — reference-only, fetched from dedicated endpoint
+    (async () => {
+      try {
+        await fetchJson<{ count: number; items: unknown[] }>("/reference/heat-events");
+        // Heat data is reference-only (annual aggregates per region) and does
+        // not map onto the monthly shared calendar — we load it for the /diseases
+        // metadata but do not inject it into seriesCache.
+      } catch (err) {
+        console.warn("[healthwatch] heat reference load failed", err);
+      }
+    })(),
+  ]);
 
-  // Derive the "all" aggregate: per-month sum across the five diseases, plus
-  // an outbreak probe that fires for a season when any member disease flags.
+  // Derive the "all" aggregate: per-month sum across forecast-ready diseases
+  // only, plus an outbreak probe that fires for a season when any member
+  // disease flags. Non-forecast diseases (Lepto, ILI) are included in the sum
+  // for their historical months but contribute no forecast points.
   for (const region of REGIONS) {
     buildAllSeries(region.code);
     buildAllOutbreak(region.code);

@@ -1,0 +1,44 @@
+﻿year,illness,region,province,events,cases,deaths,page,source_file,source_table,date_resolution
+2019,Heat Exhaustion,IV-A,Batangas,1,23,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2019,Heat Exhaustion,VIII,Northern Samar,1,66,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,NCR,Pasay City,1,56,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,NCR,Valenzuela City,1,48,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,NCR,Makati City,1,122,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,I,La Union,1,4,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,IV-B,Palawan,1,90,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2023,Heat Exhaustion,XI,Davao del Norte,1,29,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,I,Ilocos Sur,4,4,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,I,La Union,23,56,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,III,Olongapo City,1,211,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,IV-A,Laguna,1,29,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,VI,Iloilo,1,25,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,VII,Negros Oriental,2,66,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion,XII,Cotabato,1,4,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Exhaustion (17); Heat Stroke (2),IV-B,Oriental Mindoro,1,19,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat Stroke,I,La Union,2,2,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat-related Deaths,IV-A,Lucena City,1,1,1,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat-related Deaths,IV-A,Cavite,1,1,1,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat-related Deaths,V,Camarines Sur,1,4,4,2,Data/Heat-Related.pdf,Table 1,Year only
+2024,Heat-related Deaths,XII,Cotabato,1,6,6,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related Illness,I,Pangasinan,1,29,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related Illness,I,La Union,4,4,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related Illness,I,Ilocos Norte,1,1,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related Illness,IV-A,Laguna,4,4,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related Illness,VI,City of Iloilo,1,6,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,I,Pangasinan,2,41,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,I,La Union,2,7,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,I,Ilocos Norte,5,5,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,VI,Iloilo,1,31,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,IX,City of Isabela,1,186,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat Exhaustion,XI,Davao Oriental,1,10,0,2,Data/Heat-Related.pdf,Table 1,Year only
+2025,Heat-related death,XI,Davao del Norte,1,2,2,2,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Stroke,III,Zambales,2,2,2,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Stroke,IV-B,Palawan,1,1,1,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Stroke,NIR,Negros Oriental,1,1,1,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,I,Ilocos Norte,14,14,0,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,I,Ilocos Sur,3,3,0,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,I,La Union,15,46,0,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,I,Pangasinan,2,2,0,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,I,San Juan,1,1,0,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,III,Tarlac,1,7,2,3,Data/Heat-Related.pdf,Table 1,Year only
+2026,Heat Exhaustion,NIR,Negros Occidental,1,6,0,3,Data/Heat-Related.pdf,Table 1,Year only

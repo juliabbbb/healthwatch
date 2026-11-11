@@ -1,0 +1,565 @@
+﻿dataset,region,year,observed_months_json,interior_unobserved_months_json,absent_vs_dataset_observed_months_json,rows,case_sum,date_basis
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],164,183.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],257,303.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],88,122.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],60,78.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2022,"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[1],147,168.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],203,223.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],353,409.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],514,617.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],238,272.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1150,1657.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1070,1427.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],614,863.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],461,571.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],636,904.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],856,1210.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],557,639.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],572,638.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,CORDILLERA ADMINISTRATIVE REGION (CAR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],243,255.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],139,154.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],83,88.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[],[12],72,76.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2021,"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[1],43,45.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],126,135.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],119,131.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],198,213.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],296,328.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,MIMAROPA REGION,2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],118,132.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",[11],[11],57,57.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],91,96.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2020,"[1, 2, 3, 11, 12]","[4, 5, 6, 7, 8, 9, 10]","[4, 5, 6, 7, 8, 9, 10]",26,27.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],46,46.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],190,198.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],204,210.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],294,314.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[],[12],417,440.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NATIONAL CAPITAL REGION (NCR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],340,364.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],671,1081.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],606,813.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],476,652.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],351,439.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],693,1098.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],399,570.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],455,528.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],395,459.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,NEGROS ISLAND REGION (NIR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],179,204.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],83,86.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",[],"[11, 12]",44,49.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2020,"[1, 2, 3, 5, 10]","[4, 6, 7, 8, 9]","[4, 6, 7, 8, 9, 11, 12]",10,10.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2021,"[2, 4]",[3],"[1, 3, 5, 6, 7, 8, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2022,"[2, 3, 5, 6, 7, 8, 9, 10, 11, 12]",[4],"[1, 4]",55,84.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],125,139.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],105,112.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],138,171.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION I (ILOCOS REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],65,66.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1047,1521.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],797,1115.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],348,424.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],174,189.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],831,1235.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1157,1735.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1074,1379.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1096,1411.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION II (CAGAYAN VALLEY),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],391,445.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],504,680.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],272,303.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],180,194.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],187,192.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],528,636.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],501,742.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],367,404.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],345,358.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION III (CENTRAL LUZON),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],221,233.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],783,985.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],570,681.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],153,177.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],112,125.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],323,371.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],279,306.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],308,327.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],660,723.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IV-A (CALABARZON),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],547,648.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1637,2596.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1574,2510.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],755,983.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],502,588.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1301,1812.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1242,1775.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1575,2058.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1830,2707.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION IX (ZAMBOANGA PENINSULA),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],1069,1636.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11]",[9],"[9, 12]",30,30.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],147,165.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],180,192.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],95,101.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],110,116.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],81,89.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],66,73.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],175,193.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION V (BICOL REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],107,132.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],65,69.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2019,"[1, 2, 6, 7, 8]","[3, 4, 5]","[3, 4, 5, 9, 10, 11, 12]",11,11.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2020,"[1, 2, 3, 7, 10]","[4, 5, 6, 8, 9]","[4, 5, 6, 8, 9, 11, 12]",5,5.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2022,[7],[],"[1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2023,"[5, 7]",[6],"[1, 2, 3, 4, 6, 8, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2024,"[1, 2, 3]",[],"[4, 5, 6, 7, 8, 9, 10, 11, 12]",3,4.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2025,"[2, 10]","[3, 4, 5, 6, 7, 8, 9]","[1, 3, 4, 5, 6, 7, 8, 9, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VI (WESTERN VISAYAS),2026,"[1, 2, 3, 4, 6, 7]",[5],"[5, 8, 9]",9,9.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2450,5474.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2414,4787.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1529,2526.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1450,1848.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1421,1964.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1054,1474.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1383,1807.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1342,1574.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VII (CENTRAL VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],1171,1406.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],307,347.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],294,332.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],202,232.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],180,203.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],323,386.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],407,473.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],212,227.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],442,541.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION VIII (EASTERN VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],160,180.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1138,1464.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],835,944.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],518,600.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],582,662.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1012,1194.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],555,688.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],590,701.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],801,1113.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION X (NORTHERN MINDANAO),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],377,482.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],149,158.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],197,210.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],119,130.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],331,392.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],435,494.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],246,276.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],377,415.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],354,387.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XI (DAVAO REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],247,262.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],184,195.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],155,179.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],93,99.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",[9],[9],49,49.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],112,129.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],107,127.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],145,155.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],252,267.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XII (SOCCSKSARGEN),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],155,169.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2058,2886.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1606,2216.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],643,811.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],305,333.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],708,864.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],748,996.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],345,420.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],346,389.0,Source morbidity month; no week-to-month conversion
+FWBD ABD,REGION XIII (CARAGA),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],150,161.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2018,"[2, 8]","[3, 4, 5, 6, 7]","[1, 3, 4, 5, 6, 7, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2019,"[5, 10]","[6, 7, 8, 9]","[1, 2, 3, 4, 6, 7, 8, 9, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2020,[4],[],"[1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2021,"[5, 7, 8, 9, 10]",[6],"[1, 2, 3, 4, 6, 11, 12]",15,20.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2023,"[3, 4, 8, 10]","[5, 6, 7, 9]","[1, 2, 5, 6, 7, 9, 11, 12]",5,6.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2024,"[3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],"[1, 2]",41,52.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2025,"[1, 2, 3, 4, 5, 6, 7, 8]",[],"[9, 10, 11, 12]",51,59.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2026,"[1, 5, 6, 7, 8]","[2, 3, 4]","[2, 3, 4, 9]",13,21.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2018,[8],[],"[1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2022,"[9, 10, 11]",[],"[1, 2, 3, 4, 5, 6, 7, 8, 12]",6,6.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2023,"[1, 2, 5, 6, 7, 8, 11]","[3, 4, 9, 10]","[3, 4, 9, 10, 12]",10,14.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2024,"[1, 2, 3, 5, 6, 7, 10, 11]","[4, 8, 9]","[4, 8, 9, 12]",17,17.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2025,"[1, 3, 4, 5, 6, 9, 11, 12]","[2, 7, 8, 10]","[2, 7, 8, 10]",24,26.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,CORDILLERA ADMINISTRATIVE REGION (CAR),2026,"[2, 3, 4, 6, 7, 8, 9]",[5],"[1, 5]",10,10.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,MIMAROPA REGION,2018,[7],[],"[1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12]",2,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,MIMAROPA REGION,2019,[9],[],"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,MIMAROPA REGION,2022,"[7, 8, 9, 10, 11, 12]",[],"[1, 2, 3, 4, 5, 6]",13,13.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,MIMAROPA REGION,2024,"[2, 4, 7, 8]","[3, 5, 6]","[1, 3, 5, 6, 9, 10, 11, 12]",8,9.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2018,[10],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2019,"[3, 4, 8, 9]","[5, 6, 7]","[1, 2, 5, 6, 7, 10, 11, 12]",4,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2021,"[7, 10, 12]","[8, 9, 11]","[1, 2, 3, 4, 5, 6, 8, 9, 11]",4,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2022,"[7, 8, 9, 10, 11]",[],"[1, 2, 3, 4, 5, 6, 12]",26,36.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2023,"[1, 6, 7, 9, 10, 11]","[2, 3, 4, 5, 8]","[2, 3, 4, 5, 8, 12]",14,17.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2024,"[1, 3, 4, 5, 8, 10, 11, 12]","[2, 6, 7, 9]","[2, 6, 7, 9]",13,13.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2025,"[1, 2, 3, 4, 5, 7, 8, 10, 12]","[6, 9, 11]","[6, 9, 11]",29,32.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NATIONAL CAPITAL REGION (NCR),2026,"[6, 8]",[7],"[1, 2, 3, 4, 5, 7, 9]",3,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2018,[2],[],"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2022,"[4, 5, 8, 9, 10, 11, 12]","[6, 7]","[1, 2, 3, 6, 7]",211,320.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2023,"[1, 2, 3, 4, 5, 8, 9]","[6, 7]","[6, 7, 10, 11, 12]",71,89.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2024,"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[2],[2],114,121.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],120,131.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,NEGROS ISLAND REGION (NIR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],60,73.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION I (ILOCOS REGION),2022,[10],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION I (ILOCOS REGION),2023,"[1, 9]","[2, 3, 4, 5, 6, 7, 8]","[2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",4,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION I (ILOCOS REGION),2025,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION I (ILOCOS REGION),2026,"[1, 4, 7, 8]","[2, 3, 5, 6]","[2, 3, 5, 6, 9]",5,5.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION II (CAGAYAN VALLEY),2022,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION II (CAGAYAN VALLEY),2023,"[6, 7, 9]",[8],"[1, 2, 3, 4, 5, 8, 10, 11, 12]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION II (CAGAYAN VALLEY),2024,"[2, 4, 5, 6, 11]","[3, 7, 8, 9, 10]","[1, 3, 7, 8, 9, 10, 12]",7,7.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION II (CAGAYAN VALLEY),2025,"[2, 3, 4]",[],"[1, 5, 6, 7, 8, 9, 10, 11, 12]",4,4.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2018,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2021,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",5,7.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2022,"[2, 3, 7, 8, 9, 10, 11, 12]","[4, 5, 6]","[1, 4, 5, 6]",196,519.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2023,"[1, 2, 3, 4, 5, 6, 10]","[7, 8, 9]","[7, 8, 9, 11, 12]",16,18.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2024,"[4, 5, 6, 9, 10, 11, 12]","[7, 8]","[1, 2, 3, 7, 8]",11,11.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2025,"[1, 3, 8]","[2, 4, 5, 6, 7]","[2, 4, 5, 6, 7, 9, 10, 11, 12]",5,5.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION III (CENTRAL LUZON),2026,"[6, 7, 8]",[],"[1, 2, 3, 4, 5, 9]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2018,"[1, 2, 4, 8, 9]","[3, 5, 6, 7]","[3, 5, 6, 7, 10, 11, 12]",11,11.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2021,"[10, 11]",[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 12]",43,78.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2022,"[7, 8, 9, 10, 11, 12]",[],"[1, 2, 3, 4, 5, 6]",35,179.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2023,"[1, 2, 3, 4, 9]","[5, 6, 7, 8]","[5, 6, 7, 8, 10, 11, 12]",16,49.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2024,"[1, 3, 4, 5, 6, 8, 9]","[2, 7]","[2, 7, 10, 11, 12]",9,10.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2025,"[2, 4, 8]","[3, 5, 6, 7]","[1, 3, 5, 6, 7, 9, 10, 11, 12]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IV-A (CALABARZON),2026,"[1, 2, 5, 7]","[3, 4, 6]","[3, 4, 6, 8, 9]",5,5.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2018,[10],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2019,"[1, 2, 4, 5, 7]","[3, 6]","[3, 6, 8, 9, 10, 11, 12]",6,6.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2020,"[7, 9, 10, 11, 12]",[8],"[1, 2, 3, 4, 5, 6, 8]",10,12.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2021,"[4, 10]","[5, 6, 7, 8, 9]","[1, 2, 3, 5, 6, 7, 8, 9, 11, 12]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2022,"[2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",[9],"[1, 9]",55,59.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2023,"[1, 2, 3, 4, 5, 8, 9, 10, 11]","[6, 7]","[6, 7, 12]",67,89.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],94,106.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],92,118.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION IX (ZAMBOANGA PENINSULA),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],43,45.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],594,774.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],420,530.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],311,405.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],166,185.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],175,208.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],228,292.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 12]","[10, 11]","[10, 11]",64,73.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",[],"[11, 12]",41,45.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION V (BICOL REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],109,160.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VI (WESTERN VISAYAS),2022,"[4, 8, 9, 10, 11, 12]","[5, 6, 7]","[1, 2, 3, 5, 6, 7]",81,93.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VI (WESTERN VISAYAS),2023,"[1, 2, 3, 4, 6, 7, 8, 9, 11]","[5, 10]","[5, 10, 12]",45,49.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VI (WESTERN VISAYAS),2024,"[1, 2, 3, 5, 6, 7]",[4],"[4, 8, 9, 10, 11, 12]",14,14.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VI (WESTERN VISAYAS),2025,"[2, 4, 8]","[3, 5, 6, 7]","[1, 3, 5, 6, 7, 9, 10, 11, 12]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VI (WESTERN VISAYAS),2026,[8],[],"[1, 2, 3, 4, 5, 6, 7, 9]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2018,"[1, 4]","[2, 3]","[2, 3, 5, 6, 7, 8, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2019,[4],[],"[1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2020,"[1, 12]","[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]","[2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2021,"[1, 2, 3, 7]","[4, 5, 6]","[4, 5, 6, 8, 9, 10, 11, 12]",11,12.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2022,"[1, 6, 7, 8, 11]","[2, 3, 4, 5, 9, 10]","[2, 3, 4, 5, 9, 10, 12]",11,15.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2023,"[2, 4, 6, 8, 9]","[3, 5, 7]","[1, 3, 5, 7, 10, 11, 12]",9,10.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2024,"[3, 4, 5, 6, 7, 9]",[8],"[1, 2, 8, 10, 11, 12]",14,14.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2025,"[3, 6, 8, 9, 10, 11, 12]","[4, 5, 7]","[1, 2, 4, 5, 7]",40,43.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VII (CENTRAL VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],85,89.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2018,"[1, 3]",[2],"[2, 4, 5, 6, 7, 8, 9, 10, 11, 12]",2,2.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1093,1855.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],658,978.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],482,617.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1723,5494.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1341,3131.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],786,1352.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],474,726.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION VIII (EASTERN VISAYAS),2026,"[1, 2, 3, 4, 6, 7, 8, 9]",[5],[5],24,28.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2018,"[1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12]",[7],[7],93,128.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2019,"[1, 2, 3, 4, 5, 6, 7, 11]","[8, 9, 10]","[8, 9, 10, 12]",36,42.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2020,[9],[],"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2021,"[2, 3, 5, 11]","[4, 6, 7, 8, 9, 10]","[1, 4, 6, 7, 8, 9, 10, 12]",34,60.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2022,"[1, 2, 3, 10, 11, 12]","[4, 5, 6, 7, 8, 9]","[4, 5, 6, 7, 8, 9]",28,38.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2023,"[1, 2, 3, 4, 5, 8, 9, 10]","[6, 7]","[6, 7, 11, 12]",23,23.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2024,"[4, 5, 6, 8, 12]","[7, 9, 10, 11]","[1, 2, 3, 7, 9, 10, 11]",8,8.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2025,"[1, 2, 3, 4, 5, 7, 8, 9, 10]",[6],"[6, 11, 12]",22,24.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION X (NORTHERN MINDANAO),2026,"[2, 3, 7]","[4, 5, 6]","[1, 4, 5, 6, 8, 9]",7,7.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2018,"[1, 2, 3]",[],"[4, 5, 6, 7, 8, 9, 10, 11, 12]",7,11.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2019,[5],[],"[1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12]",1,1.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2020,"[1, 8, 12]","[2, 3, 4, 5, 6, 7, 9, 10, 11]","[2, 3, 4, 5, 6, 7, 9, 10, 11]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2021,"[1, 2, 3, 5, 6, 7, 10, 11]","[4, 8, 9]","[4, 8, 9, 12]",107,173.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2022,"[1, 2, 3, 4, 7, 10, 12]","[5, 6, 8, 9, 11]","[5, 6, 8, 9, 11]",126,813.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2023,"[1, 2, 3, 4, 5, 7]",[6],"[6, 8, 9, 10, 11, 12]",41,80.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2024,"[5, 6, 8, 11]","[7, 9, 10]","[1, 2, 3, 4, 7, 9, 10, 12]",15,39.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2025,"[1, 2, 3, 4, 5, 6, 10]","[7, 8, 9]","[7, 8, 9, 11, 12]",20,21.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XI (DAVAO REGION),2026,"[4, 6, 8]","[5, 7]","[1, 2, 3, 5, 7, 9]",7,9.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2018,[7],[],"[1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12]",2,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2021,"[9, 10]",[],"[1, 2, 3, 4, 5, 6, 7, 8, 11, 12]",36,77.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2022,"[2, 3, 4, 5, 10, 11]","[6, 7, 8, 9]","[1, 6, 7, 8, 9, 12]",78,206.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2023,[2],[],"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",3,3.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2024,"[3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],"[1, 2]",69,94.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XII (SOCCSKSARGEN),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],"[10, 11, 12]",145,242.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],635,1190.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],625,1336.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],317,538.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],188,400.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],82,96.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2023,"[1, 2, 3, 4, 5, 7, 8]",[6],"[6, 9, 10, 11, 12]",72,113.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2024,"[1, 2, 3, 4, 6, 7, 11]","[5, 8, 9, 10]","[5, 8, 9, 10, 12]",15,15.0,Source morbidity month; no week-to-month conversion
+FWBD Cholera,REGION XIII (CARAGA),2025,"[4, 5, 6, 7, 8]",[],"[1, 2, 3, 9, 10, 11, 12]",6,6.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1167,1626.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1509,2003.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],473,555.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],284,327.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1285,1609.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1739,2462.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1681,2360.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1539,2111.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],747,1019.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1781,2514.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2593,4799.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],893,1210.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],922,1397.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2078,3273.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2334,3999.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2316,3816.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1401,2135.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,CORDILLERA ADMINISTRATIVE REGION (CAR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],725,913.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],367,406.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],396,462.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],360,461.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],265,312.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],578,775.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],933,2055.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1118,2128.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1082,1808.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,MIMAROPA REGION,2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],535,1035.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],449,471.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],438,465.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2020,"[1, 2, 3, 4, 5, 7, 8, 9, 11, 12]","[6, 10]","[6, 10]",81,87.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],38,38.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],187,194.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],332,352.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],407,434.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],470,495.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NATIONAL CAPITAL REGION (NCR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],343,971.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1282,2234.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1326,2063.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],494,646.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],345,405.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],944,1305.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1101,1635.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1365,2276.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1258,2035.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,NEGROS ISLAND REGION (NIR),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],561,711.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],800,1014.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1254,2028.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],844,1101.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],423,532.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],799,1152.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],868,1354.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],917,1413.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],768,1036.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION I (ILOCOS REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],336,416.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],664,986.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],681,1060.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],206,275.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],138,157.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],666,847.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],730,1036.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1057,1919.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1300,2347.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION II (CAGAYAN VALLEY),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],551,723.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],584,671.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],587,698.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],291,327.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],255,286.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],398,450.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1017,1436.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1058,1396.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],987,1305.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION III (CENTRAL LUZON),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],465,568.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1536,1976.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1266,1703.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],211,229.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],195,211.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],609,772.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],972,1428.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],875,1021.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],685,935.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IV-A (CALABARZON),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],290,344.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1066,1307.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1266,1619.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],432,472.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],284,301.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],783,901.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1106,1480.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1329,1948.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1175,1606.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION IX (ZAMBOANGA PENINSULA),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],534,652.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],359,395.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],302,342.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],193,210.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],112,114.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],215,233.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],250,270.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],153,162.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],341,358.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION V (BICOL REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],275,331.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1063,1386.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1051,1381.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],250,272.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],126,134.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],290,317.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],620,768.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1186,1726.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1158,1607.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VI (WESTERN VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],524,671.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],780,927.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],718,845.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],260,298.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],182,195.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],778,1167.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1011,1453.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1376,1985.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],903,1253.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VII (CENTRAL VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],446,528.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],526,743.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],339,371.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],96,99.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],73,74.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],246,268.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],332,379.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],280,324.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],251,284.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION VIII (EASTERN VISAYAS),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],49,54.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],2020,5051.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1764,4078.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],892,1344.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],676,884.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1269,2069.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1263,2663.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1201,2772.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1466,2997.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION X (NORTHERN MINDANAO),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],943,1622.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],191,199.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],250,271.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],72,73.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],266,312.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],405,454.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],731,896.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],798,985.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],386,454.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XI (DAVAO REGION),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],505,603.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1377,2090.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1428,2062.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],429,491.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],279,306.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],513,587.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1142,1591.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],1318,1903.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],885,1089.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XII (SOCCSKSARGEN),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],407,482.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],773,948.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],469,522.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],139,146.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2021,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],72,73.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2022,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],205,215.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2023,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],317,361.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],568,681.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],614,792.0,Source morbidity month; no week-to-month conversion
+FWBD Typhoid,REGION XIII (CARAGA),2026,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],398,531.0,Source morbidity month; no week-to-month conversion
+FWBD Hep A,1,2018,"[7, 11]","[8, 9, 10]","[1, 2, 3, 4, 5, 6, 8, 9, 10, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,1,2019,"[4, 5, 6, 7, 8, 9]",[],"[1, 2, 3, 10, 11, 12]",11,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,1,2023,"[5, 12]","[6, 7, 8, 9, 10, 11]","[1, 2, 3, 4, 6, 7, 8, 9, 10, 11]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,1,2024,[2],[],"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2018,"[1, 2, 3, 7, 8, 9, 10, 11, 12]","[4, 5, 6]","[4, 5, 6]",16,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2019,"[1, 2, 3, 4, 5, 6, 8, 9, 10]",[7],"[7, 11, 12]",23,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2020,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 11]",[10],"[10, 12]",19,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2021,"[1, 2, 7, 8, 9, 12]","[3, 4, 5, 6, 10, 11]","[3, 4, 5, 6, 10, 11]",9,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2022,"[1, 3, 4, 6, 10]","[2, 5, 7, 8, 9]","[2, 5, 7, 8, 9, 11, 12]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2023,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2024,"[5, 11]","[6, 7, 8, 9, 10]","[1, 2, 3, 4, 6, 7, 8, 9, 10, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,10,2025,"[3, 5, 7, 8]","[4, 6]","[1, 2, 4, 6, 9]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2018,"[3, 10]","[4, 5, 6, 7, 8, 9]","[1, 2, 4, 5, 6, 7, 8, 9, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2019,"[5, 10]","[6, 7, 8, 9]","[1, 2, 3, 4, 6, 7, 8, 9, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2020,[4],[],"[1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2021,"[6, 9]","[7, 8]","[1, 2, 3, 4, 5, 7, 8, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2022,"[4, 5, 6, 7, 8]",[],"[1, 2, 3, 9, 10, 11, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2023,"[11, 12]",[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2024,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",4,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,11,2025,"[2, 4, 7, 8]","[3, 5, 6]","[1, 3, 5, 6, 9]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,12,2018,"[5, 6, 8, 9, 10]",[7],"[1, 2, 3, 4, 7, 11, 12]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,12,2019,"[1, 5, 6, 9]","[2, 3, 4, 7, 8]","[2, 3, 4, 7, 8, 10, 11, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,12,2020,"[7, 8, 12]","[9, 10, 11]","[1, 2, 3, 4, 5, 6, 9, 10, 11]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,12,2023,"[1, 3, 6]","[2, 4, 5]","[2, 4, 5, 7, 8, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,12,2025,"[4, 6, 9]","[5, 7, 8]","[1, 2, 3, 5, 7, 8]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,2,2018,"[3, 4, 5, 6, 7, 8]",[],"[1, 2, 9, 10, 11, 12]",9,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,2,2019,"[8, 11]","[9, 10]","[1, 2, 3, 4, 5, 6, 7, 9, 10, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,2,2022,[2],[],"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,2,2023,[9],[],"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,2,2024,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2018,"[3, 5, 6, 9, 10]","[4, 7, 8]","[1, 2, 4, 7, 8, 11, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2019,"[3, 6, 7, 10, 11, 12]","[4, 5, 8, 9]","[1, 2, 4, 5, 8, 9]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2020,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2021,"[7, 9, 12]","[8, 10, 11]","[1, 2, 3, 4, 5, 6, 8, 10, 11]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2022,"[4, 6, 9, 10, 11, 12]","[5, 7, 8]","[1, 2, 3, 5, 7, 8]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2023,"[1, 2, 4, 5, 10]","[3, 6, 7, 8, 9]","[3, 6, 7, 8, 9, 11, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2024,"[2, 3, 5, 9, 12]","[4, 6, 7, 8, 10, 11]","[1, 4, 6, 7, 8, 10, 11]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,3,2025,"[1, 5, 6, 7, 9]","[2, 3, 4, 8]","[2, 3, 4, 8]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",[11],[11],31,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2019,"[1, 2, 3, 4, 6, 8, 9, 10, 11]","[5, 7]","[5, 7, 12]",23,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2020,"[1, 2, 6]","[3, 4, 5]","[3, 4, 5, 7, 8, 9, 10, 11, 12]",4,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2021,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2022,"[4, 6, 8, 11, 12]","[5, 7, 9, 10]","[1, 2, 3, 5, 7, 9, 10]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2023,"[1, 3, 4]",[2],"[2, 5, 6, 7, 8, 9, 10, 11, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2024,"[1, 2, 3, 4, 5, 10]","[6, 7, 8, 9]","[6, 7, 8, 9, 11, 12]",13,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4A,2025,"[1, 3, 4, 6, 7, 8]","[2, 5]","[2, 5, 9]",18,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4B,2018,"[6, 7, 8]",[],"[1, 2, 3, 4, 5, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4B,2019,"[5, 9, 10]","[6, 7, 8]","[1, 2, 3, 4, 6, 7, 8, 11, 12]",4,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4B,2020,[9],[],"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4B,2021,[8],[],"[1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,4B,2023,[11],[],"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,5,2018,"[1, 3]",[2],"[2, 4, 5, 6, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,5,2019,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,5,2021,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,5,2022,[3],[],"[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,5,2024,[2],[],"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12]",[10],[10],123,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]",[],[12],20,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2020,"[2, 6]","[3, 4, 5]","[1, 3, 4, 5, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2021,"[1, 4, 7]","[2, 3, 5, 6]","[2, 3, 5, 6, 8, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2022,"[1, 3, 4, 5, 6, 7, 8, 11, 12]","[2, 9, 10]","[2, 9, 10]",28,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2023,"[1, 2, 3, 4, 5, 6, 7, 8, 12]","[9, 10, 11]","[9, 10, 11]",20,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2024,"[8, 9, 10]",[],"[1, 2, 3, 4, 5, 6, 7, 11, 12]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,6,2025,"[2, 3, 7, 8]","[4, 5, 6]","[1, 4, 5, 6, 9]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]",[11],[11],74,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],43,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2020,"[2, 3, 4, 5, 7, 8, 9, 10, 11, 12]",[6],"[1, 6]",14,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2021,"[1, 2, 3, 4, 5, 8, 10, 11]","[6, 7, 9]","[6, 7, 9, 12]",16,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2022,"[1, 3, 4, 5, 6, 8, 9, 10, 11]","[2, 7]","[2, 7, 12]",22,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2023,"[1, 2, 3, 4, 5, 6, 8, 12]","[7, 9, 10, 11]","[7, 9, 10, 11]",25,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2024,"[1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[2],[2],22,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,7,2025,"[1, 2, 3, 4, 5, 6, 7, 8, 9]",[],[],83,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2018,[8],[],"[1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2020,"[3, 9]","[4, 5, 6, 7, 8]","[1, 2, 4, 5, 6, 7, 8, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2022,"[2, 3, 9]","[4, 5, 6, 7, 8]","[1, 4, 5, 6, 7, 8, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2023,"[3, 4, 5, 6]",[],"[1, 2, 7, 8, 9, 10, 11, 12]",12,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2024,[9],[],"[1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,8,2025,"[3, 6, 7, 8, 9]","[4, 5]","[1, 2, 4, 5]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2018,"[1, 2, 3, 4, 5, 6, 7, 8, 10]",[9],"[9, 11, 12]",20,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2019,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[],[],37,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2020,"[1, 2, 4, 7, 8]","[3, 5, 6]","[3, 5, 6, 9, 10, 11, 12]",13,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2021,"[1, 3, 4, 5, 7, 10]","[2, 6, 8, 9]","[2, 6, 8, 9, 11, 12]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2022,"[1, 2, 3, 4, 6, 7, 8, 9]",[5],"[5, 10, 11, 12]",20,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2023,"[1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12]",[7],[7],45,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2024,"[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",[],"[11, 12]",104,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,9,2025,"[3, 9]","[4, 5, 6, 7, 8]","[1, 2, 4, 5, 6, 7, 8]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2018,"[2, 3, 9, 11]","[4, 5, 6, 7, 8, 10]","[1, 4, 5, 6, 7, 8, 10, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2019,"[2, 5, 6, 7, 9, 10, 11]","[3, 4, 8]","[1, 3, 4, 8, 12]",10,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2020,"[1, 2, 4, 5, 6, 7]",[3],"[3, 8, 9, 10, 11, 12]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2021,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2022,"[4, 5, 7, 10, 11, 12]","[6, 8, 9]","[1, 2, 3, 6, 8, 9]",8,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,BARMM,2023,"[1, 2, 5]","[3, 4]","[3, 4, 6, 7, 8, 9, 10, 11, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CAR,2018,"[2, 4, 6]","[3, 5]","[1, 3, 5, 7, 8, 9, 10, 11, 12]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CAR,2019,"[4, 5]",[],"[1, 2, 3, 6, 7, 8, 9, 10, 11, 12]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CAR,2020,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CAR,2023,"[2, 4]",[3],"[1, 3, 5, 6, 7, 8, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CAR,2025,"[8, 9]",[],"[1, 2, 3, 4, 5, 6, 7]",2,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2018,"[2, 4, 6, 7, 8, 9, 10, 12]","[3, 5, 11]","[1, 3, 5, 11]",17,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2019,"[4, 7, 9, 11]","[5, 6, 8, 10]","[1, 2, 3, 5, 6, 8, 10, 12]",7,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2020,"[1, 4, 5, 7, 8, 10]","[2, 3, 6, 9]","[2, 3, 6, 9, 11, 12]",9,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2021,"[2, 3, 7, 8]","[4, 5, 6]","[1, 4, 5, 6, 9, 10, 11, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2022,"[2, 5, 6, 7, 8]","[3, 4]","[1, 3, 4, 9, 10, 11, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2023,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,CARAGA,2025,[5],[],"[1, 2, 3, 4, 6, 7, 8, 9]",1,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2018,"[1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12]",[3],[3],25,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2019,"[1, 3, 4, 5, 6, 7, 8, 9, 11]","[2, 10]","[2, 10, 12]",27,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2020,"[1, 2, 11]","[3, 4, 5, 6, 7, 8, 9, 10]","[3, 4, 5, 6, 7, 8, 9, 10, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2021,"[5, 8]","[6, 7]","[1, 2, 3, 4, 6, 7, 9, 10, 11, 12]",3,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2022,"[2, 5, 6, 9, 10]","[3, 4, 7, 8]","[1, 3, 4, 7, 8, 11, 12]",6,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2023,"[1, 3, 4, 5, 6, 7, 8, 9, 11]","[2, 10]","[2, 10, 12]",15,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2024,"[1, 2, 3, 11]","[4, 5, 6, 7, 8, 9, 10]","[4, 5, 6, 7, 8, 9, 10, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NCR,2025,"[2, 3, 4, 6, 7, 8]",[5],"[1, 5, 9]",10,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NIR,2024,"[2, 3, 11]","[4, 5, 6, 7, 8, 9, 10]","[1, 4, 5, 6, 7, 8, 9, 10, 12]",5,,Source morbidity month; no week-to-month conversion
+FWBD Hep A,NIR,2025,[1],[],"[2, 3, 4, 5, 6, 7, 8, 9]",2,,Source morbidity month; no week-to-month conversion
