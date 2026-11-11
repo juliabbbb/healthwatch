@@ -1,0 +1,48 @@
+Disease,Case Definition,
+Food and Waterborne Diseases,Old (For Years 2023 and below) Source: PIDSR Manual of Procedure 2014,New (For Years 2024 onwards) Source: DM 2024-0333
+Acute Bloody Diarrhea (ABD),"Suspect
+A person with acute diarrhea with visible blood in the stool","Suspect:
+A person with acute diarrhea with visible blood in the stool
+
+Confirmed Case:
+A suspect case with stool positive for bacterial or parasitic pathogens (i.e., Shigella dysenteriae type 1, Entamoeba histolytica or Escherichia coli) through bacterial culture or any molecular diagnostic test."
+Cholera,"Suspect
+Disease unknown in the area: A person aged 5 years or more with severe dehydration or who died from acute watery diarrhea, OR
+Disease endemic in the area: A person aged 5 years or more with acute watery diarrhea with or without vomiting, OR
+In an area where there is a cholera epidemic: A person with acute watery diarrhea, with or without vomiting.
+
+Confirmed
+A suspected case that is laboratory-confirmed, through isolation of Vibrio cholerae 01 or 0139 from stools in any patient with diarrhea.","Suspect:
+In area/s where cholera outbreak has not been declared: Any patient aged 2 years and above presenting with acute watery diarrhea and severe dehydration or dying from acute watery diarrhea
+In area/s where cholera outbreak is declared: Any person presenting with or dying from acute watery diarrhea. (WHO GTFCC: Interim Guidance Document on Cholera Surveillance 2017)
+
+Probable Case:
+A suspected cholera case with positive cholera RDT result.
+
+Confirmed:
+A suspect case that is laboratory-confirmed, thru isolation of Vibrio cholerae O1 or O139 from stools in any patient with diarrhea (EB PIDSR MOP 2014)"
+"Typhoid Fever
+Source: DM 2024-0333","Suspect
+A person with an illness characterized by insidious onset of sustained fever, headache, malaise, anorexia, relative bradycardia, constipation or diarrhea, and non-productive cough for 5 days or more.
+
+Probable
+A suspected case that is positive in Typhoid Rapid Diagnostic Test; OR
+A suspected case that is epidemiologically linked to a confirmed case in an outbreak.
+
+Confirmed
+A suspected or probable case that is laboratory confirmed.
+Laboratory confirmation by culture or molecular methods of Salmonella Typhi or detection of Salmonella Typhi or Salmonella Paratyphi DNA from a normally sterile site.",
+"Acute Viral Hepatitis
+Source: DM 2024-0333","Suspect
+A person with acute illness characterized by acute jaundice, dark urine, loss of appetite, body weakness, extreme fatigue, and right upper quadrant tenderness.
+
+Confirmed
+A suspected case that is laboratory-confirmed.
+
+Laboratory Confirmation:
+Hepatitis A: Positive for IgM anti-HAV
+Hepatitis B: Positive for Hepatitis B surface antigen (HBsAg) or positive for IgM anti-HBc and antiHBe
+Non-A, non-B: Negative for IgM anti-HAV and IgM anti-HBs (or HBsAg)
+Hepatitis C: Positive for anti-HCV
+Hepatitis D: HBsAg positive or IgM anti-HBc positive PLUS anti-HDV positive (only as co-infection or super-infection of hepa B)
+Hepatitis E: IgM anti-HEV positive""",
