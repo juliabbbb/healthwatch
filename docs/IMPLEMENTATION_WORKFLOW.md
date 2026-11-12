@@ -9,11 +9,11 @@ This branch implements the reviewed local correction plan. Operational Prophet a
 | Dengue | Numeric counts; legacy ISO-Thursday/W53 convention explicitly conditional |
 | ABD, Cholera, Typhoid | Numeric reported-count series; sparse eligibility and reporting coverage retained |
 | ILI | User-authorized provisional header reversal/calendar, with corrected source-row date alignment; history, eligible operational Prophet forecasts and separate research comparison remain explicitly provisional |
-| Hep A | Provisional row-count and label interpretation; excluded from operational forecasting and primary model selection |
-| Leptospirosis | Audit only; unresolved yearly measure schemas; no inferred case totals from Deaths |
+| Hepatitis A | Provisional one-record-per-case history and eligible forecasts; excluded from primary model selection; internal Acute Viral Hepatitis ID retained |
+| Leptospirosis | User-authorized provisional one-record-per-case history/forecasts; numeric fields retained for audit; death totals unresolved; excluded from primary selection |
 | Heat | Annual reference aggregates; no manufactured monthly forecasts |
 
-Duplicate candidates are retained. Unknown codes remain Unknown, missing reports remain missing, and absent death measures are not zero. Workbook ledgers retain original sheet/row/cell types; date-typed ages are unresolved. CSV lineage uses parsed record indexes, not patient identifiers or physical text-line numbers. National totals are sums of available regional reports, not proof of complete national incidence.
+The four FWBD sources use user-relayed zero reporting only for interior gaps between existing regional reports. Added zeros retain their decision version, zero source-record count and unknown death measures; leading/trailing coverage is not extended. See source_decisions.json. Duplicate candidates are retained. Unknown codes remain Unknown, missing reports remain missing, and absent death measures are not zero. Workbook ledgers retain original sheet/row/cell types; date-typed ages are unresolved. CSV lineage uses parsed record indexes, not patient identifiers or physical text-line numbers. National totals are sums of available regional reports, not proof of complete national incidence.
 
 ## Local setup
 
@@ -59,3 +59,8 @@ Narration uses a conservative deterministic-rendering gate: numeric overlap alon
 
 Consult the current implementation handoff and per-test acceptance status. Passing backend tests, a frontend build, a verified research run and local API checks do not establish source confirmation, interval calibration, clinical reliability, deployment readiness, live semantic fidelity or participant benefit. Preserve unresolved status until actual evidence closes it.
 `outbreak_signals` serves the exact 2025 evaluation indicator artifact with pre-2025 pools; production-pool diagnostics are not substituted for those benchmark flags. Future operational seasonal alerts require a separate declared target experiment.
+
+
+## Source-rule rebuild and local activation
+
+The operational gap-rules-ddb64e035033 and research-gap-945fb497f392 runs implement source_decisions.json. Research was rerun for ABD/Cholera/Typhoid/Hep A/leptospirosis; unchanged Dengue/ILI research outputs were retained only after an exact 2019-2025 source comparison. Use src.rebuild_operational and src.rebuild_research for this path, or the full offline build for a fresh checkout. `--include-provisional` includes all three provisional research sources; `--diseases` selects independent reruns. The active local database and artifact pointers are ignored local files; no shared target was published. Research and operational source-decision hashes must match at local startup. See GAP_RULE_IMPLEMENTATION.md for executed acceptance and rollback evidence.

@@ -226,24 +226,13 @@ def build_regional(regional=None):
     that stopped reporting is never padded with fake zeros outside its real
     reporting window."""
     regional = regional if regional is not None else load_regional_raw()
+    cutoff = pd.Timestamp(year=config.DATA_END_YEAR, month=config.DATA_END_MONTH, day=1)
+    regional = regional[regional.date <= cutoff].copy()
     data = _to_monthly(regional, ["cases", "deaths"])
-    sum_cols = ["cases", "deaths"]
-    parts = []
-    for (disease, region), group in data.groupby(["disease", "region"]):
-        idx = pd.date_range(group["date"].min(), group["date"].max(), freq="MS")
-        g = (
-            group[["date"] + sum_cols]
-            .set_index("date")
-            .reindex(idx)
-            .rename_axis("date")
-            .reset_index()
-        )
-        g["disease"] = disease
-        g["region"] = region
-        parts.append(g)
-    return pd.concat(parts, ignore_index=True)[
-        ["date", "region", "disease"] + sum_cols
-    ].sort_values(["disease", "region", "date"], ignore_index=True)
+    counts = regional.groupby(['disease','region','date']).size().rename('source_record_count').reset_index()
+    data = data.merge(counts,on=['disease','region','date'],validate='one_to_one')
+    from .source_decisions import covered_zeros
+    return covered_zeros(data)
 
 
 def build_national(regional=None):

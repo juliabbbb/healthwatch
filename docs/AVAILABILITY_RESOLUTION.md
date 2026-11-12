@@ -1,3 +1,5 @@
+> Historical verification stage: source availability is superseded by GAP_RULE_IMPLEMENTATION.md. Port 8080 remains current.
+
 # Disease availability resolution — 12 November 2026
 
 Implemented directly in the original repository on UI-gerald. The active local API serves verified operational run **operational-ili-a78819fcd460** from data/local/runs/provisional-ili-v1. Local SQLite publication and restart were explicit; the previous database is backed up. No shared database publication, hosted deployment, source-owner communication or manuscript revision was performed.

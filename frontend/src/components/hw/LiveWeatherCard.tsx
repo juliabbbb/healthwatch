@@ -1,3 +1,4 @@
+import { illnessDisplayName } from "@/lib/illnessGroups";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -237,7 +238,7 @@ export function LiveWeatherCard({
               PAGASA WEATHER NOWCAST
             </span>
             <span className="text-[11px] text-muted-foreground">
-              {illness} · {data.region_short ?? data.region_name}
+              {illnessDisplayName(illness)} · {data.region_short ?? data.region_name}
             </span>
           </div>
         </div>
@@ -527,7 +528,7 @@ export function LiveWeatherCard({
                 className="label-caps text-[11px] font-bold tracking-wider"
                 style={{ color: alertColor }}
               >
-                {illness} · Meteorological Risk Tier
+                {illnessDisplayName(illness)} · Meteorological Risk Tier
               </span>
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-mono font-bold"

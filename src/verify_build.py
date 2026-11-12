@@ -27,19 +27,26 @@ def verify_operational(root, write_evidence=True):
     fcst=pd.read_csv(root/'forecasts.csv')
     if not np.isfinite(fcst[['yhat','yhat_lower','yhat_upper']]).all().all(): raise ValueError('Nonfinite forecast')
     if not (fcst.yhat_lower<=fcst.yhat_upper).all(): raise ValueError('Invalid interval')
+    from .source_decisions import require_lepto_audit
+    require_lepto_audit(root)
     observations=[]
     for name in ingest.MONTHLY_FILES:
-        if (root/name).is_file() and 'leptospirosis' not in name:
+        if (root/name).is_file():
             df=pd.read_csv(root/name)
-            if 'Leptospirosis' in set(df.disease): raise ValueError('Unresolved measure entered analytical build')
+            if 'Leptospirosis' in set(df.disease):
+                from .source_decisions import require_lepto_audit
+                audit=require_lepto_audit(root)
+                if not np.isclose(df.cases.sum(),audit['retained_rows']):raise ValueError('Leptospirosis row-count reconciliation failed')
+                if df.deaths.notna().any():raise ValueError('Unresolved leptospirosis deaths entered build')
             observations.append(df)
-    for regional,national,keys in [('regional_dengue_monthly.csv','national_monthly.csv',['date']),('regional_fwbd_monthly.csv','national_fwbd_monthly.csv',['disease','date'])]:
+    for regional,national,keys in [('regional_dengue_monthly.csv','national_monthly.csv',['date']),('regional_fwbd_monthly.csv','national_fwbd_monthly.csv',['disease','date']),('regional_ili_monthly.csv','national_ili_monthly.csv',['disease','date']),('regional_leptospirosis_monthly.csv','national_leptospirosis_monthly.csv',['disease','date'])]:
         r=pd.read_csv(root/regional);n=pd.read_csv(root/national)
         sums=r.groupby(keys).cases.sum(min_count=1).rename('regional_sum').reset_index()
         merged=n.merge(sums,on=keys,how='outer',validate='one_to_one')
         if not np.allclose(merged.cases,merged.regional_sum,equal_nan=True): raise ValueError('National/regional mismatch')
     ledger=pd.concat(observations,ignore_index=True)
-    ledger['observation_status']=np.where(ledger.cases.isna(),'missing_report',np.where(ledger.cases.eq(0),'observed_zero','observed_positive'))
+    fallback=pd.Series(np.where(ledger.cases.isna(),'missing_report',np.where(ledger.cases.eq(0),'observed_zero','observed_positive')),index=ledger.index)
+    ledger['observation_status']=ledger.get('observation_status',fallback).fillna(fallback)
     if write_evidence:
         ledger.to_csv(root/'observation_ledger.csv',index=False)
         write_registry(ingest.RAW_DIR,root)
@@ -49,7 +56,8 @@ def verify_operational(root, write_evidence=True):
         for item in registry['sources']:
             if file_record(ingest.RAW_DIR/item['file'])['sha256'] != item['sha256']:
                 raise ValueError('Raw input changed after build: '+item['file'])
-    return dict(target_dates=True,probe_dates=True,finite_forecasts=True,national_arithmetic=True,source_status='conditional',production_model='Prophet',interval_level=.8,interval_calibration='not_established')
+    from .source_decisions import decisions,digest
+    return dict(target_dates=True,probe_dates=True,finite_forecasts=True,national_arithmetic=True,source_status='conditional',production_model='Prophet',interval_level=.8,interval_calibration='not_established',case_record_rules_version=decisions()['version'],source_decisions_sha256=digest())
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--run',required=True);p.add_argument('--run-id',required=True);a=p.parse_args()

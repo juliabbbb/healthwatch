@@ -128,11 +128,11 @@ from .source_registry import policy as source_policy
 for _disease, _metadata in DISEASE_METADATA.items():
     _metadata["source_policy"] = source_policy(_disease)
     if _disease == "Leptospirosis":
-        _metadata.update(status="excluded_unresolved_measure", analytical_available=False,
-                         unavailable_reason="Case measure unresolved; historical case totals are excluded pending source confirmation.")
+        _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
+                         unavailable_reason=None, source_warning="Provisional one-case-per-source-record rule authorized by the user; row grain and fatality columns are not source-confirmed.")
     elif _disease == "Acute Viral Hepatitis":
-        _metadata.update(status="provisional", forecast_available=False,
-                         unavailable_reason="Hep A row-count interpretation and application disease label are provisional.")
+        _metadata.update(name="Hepatitis A", status="provisional", forecast_available=True,
+                         unavailable_reason=None, source_warning="Provisional Hepatitis A source-record counts; wider reporting coverage is unresolved.", driver="Source-specific Hepatitis A surveillance")
     elif _disease == "Influenza-like Illness":
         _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
                          unavailable_reason=None,

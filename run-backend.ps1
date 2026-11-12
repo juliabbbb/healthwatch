@@ -2,6 +2,7 @@ param(
     [ValidateSet('Local', 'Configured')][string]$Mode = 'Local',
     [string]$DatabasePath,
     [string]$OutputDirectory,
+    [string]$ResearchDirectory,
     [int]$Port = 8000,
     [switch]$Background
 )
@@ -49,8 +50,18 @@ try {
             throw 'Verified local database missing. See docs/LOCAL_BACKEND.md to build a local snapshot; no remote fallback is attempted.'
         }
         $env:DATABASE_URL = 'sqlite:///' + $DatabasePath.Replace('\', '/')
-        $research = Join-Path $root 'data\local\research_run'
-        if (Test-Path -LiteralPath (Join-Path $research 'manifest.json')) { $env:HEALTHWATCH_RESEARCH_RUN = $research }
+        $research = if ($ResearchDirectory) { [System.IO.Path]::GetFullPath($ResearchDirectory) } else { Join-Path $root 'data\local\research_run' }
+        $researchPointer = Join-Path $root 'data\local\active_research.json'
+        if (-not $ResearchDirectory -and (Test-Path -LiteralPath $researchPointer)) {
+            $research = (Get-Content -LiteralPath $researchPointer -Raw | ConvertFrom-Json).directory
+        }
+        if (Test-Path -LiteralPath (Join-Path $research 'manifest.json')) {
+            Push-Location -LiteralPath $root
+            try { & $py -c "import sys; from src.artifacts import verify; r=verify(sys.argv[1]); o=verify(sys.argv[2]) if sys.argv[2] else {}; h=o.get('metadata',{}).get('source_decisions_sha256'); assert not h or r.get('metadata',{}).get('source_decisions_sha256')==h, 'Research and operational source decisions differ'" $research "$OutputDirectory" }
+            finally { Pop-Location }
+            if ($LASTEXITCODE -ne 0) { throw 'Research verification or source-version matching failed.' }
+            $env:HEALTHWATCH_RESEARCH_RUN = $research
+        }
         Write-Host 'Backend mode: explicit local verified snapshot (SQLite). Shared PostgreSQL is not used.'
     } else {
         Write-Host 'Backend mode: configured DATABASE_URL. Connection errors will stop startup; no fallback is used.'

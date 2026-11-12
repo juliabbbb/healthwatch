@@ -29,6 +29,7 @@ export function NationalSnapshot({
   onIllnessChange,
   counts,
   reportingRegions,
+  valueKind,
   dominantIllness,
   dominantValue,
   dominantCases,
@@ -46,6 +47,7 @@ export function NationalSnapshot({
   onIllnessChange?: (i: string) => void;
   counts: Record<RiskLevel, number>;
   reportingRegions?: number;
+  valueKind?: string;
   dominantIllness: string;
   dominantValue: string;
   dominantCases: string;
@@ -101,7 +103,7 @@ export function NationalSnapshot({
                 : "var(--secondary)",
             }}
           >
-            {isForecast ? "Predicted" : "Reported"}
+            {valueKind === "mixed" ? "Mixed" : valueKind === "unavailable" ? "Unavailable" : isForecast ? "Predicted" : "Reported"}
           </span>
           <span className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider flex items-center gap-1 border border-border/60 bg-secondary/60 text-foreground">
             {audienceMode === "clinical" ? (
@@ -125,7 +127,7 @@ export function NationalSnapshot({
         {/* Card A: National reported aggregate */}
         <div className="col-span-2 sm:col-span-1 rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <p className="label-caps text-xs leading-tight">
-            National {isForecast ? "forecast" : "reported"} aggregate
+            National {valueKind === "mixed" ? "mixed" : isForecast ? "forecast" : "reported"} aggregate
           </p>
           <p className="text-xs text-muted-foreground">Sum of available regional reports; coverage may be incomplete. Reports across diseases are not unique persons.</p>
           {reportingRegions != null && <p className="mt-1 text-xs text-muted-foreground">{reportingRegions}/18 regions with values for this month.</p>}

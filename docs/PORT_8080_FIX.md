@@ -1,3 +1,5 @@
+> Historical verification stage: source availability is superseded by GAP_RULE_IMPLEMENTATION.md. Port 8080 remains current.
+
 # Local port 8080 data-display fix
 
 The local frontend is **http://localhost:8080**; the verified local backend remains on 8000. The running snapshot is operational-ili-a78819fcd460. The earlier launcher's separate 5173 port was incorrect for this project and has been removed. The duplicate 5173 development server was stopped; the existing HealthWatch 8080 server was restarted using the corrected launcher.

@@ -1,3 +1,4 @@
+import { buildExportData } from "@/lib/healthwatch/exportData";
 import { encodeCsv } from "@/lib/csvExport";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
@@ -10,6 +11,7 @@ import {
   TOTAL_MONTHS,
   assessRegion,
   availabilityForRegion,
+  provenanceForDisease,
   getOutbreak,
   classify,
   formatPHTDateTime,
@@ -224,7 +226,7 @@ export function ExportCustomizationModal({
       baseline: baselineLabel,
       generatedAt,
       pathology: reportPathology,
-      provenance: `Source status: ${illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" ? "provisional; source interpretation unconfirmed" : "conditional source interpretation"}. Operational Prophet; uncalibrated 80% model interval.`,
+      provenance: `Source status: ${illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" || illness === "Leptospirosis" ? "provisional; source interpretation unconfirmed" : "conditional source interpretation"}. Operational Prophet; uncalibrated 80% model interval. Run: ${provenanceForDisease(illness)?.run_id ?? "unavailable"}. FWBD zeros apply only inside existing regional report bounds.`,
       sections,
       regions,
     };
@@ -254,156 +256,10 @@ export function ExportCustomizationModal({
   }, [illness, regionCodes, exportMonthIndex, mode, unit, sections, baselineLabel]);
 
   const buildCSV = useCallback(() => {
-    if (regionCodes.length === 0) return;
-
-    if (csvDataset === "comparison") {
-      const header = [
-        "disease",
-        "source_status",
-        "validation_status",
-        "model",
-        "region_code",
-        "region",
-        "short",
-        "unit",
-        "risk_tier",
-        "reported_latest",
-        "predicted_baseline",
-        "lower",
-        "upper",
-        "percentile_rank",
-        "change_3m_pct",
-        "dominant_illness",
-        "baseline_is_forecast",
-      ];
-      const body = regionCodes.map((code) => {
-        const a = assessRegion(code, illness, exportMonthIndex, mode);
-        const region = REGION_BY_CODE[code]!;
-        const lastObserved = [...seriesFor(code, illness)].reverse().find((p) => !p.forecast);
-        const reported = lastObserved ? lastObserved.cases : a.point.cases;
-        return [
-          illness,
-          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
-          "legacy_operational_snapshot_not_research_certified",
-          "Prophet",
-          region.code,
-          region.name,
-          region.short,
-          unit,
-          a.risk,
-          csvMetric(reported, region, mode),
-          csvMetric(a.point.cases, region, mode),
-          csvMetric(a.point.lower, region, mode),
-          csvMetric(a.point.upper, region, mode),
-          a.percentileRank,
-          a.changePct,
-          a.dominantIllness.shortName,
-          monthMeta(exportMonthIndex).forecast ? 1 : 0,
-        ];
-      });
-      downloadCsv(header, body, `Comparative_Snapshot_${baselineLabel}.csv`);
-      return;
-    }
-
-    if (csvDataset === "forecast") {
-      const header = [
-        "disease",
-        "source_status",
-        "validation_status",
-        "model",
-        "region_code",
-        "region",
-        "short",
-        "unit",
-        "year",
-        "month",
-        "label",
-        "season",
-        "predicted_cases",
-        "lower",
-        "upper",
-        "risk_tier",
-      ];
-      const body: (string | number)[][] = [];
-      for (const code of regionCodes) {
-        const a = assessRegion(code, illness, exportMonthIndex, mode);
-        const region = REGION_BY_CODE[code]!;
-        for (const p of a.forecastWindow) {
-          body.push([
-            illness,
-          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
-          "legacy_operational_snapshot_not_research_certified",
-          "Prophet",
-          region.code,
-            region.name,
-            region.short,
-            unit,
-            p.year,
-            p.month,
-            p.label,
-            p.season,
-            csvMetric(p.cases, region, mode),
-            csvMetric(p.lower, region, mode),
-            csvMetric(p.upper, region, mode),
-            pointRisk(code, illness, p, mode),
-          ]);
-        }
-      }
-      const fw = regionCodes.length
-        ? assessRegion(regionCodes[0]!, illness, exportMonthIndex, mode).forecastWindow
-        : [];
-      const start = fw[0]?.label ?? baselineLabel;
-      const end = fw.at(-1)?.label ?? baselineLabel;
-      downloadCsv(header, body, `Forecast_Window_${start}_${end}.csv`);
-      return;
-    }
-
-    const header = [
-      "region_code",
-      "region",
-      "short",
-      "unit",
-      "year",
-      "month",
-      "label",
-      "season",
-      "is_forecast",
-      "cases",
-      "lower",
-      "upper",
-      "risk_tier",
-    ];
-    const body: (string | number)[][] = [];
-    for (const code of regionCodes) {
-      const region = REGION_BY_CODE[code]!;
-      for (const p of seriesFor(code, illness)) {
-        body.push([
-          illness,
-          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
-          "legacy_operational_snapshot_not_research_certified",
-          "Prophet",
-          region.code,
-          region.name,
-          region.short,
-          unit,
-          p.year,
-          p.month,
-          p.label,
-          p.season,
-          p.forecast ? 1 : 0,
-          csvMetric(p.cases, region, mode),
-          csvMetric(p.lower, region, mode),
-          csvMetric(p.upper, region, mode),
-          pointRisk(code, illness, p, mode),
-        ]);
-      }
-    }
-    downloadCsv(
-      header,
-      body,
-      `TimeSeries_${monthMeta(0).label}_${monthMeta(TOTAL_MONTHS - 1).label}.csv`,
-    );
-  }, [csvDataset, illness, regionCodes, exportMonthIndex, mode, unit, baselineLabel]);
+    if (!regionCodes.length) return;
+    const result = buildExportData(csvDataset,regionCodes,illness,exportMonthIndex,mode);
+    downloadCsv(result.header,result.rows,result.filename);
+  }, [csvDataset,regionCodes,illness,exportMonthIndex,mode]);
 
   if (!open) return null;
 

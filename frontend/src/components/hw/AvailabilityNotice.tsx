@@ -20,6 +20,7 @@ export function AvailabilityNotice({ regionCode, disease, monthIndex, onSelectMo
     <p className="text-sm font-medium">{title}</p>
     <p className="mt-1 text-xs leading-relaxed text-muted-foreground" role="status">{reason}</p>
     {last && <p className="mt-1 text-xs text-muted-foreground">Last reported month: {last.slice(0, 7)}.{facts ? ` Observed months: ${facts.observed_months}.` : ""}</p>}
+    {(facts?.zero_rule_months ?? 0) > 0 && <p className="mt-1 text-xs text-muted-foreground">Includes {facts?.zero_rule_months} internal zero-report months under the user-relayed DOH rule. Wider coverage remains unresolved.</p>}
     {onSelectMonth && lastIndex >= 0 && !selectedAvailable && <button type="button" onClick={() => onSelectMonth(lastIndex)} className="mt-2 rounded border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring">View latest reported month</button>}
   </section>;
 }

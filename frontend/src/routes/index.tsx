@@ -126,7 +126,7 @@ function MapView() {
         <NationalSnapshot
           id="hw-legend-card"
           monthLabel={meta.label}
-          isForecast={meta.forecast}
+          isForecast={national.valueKind === "forecast"} valueKind={national.valueKind}
           value={mode === "raw" ? totalCases : nationalPer100k}
           mode={mode}
           onModeChange={setMode}
@@ -255,7 +255,7 @@ function MapView() {
             <div className="space-y-4 pb-6">
               <NationalSnapshot
                 monthLabel={meta.label}
-                isForecast={meta.forecast}
+                isForecast={national.valueKind === "forecast"} valueKind={national.valueKind}
                 value={mode === "raw" ? totalCases : nationalPer100k}
                 mode={mode}
                 onModeChange={setMode}

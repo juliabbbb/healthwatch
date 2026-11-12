@@ -81,14 +81,16 @@ def load_monthly_series():
     frames = []
     for name in MONTHLY_FILES:
         path = PROCESSED_DIR / name
-        if path.exists() and "leptospirosis" not in name:
+        if path.exists():
+            if "leptospirosis" in name:
+                from .source_decisions import require_lepto_audit
+                require_lepto_audit(PROCESSED_DIR)
             frames.append(pd.read_csv(path, parse_dates=["date"]))
     if not frames:
         raise FileNotFoundError(
             f"No monthly series CSVs in {PROCESSED_DIR}; run the ingest first."
         )
     combined = pd.concat(frames, ignore_index=True)
-    combined = combined[combined.disease != "Leptospirosis"]
     return config.assert_data_window(
         config.at_or_after_data_start(combined),
         date_col="date",

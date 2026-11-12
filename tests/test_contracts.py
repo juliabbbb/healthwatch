@@ -68,9 +68,12 @@ class SourceAndEvaluationContracts(unittest.TestCase):
         self.assertTrue(pd.isna(out.cases.iloc[1]))
         self.assertEqual(ingest.to_monthly(raw,fill_missing='zero').cases.tolist(),[0,0,2])
 
-    def test_lepto_cannot_generate_unsupported_totals(self):
-        with self.assertRaisesRegex(ValueError,'unresolved'):process_leptospirosis()
-        self.assertEqual(policy('Leptospirosis')['status'],'excluded_unresolved_measure')
+    def test_legacy_lepto_requires_new_record_count_audit(self):
+        from src.source_decisions import require_lepto_audit
+        with TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError,'Legacy'):require_lepto_audit(tmp)
+        self.assertEqual(policy('Leptospirosis')['status'],'provisional')
+        self.assertEqual(policy('Leptospirosis')['fatality_measure'],'unresolved')
         self.assertEqual(policy('Influenza-like Illness')['status'],'provisional')
 
     def test_threshold_boundaries_and_missing(self):

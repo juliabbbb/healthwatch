@@ -60,3 +60,10 @@ The canonical local frontend is http://localhost:8080 (backend 8000); the earlie
 ## New source decisions — awaiting analytical rebuild
 
 See GAP_RESOLUTION_PLAN.md for the user's agreed provisional one-case-per-row rules for leptospirosis/Hep A and the user-relayed DOH zero-reporting convention limited to documented FWBD reporting periods. The attached DOH PDF confirms classification categories but not row grain. Read-only leptospirosis diagnostics yield 29,476 in-window records and 58–92 record-containing months per region using the current conditional weekly calendar. These decisions have not yet changed the active verified snapshot or its model results; implement the bounded coverage register and versioned reruns before changing availability flags.
+
+
+## Implemented source rules and revised research — 12 November 2026
+
+The plan in GAP_RESOLUTION_PLAN.md is now implemented with the user's final **interior-only** bounding rule. Current local operational run: gap-rules-ddb64e035033. Current research run: research-gap-945fb497f392. See GAP_RULE_IMPLEMENTATION.md and source_decisions.json for executed counts, compatibility changes, validation and remaining work. These supersede earlier statements that leptospirosis cases/Hep A forecasts are excluded or that source decisions are merely pending implementation. Both remain provisional; wider reporting coverage and leptospirosis deaths remain unresolved. Shared publication and hosted deployment were not performed. The user's src/features.py edit remains outside this change.
+
+The revised Chapters 4-5 PDF, Markdown and analytical tables are in the workspace's Gap_Rules_2026_11_12 folder; SHA-256 and run identities are in gap_paper_evidence.json. Prior paper and run artifacts are preserved. Do not combine the earlier scores with changed target data. The live Google document was not edited.

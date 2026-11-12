@@ -1,6 +1,6 @@
 # Data gap resolution plan — agreed rules, 12 November 2026
 
-Status: planning and source inspection complete; the new counting/zero rules have **not** been applied to the running database, forecasts, four-model experiment or manuscript. This plan supersedes the earlier unresolved decision questions but does not silently relabel old outputs as new results.
+Status: implemented and locally activated. See GAP_RULE_IMPLEMENTATION.md for verified runs, the interior-only boundary chosen by the user, tests, revised paper and remaining limits. The sequence below records the reviewed plan; the wider coverage is still unresolved. This plan supersedes the earlier unresolved decision questions but does not silently relabel old outputs as new results.
 
 ## Evidence and decisions
 

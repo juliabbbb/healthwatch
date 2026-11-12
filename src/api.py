@@ -102,7 +102,15 @@ def _load_repo_tables():
     DATABASE_URL and on the schema being built (auto-created via
     `db.ensure_tables()` at startup)."""
     obs = db.read_table("monthly_observations")
-    obs = obs[(obs["year"] >= config.DATA_START_YEAR) & (obs["disease"] != "Leptospirosis")]
+    obs = obs[obs["year"] >= config.DATA_START_YEAR]
+    runs = db.read_table("pipeline_runs")
+    approved_records = False
+    if not runs.empty:
+        try:
+            approved_records = bool(json.loads(runs.sort_values("id").iloc[-1]["notes"]).get("metadata",{}).get("case_record_rules_version"))
+        except (ValueError, TypeError): pass
+    if not approved_records:
+        obs = obs[obs.disease != "Leptospirosis"]  # Never serve pre-decision legacy aggregates.
     obs = config.at_or_before_data_end(obs)
     obs = _dedupe_latest(obs, ["region_code", "year", "month", "disease"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
@@ -136,6 +144,10 @@ def _load_repo_tables():
         esc.assign(region=esc["region_code"].map(_label)) if not esc.empty else None
     )
 
+    if not approved_records:
+        for frame in [_FORECASTS,_CLASSIFICATION,_THRESHOLDS,_METRICS,_OUTBREAKS,_OUTBREAK_VALIDATION]:
+            if 'disease' in frame:
+                frame.drop(frame.index[frame.disease.isin(['Leptospirosis','Acute Viral Hepatitis'])],inplace=True)
     return (
         _NATIONAL,
         _REGIONAL,
@@ -204,7 +216,7 @@ def _season(dt):
     return "wet" if dt.month in WET_MONTHS else "dry"
 
 
-def _month_point(i, dt, cases, forecast, lower=None, upper=None):
+def _month_point(i, dt, cases, forecast, lower=None, upper=None, observation_status=None, source_record_count=None, coverage_basis=None):
     def finite(value):
         return float(value) if value is not None and pd.notna(value) and np.isfinite(float(value)) else None
     c = finite(cases)
@@ -213,7 +225,9 @@ def _month_point(i, dt, cases, forecast, lower=None, upper=None):
             "season": _season(dt), "forecast": forecast, "cases": c,
             "lower": finite(lower) if forecast else c, "upper": finite(upper) if forecast else c,
             "raw": c, "adjusted": False,
-            "observation_status": "forecast" if forecast else "missing_report" if c is None else "observed_zero" if c == 0 else "observed_positive",
+            "observation_status": "forecast" if forecast else observation_status if isinstance(observation_status,str) else "missing_report" if c is None else "observed_zero" if c == 0 else "observed_positive",
+            "source_record_count": finite(source_record_count),
+            "coverage_basis": coverage_basis if isinstance(coverage_basis,str) else None,
             "interval_level": 0.8 if forecast and lower is not None else None}
 
 
@@ -982,8 +996,8 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
             (_REGIONAL["region_code"] == code) & (_REGIONAL["disease"] == disease)
         ].sort_values("date")
         points = [
-            _month_point(i, dt, cases, False)
-            for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
+            _month_point(i, row.date, row.cases, False, observation_status=getattr(row,'observation_status',None), source_record_count=getattr(row,'source_record_count',None),coverage_basis=getattr(row,'coverage_basis',None))
+            for i, row in enumerate(hist.itertuples(index=False))
         ]
         if forecast_available:
             fcst = _FORECASTS[
@@ -1094,8 +1108,8 @@ def series(
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
     hist = _history(db_region, disease)
     points = [
-        _month_point(i, dt, cases, False)
-        for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
+        _month_point(i, row.date, row.cases, False, observation_status=getattr(row,'observation_status',None), source_record_count=getattr(row,'source_record_count',None),coverage_basis=getattr(row,'coverage_basis',None))
+        for i, row in enumerate(hist.itertuples(index=False))
     ]
     if include_forecast and config.DISEASE_METADATA[disease].get("forecast_available", False):
         fcst = _FORECASTS[
@@ -1186,6 +1200,13 @@ def reported_breakdown(
         None if code == db.NATIONAL_CODE else code, year, month, disease=disease
     )
     if bd["records"] == 0:
+        hist = _history(code,disease)
+        matching = hist[(hist.date.dt.year==year)&(hist.date.dt.month==month)]
+        if not matching.empty and matching.cases.notna().all() and matching.cases.eq(0).all():
+            return dict(disease=disease,region=_label(code),region_code=code,year=year,month=month,
+                label=f"{year}-{month:02d}",total_cases=0,total_deaths=None,records=0,breakdowns={},
+                observation_status='zero_by_user_relayed_DOH_rule',
+                availability_note='Zero cases under the interior-gap reporting rule; no demographic records or death measure are supplied.')
         raise HTTPException(
             status_code=404,
             detail=f"No reported case records for {year}-{month:02d} in {region}.",

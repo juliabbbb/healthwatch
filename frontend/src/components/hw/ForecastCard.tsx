@@ -192,6 +192,7 @@ export function ForecastCard({
                 ? `${a.region.classification} · ${a.region.density.toLocaleString()} persons/km²`
                 : "Philippine Administrative Region · Community Health Outlook"}
             </p>
+            {availability?.source_status === "provisional" && <p className="mt-1 text-xs text-muted-foreground">Provisional source interpretation</p>}
             <div className="flex items-center gap-1.5 mt-1.5">
               <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border border-border/70 bg-secondary/50">
                 {audienceMode === "clinical" ? (
@@ -242,7 +243,7 @@ export function ForecastCard({
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
             <p className="label-caps text-xs">
-              {meta.forecast ? "Predicted" : "Reported"} · {unit}
+              {a.point.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
             <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
               {formatMetric(a.value, mode)}
@@ -352,14 +353,14 @@ export function ForecastCard({
               <span className="text-xs font-medium text-muted-foreground truncate block">
                 {!Number.isFinite(a.value)
                   ? "No observation or forecast for selected month"
-                  : meta.forecast
+                  : a.point.forecast
                   ? isForecastUnavailable
                     ? "Forecast unavailable for this series"
                     : `Prophet Forecast · 80% model interval ${formatMetric(
                       metricValue(a.point.lower, a.region, mode),
                       mode,
                     )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
-                  : "DOH Epidemiology Bureau PIDSR Surveillance"}
+                  : a.point.observation_status === "zero_by_user_relayed_DOH_rule" ? "Zero cases under the user-relayed DOH rule" : "DOH source records"}
               </span>
             </div>
           </div>
@@ -404,7 +405,7 @@ export function ForecastCard({
 
       {illness === "all" && <p className="px-5 py-2 text-xs text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "Unavailable"}. Aggregate prediction intervals are unavailable.</p>}
       {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "Combined counts are descriptive. Select a disease for its regional risk tiers; no combined disease threshold is defined." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
-      {(illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
+      {(illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" || illness === "Leptospirosis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
       {audienceMode === "clinical" && <ResearchComparison disease={illness} region={a.region.name} regionCode={regionCode} />}
       {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}
       {audienceMode === "clinical" && !isForecastUnavailable && (
@@ -441,14 +442,7 @@ export function ForecastCard({
         <LiveWeatherCard
           regionCode={regionCode}
           illness={illness}
-          nextForecast={nextPt ? {
-            value: metricValue(nextPt.cases, a.region, mode),
-            lower: metricValue(nextPt.lower, a.region, mode),
-            upper: metricValue(nextPt.upper, a.region, mode),
-            label: nextPt.label,
-            unit,
-            mode,
-          } : undefined}
+
         />
       </section>
 
@@ -496,15 +490,15 @@ export function ForecastCard({
                 MODEL VALIDATION (PROPHET)
               </span>
               <StatusChip className="text-xs py-0.5 px-2.5 text-muted-foreground">
-                {validation.label} · MAPE {validation.mape}%
+                {validation.label} · MAPE {Number.isFinite(validation.mape) ? `${validation.mape.toFixed(2)}%` : "Unavailable"}
               </StatusChip>
             </div>
             <div className="mt-2 space-y-1.5 pt-0.5">
               <div className="grid grid-cols-3 gap-2 text-center">
                 {[
-                  { k: "MAE", v: validation.mae.toLocaleString() },
-                  { k: "RMSE", v: validation.rmse.toLocaleString() },
-                  { k: "MAPE", v: `${validation.mape}%` },
+                  { k: "MAE", v: Number.isFinite(validation.mae) ? validation.mae.toLocaleString(undefined,{maximumFractionDigits:2}) : "Unavailable" },
+                  { k: "RMSE", v: Number.isFinite(validation.rmse) ? validation.rmse.toLocaleString(undefined,{maximumFractionDigits:2}) : "Unavailable" },
+                  { k: "MAPE", v: Number.isFinite(validation.mape) ? `${validation.mape.toFixed(2)}%` : "Unavailable" },
                 ].map((m) => (
                   <div
                     key={m.k}
@@ -517,7 +511,7 @@ export function ForecastCard({
                   </div>
                 ))}
               </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">{validation.note}</p>
+              <p className="text-xs leading-relaxed text-muted-foreground">{validation.note} Scored evaluation months: {validation.folds}; a short window does not establish reliable performance.</p>
             </div>
           </section>
           )}

@@ -15,7 +15,7 @@ export function ResearchComparison({ disease, region, regionCode }: { disease: s
     const controller = new AbortController();
     setResult(null);
     setMessage("Loading research comparison…");
-    const canonical = disease === "Influenza-like Illness" ? "ILI" : disease;
+    const canonical = disease === "Influenza-like Illness" ? "ILI" : disease === "Acute Viral Hepatitis" ? "Hep A" : disease;
     const params = new URLSearchParams({ disease: canonical, region, fold });
     if (regionCode) params.set("region_code", regionCode);
     const base = import.meta.env["VITE_API_URL"] ?? "http://localhost:8000";

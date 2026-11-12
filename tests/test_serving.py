@@ -62,11 +62,11 @@ class ServingAndNarrationTests(unittest.TestCase):
                         self.assertEqual(len(res.json()['windows']),2)
                     self.assertEqual(client.get('/metrics/National',params={'window':'absent'}).status_code,404)
                     result=client.get('/dashboard',params={'disease':'Leptospirosis'})
-                    self.assertEqual(result.json()['series'],{})
-                    self.assertEqual(result.json()['source_policy']['status'],'excluded_unresolved_measure')
+                    self.assertTrue(all(not points for points in result.json()['series'].values()))
+                    self.assertEqual(result.json()['source_policy']['status'],'provisional')
                     availability=client.get('/availability',params={'disease':'Leptospirosis'}).json()['regions']
                     self.assertEqual(len(availability),18)
-                    self.assertTrue(all(row['reason_code']=='unresolved_measure' for row in availability.values()))
+                    self.assertTrue(all(row['reason_code']=='insufficient_observed_history' for row in availability.values()))
                     for disease in ['Influenza-like Illness','Leptospirosis','Heat-Related Illness']:
                         response=client.get('/reported/National',params={'disease':disease,'year':2025,'month':1})
                         self.assertEqual(response.status_code,422)

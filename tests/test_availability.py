@@ -26,7 +26,7 @@ class AvailabilityTests(unittest.TestCase):
 
     def test_disabled_source_cannot_expose_stale_forecast_dates(self):
         forecast=pd.DataFrame({'target_date':['2026-01-01'],'yhat':[1]})
-        for disease,reason in [('Acute Viral Hepatitis','source_confirmation_pending'),('Leptospirosis','unresolved_measure'),('Heat-Related Illness','annual_reference_only')]:
+        for disease,reason in [('Heat-Related Illness','annual_reference_only')]:
             result=describe(pd.DataFrame(),forecast,config.DISEASE_METADATA[disease])
             self.assertEqual(result['reason_code'],reason)
             self.assertFalse(result['forecast_available'])

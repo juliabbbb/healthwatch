@@ -53,5 +53,5 @@ def comparison(disease: str, region: str, fold: str = Query('TEST2025'), region_
     seasonal=pd.read_csv(root/'results/season_predictions.csv')
     seasonal=seasonal[(seasonal.disease==disease)&(seasonal.region==region)&(seasonal.fold==fold)]
     return dict(run_id=manifest['run_id'],experiment_id=manifest['experiment_id'], disease=disease,region=region,fold=fold,
-                retrospective=True,point_only=True,provisional=disease=='ILI',
+                retrospective=True,point_only=True,provisional=disease in {'ILI','Hep A','Leptospirosis'},
                 metrics=records(selected),predictions=records(predictions),seasonal=records(seasonal))

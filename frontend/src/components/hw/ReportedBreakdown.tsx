@@ -29,7 +29,7 @@ const ACCESSIBLE_DISEASE = (disease: string) =>
 interface BreakdownRow {
   value: string;
   cases: number;
-  deaths: number;
+  deaths: number | null;
   share: number;
 }
 
@@ -41,7 +41,8 @@ interface ReportedBreakdownData {
   month: number;
   label: string;
   total_cases: number;
-  total_deaths: number;
+  total_deaths: number | null;
+  availability_note?: string;
   records: number;
   breakdowns: Record<string, BreakdownRow[]>;
 }
@@ -148,7 +149,7 @@ function DimensionRows({ rows }: { rows: BreakdownRow[] }) {
           <div className="flex items-baseline justify-between gap-3">
             <span className="text-xs text-foreground/90 truncate">
               {r.value}
-              {r.deaths > 0 && (
+              {(r.deaths ?? 0) > 0 && (
                 <span className="text-[10px] text-muted-foreground ml-1.5">
                   · {r.deaths} deaths
                 </span>
@@ -231,8 +232,9 @@ export function ReportedBreakdown({
         <p className="text-xs font-semibold text-foreground">Reported Data Breakdown</p>
         {data && (
           <p className="text-[10px] font-medium text-muted-foreground mt-0.5">
+            {data.availability_note && <span className="block">{data.availability_note}</span>}
             {data.region} · {data.label} · {data.total_cases.toLocaleString()} cases ·{" "}
-            {data.total_deaths.toLocaleString()} deaths
+            {data.total_deaths == null ? "Deaths unavailable" : `${data.total_deaths.toLocaleString()} deaths`}
           </p>
         )}
         {/* Per-disease provenance stays visible in every state — loading, error and

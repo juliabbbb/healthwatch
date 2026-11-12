@@ -1,7 +1,7 @@
 import { createServer } from 'vite';
 import { resolve } from 'node:path';
 import assert from 'node:assert/strict';
-const point=(cases)=>({index:0,year:2019,month:1,label:'2019-01',date:'2019-01-01',season:'dry',forecast:false,cases,lower:cases,upper:cases,raw:cases,adjusted:false});
+const point=(cases)=>({observation_status:cases===0?'zero_by_user_relayed_DOH_rule':'observed_positive',coverage_basis:'fixture',source_record_count:cases===0?0:1,index:0,year:2019,month:1,label:'2019-01',date:'2019-01-01',season:'dry',forecast:false,cases,lower:cases,upper:cases,raw:cases,adjusted:false});
 globalThis.fetch=async (url)=>{
   const path=new URL(url,'http://localhost:8000');
   let payload={};
@@ -9,7 +9,7 @@ globalThis.fetch=async (url)=>{
   else if(path.pathname==='/dashboard')payload=path.searchParams.get('disease')==='Influenza-like Illness'?
     {forecast_available:true,series:{NCR:[point(1000)]},availability:{'130000000':{source_status:'provisional',observed_months:90,history_available:true,forecast_available:true,last_observed:'2026-08-01'}},metrics:{},outbreak:[]}:
     path.searchParams.get('disease')==='Dengue'?
-    {forecast_available:true,series:{NCR:[point(3)],CAR:[point(100)]},thresholds:[{region:'National Capital Region',month:1,p50:2.9,p75:2.99},{region:'Cordillera Administrative Region',month:1,p50:200,p75:400}],metrics:{},outbreak:[]}:
+    {forecast_available:true,provenance:{run_id:'test-run',validation_status:'verified_local_operational'},series:{NCR:[point(3)],CAR:[point(100)]},thresholds:[{region:'National Capital Region',month:1,p50:2.9,p75:2.99},{region:'Cordillera Administrative Region',month:1,p50:200,p75:400}],metrics:{},outbreak:[]}:
     {forecast_available:false,series:{},metrics:{},outbreak:[]};
   return new Response(JSON.stringify(payload),{status:200,headers:{'Content-Type':'application/json'}});
 };
@@ -33,5 +33,14 @@ try{
  assert.equal(all.cases,3);assert.equal(data.getSeries('130000000','Influenza-like Illness')[0].cases,1000);
  assert.equal(data.availabilityForRegion('130000000','Influenza-like Illness').source_status,'provisional');
  assert.equal(data.ILLNESS_BY_ID['Influenza-like Illness'].forecastAvailable,true);
+ const {buildExportData}=await server.ssrLoadModule('/src/lib/healthwatch/exportData.ts');
+ const {encodeCsv}=await server.ssrLoadModule('/src/lib/csvExport.ts');
+ for(const kind of ['comparison','forecast','timeseries']){
+  const file=buildExportData(kind,['130000000'],'Dengue',0,'raw');
+  assert.ok(file.rows.every(row=>row.length===file.header.length));
+  assert.doesNotThrow(()=>encodeCsv(file.header,file.rows));
+  if(file.rows.length){assert.equal(file.rows[0][file.header.indexOf('operational_run_id')],'test-run');assert.ok(file.header.includes('observation_status'));}
+  if(kind==='forecast')assert.equal(file.rows.length,0); // Actual-only fixture must not become forecast rows.
+ }
  console.log('PASS: own-region canonical risk; per-capita invariance; no stale-date substitution; unavailable display; population guard; explicit contributors; no summed interval.');
 }finally{await server.close();}

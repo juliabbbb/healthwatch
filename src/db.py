@@ -177,6 +177,9 @@ monthly_observations = Table(
     Column("month", Integer, primary_key=True),
     Column("cases", Integer, nullable=True),
     Column("deaths", Integer, nullable=True),
+    Column("observation_status", String(64), nullable=True),
+    Column("source_record_count", Integer, nullable=True),
+    Column("coverage_basis", String(128), nullable=True),
 )
 
 forecasts = Table(
@@ -435,7 +438,8 @@ def _to_mid(dates, col="target_date"):
 
 def _load_csv(name):
     if "leptospirosis" in name:
-        return None
+        from .source_decisions import require_lepto_audit
+        require_lepto_audit(ingest.PROCESSED_DIR)
     path = ingest.PROCESSED_DIR / name
     if not path.exists():
         return None
@@ -748,12 +752,13 @@ PROVIDENCE_NOTES = (
 
 
 def _monthly_observation_rows(regional):
-    regional = regional[regional.disease != "Leptospirosis"].copy()
+    regional = regional.copy()
     regional["region_code"] = regional["region"].map(_region_code)
     regional["year"] = pd.to_datetime(regional["date"]).dt.year
     regional["month"] = pd.to_datetime(regional["date"]).dt.month
-    cols = ["region_code","disease","year","month","cases","deaths"]
-    return regional[cols].astype(object).where(pd.notna(regional[cols]), None).to_dict(orient="records")
+    cols = ["region_code","disease","year","month","cases","deaths","observation_status","source_record_count","coverage_basis"]
+    rows = regional.reindex(columns=cols)
+    return rows.astype(object).where(pd.notna(rows), None).to_dict(orient="records")
 
 
 def read_table(table):
@@ -796,7 +801,7 @@ def _breakdown_from(table, dim_pick, region_code, year, month, disease=None):
         total = conn.execute(
             text(
                 f"SELECT COALESCE(SUM(cases), 0) AS cases,"
-                f" COALESCE(SUM(deaths), 0) AS deaths, COUNT(*) AS records"
+                f" SUM(deaths) AS deaths, COUNT(*) AS records"
                 f" FROM {table} WHERE year = :y AND month = :m" + year_start + region + dis
             ),
             params,
@@ -813,13 +818,13 @@ def _breakdown_from(table, dim_pick, region_code, year, month, disease=None):
                 params,
             ).mappings().all()
             dims[name] = [
-                {"value": r["value"], "cases": int(r["cases"]), "deaths": int(r["deaths"])}
+                {"value": r["value"], "cases": int(r["cases"]), "deaths": int(r["deaths"]) if r["deaths"] is not None else None}
                 for r in rows
             ]
 
     return {
         "total_cases": int(total.cases),
-        "total_deaths": int(total.deaths),
+        "total_deaths": int(total.deaths) if total.deaths is not None else None,
         "records": int(total.records),
         "dims": dims,
     }

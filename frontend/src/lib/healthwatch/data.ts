@@ -355,9 +355,9 @@ export const ILLNESSES: Illness[] = [
   },
   {
     id: "Acute Viral Hepatitis",
-    name: "Acute Viral Hepatitis",
-    forecastAvailable: false,
-    unavailableReason: "Provisional Hep A measure and label; operational forecasts unavailable.",
+    name: "Hepatitis A",
+    forecastAvailable: true,
+    unavailableReason: "Provisional Hepatitis A source-record counts; forecasts depend on regional history and target dates.",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
     transmission: "Water-Borne",
@@ -379,8 +379,8 @@ export const ILLNESSES: Illness[] = [
     amplitude: 0.9,
     baseRate: 0.04,
     trend: 0.02,
-    forecastAvailable: false,
-    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
+    forecastAvailable: true,
+    unavailableReason: "Provisional one-case-per-source-record rule; fatality fields remain unresolved.",
   },
   {
     id: "Influenza-like Illness",
@@ -617,6 +617,8 @@ export interface MonthPoint {
   contributors?: string[];
   canonicalRisk?: RiskLevel;
   observation_status?: string;
+  coverage_basis?: string | null;
+  source_record_count?: number | null;
   adjusted: boolean; // true when a post-processing rule changed the value
   adjustReason?: string;
 }
@@ -651,6 +653,7 @@ export interface SeriesAvailability {
   source_warning?: string | null;
   history_available: boolean;
   observed_months: number;
+  zero_rule_months?: number;
   required_observed_months: number;
   first_observed: string | null;
   last_observed: string | null;
@@ -660,6 +663,9 @@ export interface SeriesAvailability {
   reason_code: string | null;
   message: string | null;
 }
+interface OperationalProvenance { run_id?: string; validation_status?: string }
+const provenanceCache = new Map<string, OperationalProvenance>();
+export function provenanceForDisease(disease: string) { return provenanceCache.get(disease === "all" ? "Dengue" : disease); }
 const availabilityCache = new Map<string, SeriesAvailability>();
 export function availabilityForRegion(code: string, disease: string): SeriesAvailability | undefined {
   return availabilityCache.get(`${code}:${disease}`);
@@ -725,6 +731,7 @@ export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
     forecast_available?: boolean;
+    provenance?: OperationalProvenance;
     availability?: Record<string, SeriesAvailability>;
     thresholds?: { region: string; region_code?: string; month: number; p50: number | null; p75: number | null }[];
     series: Record<string, MonthPoint[]>;
@@ -746,6 +753,7 @@ export async function loadHealthwatchData(): Promise<void> {
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        if (res.provenance) provenanceCache.set(disease,res.provenance);
         const diseaseMeta = ILLNESS_BY_ID[disease];
         if (diseaseMeta && res.forecast_available != null) diseaseMeta.forecastAvailable = res.forecast_available;
         for (const [code, facts] of Object.entries(res.availability ?? {})) availabilityCache.set(`${code}:${disease}`, facts);
@@ -1200,7 +1208,9 @@ export function summarizeRegionalValues(assessments: RegionAssessment[]) {
   const reporting = assessments.filter((a) => a.point.raw >= 0 && Number.isFinite(a.point.cases));
   const cases = reporting.length ? reporting.reduce((sum, a) => sum + a.point.cases, 0) : NaN;
   const population = assessments.reduce((sum, a) => sum + a.region.population, 0);
-  return { reportingRegions: reporting.length, cases, per100k: population > 0 ? cases / population * 100000 : NaN };
+  const forecastCount = reporting.filter((a) => a.point.forecast).length;
+  const valueKind = !reporting.length ? "unavailable" : forecastCount === reporting.length ? "forecast" : forecastCount ? "mixed" : "reported";
+  return { reportingRegions: reporting.length, cases, per100k: population > 0 ? cases / population * 100000 : NaN, valueKind };
 }
 
 export interface NationalDominant {

@@ -8,7 +8,9 @@ from .source_registry import write_registry
 
 
 def check_sources(output):
-    expected={ingest.RAW_DIR/DOH_FILE:{'Year','Morbidity Week','Region','No. of Cases','No. of Deaths'},
+    lepto=list((ingest.RAW_DIR/'new_diseases').glob('*Lepto*.csv'))
+    if len(lepto)!=1:raise ValueError('Expected one leptospirosis source')
+    expected={lepto[0]:{'Year','Morbidity Week','Region','Cases','Case Classification','Deaths'},ingest.RAW_DIR/DOH_FILE:{'Year','Morbidity Week','Region','No. of Cases','No. of Deaths'},
               ingest.RAW_DIR/'new_diseases/ILI - Cases - Data.csv':{'Year','Morbidity Week','Region','Cases'}}
     for disease,name in FWD_FILES.items():
         columns={'Year','Morbidity Month','Region','Case Classification','Outcome','Admitted'}
@@ -22,7 +24,7 @@ def check_sources(output):
         if len(header)!=len(set(header)):raise ValueError('Duplicate source columns: '+path.name)
         if not required.issubset(header):raise ValueError('Required columns missing: '+path.name)
     records=write_registry(ingest.RAW_DIR,output)
-    return dict(schema_preflight=True,hashed_inputs=len(records),source_confirmation='conditional',leptospirosis='excluded_unresolved_measure')
+    return dict(schema_preflight=True,hashed_inputs=len(records),source_confirmation='conditional',leptospirosis='provisional_source_record_count')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--output',required=True);a=p.parse_args();print(json.dumps(check_sources(a.output),indent=2))

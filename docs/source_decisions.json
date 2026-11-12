@@ -1,0 +1,29 @@
+{
+  "version": "record_rules_2026_11_12_v1",
+  "decision_date": "2026-11-12",
+  "provenance": "User instructions and user-relayed DOH clarification in this project conversation; original zero-reporting reference not supplied",
+  "leptospirosis": {
+    "measure": "one_case_per_nonblank_source_record",
+    "status": "provisional",
+    "classifications": {
+      "S": "Suspect",
+      "P": "Probable",
+      "C": "Confirmed"
+    },
+    "classification_reference": "DOH-249290475072 release dated 2026-10-12, pages 1-2; classification evidence only, not record-grain confirmation",
+    "fatality_measure": "unresolved_do_not_sum",
+    "duplicate_policy": "retain_candidates_not_proven_duplicate_patients"
+  },
+  "hepatitis_a": {
+    "measure": "one_case_per_nonblank_source_record",
+    "status": "provisional",
+    "display_name": "Hepatitis A",
+    "internal_id": "Acute Viral Hepatitis"
+  },
+  "fwbd_zero_rule": "Absent records mean zero cases only inside explicitly declared disease/region coverage; not a zero-death rule",
+  "coverage": [],
+  "coverage_status": "User explicitly selected interior-only bounds; wider disease/regional reporting coverage unresolved",
+  "outside_coverage": "missing_or_unavailable_never_zero",
+  "geography": "Preserve source region labels; boundary comparability is not established by a zero-reporting rule",
+  "coverage_mode": "interior_only_between_existing_reports_per_region"
+}

@@ -25,7 +25,8 @@ if ($LASTEXITCODE -ne 0) { throw "Source preflight failed. No fitting or publica
 
 $steps = @(
     'src.fwbd_ingest'           # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> monthly series
-    'src.ili_ingest'            # Provisional observed history only; lepto excluded
+    'src.ili_ingest'            # Provisional ILI observed counts
+    'src.leptospirosis_ingest'  # User-authorized provisional case-record counts
     'src.heat_ingest'           # Annual reference only
     'src.doh_eb_ingest'          # canonical DOH-EB file -> monthly series
     'src.forecast'               # Prophet fits + 12-month forecasts, validation folds

@@ -13,20 +13,29 @@ def main():
     parser.add_argument('--output',required=True)
     parser.add_argument('--weka-jar',required=True)
     parser.add_argument('--include-provisional-ili',action='store_true')
+    parser.add_argument('--include-provisional',action='store_true')
+    parser.add_argument('--diseases',nargs='+')
     args=parser.parse_args()
     O=Path(args.output).resolve()
     if O.exists(): raise ValueError('Choose a new immutable run directory')
     for part in ['data','results','weka']: (O/part).mkdir(parents=True,exist_ok=True)
     CONFIG=json.loads((Path(__file__).parent.parent/'docs/research_protocol.json').read_text(encoding='utf-8'))
+    from .source_decisions import decisions,digest
+    CONFIG['source_decisions']=decisions();CONFIG['source_decisions_sha256']=digest()
+    CONFIG['provisional']=['ILI','Hep A','Leptospirosis']
+    CONFIG['missingness']='Unknown actuals remain missing. User-relayed zero reporting is applied only to interior gaps inside each FWBD region series, with lineage; no leading/trailing or ILI/leptospirosis zeros are invented.'
+    CONFIG['case_policy']='Leptospirosis and Hep A use provisional one-source-record-per-case rules; numeric primary sources retain weighted counts; duplicate candidates retained.'
     CONFIG['run_id']='HW-'+time.strftime('%Y%m%d-%H%M%S')+'-'+__import__('uuid').uuid4().hex[:8]
     allmonthly=pd.read_csv(args.observations,parse_dates=['date'])
     required={'disease','region','date','cases','provisional'}
     if not required.issubset(allmonthly): raise ValueError('Missing observation provenance/columns')
     if allmonthly.duplicated(['disease','region','date']).any(): raise ValueError('Duplicate observation key')
     allowed=set(CONFIG['primary_diseases']) | ({'ILI'} if args.include_provisional_ili else set())
+    if args.include_provisional:allowed|={'ILI','Hep A','Leptospirosis'}
+    if args.diseases:allowed&=set(args.diseases)
     allmonthly=allmonthly[allmonthly.disease.isin(allowed)].copy()
     if allmonthly.empty: raise ValueError('No eligible source diseases')
-    allmonthly['provisional']=allmonthly.disease.eq('ILI')
+    allmonthly['provisional']=allmonthly.disease.isin({'ILI','Hep A','Leptospirosis'})
     if (pd.to_numeric(allmonthly.cases,errors='raise').dropna()<0).any(): raise ValueError('Negative observed cases')
     allmonthly.to_csv(O/'data/source_monthly_observed.csv',index=False)
     (O/'protocol_frozen.json').write_text(json.dumps(CONFIG,indent=2),encoding='utf-8')
@@ -42,6 +51,7 @@ def main():
                 year=int(yeartext);cutoff=pd.Timestamp(year=year-1,month=12,day=1);dates=pd.date_range(f'{year}-01-01',periods=12,freq='MS')
                 train=obs.reindex(pd.date_range('2019-01-01',cutoff,freq='MS'));actual=obs.reindex(dates);naive=obs.reindex(dates-pd.DateOffset(years=1)).to_numpy();scoremask=actual.notna().to_numpy()&np.isfinite(naive)
                 reasons=[]
+                if train.dropna().eq(0).all():reasons.append('all_zero_training_requires_separate_method')
                 if train.notna().sum()<24:reasons.append('fewer than24 observed training months')
                 if train.iloc[12:].notna().sum()<12:reasons.append('fewer than12 RF target months after initial lags')
                 if scoremask.sum()<9:reasons.append('fewer than9 paired actual/prior-year target months')
