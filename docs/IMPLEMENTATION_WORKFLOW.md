@@ -8,7 +8,7 @@ This branch implements the reviewed local correction plan. Operational Prophet a
 |---|---|
 | Dengue | Numeric counts; legacy ISO-Thursday/W53 convention explicitly conditional |
 | ABD, Cholera, Typhoid | Numeric reported-count series; sparse eligibility and reporting coverage retained |
-| ILI | User-authorized provisional header reversal/calendar, with corrected source-row date alignment; research and historical display conditional |
+| ILI | User-authorized provisional header reversal/calendar, with corrected source-row date alignment; history, eligible operational Prophet forecasts and separate research comparison remain explicitly provisional |
 | Hep A | Provisional row-count and label interpretation; excluded from operational forecasting and primary model selection |
 | Leptospirosis | Audit only; unresolved yearly measure schemas; no inferred case totals from Deaths |
 | Heat | Annual reference aggregates; no manufactured monthly forecasts |

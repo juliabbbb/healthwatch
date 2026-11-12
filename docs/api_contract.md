@@ -124,3 +124,9 @@ curl "https://healthwatch-api-xepv.onrender.com/escalation?top=5" \
 ```
 
 See `docs/examples/integration_client.py` for a working `requests` client.
+
+## Regional availability (local implementation, November 2026)
+
+GET /availability?disease=<supported disease> returns source_policy and regions keyed by stable region code. /dashboard includes the same availability map. Each entry separates source_status, source_warning, history_available, observed_months, required_observed_months, first_observed/last_observed, disease_forecast_enabled, forecast_available, forecast_start/forecast_end, reason_code and message. Dates are ISO strings or null; history counts exclude null reports and include actual zeros. Reasons include insufficient_observed_history, source_confirmation_pending, unresolved_measure, annual_reference_only and forecast_not_built. Provisional status is retained even with eligible ILI forecasts. Disease-level capability alone does not guarantee a region forecast.
+
+GET /reference/heat-events accepts region_code (or canonical region name). It returns annual source rows only; no row is not proof of a zero. ILI/leptospirosis/heat have no supported /reported record-level demographic breakdown and return 422 with an explanation. Snapshot identity comes from /health and the database provenance. Current startup reads monthly/model tables from the explicitly configured database; the heat reference endpoint reads matching selected artifacts. The older data-freshness description above is superseded by IMPLEMENTATION_WORKFLOW.md and LOCAL_BACKEND.md.

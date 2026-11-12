@@ -1,0 +1,6 @@
+artifact,primary_rows_preserved,added_ili_rows
+forecasts.csv,876,228
+season_probes.csv,390,114
+validation_metrics.csv,134,38
+validation_predictions.csv,1608,456
+forecast_exclusions.csv,15,0

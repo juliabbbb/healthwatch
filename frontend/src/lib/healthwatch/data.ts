@@ -298,6 +298,9 @@ export const DISEASE_GROUPS = {
   "Heat-Related Illness": "Environmental and Climate Hazards",
 } as const;
 
+// Forecast capability does not silently expand the primary aggregate cohort.
+export const PRIMARY_AGGREGATE_DISEASES = ["Dengue", "Acute Bloody Diarrhea", "Cholera", "Typhoid Fever"];
+
 export const ILLNESSES: Illness[] = [
   {
     id: "Dengue",
@@ -390,8 +393,8 @@ export const ILLNESSES: Illness[] = [
     amplitude: 0.6,
     baseRate: 0.7,
     trend: 0.03,
-    forecastAvailable: false,
-    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
+    forecastAvailable: true,
+    unavailableReason: "Provisional ILI forecast; header/calendar interpretation is not source-confirmed.",
   },
   {
     id: "Heat-Related Illness",
@@ -643,6 +646,25 @@ export function upcomingSeasonForMonth(month: number): Season {
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
+export interface SeriesAvailability {
+  source_status: string;
+  source_warning?: string | null;
+  history_available: boolean;
+  observed_months: number;
+  required_observed_months: number;
+  first_observed: string | null;
+  last_observed: string | null;
+  forecast_available: boolean;
+  forecast_start: string | null;
+  forecast_end: string | null;
+  reason_code: string | null;
+  message: string | null;
+}
+const availabilityCache = new Map<string, SeriesAvailability>();
+export function availabilityForRegion(code: string, disease: string): SeriesAvailability | undefined {
+  return availabilityCache.get(`${code}:${disease}`);
+}
+
 const seriesCache = new Map<string, MonthPoint[]>();
 const thresholdCache = new Map<string, Thresholds>();
 const metricsCache = new Map<string, ModelMetrics>();
@@ -703,6 +725,7 @@ export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
     forecast_available?: boolean;
+    availability?: Record<string, SeriesAvailability>;
     thresholds?: { region: string; region_code?: string; month: number; p50: number | null; p75: number | null }[];
     series: Record<string, MonthPoint[]>;
     metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: RiskLevel; note?: string } }>;
@@ -723,6 +746,9 @@ export async function loadHealthwatchData(): Promise<void> {
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        const diseaseMeta = ILLNESS_BY_ID[disease];
+        if (diseaseMeta && res.forecast_available != null) diseaseMeta.forecastAvailable = res.forecast_available;
+        for (const [code, facts] of Object.entries(res.availability ?? {})) availabilityCache.set(`${code}:${disease}`, facts);
         for (const row of res.thresholds ?? []) {
           const code = row.region_code ?? regionCodeForApiLabel(row.region);
           if (code) thresholdCache.set(`${code}:${disease}:${row.month}`, { p50: row.p50 ?? NaN, p75: row.p75 ?? NaN });
@@ -766,6 +792,7 @@ export async function loadHealthwatchData(): Promise<void> {
           }
         }
       } catch (err) {
+        for (const region of REGIONS) availabilityCache.set(`${region.code}:${disease}`, { source_status: "request_failed", history_available: false, observed_months: 0, required_observed_months: 24, first_observed: null, last_observed: null, forecast_available: false, forecast_start: null, forecast_end: null, reason_code: "request_failed", message: "Data request failed. Retry loading the dashboard; this is not a zero-case report." });
         console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
       }
     }),
@@ -782,10 +809,9 @@ export async function loadHealthwatchData(): Promise<void> {
     })(),
   ]);
 
-  // Derive the "all" aggregate: per-month sum across forecast-ready diseases
-  // only, plus an outbreak probe that fires for a season when any member
-  // disease flags. Non-forecast diseases (Lepto, ILI) are included in the sum
-  // for their historical months but contribute no forecast points.
+  // Derive the primary four-disease aggregate. Provisional ILI/Hep A, unresolved
+  // leptospirosis and annual heat data do not change this cohort when enabled
+  // individually. Contributors remain explicit for every month.
   for (const region of REGIONS) {
     buildAllSeries(region.code);
     buildAllOutbreak(region.code);
@@ -844,7 +870,7 @@ function emptyMonth(index: number): MonthPoint {
 }
 
 function buildAllSeries(code: string): void {
-  const diseases = ILLNESSES.filter((i) => i.forecastAvailable !== false && i.id !== "Acute Viral Hepatitis").map((i) => i.id);
+  const diseases = PRIMARY_AGGREGATE_DISEASES;
   let any = false;
   const out: MonthPoint[] = [];
   for (let i = 0; i < TOTAL_MONTHS; i++) {
@@ -887,7 +913,7 @@ function buildAllSeries(code: string): void {
 }
 
 function buildAllOutbreak(code: string): void {
-  const diseases = ILLNESSES.filter((i) => i.forecastAvailable !== false && i.id !== "Acute Viral Hepatitis").map((i) => i.id);
+  const diseases = PRIMARY_AGGREGATE_DISEASES;
   const union: Partial<Record<Season, OutbreakIndicator>> = {};
   for (const d of diseases) {
     for (const [season, ind] of Object.entries(outbreakCache.get(`${code}:${d}`) ?? {})) {
@@ -946,7 +972,7 @@ export function forecastCategoryMix(
   months: number = FORECAST_MONTHS,
 ): ForecastCategoryMix {
   const mix: ForecastCategoryMix = { dengue: 0, foodBorne: 0, waterBorne: 0, total: 0 };
-  for (const disease of ILLNESSES) {
+  for (const disease of ILLNESSES.filter((item) => PRIMARY_AGGREGATE_DISEASES.includes(item.id))) {
     const series = getSeries(regionCode, disease.id);
     for (let i = monthIndex + 1; i <= monthIndex + months; i++) {
       const p = series[i];
@@ -1086,9 +1112,8 @@ export function assessRegion(
 
   if (!series.length || !series[monthIndex] || series[monthIndex]!.raw < 0 || !Number.isFinite(series[monthIndex]!.cases)) {
     // A region with no series yet (backend incomplete or unreachable) must not
-    // take the dashboard down. Report the requested calendar location with a
-    // zeroed point so maps and charts render; the tier falls to Low by
-    // construction and the rank lands at the bottom of the national pool.
+    // take the dashboard down. Report the requested calendar location with an
+    // unavailable point without substituting zero cases, a rank or a trend.
     const idx = Math.min(Math.max(monthIndex, 0), Math.max(0, TOTAL_MONTHS - 1));
     const safeMeta = monthMeta(idx);
     const point: MonthPoint = {
@@ -1106,7 +1131,6 @@ export function assessRegion(
       adjusted: false,
     };
     const thresholds = getThresholds(illnessId, point.month, mode);
-    const dist = pooledValues(illnessId, point.month, mode);
     return {
       region,
       monthIndex: idx,
@@ -1115,12 +1139,10 @@ export function assessRegion(
       value: NaN,
       thresholds,
       risk: "unavailable",
-      percentileRank: Math.round(
-        (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
-      ),
+      percentileRank: NaN,
       dominantIllness: ILLNESSES[0]!,
       forecastWindow: [],
-      changePct: 0,
+      changePct: NaN,
     };
   }
 
@@ -1132,7 +1154,7 @@ export function assessRegion(
 
   const dist = pooledValues(illnessId, point.month, mode);
   const below = dist.filter((v) => v <= value).length;
-  const percentileRank = Math.round((below / Math.max(1, dist.length)) * 100);
+  const percentileRank = dist.length && Number.isFinite(value) ? Math.round((below / dist.length) * 100) : NaN;
 
   const dominantIllness = ILLNESSES.reduce((best, ill) => {
     const ra =
@@ -1145,8 +1167,8 @@ export function assessRegion(
   }, ILLNESSES[0]!);
 
   const forecastWindow = series.slice(idx + 1, idx + 1 + FORECAST_MONTHS);
-  const prev = series[Math.max(0, idx - 3)]!.cases || 1;
-  const changePct = Math.round(((point.cases - prev) / prev) * 100);
+  const prev = idx >= 3 ? series[idx - 3]?.cases : NaN;
+  const changePct = prev != null && Number.isFinite(prev) && prev > 0 ? Math.round(((point.cases - prev) / prev) * 100) : NaN;
 
   return {
     region,
@@ -1190,7 +1212,7 @@ export function nationalDominant(
   monthIndex: number,
   mode: MetricMode = "percapita",
 ): NationalDominant {
-  const pool = illnessId === "all" ? ILLNESSES : ILLNESSES.filter((i) => i.id === illnessId);
+  const pool = ILLNESSES.filter((i) => illnessId === "all" ? PRIMARY_AGGREGATE_DISEASES.includes(i.id) : i.id === illnessId);
   let best: Illness = ILLNESSES[0]!;
   let bestCases = -1;
   for (const ill of pool) {

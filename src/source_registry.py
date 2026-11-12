@@ -9,7 +9,7 @@ POLICIES = {
     'Cholera': dict(measure='Total Cases', status='numeric_count', calendar='explicit_month', forecast=True),
     'Typhoid Fever': dict(measure='Total Cases', status='numeric_count', calendar='explicit_month', forecast=True),
     'Acute Viral Hepatitis': dict(measure='provisional_row_count', status='provisional', calendar='explicit_month', forecast=False, source_label='Hep A'),
-    'Influenza-like Illness': dict(measure='Cases', status='provisional', calendar='provisional_reversed_headers_iso_thursday_w53_fold52', forecast=False),
+    'Influenza-like Illness': dict(measure='Cases', status='provisional', calendar='provisional_reversed_headers_iso_thursday_w53_fold52', forecast=True, operational_mode='provisional'),
     'Leptospirosis': dict(measure=None, status='excluded_unresolved_measure', calendar=None, forecast=False),
     'Heat-Related Illness': dict(measure='annual_events_cases_deaths', status='reference_only', calendar='annual', forecast=False),
 }

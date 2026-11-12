@@ -9,6 +9,7 @@ import {
   REGION_BY_CODE,
   TOTAL_MONTHS,
   assessRegion,
+  availabilityForRegion,
   getOutbreak,
   classify,
   formatPHTDateTime,
@@ -223,6 +224,7 @@ export function ExportCustomizationModal({
       baseline: baselineLabel,
       generatedAt,
       pathology: reportPathology,
+      provenance: `Source status: ${illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" ? "provisional; source interpretation unconfirmed" : "conditional source interpretation"}. Operational Prophet; uncalibrated 80% model interval.`,
       sections,
       regions,
     };
@@ -281,7 +283,7 @@ export function ExportCustomizationModal({
         const reported = lastObserved ? lastObserved.cases : a.point.cases;
         return [
           illness,
-          "conditional_source_interpretation",
+          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
           "legacy_operational_snapshot_not_research_certified",
           "Prophet",
           region.code,
@@ -329,7 +331,7 @@ export function ExportCustomizationModal({
         for (const p of a.forecastWindow) {
           body.push([
             illness,
-          "conditional_source_interpretation",
+          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
           "legacy_operational_snapshot_not_research_certified",
           "Prophet",
           region.code,
@@ -377,7 +379,7 @@ export function ExportCustomizationModal({
       for (const p of seriesFor(code, illness)) {
         body.push([
           illness,
-          "conditional_source_interpretation",
+          availabilityForRegion(region.code, illness)?.source_status ?? "conditional_source_interpretation",
           "legacy_operational_snapshot_not_research_certified",
           "Prophet",
           region.code,

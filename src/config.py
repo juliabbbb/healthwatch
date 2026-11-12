@@ -134,8 +134,9 @@ for _disease, _metadata in DISEASE_METADATA.items():
         _metadata.update(status="provisional", forecast_available=False,
                          unavailable_reason="Hep A row-count interpretation and application disease label are provisional.")
     elif _disease == "Influenza-like Illness":
-        _metadata.update(status="provisional", analytical_available=True,
-                         unavailable_reason="Provisional ILI header/calendar interpretation; research comparison exists separately from operational forecasts.")
+        _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
+                         unavailable_reason=None,
+                         source_warning="Provisional ILI year/week header reversal and calendar mapping; not source-confirmed.")
 SUPPORTED_DISEASES = list(DISEASE_METADATA.keys())
 FORECAST_READY_DISEASES = [d for d, m in DISEASE_METADATA.items() if m["forecast_available"]]
 DISEASE_GROUPS = {d: m["group"] for d, m in DISEASE_METADATA.items()}

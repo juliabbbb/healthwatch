@@ -1,3 +1,5 @@
+import { AvailabilityNotice } from "./AvailabilityNotice";
+import { HeatReferencePanel } from "./HeatReferencePanel";
 import { ResearchComparison } from "./ResearchComparison";
 import { Link } from "@tanstack/react-router";
 import {
@@ -18,7 +20,7 @@ import { useAudienceMode } from "@/hooks/useAudienceMode";
 import {
   METRIC_META,
   assessRegion,
-  classify,
+  availabilityForRegion,
   forecastCategoryMix,
   formatMetric,
   getOutbreak,
@@ -68,6 +70,7 @@ export interface ForecastCardProps {
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
   onClose?: () => void;
+  onSelectMonth?: ((index: number) => void) | undefined;
   variant?: "panel" | "sheet";
   className?: string;
   showHeader?: boolean;
@@ -83,6 +86,7 @@ export function ForecastCard({
   mode = "percapita",
   onModeChange,
   onClose,
+  onSelectMonth,
   layer = "hotspot",
   onLayerChange,
   variant = "panel",
@@ -103,17 +107,18 @@ export function ForecastCard({
   const { mode: audienceMode } = useAudienceMode();
   const isSheet = variant === "sheet";
   const illnessMeta = ILLNESS_BY_ID[illness];
-  const isForecastUnavailable = illnessMeta?.forecastAvailable === false;
+  const availability = availabilityForRegion(regionCode, illness);
+  const isForecastUnavailable = illness !== "all" && (availability ? !availability.forecast_available : illnessMeta?.forecastAvailable === false);
 
   /* ---------- Derived KPI data ---------- */
 
-  const nextPt = a.forecastWindow[0];
+  const nextPt = a.forecastWindow.find((point) => point.forecast && Number.isFinite(point.cases));
   const nextMonthKpi = isForecastUnavailable
-    ? { value: "—", sub: illnessMeta?.unavailableReason ?? "Forecast not available" }
+    ? { value: "—", sub: availability?.message ?? illnessMeta?.unavailableReason ?? "Forecast not available" }
     : nextPt
     ? {
         value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
-        sub: `80% model interval ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
+        sub: `${nextPt.label} · 80% model interval ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
           metricValue(nextPt.upper, a.region, mode),
           mode,
         )}`,
@@ -127,9 +132,9 @@ export function ForecastCard({
           ? `Outbreak signal — ${OUTBREAK_TRIGGER_LABEL[upcomingInd.trigger] ?? upcomingInd.trigger}`
           : "Normal seasonal range",
       }
-    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "Normal seasonal range" };
+    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "Seasonal reference unavailable" };
 
-  const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast);
+  const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast && p.raw >= 0 && Number.isFinite(p.cases));
   const peakPt = histPts.length
     ? histPts.reduce((best, p) => (p.cases > best.cases ? p : best))
     : undefined;
@@ -142,12 +147,12 @@ export function ForecastCard({
 
   const kpi: KpiStripData = {
     nextMonth: nextMonthKpi,
-    currentRisk: { level: a.risk, sub: `${a.percentileRank}th %ile of nat'l pool` },
+    currentRisk: { level: a.risk, sub: Number.isFinite(a.percentileRank) ? `${Number.isFinite(a.percentileRank) ? `${a.percentileRank}th %ile` : "Unavailable"} of nat'l pool` : "Rank unavailable" },
     season: seasonKpi,
     peak: peakKpi,
   };
 
-  const sparkData: SparklinePoint[] = a.forecastWindow.slice(0, 6).map((p) => {
+  const sparkData: SparklinePoint[] = a.forecastWindow.filter((point) => point.forecast).slice(0, 6).map((p) => {
     const val = metricValue(p.cases, a.region, mode);
     return {
       label: MONTH_ABBR[p.month - 1] ?? String(p.month),
@@ -155,12 +160,12 @@ export function ForecastCard({
       yhat: val,
       lower: metricValue(p.lower, a.region, mode),
       upper: metricValue(p.upper, a.region, mode),
-      risk: classify(val, a.thresholds),
+      risk: assessRegion(regionCode, illness, p.index, mode).risk,
     };
   });
 
   const riskCounts = riskCountsFor(
-    a.forecastWindow.slice(0, 6).map((p) => classify(metricValue(p.cases, a.region, mode), a.thresholds)),
+    a.forecastWindow.filter((point) => point.forecast).slice(0, 6).map((p) => assessRegion(regionCode, illness, p.index, mode).risk),
   );
 
   const mix = forecastCategoryMix(regionCode, a.monthIndex, 6);
@@ -225,18 +230,8 @@ export function ForecastCard({
       />
       )}
 
-      {/* Forecast Unavailable Notice (for non-forecast diseases) */}
-      {isForecastUnavailable && (
-        <div className="mx-5 mt-3 shrink-0 flex items-start gap-2.5 rounded-lg border border-border/70 bg-secondary/30 px-4 py-3">
-          <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground">Historical Data Only</p>
-            <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-              {illnessMeta?.unavailableReason ?? "Forecast model not yet available for this disease."}
-            </p>
-          </div>
-        </div>
-      )}
+      <AvailabilityNotice regionCode={regionCode} disease={illness} monthIndex={monthIndex} onSelectMonth={onSelectMonth} />
+      {illness === "Heat-Related Illness" && <HeatReferencePanel regionCode={regionCode} />}
 
       {/* 2. Current Status Card */}
       <section className="border-b border-border/70 px-5 py-3.5">
@@ -327,38 +322,39 @@ export function ForecastCard({
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
               <span className="label-caps text-[11px] block">Cases</span>
               <span className="font-mono text-sm font-bold text-foreground truncate block">
-                {a.point.cases.toLocaleString()}
+                {formatMetric(a.point.cases, "raw")}
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
               <span className="label-caps text-[11px] block">3-Mo Trend</span>
               <span
                 className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
-                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+                style={{ color: !Number.isFinite(a.changePct) ? "var(--muted-foreground)" : a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
               >
-                {a.changePct >= 0 ? (
+                {!Number.isFinite(a.changePct) ? <Info className="size-3.5 shrink-0" /> : a.changePct >= 0 ? (
                   <TrendingUp className="size-3.5 shrink-0" />
                 ) : (
                   <TrendingDown className="size-3.5 shrink-0" />
                 )}
                 <span className="truncate">
-                  {a.changePct >= 0 ? "+" : ""}
-                  {a.changePct}%
+                  {Number.isFinite(a.changePct) ? `${a.changePct >= 0 ? "+" : ""}${a.changePct}%` : "Unavailable"}
                 </span>
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
               <span className="label-caps text-[11px] block">Nat'l Rank</span>
               <span className="font-mono text-sm font-bold text-foreground truncate block">
-                {a.percentileRank}th %ile
+                {Number.isFinite(a.percentileRank) ? `${a.percentileRank}th %ile` : "Unavailable"}
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
               <span className="label-caps text-[11px] block">Data Source</span>
               <span className="text-xs font-medium text-muted-foreground truncate block">
-                {meta.forecast
+                {!Number.isFinite(a.value)
+                  ? "No observation or forecast for selected month"
+                  : meta.forecast
                   ? isForecastUnavailable
-                    ? "Historical Surveillance Only — Forecast Pending"
+                    ? "Forecast unavailable for this series"
                     : `Prophet Forecast · 80% model interval ${formatMetric(
                       metricValue(a.point.lower, a.region, mode),
                       mode,
@@ -379,15 +375,15 @@ export function ForecastCard({
               <span className="label-caps text-[10px] text-muted-foreground block">Case Direction</span>
               <span
                 className="inline-flex min-w-0 items-center gap-1.5 text-xs font-bold mt-0.5"
-                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+                style={{ color: !Number.isFinite(a.changePct) ? "var(--muted-foreground)" : a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
               >
-                {a.changePct >= 0 ? (
+                {!Number.isFinite(a.changePct) ? <Info className="size-3.5 shrink-0" /> : a.changePct >= 0 ? (
                   <TrendingUp className="size-3.5 shrink-0" />
                 ) : (
                   <TrendingDown className="size-3.5 shrink-0" />
                 )}
                 <span className="truncate">
-                  {a.changePct > 5
+                  {!Number.isFinite(a.changePct) ? "Unavailable" : a.changePct > 5
                     ? `Increasing (+${a.changePct}%)`
                     : a.changePct < -5
                     ? `Decreasing (${a.changePct}%)`
@@ -456,10 +452,10 @@ export function ForecastCard({
         />
       </section>
 
-      {/* 7. Clinical Surge Decision Support (Healthcare Worker Mode) */}
-      {audienceMode === "clinical" ? (
+      {/* Data-dependent guidance is hidden when the risk is unavailable. */}
+      {a.risk !== "unavailable" && (audienceMode === "clinical" ? (
         <>
-          <section className="border-b border-border/70 px-5 py-3 shrink-0 bg-secondary/15">
+          {illness === "Dengue" && <section className="border-b border-border/70 px-5 py-3 shrink-0 bg-secondary/15">
             <div className="flex items-center justify-between mb-2">
               <span className="label-caps text-xs text-primary font-bold tracking-wider flex items-center gap-1.5">
                 <Stethoscope className="size-3.5 text-primary" /> CLINICAL SURGE &amp; TRIAGE PROTOCOL
@@ -490,7 +486,7 @@ export function ForecastCard({
                 </p>
               </div>
             </div>
-          </section>
+          </section>}
 
           {/* Model Statistical Validation Panel (forecast-ready diseases only) */}
           {!isForecastUnavailable && (
@@ -626,7 +622,7 @@ export function ForecastCard({
             </div>
           </div>
         </section>
-      )}
+      ))}
 
 
 

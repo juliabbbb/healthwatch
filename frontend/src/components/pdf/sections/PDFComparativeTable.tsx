@@ -93,12 +93,11 @@ export function PDFComparativeTable({ rows, status }: PDFComparativeTableProps) 
               </Text>
             </Cell>
             <Cell fl={COLS[3]!.flex} align={COL_ALIGNS.percentile}>
-              <Text style={pdfStyles.td}>{r.percentile}th</Text>
+              <Text style={pdfStyles.td}>{Number.isFinite(r.percentile) ? `${r.percentile}th` : "Unavailable"}</Text>
             </Cell>
             <Cell fl={COLS[4]!.flex} align={COL_ALIGNS.trajectory}>
-              <Text style={[pdfStyles.td, { color: r.changePct >= 0 ? COLORS.high : COLORS.low }]}>
-                {r.changePct >= 0 ? "+" : ""}
-                {r.changePct}%
+              <Text style={[pdfStyles.td, { color: !Number.isFinite(r.changePct) ? COLORS.mutedLight : r.changePct >= 0 ? COLORS.high : COLORS.low }]}>
+                {Number.isFinite(r.changePct) ? `${r.changePct >= 0 ? "+" : ""}${r.changePct}%` : "Unavailable"}
               </Text>
             </Cell>
             <Cell fl={COLS[5]!.flex} align={COL_ALIGNS.risk}>

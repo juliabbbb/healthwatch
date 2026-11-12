@@ -16,6 +16,7 @@ export interface MobileBottomSheetProps {
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
   onClose?: () => void;
+  onSelectMonth?: ((index: number) => void) | undefined;
 }
 
 export function MobileBottomSheet({
@@ -27,6 +28,7 @@ export function MobileBottomSheet({
   layer = "hotspot",
   onLayerChange,
   onClose,
+  onSelectMonth,
 }: MobileBottomSheetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [lastRegionCode, setLastRegionCode] = useState<string | null>(regionCode);

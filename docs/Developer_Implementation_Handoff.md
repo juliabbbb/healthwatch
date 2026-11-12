@@ -43,3 +43,10 @@ Schema changes require a reviewed new/staging schema or migration before existin
 Source-owner confirmation of weekly mapping, ILI headers, Hep A unit/label, lepto dictionaries, case-definition eras and completeness/geography remains external. The application must retain provisional/excluded status. Interval calibration, complete provider semantic/failure corpus, participant comprehension testing and new future-period validation are not completed. Optional sensitivity/ablation reruns and complete device/filter/browser export coverage remain unverified. The acceptance CSV labels partial/not-run items explicitly; 32 unit/integration tests do not mean all 53 original acceptance scenarios have passed.
 
 The Chapters 4–5 PDF is the original separate research snapshot. Its empirical primary/ILI results are reproduced; it was not silently rewritten to imply that this branch is deployed or all objectives operationally accepted. Integrate manuscript changes only with the final agreed evidence state.
+
+
+## Disease availability follow-through — 12 November 2026
+
+See AVAILABILITY_RESOLUTION.md for the new local operational ILI snapshot, exact Cholera eligibility counts, heat region mapping correction, availability API/UI and deployment boundaries. Provisional ILI operational forecasting is now enabled in source policy and the verified local database (18 regions plus National); it remains outside the primary four-disease aggregate and model-selection cohort. Hep A forecasts, leptospirosis totals and monthly heat forecasts remain excluded for their documented source limitations. Source clarification is drafted in SOURCE_CLARIFICATION_REQUEST.md and has not been sent.
+
+The shared connection is still unresolved; no shared publication or hosted activation follows from these local changes. Existing local application code was directly corrected on UI-gerald. The user's pre-existing src/features.py edit was preserved and left outside this change.

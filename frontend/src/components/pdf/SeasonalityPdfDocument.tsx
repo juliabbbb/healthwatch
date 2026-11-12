@@ -330,10 +330,10 @@ export function SeasonalityPdfDocument({
               label="Predicted cases"
               value={`${forecast.predictedCases.toLocaleString()} (CI ${forecast.predictedLower.toLocaleString()}–${forecast.predictedUpper.toLocaleString()})`}
             />
-            <MetaRow label="Historical percentile" value={`${forecast.percentileRank}th`} />
+            <MetaRow label="Historical percentile" value={Number.isFinite(forecast.percentileRank) ? `${forecast.percentileRank}th` : "Unavailable"} />
             <MetaRow
               label="3-month change"
-              value={`${forecast.changePct >= 0 ? "+" : ""}${forecast.changePct}%`}
+              value={Number.isFinite(forecast.changePct) ? `${forecast.changePct >= 0 ? "+" : ""}${forecast.changePct}%` : "Unavailable"}
             />
             <MetaRow label="Dominant illness" value={forecast.dominantIllness} />
           </>

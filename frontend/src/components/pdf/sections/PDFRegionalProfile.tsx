@@ -79,13 +79,12 @@ export function PDFRegionalProfile({
       <View style={[pdfStyles.row, { marginTop: 6 }]}>
         <View style={[pdfStyles.metricBox, { flex: 1 }]}>
           <Text style={pdfStyles.label}>Nat'n Percentile</Text>
-          <Text style={[pdfStyles.value, { fontSize: 9 }]}>{percentileRank}th</Text>
+          <Text style={[pdfStyles.value, { fontSize: 9 }]}>{Number.isFinite(percentileRank) ? `${percentileRank}th` : "Unavailable"}</Text>
         </View>
         <View style={[pdfStyles.metricBox, { flex: 1 }]}>
           <Text style={pdfStyles.label}>3-Mo Trajectory</Text>
           <Text style={[pdfStyles.value, { fontSize: 9 }]}>
-            {changePct >= 0 ? "+" : ""}
-            {changePct}%
+            {Number.isFinite(changePct) ? `${changePct >= 0 ? "+" : ""}${changePct}%` : "Unavailable"}
           </Text>
         </View>
         <View style={[pdfStyles.metricBox, { flex: 1 }]}>

@@ -64,6 +64,12 @@ class ServingAndNarrationTests(unittest.TestCase):
                     result=client.get('/dashboard',params={'disease':'Leptospirosis'})
                     self.assertEqual(result.json()['series'],{})
                     self.assertEqual(result.json()['source_policy']['status'],'excluded_unresolved_measure')
+                    availability=client.get('/availability',params={'disease':'Leptospirosis'}).json()['regions']
+                    self.assertEqual(len(availability),18)
+                    self.assertTrue(all(row['reason_code']=='unresolved_measure' for row in availability.values()))
+                    for disease in ['Influenza-like Illness','Leptospirosis','Heat-Related Illness']:
+                        response=client.get('/reported/National',params={'disease':disease,'year':2025,'month':1})
+                        self.assertEqual(response.status_code,422)
             finally:
                 eng.dispose()
                 if cached is None:

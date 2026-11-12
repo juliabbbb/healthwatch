@@ -17,7 +17,7 @@ export function KpiStrip({ data }: { data: KpiStripData }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       <KpiCard
-        label="Next Month Forecast"
+        label="Next Available Forecast"
         value={data.nextMonth.value}
         sub={data.nextMonth.sub}
       />

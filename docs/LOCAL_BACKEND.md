@@ -30,3 +30,9 @@ Create the local database's parent directory first. The build can take time and 
 `./run-backend.ps1 -Mode Configured` uses DATABASE_URL from the environment or the existing .env. An invalid/paused/unavailable Supabase connection stops startup rather than changing targets. The configured connection currently rejects the tenant/user and must be corrected by the project owner before this mode can work. Never commit credentials. Existing-database schema migration and shared publication remain separate reviewed actions.
 
 The launcher restores the parent process's database/research environment settings after starting its child process. `/health` exposes only readiness, database type and snapshot identity; it does not expose connection credentials.
+
+## Matching local reference artifacts
+
+The local launcher now reads data/local/active_run.json when using the default local database. It verifies that artifact directory and checks that its run identity matches the database's health response. This keeps the annual heat endpoint on the same explicitly selected run. The pointer is local and ignored. For another explicit snapshot, pass both -DatabasePath and -OutputDirectory; the caller's environment values are restored after launch.
+
+On this computer the active local snapshot is operational-ili-a78819fcd460 from data/local/runs/provisional-ili-v1. The previous local database is preserved at data/local/healthwatch_before_ili_20261112.db. Neither file is the shared Supabase database. A restart can use ./run-dev.ps1; its frontend now explicitly uses port 5173 with strict port selection and waits for an HTTP response, rather than inheriting Vite's 8080 configuration while printing the wrong URL.

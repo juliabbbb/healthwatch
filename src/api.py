@@ -936,6 +936,25 @@ def health():
             "shared_database": dialect == "postgresql"}
 
 
+def _region_availability(disease):
+    from .availability import describe
+    result={}
+    for region in REGION_META:
+        code=region["code"]
+        hist=_REGIONAL[(_REGIONAL.region_code==code)&(_REGIONAL.disease==disease)]
+        fcst=_FORECASTS[(_FORECASTS.region_code==code)&(_FORECASTS.disease==disease)]
+        result[code]=describe(hist,fcst,config.DISEASE_METADATA[disease])
+    return result
+
+
+@app.get("/availability", tags=["info"])
+def availability(disease: str = Query(default=DISEASE_DEFAULT)):
+    _check_disease(disease)
+    if not _data_ready:
+        raise HTTPException(503,"Data still loading")
+    return {"disease":disease,"regions":_region_availability(disease),"source_policy":config.DISEASE_METADATA[disease]["source_policy"]}
+
+
 @app.get("/dashboard", tags=["objective_4_dashboard"])
 @limiter.limit("300/minute")
 def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
@@ -949,7 +968,7 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
     source_info = config.DISEASE_METADATA.get(disease, {})
     if source_info.get("analytical_available") is False:
         return {"disease": disease, "forecast_available": False, "unavailable_reason": source_info["unavailable_reason"],
-                "source_policy": source_info["source_policy"], "series": {}, "metrics": {}, "outbreak": []}
+                "source_policy": source_info["source_policy"], "availability": _region_availability(disease), "series": {}, "metrics": {}, "outbreak": []}
     forecast_available = source_info.get("forecast_available", False)
     unavailable_reason = config.DISEASE_METADATA.get(disease, {}).get("unavailable_reason")
 
@@ -1019,6 +1038,7 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
     return {
         "disease": disease,
         "provenance": _RUN_PROVENANCE,
+        "availability": _region_availability(disease),
         "forecast_available": forecast_available,
         "unavailable_reason": unavailable_reason,
         "source_policy": source_info["source_policy"],
@@ -1149,6 +1169,8 @@ def reported_breakdown(
     Accepts region names or codes; "National" spans all 18 regions.
     """
     _check_disease(disease)
+    if disease in {"Influenza-like Illness","Leptospirosis","Heat-Related Illness"}:
+        raise HTTPException(422, "This source has no supported record-level demographic breakdown. Monthly history/forecasts or annual references have separate availability.")
     if (year * 100 + month) > (config.DATA_END_YEAR * 100 + config.DATA_END_MONTH):
         raise HTTPException(
             status_code=404,
@@ -1414,12 +1436,17 @@ def diseases():
 
 
 @app.get("/reference/heat-events", tags=["reference"])
-def heat_events(region: str | None = Query(default=None)):
+def heat_events(region: str | None = Query(default=None), region_code: str | None = Query(default=None)):
     """Reference-only heat-related health events transcribed from DOH surveillance reports."""
     path = ingest.PROCESSED_DIR / "heat_reference_events.csv"
     if not path.exists():
         raise HTTPException(status_code=404, detail="Heat reference data not available")
-    df = pd.read_csv(path)
+    from .heat_ingest import normalize_heat
+    df = normalize_heat(pd.read_csv(path))
+    if region_code:
+        canonical=_resolve_region(region_code)
+        if canonical is None:raise HTTPException(404,"Unknown region")
+        region=_label(canonical)
     if region:
         df = df[df["canonical_region"].str.lower() == region.lower()]
     return {

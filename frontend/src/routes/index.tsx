@@ -153,6 +153,7 @@ function MapView() {
             regionCode={selected}
             illness={illness}
             monthIndex={monthIndex}
+            onSelectMonth={setMonthIndex}
             mode={mode}
             onModeChange={setMode}
             onClose={() => setSelected(null)}
@@ -203,6 +204,7 @@ function MapView() {
         regionCode={mobileNationalOpen ? null : selected}
         illness={illness}
         monthIndex={monthIndex}
+            onSelectMonth={setMonthIndex}
         mode={mode}
         onModeChange={setMode}
         layer={layer}

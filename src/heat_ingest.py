@@ -1,7 +1,7 @@
 """Reference ingestion for Heat-Related Illness events.
 
 Source: DOH Heat-Related Events Report (data/raw/new_diseases/Heat-Related.pdf),
-Table 1, pages 2-3 (43 events across 13 regions, 2019 and 2023-2026).
+Table 1, pages 2-3 (43 rows, 113 events across 13 regions, 2019 and 2023-2026).
 
 Notice:
   This dataset contains annual reference aggregates only (no monthly or weekly
@@ -19,6 +19,18 @@ HEAT_AUDIT_CSV = "data/audit/heat_events.csv"
 DISEASE = "Heat-Related Illness"
 
 REGION_NORMALIZATION = {
+    "I": "Ilocos Region",
+    "III": "Central Luzon",
+    "IV-A": "CALABARZON",
+    "IV-B": "MIMAROPA",
+    "V": "Bicol Region",
+    "VI": "Western Visayas",
+    "VII": "Central Visayas",
+    "VIII": "Eastern Visayas",
+    "IX": "Zamboanga Peninsula",
+    "XI": "Davao Region",
+    "XII": "SOCCSKSARGEN",
+    "NIR": "Negros Island Region",
     "BARMM": "Bangsamoro (BARMM)",
     "CAR": "Cordillera Administrative Region",
     "Caraga": "Caraga",
@@ -35,6 +47,14 @@ REGION_NORMALIZATION = {
 }
 
 
+def normalize_heat(df):
+    df=df.copy()
+    df['canonical_region']=df.region.map(REGION_NORMALIZATION)
+    if df.canonical_region.isna().any():
+        raise ValueError('Unmapped heat source region: '+str(df.loc[df.canonical_region.isna(),'region'].unique()))
+    return df
+
+
 def process_heat(audit_path=None):
     audit_path = Path(audit_path) if audit_path else ingest.ROOT / HEAT_AUDIT_CSV
     if not audit_path.exists():
@@ -42,7 +62,7 @@ def process_heat(audit_path=None):
 
     df = pd.read_csv(audit_path)
 
-    df["canonical_region"] = df["region"].map(REGION_NORMALIZATION).fillna(df["region"])
+    df = normalize_heat(df)
     df["disease"] = DISEASE
     df["forecast_available"] = False
     df["unavailable_reason"] = (

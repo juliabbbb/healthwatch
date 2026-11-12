@@ -1,0 +1,4 @@
+region,observed_months,required_observed_months,additional_observed_months_needed,first_observed,last_observed,internal_calendar_positions,unreported_internal_months,reason,run_id
+Cagayan Valley,12,24,12,2022-11-01,2025-04-01,30,18,insufficient_observed_history,operational-ili-a78819fcd460
+Ilocos Region,8,24,16,2022-10-01,2026-08-01,47,39,insufficient_observed_history,operational-ili-a78819fcd460
+MIMAROPA,11,24,13,2019-09-01,2024-08-01,60,49,insufficient_observed_history,operational-ili-a78819fcd460
