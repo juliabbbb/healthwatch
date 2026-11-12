@@ -1,0 +1,81 @@
+﻿dataset,column,records,blank_count,blank_pct,literal_null_token_count,distinct_nonblank,numeric_nonblank,nonnumeric_nonblank,numeric_min,numeric_max,numeric_sum,negative_count,zero_count,fractional_count,replacement_character_cells,date_typed_cells
+Dengue,Year,749683,0,0.0,0,8,749683,0,2019.0,2026.0,1516390221.0,0,0,0,0,
+Dengue,Morbidity Week,749683,0,0.0,0,53,749683,0,1.0,53.0,20445063.0,0,0,0,0,
+Dengue,Region,749683,0,0.0,0,18,0,749683,,,,0,0,0,0,
+Dengue,Province,749683,0,0.0,0,119,0,749683,,,,0,0,0,0,
+Dengue,Age Group,749683,0,0.0,0,6,0,749683,,,,0,0,0,0,
+Dengue,Sex,749683,0,0.0,0,2,0,749683,,,,0,0,0,0,
+Dengue,Clinical Classification,749683,0,0.0,0,5,0,749683,,,,0,0,0,0,
+Dengue,Final Case Classification,749683,0,0.0,0,3,0,749683,,,,0,0,0,0,
+Dengue,Admitted,749683,0,0.0,0,2,0,749683,,,,0,0,0,0,
+Dengue,No. of Cases,749683,0,0.0,0,122,749683,0,1.0,245.0,1959058.0,0,0,0,0,
+Dengue,No. of Deaths,749683,0,0.0,0,5,749683,0,0.0,4.0,7214.0,0,742638,0,0,
+ILI,Year,62490,0,0.0,0,53,62490,0,1.0,53.0,1618894.0,0,0,0,0,
+ILI,Morbidity Week,62490,0,0.0,0,9,62490,0,2018.0,2026.0,126369557.0,0,0,0,0,
+ILI,Region,62490,0,0.0,0,18,0,62490,,,,0,0,0,0,
+ILI,Province,62490,0,0.0,0,149,0,62490,,,,0,0,0,0,
+ILI,Vaccination Status,62490,0,0.0,0,3,0,62490,,,,0,0,0,0,
+ILI,Influenza Positive,62490,0,0.0,0,7,0,62490,,,,0,0,0,0,
+ILI,Cases,62490,0,0.0,0,350,62490,0,1.0,650.0,1262533.0,0,0,0,0,
+Leptospirosis,Year,30792,187,0.607301,0,8,30605,0,2019.0,2026.0,61930723.0,0,0,0,0,
+Leptospirosis,Morbidity Week,30792,187,0.607301,0,53,30605,0,1.0,53.0,910638.0,0,0,0,0,
+Leptospirosis,Region,30792,187,0.607301,0,18,0,30605,,,,0,0,0,0,
+Leptospirosis,Province,30792,187,0.607301,0,118,0,30605,,,,0,0,0,0,
+Leptospirosis,Age Group,30792,187,0.607301,0,6,0,30605,,,,0,0,0,0,
+Leptospirosis,Sex,30792,187,0.607301,0,2,0,30605,,,,0,0,0,0,
+Leptospirosis,Admitted,30792,189,0.613796,0,2,0,30603,,,,0,0,0,0,
+Leptospirosis,Case Classification,30792,26540,86.191218,0,3,0,4252,,,,0,0,0,0,
+Leptospirosis,Cases,30792,187,0.607301,0,25,4252,26353,1.0,31.0,6563.0,0,0,0,0,
+Leptospirosis,Deaths,30792,187,0.607301,0,54,30605,0,0.0,77.0,46609.0,0,3633,0,0,
+FWBD definitions,Disease,5,0,0.0,0,5,0,5,,,,0,0,0,0,
+FWBD definitions,Case Definition,5,0,0.0,0,5,0,5,,,,0,0,0,0,
+FWBD definitions,UNNAMED_COLUMN_3,5,2,40.0,0,3,0,3,,,,0,0,0,0,
+FWBD Case Definitions,Disease,5,0,0.0,0,5,0,5,,,,0,0,0,,0.0
+FWBD Case Definitions,Case Definition,5,0,0.0,0,5,0,5,,,,0,0,0,,0.0
+FWBD Case Definitions,UNNAMED_COLUMN_3,5,2,40.0,0,3,0,3,,,,0,0,0,,0.0
+FWBD ABD,Year,75988,0,0.0,0,9,75988,0,2018.0,2026.0,153625429.0,0,0,0,,0.0
+FWBD ABD,Morbidity Month,75988,0,0.0,0,12,75988,0,1.0,12.0,453288.0,0,0,0,,0.0
+FWBD ABD,Morbidity Week,75988,0,0.0,0,53,75988,0,1.0,53.0,1842156.0,0,0,0,,0.0
+FWBD ABD,Region,75988,0,0.0,0,18,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Province/Highly Urbanized Cities,75988,0,0.0,0,119,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Age Group,75988,0,0.0,0,6,0,75988,,,,0,0,0,,12524.0
+FWBD ABD,Sex,75988,0,0.0,0,2,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Admitted,75988,0,0.0,0,2,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Outcome,75988,0,0.0,0,2,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Laboratory Result,75988,0,0.0,0,6,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Organism,75988,61,0.08027583302626731,31524,127,0,75927,,,,0,0,0,,0.0
+FWBD ABD,Case Classification,75988,0,0.0,0,2,0,75988,,,,0,0,0,,0.0
+FWBD ABD,Total Cases,75988,0,0.0,0,20,75988,0,1.0,42.0,102352.0,0,0,0,,0.0
+FWBD Cholera,Year,13514,0,0.0,0,9,13514,0,2018.0,2026.0,27318920.0,0,0,0,,0.0
+FWBD Cholera,Morbidity Month,13514,0,0.0,0,12,13514,0,1.0,12.0,83356.0,0,0,0,,0.0
+FWBD Cholera,Morbidity Week,13514,0,0.0,0,53,13514,0,1.0,53.0,339106.0,0,0,0,,0.0
+FWBD Cholera,Region,13514,0,0.0,0,18,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Province/Highly Urbanized Cities,13514,0,0.0,0,108,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Age Group,13514,0,0.0,0,6,0,13514,,,,0,0,0,,3530.0
+FWBD Cholera,Sex,13514,0,0.0,0,2,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Case Classification,13514,0,0.0,0,3,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Admitted,13514,0,0.0,0,2,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Outcome,13514,0,0.0,0,2,0,13514,,,,0,0,0,,0.0
+FWBD Cholera,Total Cases,13514,0,0.0,0,36,13514,0,1.0,72.0,25480.0,0,0,0,,0.0
+FWBD Typhoid,Year,119325,0,0.0,0,9,119325,0,2018.0,2026.0,241276279.0,0,0,0,,0.0
+FWBD Typhoid,Morbidity Month,119325,0,0.0,0,12,119325,0,1.0,12.0,757513.0,0,0,0,,0.0
+FWBD Typhoid,Morbidity Week,119325,0,0.0,0,53,119325,0,1.0,53.0,3092198.0,0,0,0,,0.0
+FWBD Typhoid,Region,119325,0,0.0,0,18,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Province/Highly Urbanized Cities,119325,0,0.0,0,118,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Age Group,119325,0,0.0,0,6,0,119325,,,,0,0,0,,29601.0
+FWBD Typhoid,Sex,119325,0,0.0,0,2,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Case Classification,119325,0,0.0,0,3,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Admitted,119325,0,0.0,0,2,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Outcome,119325,0,0.0,0,2,0,119325,,,,0,0,0,,0.0
+FWBD Typhoid,Total Cases,119325,0,0.0,0,26,119325,0,1.0,131.0,174346.0,0,0,0,,0.0
+FWBD Hep A,Year,1313,0,0.0,0,8,1313,0,2018.0,2025.0,2653544.0,0,0,0,,0.0
+FWBD Hep A,Morbidity Month,1313,0,0.0,0,12,1313,0,1.0,12.0,7640.0,0,0,0,,0.0
+FWBD Hep A,Morbidity Week,1313,175,13.328255902513328,0,53,1138,0,1.0,53.0,27207.0,0,0,0,,0.0
+FWBD Hep A,Region,1313,0,0.0,0,18,999,314,1.0,12.0,7410.0,0,0,0,,0.0
+FWBD Hep A,Province,1313,0,0.0,0,72,0,1313,,,,0,0,0,,0.0
+FWBD Hep A,Province/City,1313,0,0.0,0,103,0,1313,,,,0,0,0,,0.0
+FWBD Hep A,Age,1313,42,3.198781416603199,0,546,1271,0,0.0,90.1,38892.2,0,2,1140,,0.0
+FWBD Hep A,Sex,1313,0,0.0,0,2,0,1313,,,,0,0,0,,0.0
+FWBD Hep A,Case Classification,1313,0,0.0,0,1,0,1313,,,,0,0,0,,0.0
+FWBD Hep A,Admitted,1313,0,0.0,0,2,0,1313,,,,0,0,0,,0.0
+FWBD Hep A,Outcome,1313,0,0.0,0,2,0,1313,,,,0,0,0,,0.0

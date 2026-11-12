@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 from prophet import Prophet
 
-from . import features, ingest
+from . import config, features, ingest
 
 logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
 
@@ -187,6 +187,8 @@ def run(probes_only=False):
     metric_rows = []
     val_rows = []
     for (disease, region), group in df.groupby(["disease", "region"]):
+        if disease not in config.FORECAST_READY_DISEASES:
+            continue
         series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
         if len(series) < MIN_TRAIN_MONTHS:
             print(

@@ -1,0 +1,992 @@
+﻿dataset,column,value,rows
+Dengue,Year,2024,151921
+Dengue,Year,2019,123663
+Dengue,Year,2025,117974
+Dengue,Year,2022,97457
+Dengue,Year,2023,95707
+Dengue,Year,2026,71614
+Dengue,Year,2020,46396
+Dengue,Year,2021,44951
+Dengue,Morbidity Week,33,21779
+Dengue,Morbidity Week,32,21495
+Dengue,Morbidity Week,31,21116
+Dengue,Morbidity Week,34,20842
+Dengue,Morbidity Week,35,20732
+Dengue,Morbidity Week,30,20464
+Dengue,Morbidity Week,29,19871
+Dengue,Morbidity Week,28,19014
+Dengue,Morbidity Week,36,18908
+Dengue,Morbidity Week,27,18060
+Dengue,Morbidity Week,37,16764
+Dengue,Morbidity Week,26,16461
+Dengue,Morbidity Week,38,16296
+Dengue,Morbidity Week,40,15845
+Dengue,Morbidity Week,39,15816
+Dengue,Morbidity Week,41,15672
+Dengue,Morbidity Week,2,15583
+Dengue,Morbidity Week,25,15567
+Dengue,Morbidity Week,42,15206
+Dengue,Morbidity Week,3,15142
+Dengue,Morbidity Week,1,14795
+Dengue,Morbidity Week,4,14766
+Dengue,Morbidity Week,43,14578
+Dengue,Morbidity Week,5,14477
+Dengue,Morbidity Week,24,14351
+Dengue,Morbidity Week,44,14239
+Dengue,Morbidity Week,45,13792
+Dengue,Morbidity Week,46,13467
+Dengue,Morbidity Week,6,13404
+Dengue,Morbidity Week,7,13348
+Dengue,Morbidity Week,47,13261
+Dengue,Morbidity Week,48,13065
+Dengue,Morbidity Week,23,12955
+Dengue,Morbidity Week,9,12891
+Dengue,Morbidity Week,8,12805
+Dengue,Morbidity Week,10,12365
+Dengue,Morbidity Week,49,12207
+Dengue,Morbidity Week,22,11846
+Dengue,Morbidity Week,11,11483
+Dengue,Morbidity Week,50,11321
+Dengue,Morbidity Week,21,11040
+Dengue,Morbidity Week,12,10748
+Dengue,Morbidity Week,20,10700
+Dengue,Morbidity Week,19,10291
+Dengue,Morbidity Week,18,10153
+Dengue,Morbidity Week,14,9984
+Dengue,Morbidity Week,13,9955
+Dengue,Morbidity Week,15,9930
+Dengue,Morbidity Week,16,9796
+Dengue,Morbidity Week,52,9728
+Dengue,Morbidity Week,17,9721
+Dengue,Morbidity Week,51,9578
+Dengue,Morbidity Week,53,2010
+Dengue,Region,NATIONAL CAPITAL REGION (NCR),98167
+Dengue,Region,REGION III (CENTRAL LUZON),82242
+Dengue,Region,REGION IV-A (CALABARZON),71566
+Dengue,Region,REGION X (NORTHERN MINDANAO),44487
+Dengue,Region,REGION VII (CENTRAL VISAYAS),41630
+Dengue,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),40416
+Dengue,Region,REGION XI (DAVAO REGION),40229
+Dengue,Region,MIMAROPA REGION,39088
+Dengue,Region,REGION VI (WESTERN VISAYAS),38647
+Dengue,Region,REGION XII (SOCCSKSARGEN),38543
+Dengue,Region,REGION IX (ZAMBOANGA PENINSULA),37635
+Dengue,Region,REGION I (ILOCOS REGION),33985
+Dengue,Region,REGION II (CAGAYAN VALLEY),29458
+Dengue,Region,REGION XIII (CARAGA),26775
+Dengue,Region,REGION VIII (EASTERN VISAYAS),24848
+Dengue,Region,NEGROS ISLAND REGION (NIR),24843
+Dengue,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),24125
+Dengue,Region,REGION V (BICOL REGION),12999
+Dengue,Age Group,5 to 14,231325
+Dengue,Age Group,15 to 24,170187
+Dengue,Age Group,25 to 64,166249
+Dengue,Age Group,Below 5,143978
+Dengue,Age Group,65 and above,35974
+Dengue,Age Group,Unspecified,1970
+Dengue,Sex,M,385118
+Dengue,Sex,F,364565
+Dengue,Clinical Classification,DENGUE WITH WARNING SIGNS,377032
+Dengue,Clinical Classification,DENGUE WITHOUT WARNING SIGNS,323111
+Dengue,Clinical Classification,UNKNOWN,25516
+Dengue,Clinical Classification,SEVERE DENGUE,23816
+Dengue,Clinical Classification,UNSPECIFIED,208
+Dengue,Final Case Classification,SUSPECT,400672
+Dengue,Final Case Classification,CONFIRMED,247976
+Dengue,Final Case Classification,PROBABLE,101035
+Dengue,Admitted,Y,683876
+Dengue,Admitted,N,65807
+Dengue,No. of Deaths,0,742638
+Dengue,No. of Deaths,1,6887
+Dengue,No. of Deaths,2,148
+Dengue,No. of Deaths,3,9
+Dengue,No. of Deaths,4,1
+ILI,Year,31,1363
+ILI,Year,32,1362
+ILI,Year,30,1355
+ILI,Year,33,1353
+ILI,Year,5,1336
+ILI,Year,2,1330
+ILI,Year,29,1329
+ILI,Year,3,1327
+ILI,Year,6,1319
+ILI,Year,4,1289
+ILI,Year,10,1284
+ILI,Year,34,1282
+ILI,Year,7,1279
+ILI,Year,8,1279
+ILI,Year,1,1278
+ILI,Year,28,1275
+ILI,Year,11,1272
+ILI,Year,9,1263
+ILI,Year,27,1262
+ILI,Year,42,1256
+ILI,Year,25,1247
+ILI,Year,26,1244
+ILI,Year,41,1243
+ILI,Year,40,1233
+ILI,Year,12,1232
+ILI,Year,43,1212
+ILI,Year,37,1205
+ILI,Year,38,1191
+ILI,Year,23,1187
+ILI,Year,44,1183
+ILI,Year,24,1179
+ILI,Year,22,1171
+ILI,Year,39,1171
+ILI,Year,36,1169
+ILI,Year,20,1160
+ILI,Year,19,1147
+ILI,Year,13,1146
+ILI,Year,35,1140
+ILI,Year,21,1122
+ILI,Year,14,1120
+ILI,Year,15,1111
+ILI,Year,45,1106
+ILI,Year,18,1089
+ILI,Year,47,1083
+ILI,Year,48,1074
+ILI,Year,16,1068
+ILI,Year,46,1062
+ILI,Year,17,1046
+ILI,Year,49,1040
+ILI,Year,50,996
+ILI,Year,52,914
+ILI,Year,51,905
+ILI,Year,53,201
+ILI,Morbidity Week,2025,9627
+ILI,Morbidity Week,2023,8977
+ILI,Morbidity Week,2024,8412
+ILI,Morbidity Week,2022,7320
+ILI,Morbidity Week,2021,6185
+ILI,Morbidity Week,2018,6070
+ILI,Morbidity Week,2019,5944
+ILI,Morbidity Week,2020,5238
+ILI,Morbidity Week,2026,4717
+ILI,Region,NATIONAL CAPITAL REGION (NCR),7767
+ILI,Region,REGION IV-A (CALABARZON),5904
+ILI,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),4631
+ILI,Region,REGION III (CENTRAL LUZON),4611
+ILI,Region,REGION X (NORTHERN MINDANAO),4280
+ILI,Region,REGION XI (DAVAO REGION),4208
+ILI,Region,REGION VIII (EASTERN VISAYAS),4144
+ILI,Region,REGION XIII (CARAGA),4007
+ILI,Region,REGION I (ILOCOS REGION),3344
+ILI,Region,REGION VII (CENTRAL VISAYAS),3201
+ILI,Region,REGION XII (SOCCSKSARGEN),3104
+ILI,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2598
+ILI,Region,REGION II (CAGAYAN VALLEY),2508
+ILI,Region,REGION IV-B (MIMAROPA),2291
+ILI,Region,REGION IX (ZAMBOANGA PENINSULA),2068
+ILI,Region,NEGROS ISLAND REGION (NIR),2023
+ILI,Region,REGION VI (WESTERN VISAYAS),1215
+ILI,Region,REGION V (BICOL REGION),586
+ILI,Vaccination Status,UNKNOWN,36980
+ILI,Vaccination Status,NO,24787
+ILI,Vaccination Status,YES,723
+ILI,Influenza Positive,UNKNOWN,26486
+ILI,Influenza Positive,NOT DONE,18609
+ILI,Influenza Positive,NEGATIVE,10739
+ILI,Influenza Positive,POSITIVE,6347
+ILI,Influenza Positive,INVALID,196
+ILI,Influenza Positive,EQUIVOCAL,103
+ILI,Influenza Positive,Negative,10
+Leptospirosis,Year,2025,6987
+Leptospirosis,Year,2026,5911
+Leptospirosis,Year,2024,4971
+Leptospirosis,Year,2023,4252
+Leptospirosis,Year,2022,3163
+Leptospirosis,Year,2019,2338
+Leptospirosis,Year,2021,1594
+Leptospirosis,Year,2020,1389
+Leptospirosis,Year,,187
+Leptospirosis,Morbidity Week,32,1469
+Leptospirosis,Morbidity Week,31,1409
+Leptospirosis,Morbidity Week,33,1312
+Leptospirosis,Morbidity Week,36,1164
+Leptospirosis,Morbidity Week,34,1150
+Leptospirosis,Morbidity Week,37,1145
+Leptospirosis,Morbidity Week,30,1068
+Leptospirosis,Morbidity Week,35,1057
+Leptospirosis,Morbidity Week,38,950
+Leptospirosis,Morbidity Week,29,801
+Leptospirosis,Morbidity Week,40,711
+Leptospirosis,Morbidity Week,45,709
+Leptospirosis,Morbidity Week,39,696
+Leptospirosis,Morbidity Week,44,652
+Leptospirosis,Morbidity Week,28,648
+Leptospirosis,Morbidity Week,43,629
+Leptospirosis,Morbidity Week,41,612
+Leptospirosis,Morbidity Week,27,603
+Leptospirosis,Morbidity Week,42,595
+Leptospirosis,Morbidity Week,46,594
+Leptospirosis,Morbidity Week,47,579
+Leptospirosis,Morbidity Week,48,559
+Leptospirosis,Morbidity Week,1,525
+Leptospirosis,Morbidity Week,26,524
+Leptospirosis,Morbidity Week,49,518
+Leptospirosis,Morbidity Week,2,514
+Leptospirosis,Morbidity Week,3,504
+Leptospirosis,Morbidity Week,25,499
+Leptospirosis,Morbidity Week,24,463
+Leptospirosis,Morbidity Week,4,453
+Leptospirosis,Morbidity Week,7,434
+Leptospirosis,Morbidity Week,5,412
+Leptospirosis,Morbidity Week,23,402
+Leptospirosis,Morbidity Week,50,402
+Leptospirosis,Morbidity Week,9,394
+Leptospirosis,Morbidity Week,8,389
+Leptospirosis,Morbidity Week,6,385
+Leptospirosis,Morbidity Week,52,372
+Leptospirosis,Morbidity Week,22,367
+Leptospirosis,Morbidity Week,10,363
+Leptospirosis,Morbidity Week,51,349
+Leptospirosis,Morbidity Week,21,322
+Leptospirosis,Morbidity Week,11,314
+Leptospirosis,Morbidity Week,20,301
+Leptospirosis,Morbidity Week,15,298
+Leptospirosis,Morbidity Week,12,289
+Leptospirosis,Morbidity Week,18,276
+Leptospirosis,Morbidity Week,19,276
+Leptospirosis,Morbidity Week,16,274
+Leptospirosis,Morbidity Week,14,257
+Leptospirosis,Morbidity Week,13,253
+Leptospirosis,Morbidity Week,17,246
+Leptospirosis,Morbidity Week,,187
+Leptospirosis,Morbidity Week,53,118
+Leptospirosis,Region,NATIONAL CAPITAL REGION (NCR),7775
+Leptospirosis,Region,REGION III (CENTRAL LUZON),2950
+Leptospirosis,Region,REGION IV-A (CALABARZON),2670
+Leptospirosis,Region,REGION II (CAGAYAN VALLEY),2644
+Leptospirosis,Region,REGION VI (WESTERN VISAYAS),2174
+Leptospirosis,Region,REGION XI (DAVAO REGION),1768
+Leptospirosis,Region,REGION I (ILOCOS REGION),1465
+Leptospirosis,Region,REGION VII (CENTRAL VISAYAS),1442
+Leptospirosis,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),1251
+Leptospirosis,Region,NEGROS ISLAND REGION (NIR),1249
+Leptospirosis,Region,REGION V (BICOL REGION),1102
+Leptospirosis,Region,MIMAROPA REGION,1086
+Leptospirosis,Region,REGION XIII (CARAGA),1038
+Leptospirosis,Region,REGION IX (ZAMBOANGA PENINSULA),592
+Leptospirosis,Region,REGION VIII (EASTERN VISAYAS),495
+Leptospirosis,Region,REGION X (NORTHERN MINDANAO),475
+Leptospirosis,Region,REGION XII (SOCCSKSARGEN),272
+Leptospirosis,Region,,187
+Leptospirosis,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),157
+Leptospirosis,Age Group,25-64,17456
+Leptospirosis,Age Group,15-24,7678
+Leptospirosis,Age Group,5-14,2887
+Leptospirosis,Age Group,65+,2086
+Leptospirosis,Age Group,0-4,456
+Leptospirosis,Age Group,,187
+Leptospirosis,Age Group,UNKNOWN,42
+Leptospirosis,Sex,M,24525
+Leptospirosis,Sex,F,6080
+Leptospirosis,Sex,,187
+Leptospirosis,Admitted,Y,26922
+Leptospirosis,Admitted,N,3681
+Leptospirosis,Admitted,,189
+Leptospirosis,Case Classification,,26540
+Leptospirosis,Case Classification,S,3426
+Leptospirosis,Case Classification,C,775
+Leptospirosis,Case Classification,P,51
+Leptospirosis,Cases,S,21228
+Leptospirosis,Cases,1,3190
+Leptospirosis,Cases,P,2806
+Leptospirosis,Cases,C,2319
+Leptospirosis,Cases,2,616
+Leptospirosis,Cases,3,199
+Leptospirosis,Cases,,187
+Leptospirosis,Cases,4,96
+Leptospirosis,Cases,5,57
+Leptospirosis,Cases,6,31
+Leptospirosis,Cases,8,16
+Leptospirosis,Cases,7,13
+Leptospirosis,Cases,10,6
+Leptospirosis,Cases,12,6
+Leptospirosis,Cases,11,5
+Leptospirosis,Cases,16,3
+Leptospirosis,Cases,9,3
+Leptospirosis,Cases,14,2
+Leptospirosis,Cases,15,2
+Leptospirosis,Cases,13,1
+Leptospirosis,Cases,22,1
+Leptospirosis,Cases,31,1
+Leptospirosis,Cases,23,1
+Leptospirosis,Cases,17,1
+Leptospirosis,Cases,26,1
+Leptospirosis,Cases,18,1
+Leptospirosis,Deaths,1,19900
+Leptospirosis,Deaths,2,3739
+Leptospirosis,Deaths,0,3633
+Leptospirosis,Deaths,3,1375
+Leptospirosis,Deaths,4,640
+Leptospirosis,Deaths,5,345
+Leptospirosis,Deaths,6,253
+Leptospirosis,Deaths,,187
+Leptospirosis,Deaths,7,154
+Leptospirosis,Deaths,8,120
+Leptospirosis,Deaths,9,87
+Leptospirosis,Deaths,10,54
+Leptospirosis,Deaths,11,49
+Leptospirosis,Deaths,12,33
+Leptospirosis,Deaths,13,29
+Leptospirosis,Deaths,14,21
+Leptospirosis,Deaths,17,21
+Leptospirosis,Deaths,15,18
+Leptospirosis,Deaths,16,16
+Leptospirosis,Deaths,18,13
+Leptospirosis,Deaths,19,12
+Leptospirosis,Deaths,20,11
+Leptospirosis,Deaths,24,10
+Leptospirosis,Deaths,21,10
+Leptospirosis,Deaths,23,8
+Leptospirosis,Deaths,25,6
+Leptospirosis,Deaths,34,4
+Leptospirosis,Deaths,35,3
+Leptospirosis,Deaths,36,3
+Leptospirosis,Deaths,29,3
+Leptospirosis,Deaths,38,3
+Leptospirosis,Deaths,33,2
+Leptospirosis,Deaths,37,2
+Leptospirosis,Deaths,71,2
+Leptospirosis,Deaths,52,2
+Leptospirosis,Deaths,27,2
+Leptospirosis,Deaths,44,2
+Leptospirosis,Deaths,30,2
+Leptospirosis,Deaths,28,2
+Leptospirosis,Deaths,32,1
+Leptospirosis,Deaths,63,1
+Leptospirosis,Deaths,54,1
+Leptospirosis,Deaths,58,1
+Leptospirosis,Deaths,60,1
+Leptospirosis,Deaths,48,1
+Leptospirosis,Deaths,53,1
+Leptospirosis,Deaths,64,1
+Leptospirosis,Deaths,39,1
+Leptospirosis,Deaths,77,1
+Leptospirosis,Deaths,55,1
+Leptospirosis,Deaths,50,1
+Leptospirosis,Deaths,61,1
+Leptospirosis,Deaths,26,1
+Leptospirosis,Deaths,31,1
+Leptospirosis,Deaths,22,1
+FWBD definitions,Disease,Food and Waterborne Diseases,1
+FWBD definitions,Disease,Acute Bloody Diarrhea (ABD),1
+FWBD definitions,Disease,Cholera,1
+FWBD definitions,Disease,"Typhoid Fever
+Source: DM 2024-0333",1
+FWBD definitions,Disease,"Acute Viral Hepatitis
+Source: DM 2024-0333",1
+FWBD definitions,Case Definition,Old (For Years 2023 and below) Source: PIDSR Manual of Procedure 2014,1
+FWBD definitions,Case Definition,"Suspect
+A person with acute diarrhea with visible blood in the stool",1
+FWBD definitions,Case Definition,"Suspect
+Disease unknown in the area: A person aged 5 years or more with severe dehydration or who died from acute watery diarrhea, OR
+Disease endemic in the area: A person aged 5 years or more with acute watery diarrhea with or without vomiting, OR
+In an area where there is a cholera epidemic: A person with acute watery diarrhea, with or without vomiting.
+
+Confirmed
+A suspected case that is laboratory-confirmed, through isolation of Vibrio cholerae 01 or 0139 from stools in any patient with diarrhea.",1
+FWBD definitions,Case Definition,"Suspect
+A person with an illness characterized by insidious onset of sustained fever, headache, malaise, anorexia, relative bradycardia, constipation or diarrhea, and non-productive cough for 5 days or more.
+
+Probable
+A suspected case that is positive in Typhoid Rapid Diagnostic Test; OR
+A suspected case that is epidemiologically linked to a confirmed case in an outbreak.
+
+Confirmed
+A suspected or probable case that is laboratory confirmed.
+Laboratory confirmation by culture or molecular methods of Salmonella Typhi or detection of Salmonella Typhi or Salmonella Paratyphi DNA from a normally sterile site.",1
+FWBD definitions,Case Definition,"Suspect
+A person with acute illness characterized by acute jaundice, dark urine, loss of appetite, body weakness, extreme fatigue, and right upper quadrant tenderness.
+
+Confirmed
+A suspected case that is laboratory-confirmed.
+
+Laboratory Confirmation:
+Hepatitis A: Positive for IgM anti-HAV
+Hepatitis B: Positive for Hepatitis B surface antigen (HBsAg) or positive for IgM anti-HBc and antiHBe
+Non-A, non-B: Negative for IgM anti-HAV and IgM anti-HBs (or HBsAg)
+Hepatitis C: Positive for anti-HCV
+Hepatitis D: HBsAg positive or IgM anti-HBc positive PLUS anti-HDV positive (only as co-infection or super-infection of hepa B)
+Hepatitis E: IgM anti-HEV positive""",1
+FWBD definitions,UNNAMED_COLUMN_3,,2
+FWBD definitions,UNNAMED_COLUMN_3,New (For Years 2024 onwards) Source: DM 2024-0333,1
+FWBD definitions,UNNAMED_COLUMN_3,"Suspect:
+A person with acute diarrhea with visible blood in the stool
+
+Confirmed Case:
+A suspect case with stool positive for bacterial or parasitic pathogens (i.e., Shigella dysenteriae type 1, Entamoeba histolytica or Escherichia coli) through bacterial culture or any molecular diagnostic test.",1
+FWBD definitions,UNNAMED_COLUMN_3,"Suspect:
+In area/s where cholera outbreak has not been declared: Any patient aged 2 years and above presenting with acute watery diarrhea and severe dehydration or dying from acute watery diarrhea
+In area/s where cholera outbreak is declared: Any person presenting with or dying from acute watery diarrhea. (WHO GTFCC: Interim Guidance Document on Cholera Surveillance 2017)
+
+Probable Case:
+A suspected cholera case with positive cholera RDT result.
+
+Confirmed:
+A suspect case that is laboratory-confirmed, thru isolation of Vibrio cholerae O1 or O139 from stools in any patient with diarrhea (EB PIDSR MOP 2014)",1
+FWBD Case Definitions,Disease,Food and Waterborne Diseases,1
+FWBD Case Definitions,Disease,Acute Bloody Diarrhea (ABD),1
+FWBD Case Definitions,Disease,Cholera,1
+FWBD Case Definitions,Disease,"Typhoid Fever
+Source: DM 2024-0333",1
+FWBD Case Definitions,Disease,"Acute Viral Hepatitis
+Source: DM 2024-0333",1
+FWBD Case Definitions,Case Definition,Old (For Years 2023 and below) Source: PIDSR Manual of Procedure 2014,1
+FWBD Case Definitions,Case Definition,"Suspect
+A person with acute diarrhea with visible blood in the stool",1
+FWBD Case Definitions,Case Definition,"Suspect
+Disease unknown in the area: A person aged 5 years or more with severe dehydration or who died from acute watery diarrhea, OR
+Disease endemic in the area: A person aged 5 years or more with acute watery diarrhea with or without vomiting, OR
+In an area where there is a cholera epidemic: A person with acute watery diarrhea, with or without vomiting.
+
+Confirmed
+A suspected case that is laboratory-confirmed, through isolation of Vibrio cholerae 01 or 0139 from stools in any patient with diarrhea.",1
+FWBD Case Definitions,Case Definition,"Suspect
+A person with an illness characterized by insidious onset of sustained fever, headache, malaise, anorexia, relative bradycardia, constipation or diarrhea, and non-productive cough for 5 days or more.
+
+Probable
+A suspected case that is positive in Typhoid Rapid Diagnostic Test; OR
+A suspected case that is epidemiologically linked to a confirmed case in an outbreak.
+
+Confirmed
+A suspected or probable case that is laboratory confirmed.
+Laboratory confirmation by culture or molecular methods of Salmonella Typhi or detection of Salmonella Typhi or Salmonella Paratyphi DNA from a normally sterile site.",1
+FWBD Case Definitions,Case Definition,"Suspect
+A person with acute illness characterized by acute jaundice, dark urine, loss of appetite, body weakness, extreme fatigue, and right upper quadrant tenderness.
+
+Confirmed
+A suspected case that is laboratory-confirmed.
+
+Laboratory Confirmation:
+Hepatitis A: Positive for IgM anti-HAV
+Hepatitis B: Positive for Hepatitis B surface antigen (HBsAg) or positive for IgM anti-HBc and antiHBe
+Non-A, non-B: Negative for IgM anti-HAV and IgM anti-HBs (or HBsAg)
+Hepatitis C: Positive for anti-HCV
+Hepatitis D: HBsAg positive or IgM anti-HBc positive PLUS anti-HDV positive (only as co-infection or super-infection of hepa B)
+Hepatitis E: IgM anti-HEV positive""",1
+FWBD Case Definitions,UNNAMED_COLUMN_3,,2
+FWBD Case Definitions,UNNAMED_COLUMN_3,New (For Years 2024 onwards) Source: DM 2024-0333,1
+FWBD Case Definitions,UNNAMED_COLUMN_3,"Suspect:
+A person with acute diarrhea with visible blood in the stool
+
+Confirmed Case:
+A suspect case with stool positive for bacterial or parasitic pathogens (i.e., Shigella dysenteriae type 1, Entamoeba histolytica or Escherichia coli) through bacterial culture or any molecular diagnostic test.",1
+FWBD Case Definitions,UNNAMED_COLUMN_3,"Suspect:
+In area/s where cholera outbreak has not been declared: Any patient aged 2 years and above presenting with acute watery diarrhea and severe dehydration or dying from acute watery diarrhea
+In area/s where cholera outbreak is declared: Any person presenting with or dying from acute watery diarrhea. (WHO GTFCC: Interim Guidance Document on Cholera Surveillance 2017)
+
+Probable Case:
+A suspected cholera case with positive cholera RDT result.
+
+Confirmed:
+A suspect case that is laboratory-confirmed, thru isolation of Vibrio cholerae O1 or O139 from stools in any patient with diarrhea (EB PIDSR MOP 2014)",1
+FWBD ABD,Year,2018,12616
+FWBD ABD,Year,2019,11023
+FWBD ABD,Year,2025,9977
+FWBD ABD,Year,2022,8952
+FWBD ABD,Year,2024,8407
+FWBD ABD,Year,2023,8285
+FWBD ABD,Year,2020,6011
+FWBD ABD,Year,2026,5787
+FWBD ABD,Year,2021,4930
+FWBD ABD,Morbidity Month,1,7614
+FWBD ABD,Morbidity Month,3,7342
+FWBD ABD,Morbidity Month,5,7329
+FWBD ABD,Morbidity Month,7,7295
+FWBD ABD,Morbidity Month,6,6909
+FWBD ABD,Morbidity Month,4,6828
+FWBD ABD,Morbidity Month,2,6731
+FWBD ABD,Morbidity Month,8,6569
+FWBD ABD,Morbidity Month,9,5419
+FWBD ABD,Morbidity Month,10,5133
+FWBD ABD,Morbidity Month,11,4771
+FWBD ABD,Morbidity Month,12,4048
+FWBD ABD,Morbidity Week,9,2008
+FWBD ABD,Morbidity Week,5,1869
+FWBD ABD,Morbidity Week,18,1810
+FWBD ABD,Morbidity Week,22,1771
+FWBD ABD,Morbidity Week,31,1765
+FWBD ABD,Morbidity Week,3,1686
+FWBD ABD,Morbidity Week,4,1668
+FWBD ABD,Morbidity Week,8,1667
+FWBD ABD,Morbidity Week,12,1666
+FWBD ABD,Morbidity Week,2,1665
+FWBD ABD,Morbidity Week,6,1663
+FWBD ABD,Morbidity Week,29,1663
+FWBD ABD,Morbidity Week,21,1662
+FWBD ABD,Morbidity Week,27,1657
+FWBD ABD,Morbidity Week,30,1635
+FWBD ABD,Morbidity Week,23,1622
+FWBD ABD,Morbidity Week,28,1611
+FWBD ABD,Morbidity Week,11,1609
+FWBD ABD,Morbidity Week,7,1607
+FWBD ABD,Morbidity Week,14,1601
+FWBD ABD,Morbidity Week,25,1599
+FWBD ABD,Morbidity Week,19,1589
+FWBD ABD,Morbidity Week,26,1589
+FWBD ABD,Morbidity Week,17,1582
+FWBD ABD,Morbidity Week,20,1579
+FWBD ABD,Morbidity Week,16,1577
+FWBD ABD,Morbidity Week,32,1567
+FWBD ABD,Morbidity Week,1,1558
+FWBD ABD,Morbidity Week,24,1539
+FWBD ABD,Morbidity Week,15,1524
+FWBD ABD,Morbidity Week,13,1513
+FWBD ABD,Morbidity Week,10,1500
+FWBD ABD,Morbidity Week,33,1480
+FWBD ABD,Morbidity Week,35,1364
+FWBD ABD,Morbidity Week,34,1353
+FWBD ABD,Morbidity Week,36,1326
+FWBD ABD,Morbidity Week,37,1266
+FWBD ABD,Morbidity Week,40,1253
+FWBD ABD,Morbidity Week,42,1214
+FWBD ABD,Morbidity Week,44,1180
+FWBD ABD,Morbidity Week,41,1178
+FWBD ABD,Morbidity Week,38,1172
+FWBD ABD,Morbidity Week,39,1163
+FWBD ABD,Morbidity Week,45,1157
+FWBD ABD,Morbidity Week,43,1098
+FWBD ABD,Morbidity Week,47,1090
+FWBD ABD,Morbidity Week,48,1084
+FWBD ABD,Morbidity Week,46,1073
+FWBD ABD,Morbidity Week,49,1068
+FWBD ABD,Morbidity Week,50,939
+FWBD ABD,Morbidity Week,52,900
+FWBD ABD,Morbidity Week,51,884
+FWBD ABD,Morbidity Week,53,125
+FWBD ABD,Region,REGION VII (CENTRAL VISAYAS),14214
+FWBD ABD,Region,REGION IX (ZAMBOANGA PENINSULA),11485
+FWBD ABD,Region,REGION II (CAGAYAN VALLEY),6915
+FWBD ABD,Region,REGION XIII (CARAGA),6909
+FWBD ABD,Region,REGION X (NORTHERN MINDANAO),6408
+FWBD ABD,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),6159
+FWBD ABD,Region,NEGROS ISLAND REGION (NIR),4225
+FWBD ABD,Region,REGION IV-A (CALABARZON),3735
+FWBD ABD,Region,REGION III (CENTRAL LUZON),3105
+FWBD ABD,Region,REGION VIII (EASTERN VISAYAS),2527
+FWBD ABD,Region,REGION XI (DAVAO REGION),2455
+FWBD ABD,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),2024
+FWBD ABD,Region,NATIONAL CAPITAL REGION (NCR),1665
+FWBD ABD,Region,REGION XII (SOCCSKSARGEN),1252
+FWBD ABD,Region,MIMAROPA REGION,1194
+FWBD ABD,Region,REGION V (BICOL REGION),991
+FWBD ABD,Region,REGION I (ILOCOS REGION),627
+FWBD ABD,Region,REGION VI (WESTERN VISAYAS),98
+FWBD ABD,Age Group,0-4,25724
+FWBD ABD,Age Group,25-64,20929
+FWBD ABD,Age Group,2026-05-14T00:00:00,12524
+FWBD ABD,Age Group,15-24,9243
+FWBD ABD,Age Group,65+,7465
+FWBD ABD,Age Group,Unknown,103
+FWBD ABD,Sex,M,38124
+FWBD ABD,Sex,F,37864
+FWBD ABD,Admitted,Y,67082
+FWBD ABD,Admitted,N,8906
+FWBD ABD,Outcome,A,75649
+FWBD ABD,Outcome,D,339
+FWBD ABD,Laboratory Result,POSITIVE,41090
+FWBD ABD,Laboratory Result,UNKNOWN,17661
+FWBD ABD,Laboratory Result,NOT DONE,11437
+FWBD ABD,Laboratory Result,NEGATIVE,5729
+FWBD ABD,Laboratory Result,EQUIVOCAL,61
+FWBD ABD,Laboratory Result,PENDING,10
+FWBD ABD,Case Classification,S,38461
+FWBD ABD,Case Classification,C,37527
+FWBD ABD,Total Cases,1,60060
+FWBD ABD,Total Cases,2,10608
+FWBD ABD,Total Cases,3,3043
+FWBD ABD,Total Cases,4,1141
+FWBD ABD,Total Cases,5,531
+FWBD ABD,Total Cases,6,234
+FWBD ABD,Total Cases,7,139
+FWBD ABD,Total Cases,8,81
+FWBD ABD,Total Cases,9,48
+FWBD ABD,Total Cases,10,38
+FWBD ABD,Total Cases,11,17
+FWBD ABD,Total Cases,13,13
+FWBD ABD,Total Cases,12,13
+FWBD ABD,Total Cases,14,10
+FWBD ABD,Total Cases,16,4
+FWBD ABD,Total Cases,15,4
+FWBD ABD,Total Cases,17,1
+FWBD ABD,Total Cases,38,1
+FWBD ABD,Total Cases,42,1
+FWBD ABD,Total Cases,18,1
+FWBD Cholera,Year,2022,2848
+FWBD Cholera,Year,2019,2190
+FWBD Cholera,Year,2023,1968
+FWBD Cholera,Year,2018,1355
+FWBD Cholera,Year,2020,1305
+FWBD Cholera,Year,2024,1299
+FWBD Cholera,Year,2021,1094
+FWBD Cholera,Year,2025,1080
+FWBD Cholera,Year,2026,375
+FWBD Cholera,Morbidity Month,1,1310
+FWBD Cholera,Morbidity Month,3,1291
+FWBD Cholera,Morbidity Month,2,1236
+FWBD Cholera,Morbidity Month,10,1227
+FWBD Cholera,Morbidity Month,5,1199
+FWBD Cholera,Morbidity Month,4,1149
+FWBD Cholera,Morbidity Month,7,1144
+FWBD Cholera,Morbidity Month,11,1097
+FWBD Cholera,Morbidity Month,8,1090
+FWBD Cholera,Morbidity Month,6,1071
+FWBD Cholera,Morbidity Month,9,927
+FWBD Cholera,Morbidity Month,12,773
+FWBD Cholera,Morbidity Week,9,357
+FWBD Cholera,Morbidity Week,5,344
+FWBD Cholera,Morbidity Week,44,317
+FWBD Cholera,Morbidity Week,7,303
+FWBD Cholera,Morbidity Week,10,300
+FWBD Cholera,Morbidity Week,22,299
+FWBD Cholera,Morbidity Week,4,298
+FWBD Cholera,Morbidity Week,42,296
+FWBD Cholera,Morbidity Week,1,294
+FWBD Cholera,Morbidity Week,6,294
+FWBD Cholera,Morbidity Week,8,283
+FWBD Cholera,Morbidity Week,11,278
+FWBD Cholera,Morbidity Week,14,276
+FWBD Cholera,Morbidity Week,19,275
+FWBD Cholera,Morbidity Week,45,275
+FWBD Cholera,Morbidity Week,17,274
+FWBD Cholera,Morbidity Week,13,273
+FWBD Cholera,Morbidity Week,20,273
+FWBD Cholera,Morbidity Week,12,272
+FWBD Cholera,Morbidity Week,31,272
+FWBD Cholera,Morbidity Week,28,271
+FWBD Cholera,Morbidity Week,30,271
+FWBD Cholera,Morbidity Week,2,270
+FWBD Cholera,Morbidity Week,24,270
+FWBD Cholera,Morbidity Week,26,270
+FWBD Cholera,Morbidity Week,43,269
+FWBD Cholera,Morbidity Week,21,268
+FWBD Cholera,Morbidity Week,3,266
+FWBD Cholera,Morbidity Week,32,265
+FWBD Cholera,Morbidity Week,16,264
+FWBD Cholera,Morbidity Week,41,261
+FWBD Cholera,Morbidity Week,18,260
+FWBD Cholera,Morbidity Week,40,260
+FWBD Cholera,Morbidity Week,27,255
+FWBD Cholera,Morbidity Week,15,252
+FWBD Cholera,Morbidity Week,35,247
+FWBD Cholera,Morbidity Week,39,246
+FWBD Cholera,Morbidity Week,46,242
+FWBD Cholera,Morbidity Week,34,241
+FWBD Cholera,Morbidity Week,47,236
+FWBD Cholera,Morbidity Week,29,234
+FWBD Cholera,Morbidity Week,33,226
+FWBD Cholera,Morbidity Week,37,225
+FWBD Cholera,Morbidity Week,23,224
+FWBD Cholera,Morbidity Week,25,220
+FWBD Cholera,Morbidity Week,38,211
+FWBD Cholera,Morbidity Week,48,210
+FWBD Cholera,Morbidity Week,36,205
+FWBD Cholera,Morbidity Week,49,196
+FWBD Cholera,Morbidity Week,52,186
+FWBD Cholera,Morbidity Week,50,182
+FWBD Cholera,Morbidity Week,51,156
+FWBD Cholera,Morbidity Week,53,2
+FWBD Cholera,Region,REGION VIII (EASTERN VISAYAS),6583
+FWBD Cholera,Region,REGION V (BICOL REGION),2108
+FWBD Cholera,Region,REGION XIII (CARAGA),1940
+FWBD Cholera,Region,NEGROS ISLAND REGION (NIR),577
+FWBD Cholera,Region,REGION IX (ZAMBOANGA PENINSULA),371
+FWBD Cholera,Region,REGION XII (SOCCSKSARGEN),333
+FWBD Cholera,Region,REGION XI (DAVAO REGION),327
+FWBD Cholera,Region,REGION X (NORTHERN MINDANAO),252
+FWBD Cholera,Region,REGION III (CENTRAL LUZON),237
+FWBD Cholera,Region,REGION VII (CENTRAL VISAYAS),176
+FWBD Cholera,Region,REGION VI (WESTERN VISAYAS),144
+FWBD Cholera,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),131
+FWBD Cholera,Region,REGION IV-A (CALABARZON),122
+FWBD Cholera,Region,NATIONAL CAPITAL REGION (NCR),94
+FWBD Cholera,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),68
+FWBD Cholera,Region,MIMAROPA REGION,25
+FWBD Cholera,Region,REGION II (CAGAYAN VALLEY),15
+FWBD Cholera,Region,REGION I (ILOCOS REGION),11
+FWBD Cholera,Age Group,25-64,4867
+FWBD Cholera,Age Group,2026-05-14T00:00:00,3530
+FWBD Cholera,Age Group,15-24,2597
+FWBD Cholera,Age Group,65+,2135
+FWBD Cholera,Age Group,0-4,337
+FWBD Cholera,Age Group,Unknown,48
+FWBD Cholera,Sex,F,6928
+FWBD Cholera,Sex,M,6586
+FWBD Cholera,Case Classification,S,12932
+FWBD Cholera,Case Classification,C,575
+FWBD Cholera,Case Classification,P,7
+FWBD Cholera,Admitted,Y,13101
+FWBD Cholera,Admitted,N,413
+FWBD Cholera,Outcome,A,13323
+FWBD Cholera,Outcome,D,191
+FWBD Cholera,Total Cases,1,8853
+FWBD Cholera,Total Cases,2,2376
+FWBD Cholera,Total Cases,3,988
+FWBD Cholera,Total Cases,4,424
+FWBD Cholera,Total Cases,5,278
+FWBD Cholera,Total Cases,6,173
+FWBD Cholera,Total Cases,7,109
+FWBD Cholera,Total Cases,8,70
+FWBD Cholera,Total Cases,9,59
+FWBD Cholera,Total Cases,10,38
+FWBD Cholera,Total Cases,11,26
+FWBD Cholera,Total Cases,12,23
+FWBD Cholera,Total Cases,14,16
+FWBD Cholera,Total Cases,13,14
+FWBD Cholera,Total Cases,15,11
+FWBD Cholera,Total Cases,16,6
+FWBD Cholera,Total Cases,17,6
+FWBD Cholera,Total Cases,19,6
+FWBD Cholera,Total Cases,22,4
+FWBD Cholera,Total Cases,21,4
+FWBD Cholera,Total Cases,20,4
+FWBD Cholera,Total Cases,18,3
+FWBD Cholera,Total Cases,23,3
+FWBD Cholera,Total Cases,26,3
+FWBD Cholera,Total Cases,33,2
+FWBD Cholera,Total Cases,40,2
+FWBD Cholera,Total Cases,34,2
+FWBD Cholera,Total Cases,31,2
+FWBD Cholera,Total Cases,28,2
+FWBD Cholera,Total Cases,25,1
+FWBD Cholera,Total Cases,29,1
+FWBD Cholera,Total Cases,39,1
+FWBD Cholera,Total Cases,38,1
+FWBD Cholera,Total Cases,72,1
+FWBD Cholera,Total Cases,59,1
+FWBD Cholera,Total Cases,61,1
+FWBD Typhoid,Year,2024,19003
+FWBD Typhoid,Year,2019,17637
+FWBD Typhoid,Year,2023,16798
+FWBD Typhoid,Year,2018,16785
+FWBD Typhoid,Year,2025,16669
+FWBD Typhoid,Year,2022,12248
+FWBD Typhoid,Year,2026,8634
+FWBD Typhoid,Year,2020,6616
+FWBD Typhoid,Year,2021,4935
+FWBD Typhoid,Morbidity Month,7,12487
+FWBD Typhoid,Morbidity Month,8,12481
+FWBD Typhoid,Morbidity Month,9,11109
+FWBD Typhoid,Morbidity Month,1,11026
+FWBD Typhoid,Morbidity Month,6,10840
+FWBD Typhoid,Morbidity Month,10,9975
+FWBD Typhoid,Morbidity Month,5,9638
+FWBD Typhoid,Morbidity Month,2,9378
+FWBD Typhoid,Morbidity Month,3,9234
+FWBD Typhoid,Morbidity Month,4,8757
+FWBD Typhoid,Morbidity Month,11,8017
+FWBD Typhoid,Morbidity Month,12,6383
+FWBD Typhoid,Morbidity Week,31,3175
+FWBD Typhoid,Morbidity Week,35,2956
+FWBD Typhoid,Morbidity Week,27,2830
+FWBD Typhoid,Morbidity Week,30,2803
+FWBD Typhoid,Morbidity Week,28,2800
+FWBD Typhoid,Morbidity Week,36,2797
+FWBD Typhoid,Morbidity Week,32,2792
+FWBD Typhoid,Morbidity Week,29,2725
+FWBD Typhoid,Morbidity Week,26,2719
+FWBD Typhoid,Morbidity Week,34,2715
+FWBD Typhoid,Morbidity Week,33,2706
+FWBD Typhoid,Morbidity Week,5,2697
+FWBD Typhoid,Morbidity Week,40,2595
+FWBD Typhoid,Morbidity Week,9,2550
+FWBD Typhoid,Morbidity Week,22,2506
+FWBD Typhoid,Morbidity Week,25,2484
+FWBD Typhoid,Morbidity Week,24,2438
+FWBD Typhoid,Morbidity Week,38,2423
+FWBD Typhoid,Morbidity Week,37,2422
+FWBD Typhoid,Morbidity Week,2,2418
+FWBD Typhoid,Morbidity Week,4,2381
+FWBD Typhoid,Morbidity Week,3,2366
+FWBD Typhoid,Morbidity Week,1,2358
+FWBD Typhoid,Morbidity Week,23,2351
+FWBD Typhoid,Morbidity Week,39,2310
+FWBD Typhoid,Morbidity Week,42,2286
+FWBD Typhoid,Morbidity Week,6,2283
+FWBD Typhoid,Morbidity Week,41,2271
+FWBD Typhoid,Morbidity Week,18,2256
+FWBD Typhoid,Morbidity Week,7,2209
+FWBD Typhoid,Morbidity Week,8,2201
+FWBD Typhoid,Morbidity Week,44,2196
+FWBD Typhoid,Morbidity Week,20,2187
+FWBD Typhoid,Morbidity Week,21,2176
+FWBD Typhoid,Morbidity Week,43,2149
+FWBD Typhoid,Morbidity Week,10,2141
+FWBD Typhoid,Morbidity Week,16,2065
+FWBD Typhoid,Morbidity Week,13,2058
+FWBD Typhoid,Morbidity Week,19,2053
+FWBD Typhoid,Morbidity Week,14,2050
+FWBD Typhoid,Morbidity Week,17,2019
+FWBD Typhoid,Morbidity Week,15,2003
+FWBD Typhoid,Morbidity Week,12,1977
+FWBD Typhoid,Morbidity Week,11,1957
+FWBD Typhoid,Morbidity Week,46,1880
+FWBD Typhoid,Morbidity Week,45,1850
+FWBD Typhoid,Morbidity Week,48,1826
+FWBD Typhoid,Morbidity Week,47,1788
+FWBD Typhoid,Morbidity Week,49,1690
+FWBD Typhoid,Morbidity Week,50,1509
+FWBD Typhoid,Morbidity Week,52,1437
+FWBD Typhoid,Morbidity Week,51,1257
+FWBD Typhoid,Morbidity Week,53,234
+FWBD Typhoid,Region,CORDILLERA ADMINISTRATIVE REGION (CAR),15043
+FWBD Typhoid,Region,REGION X (NORTHERN MINDANAO),11494
+FWBD Typhoid,Region,BANGSAMORO AUTONOMOUS REGION IN MUSLIM MINDANAO (BARMM),10424
+FWBD Typhoid,Region,NEGROS ISLAND REGION (NIR),8676
+FWBD Typhoid,Region,REGION IX (ZAMBOANGA PENINSULA),7975
+FWBD Typhoid,Region,REGION XII (SOCCSKSARGEN),7778
+FWBD Typhoid,Region,REGION I (ILOCOS REGION),7009
+FWBD Typhoid,Region,REGION IV-A (CALABARZON),6639
+FWBD Typhoid,Region,REGION VII (CENTRAL VISAYAS),6454
+FWBD Typhoid,Region,REGION VI (WESTERN VISAYAS),6268
+FWBD Typhoid,Region,REGION II (CAGAYAN VALLEY),5993
+FWBD Typhoid,Region,REGION III (CENTRAL LUZON),5642
+FWBD Typhoid,Region,MIMAROPA REGION,5634
+FWBD Typhoid,Region,REGION XI (DAVAO REGION),3604
+FWBD Typhoid,Region,REGION XIII (CARAGA),3555
+FWBD Typhoid,Region,NATIONAL CAPITAL REGION (NCR),2745
+FWBD Typhoid,Region,REGION V (BICOL REGION),2200
+FWBD Typhoid,Region,REGION VIII (EASTERN VISAYAS),2192
+FWBD Typhoid,Age Group,25-64,35756
+FWBD Typhoid,Age Group,2026-05-14T00:00:00,29601
+FWBD Typhoid,Age Group,15-24,23069
+FWBD Typhoid,Age Group,0-4,20920
+FWBD Typhoid,Age Group,65+,9657
+FWBD Typhoid,Age Group,Unknown,322
+FWBD Typhoid,Sex,M,60667
+FWBD Typhoid,Sex,F,58658
+FWBD Typhoid,Case Classification,S,69379
+FWBD Typhoid,Case Classification,P,47742
+FWBD Typhoid,Case Classification,C,2204
+FWBD Typhoid,Admitted,Y,101793
+FWBD Typhoid,Admitted,N,17532
+FWBD Typhoid,Outcome,A,118848
+FWBD Typhoid,Outcome,D,477
+FWBD Typhoid,Total Cases,1,88506
+FWBD Typhoid,Total Cases,2,19209
+FWBD Typhoid,Total Cases,3,6243
+FWBD Typhoid,Total Cases,4,2612
+FWBD Typhoid,Total Cases,5,1187
+FWBD Typhoid,Total Cases,6,635
+FWBD Typhoid,Total Cases,7,367
+FWBD Typhoid,Total Cases,8,195
+FWBD Typhoid,Total Cases,9,142
+FWBD Typhoid,Total Cases,10,91
+FWBD Typhoid,Total Cases,11,49
+FWBD Typhoid,Total Cases,12,27
+FWBD Typhoid,Total Cases,13,14
+FWBD Typhoid,Total Cases,15,12
+FWBD Typhoid,Total Cases,16,8
+FWBD Typhoid,Total Cases,14,7
+FWBD Typhoid,Total Cases,18,6
+FWBD Typhoid,Total Cases,17,5
+FWBD Typhoid,Total Cases,22,2
+FWBD Typhoid,Total Cases,33,2
+FWBD Typhoid,Total Cases,25,1
+FWBD Typhoid,Total Cases,35,1
+FWBD Typhoid,Total Cases,131,1
+FWBD Typhoid,Total Cases,64,1
+FWBD Typhoid,Total Cases,102,1
+FWBD Typhoid,Total Cases,72,1
+FWBD Hep A,Year,2018,350
+FWBD Hep A,Year,2019,227
+FWBD Hep A,Year,2024,175
+FWBD Hep A,Year,2025,155
+FWBD Hep A,Year,2023,147
+FWBD Hep A,Year,2022,121
+FWBD Hep A,Year,2020,85
+FWBD Hep A,Year,2021,53
+FWBD Hep A,Morbidity Month,1,163
+FWBD Hep A,Morbidity Month,7,156
+FWBD Hep A,Morbidity Month,8,146
+FWBD Hep A,Morbidity Month,5,125
+FWBD Hep A,Morbidity Month,3,124
+FWBD Hep A,Morbidity Month,2,108
+FWBD Hep A,Morbidity Month,6,105
+FWBD Hep A,Morbidity Month,4,98
+FWBD Hep A,Morbidity Month,9,89
+FWBD Hep A,Morbidity Month,11,73
+FWBD Hep A,Morbidity Month,10,67
+FWBD Hep A,Morbidity Month,12,59
+FWBD Hep A,Morbidity Week,,175
+FWBD Hep A,Morbidity Week,30,58
+FWBD Hep A,Morbidity Week,4,48
+FWBD Hep A,Morbidity Week,32,44
+FWBD Hep A,Morbidity Week,31,39
+FWBD Hep A,Morbidity Week,9,35
+FWBD Hep A,Morbidity Week,11,30
+FWBD Hep A,Morbidity Week,2,28
+FWBD Hep A,Morbidity Week,6,26
+FWBD Hep A,Morbidity Week,21,26
+FWBD Hep A,Morbidity Week,3,25
+FWBD Hep A,Morbidity Week,28,25
+FWBD Hep A,Morbidity Week,37,25
+FWBD Hep A,Morbidity Week,10,24
+FWBD Hep A,Morbidity Week,13,24
+FWBD Hep A,Morbidity Week,22,24
+FWBD Hep A,Morbidity Week,26,24
+FWBD Hep A,Morbidity Week,27,24
+FWBD Hep A,Morbidity Week,5,23
+FWBD Hep A,Morbidity Week,7,23
+FWBD Hep A,Morbidity Week,18,23
+FWBD Hep A,Morbidity Week,24,23
+FWBD Hep A,Morbidity Week,34,23
+FWBD Hep A,Morbidity Week,14,22
+FWBD Hep A,Morbidity Week,35,22
+FWBD Hep A,Morbidity Week,48,22
+FWBD Hep A,Morbidity Week,8,21
+FWBD Hep A,Morbidity Week,29,21
+FWBD Hep A,Morbidity Week,16,20
+FWBD Hep A,Morbidity Week,19,20
+FWBD Hep A,Morbidity Week,23,20
+FWBD Hep A,Morbidity Week,25,20
+FWBD Hep A,Morbidity Week,38,20
+FWBD Hep A,Morbidity Week,1,19
+FWBD Hep A,Morbidity Week,17,19
+FWBD Hep A,Morbidity Week,45,19
+FWBD Hep A,Morbidity Week,20,18
+FWBD Hep A,Morbidity Week,49,17
+FWBD Hep A,Morbidity Week,15,16
+FWBD Hep A,Morbidity Week,50,16
+FWBD Hep A,Morbidity Week,33,15
+FWBD Hep A,Morbidity Week,36,15
+FWBD Hep A,Morbidity Week,40,15
+FWBD Hep A,Morbidity Week,44,15
+FWBD Hep A,Morbidity Week,46,15
+FWBD Hep A,Morbidity Week,12,14
+FWBD Hep A,Morbidity Week,42,13
+FWBD Hep A,Morbidity Week,47,12
+FWBD Hep A,Morbidity Week,39,11
+FWBD Hep A,Morbidity Week,41,10
+FWBD Hep A,Morbidity Week,43,9
+FWBD Hep A,Morbidity Week,51,9
+FWBD Hep A,Morbidity Week,52,7
+FWBD Hep A,Morbidity Week,53,2
+FWBD Hep A,Region,7,299
+FWBD Hep A,Region,9,248
+FWBD Hep A,Region,6,212
+FWBD Hep A,Region,4A,101
+FWBD Hep A,Region,NCR,97
+FWBD Hep A,Region,10,84
+FWBD Hep A,Region,CARAGA,46
+FWBD Hep A,Region,3,42
+FWBD Hep A,Region,BARMM,38
+FWBD Hep A,Region,11,26
+FWBD Hep A,Region,8,25
+FWBD Hep A,Region,12,23
+FWBD Hep A,Region,2,17
+FWBD Hep A,Region,1,16
+FWBD Hep A,Region,CAR,15
+FWBD Hep A,Region,4B,10
+FWBD Hep A,Region,5,7
+FWBD Hep A,Region,NIR,7
+FWBD Hep A,Sex,M,800
+FWBD Hep A,Sex,F,513
+FWBD Hep A,Case Classification,C,1313
+FWBD Hep A,Admitted,Y,923
+FWBD Hep A,Admitted,N,390
+FWBD Hep A,Outcome,A,1302
+FWBD Hep A,Outcome,D,11

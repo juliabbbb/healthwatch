@@ -16,25 +16,11 @@ from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
 
-from . import config, db, weather_live
+from . import config, db, ingest, weather_live
 
-SUPPORTED_DISEASES = [
-    "Dengue",
-    "Acute Bloody Diarrhea",
-    "Cholera",
-    "Typhoid Fever",
-    "Acute Viral Hepatitis",
-]
+SUPPORTED_DISEASES = config.SUPPORTED_DISEASES
 DISEASE_DEFAULT = "Dengue"
-
-# Presentation grouping only — the pipeline runs each disease independently.
-DISEASE_GROUPS = {
-    "Dengue": "Dengue",
-    "Acute Bloody Diarrhea": "Food and Waterborne Diseases",
-    "Cholera": "Food and Waterborne Diseases",
-    "Typhoid Fever": "Food and Waterborne Diseases",
-    "Acute Viral Hepatitis": "Food and Waterborne Diseases",
-}
+DISEASE_GROUPS = config.DISEASE_GROUPS
 PRIMARY_WINDOW = "last_12m"
 
 WET_MONTHS = (6, 7, 8, 9, 10, 11)
@@ -979,6 +965,9 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
         raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
     _check_disease(disease)
 
+    forecast_available = config.DISEASE_METADATA.get(disease, {}).get("forecast_available", False)
+    unavailable_reason = config.DISEASE_METADATA.get(disease, {}).get("unavailable_reason")
+
     series_out = {}
     metrics_out = {}
     for region in REGION_META:
@@ -992,54 +981,60 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
             _month_point(i, dt, cases, False)
             for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
         ]
-        fcst = _FORECASTS[
-            (_FORECASTS["region_code"] == code) & (_FORECASTS["disease"] == disease)
-        ].sort_values("target_date")
-        for k, row in enumerate(fcst.itertuples(index=False)):
-            points.append(
-                _month_point(
-                    len(points),
-                    row.target_date,
-                    row.yhat,
-                    True,
-                    lower=row.yhat_lower,
-                    upper=row.yhat_upper,
+        if forecast_available:
+            fcst = _FORECASTS[
+                (_FORECASTS["region_code"] == code) & (_FORECASTS["disease"] == disease)
+            ].sort_values("target_date")
+            for k, row in enumerate(fcst.itertuples(index=False)):
+                points.append(
+                    _month_point(
+                        len(points),
+                        row.target_date,
+                        row.yhat,
+                        True,
+                        lower=row.yhat_lower,
+                        upper=row.yhat_upper,
+                    )
                 )
-            )
         series_out[label] = points
         # --- metrics ---
-        rows = _METRICS[
-            (_METRICS["region_code"] == code) & (_METRICS["disease"] == disease)
-        ]
-        primary = rows[rows["window"] == PRIMARY_WINDOW]
-        if not primary.empty:
-            row = primary.iloc[0]
-            metrics_out[label] = {
-                "region": region["name"],
-                "mae": float(row["MAE"]),
-                "rmse": float(row["RMSE"]),
-                "mape": float(row["MAPE"]),
-                "months": int(row["months"]),
-                "skill_vs_naive_pct": (
-                    None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"])
-                ),
-                "confidence": _confidence(
-                    float(row["MAPE"]), float(row["skill_vs_naive_pct"]), int(row["months"])
-                ),
-                "windows": rows.assign(
-                    region=rows["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
-                ).drop(columns=["region_code"]).to_dict(orient="records"),
-            }
+        if forecast_available:
+            rows = _METRICS[
+                (_METRICS["region_code"] == code) & (_METRICS["disease"] == disease)
+            ]
+            primary = rows[rows["window"] == PRIMARY_WINDOW]
+            if not primary.empty:
+                row = primary.iloc[0]
+                metrics_out[label] = {
+                    "region": region["name"],
+                    "mae": float(row["MAE"]),
+                    "rmse": float(row["RMSE"]),
+                    "mape": float(row["MAPE"]),
+                    "months": int(row["months"]),
+                    "skill_vs_naive_pct": (
+                        None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"])
+                    ),
+                    "confidence": _confidence(
+                        float(row["MAPE"]), float(row["skill_vs_naive_pct"]), int(row["months"])
+                    ),
+                    "windows": rows.assign(
+                        region=rows["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
+                    ).drop(columns=["region_code"]).to_dict(orient="records"),
+                }
 
     # --- outbreak ---
-    outbreak_df = _OUTBREAKS.copy()
-    outbreak_df = outbreak_df.assign(
-        region=outbreak_df["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
-    ).drop(columns=["region_code"])
-    outbreak_items = outbreak_df.sort_values(["region", "season"]).to_dict(orient="records")
+    outbreak_items = []
+    if forecast_available:
+        outbreak_df = _OUTBREAKS[_OUTBREAKS["disease"] == disease].copy()
+        outbreak_df = outbreak_df.assign(
+            region=outbreak_df["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
+        ).drop(columns=["region_code"])
+        outbreak_items = outbreak_df.sort_values(["region", "season"]).to_dict(orient="records")
 
     return {
         "disease": disease,
+        "forecast_available": forecast_available,
+        "unavailable_reason": unavailable_reason,
         "series": series_out,
         "metrics": metrics_out,
         "outbreak": outbreak_items,
@@ -1075,6 +1070,7 @@ def status():
         },
         "pipeline_data_through": data_through.date().isoformat(),
         "supported_diseases": SUPPORTED_DISEASES,
+        "disease_metadata": config.DISEASE_METADATA,
     }
 
 
@@ -1215,6 +1211,16 @@ def reported_breakdown(
 @limiter.limit("300/minute")
 def forecast(request: Request, disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
+    if disease not in config.FORECAST_READY_DISEASES:
+        meta = config.DISEASE_METADATA.get(disease, {})
+        return {
+            "disease": disease,
+            "region": region,
+            "count": 0,
+            "items": [],
+            "forecast_available": False,
+            "reason": meta.get("unavailable_reason", "Forecast unavailable for this disease."),
+        }
     df = _FORECASTS[_FORECASTS["disease"] == disease]
     if region:
         db_region = _resolve_region(region)
@@ -1235,6 +1241,16 @@ def forecast(request: Request, disease: str, region: str | None = Query(default=
 @limiter.limit("300/minute")
 def risk_classification(request: Request, disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
+    if disease not in config.FORECAST_READY_DISEASES:
+        meta = config.DISEASE_METADATA.get(disease, {})
+        return {
+            "disease": disease,
+            "region": region,
+            "count": 0,
+            "items": [],
+            "forecast_available": False,
+            "reason": meta.get("unavailable_reason", "Risk classification unavailable for this disease."),
+        }
     df = _CLASSIFICATION[_CLASSIFICATION["disease"] == disease]
     if region:
         db_region = _resolve_region(region)
@@ -1302,6 +1318,16 @@ def seasonal_thresholds(region: str | None = Query(default=None)):
 @app.get("/thresholds/{disease}", tags=["objective_3_classification"])
 def thresholds(disease: str, region: str | None = Query(default=None)):
     _check_disease(disease)
+    if disease not in config.FORECAST_READY_DISEASES:
+        meta = config.DISEASE_METADATA.get(disease, {})
+        return {
+            "disease": disease,
+            "region": region,
+            "count": 0,
+            "items": [],
+            "thresholds_available": False,
+            "reason": meta.get("unavailable_reason", "Thresholds unavailable for this disease."),
+        }
     df = _THRESHOLDS[_THRESHOLDS["disease"] == disease]
     if region:
         db_region = _resolve_region(region)
@@ -1318,6 +1344,7 @@ def thresholds(disease: str, region: str | None = Query(default=None)):
 def outbreak_overview(
     region: str | None = Query(default=None),
     season: str | None = Query(default=None),
+    disease: str | None = Query(default=None),
 ):
     """Region-season outbreak flags for the map/dashboard.
 
@@ -1325,6 +1352,19 @@ def outbreak_overview(
     P75). Rule B: the season's forecast average exceeds the season's long-run
     P75. Trigger reports which rule(s) fired."""
     df = _OUTBREAKS.copy()
+    if disease:
+        _check_disease(disease)
+        if disease not in config.FORECAST_READY_DISEASES:
+            meta = config.DISEASE_METADATA.get(disease, {})
+            return {
+                "season": season,
+                "disease": disease,
+                "count": 0,
+                "items": [],
+                "outbreak_available": False,
+                "reason": meta.get("unavailable_reason", "Outbreak indicator unavailable for this disease."),
+            }
+        df = df[df["disease"] == disease]
     df = df.assign(region=df["region_code"].map(_label)).drop(columns=["region_code"])
     if region:
         db_region = _resolve_region(region)
@@ -1346,6 +1386,15 @@ def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
     db_region = _resolve_region(region)
     if db_region is None:
         raise HTTPException(status_code=404, detail=f"Unknown region '{region}'")
+    if disease not in config.FORECAST_READY_DISEASES:
+        meta = config.DISEASE_METADATA.get(disease, {})
+        return {
+            "region": _label(db_region),
+            "disease": disease,
+            "outbreak_available": False,
+            "reason": meta.get("unavailable_reason", "Outbreak indicator unavailable for this disease."),
+            "seasons": [],
+        }
     rows = _OUTBREAKS[
         (_OUTBREAKS["region_code"] == db_region) & (_OUTBREAKS["disease"] == disease)
     ].sort_values("season")
@@ -1356,6 +1405,36 @@ def outbreak(region: str, disease: str = Query(default=DISEASE_DEFAULT)):
         "region": _label(db_region),
         "disease": disease,
         "seasons": rows.to_dict(orient="records"),
+    }
+
+
+@app.get("/diseases", tags=["info"])
+def diseases():
+    """List all supported diseases with metadata, groups, reporting cutoffs, and forecast availability."""
+    return {
+        "diseases": config.DISEASE_METADATA,
+        "supported": config.SUPPORTED_DISEASES,
+        "forecast_ready": config.FORECAST_READY_DISEASES,
+        "groups": config.DISEASE_GROUPS,
+    }
+
+
+@app.get("/reference/heat-events", tags=["reference"])
+def heat_events(region: str | None = Query(default=None)):
+    """Reference-only heat-related health events transcribed from DOH surveillance reports."""
+    path = ingest.PROCESSED_DIR / "heat_reference_events.csv"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Heat reference data not available")
+    df = pd.read_csv(path)
+    if region:
+        df = df[df["canonical_region"].str.lower() == region.lower()]
+    return {
+        "disease": "Heat-Related Illness",
+        "date_resolution": "Annual aggregates (Table 1, DOH Report)",
+        "forecast_available": False,
+        "unavailable_reason": "Heat-related illness data is limited to annual event aggregates and lacks continuous monthly surveillance time series.",
+        "count": len(df),
+        "items": df.to_dict(orient="records"),
     }
 
 

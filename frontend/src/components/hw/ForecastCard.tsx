@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
+  Info,
 } from "lucide-react";
 import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
@@ -24,6 +25,7 @@ import {
   modelMetrics,
   monthMeta,
   seriesFor,
+  ILLNESS_BY_ID,
   OUTBREAK_BENCHMARK_SEASON,
   OUTBREAK_TRIGGER_LABEL,
   REGION_BY_CODE,
@@ -99,11 +101,15 @@ export function ForecastCard({
   const [aiEnabled] = useAiAnalysisSetting();
   const { mode: audienceMode } = useAudienceMode();
   const isSheet = variant === "sheet";
+  const illnessMeta = ILLNESS_BY_ID[illness];
+  const isForecastUnavailable = illnessMeta?.forecastAvailable === false;
 
   /* ---------- Derived KPI data ---------- */
 
   const nextPt = a.forecastWindow[0];
-  const nextMonthKpi = nextPt
+  const nextMonthKpi = isForecastUnavailable
+    ? { value: "—", sub: illnessMeta?.unavailableReason ?? "Forecast not available" }
+    : nextPt
     ? {
         value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
         sub: `95% CI ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
@@ -208,13 +214,28 @@ export function ForecastCard({
         </div>
       )}
 
-      {/* Outbreak Alert (conditional) */}
+      {/* Outbreak Alert (conditional — only for forecast-ready diseases) */}
+      {!isForecastUnavailable && (
       <OutbreakBanner
         regionName={a.region.name}
         season={upcoming}
         indicator={upcomingInd}
         className="mx-5 mt-3 shrink-0"
       />
+      )}
+
+      {/* Forecast Unavailable Notice (for non-forecast diseases) */}
+      {isForecastUnavailable && (
+        <div className="mx-5 mt-3 shrink-0 flex items-start gap-2.5 rounded-lg border border-border/70 bg-secondary/30 px-4 py-3">
+          <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+          <div className="min-w-0">
+            <p className="text-xs font-semibold text-foreground">Historical Data Only</p>
+            <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
+              {illnessMeta?.unavailableReason ?? "Forecast model not yet available for this disease."}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* 2. Current Status Card */}
       <section className="border-b border-border/70 px-5 py-3.5">
@@ -335,7 +356,9 @@ export function ForecastCard({
               <span className="label-caps text-[11px] block">Data Source</span>
               <span className="text-xs font-medium text-muted-foreground truncate block">
                 {meta.forecast
-                  ? `Prophet Forecast · 95% CI ${formatMetric(
+                  ? isForecastUnavailable
+                    ? "Historical Surveillance Only — Forecast Pending"
+                    : `Prophet Forecast · 95% CI ${formatMetric(
                       metricValue(a.point.lower, a.region, mode),
                       mode,
                     )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
@@ -375,15 +398,15 @@ export function ForecastCard({
         )}
       </section>
 
-      {/* 3. Epicentra-style KPI Strip (Healthcare Worker Mode only) */}
-      {audienceMode === "clinical" && (
+      {/* 3. Epicentra-style KPI Strip (Healthcare Worker Mode only, forecast-ready diseases) */}
+      {audienceMode === "clinical" && !isForecastUnavailable && (
         <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
           <KpiStrip data={kpi} />
         </section>
       )}
 
-      {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only) */}
-      {audienceMode === "clinical" && (
+      {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}
+      {audienceMode === "clinical" && !isForecastUnavailable && (
         <section className="border-b border-border/70 px-5 py-3 shrink-0">
           <div className="flex items-center justify-between mb-2">
             <span className="label-caps text-xs text-muted-foreground tracking-wider">
@@ -464,7 +487,8 @@ export function ForecastCard({
             </div>
           </section>
 
-          {/* Model Statistical Validation Panel */}
+          {/* Model Statistical Validation Panel (forecast-ready diseases only) */}
+          {!isForecastUnavailable && (
           <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
             <div className="flex items-center justify-between py-0.5 text-xs">
               <span className="label-caps text-xs text-muted-foreground tracking-wider">
@@ -495,6 +519,7 @@ export function ForecastCard({
               <p className="text-xs leading-relaxed text-muted-foreground">{validation.note}</p>
             </div>
           </section>
+          )}
         </>
       ) : (
         /* General Public Mode: Household 4S Guide & Emergency Warning Signs */
@@ -513,7 +538,11 @@ export function ForecastCard({
             <div className="rounded-lg border border-border/60 bg-card/80 p-3 space-y-2">
               <p className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
                 <CheckCircle2 className="size-3.5 text-primary shrink-0" />
-                {illness === "Dengue" ? "DOH 4S Strategy to Protect Your Family" : "Safe Water & Hygiene Precautions"}
+                {illness === "Dengue" ? "DOH 4S Strategy to Protect Your Family"
+                  : illness === "Leptospirosis" ? "Flood-Water Safety Precautions"
+                  : illness === "Influenza-like Illness" ? "Respiratory Illness Prevention"
+                  : illness === "Heat-Related Illness" ? "Beat the Heat Safety Tips"
+                  : "Safe Water & Hygiene Precautions"}
               </p>
               {illness === "Dengue" ? (
                 <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
@@ -528,6 +557,42 @@ export function ForecastCard({
                   </li>
                   <li className="flex items-start gap-1.5">
                     <strong className="text-foreground shrink-0">4. Say Yes to Fogging:</strong> Support localized misting during declared hotspot cluster outbreaks.
+                  </li>
+                </ul>
+              ) : illness === "Leptospirosis" ? (
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">1. Avoid Floodwater:</strong> Do not wade or swim in floodwater, especially with open wounds or cuts.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">2. Wear Protective Footwear:</strong> Use boots or waterproof footwear when walking through flooded or muddy areas.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">3. Seek Immediate Care:</strong> If you develop fever, muscle pain, or dark-colored urine after flood exposure, go to the nearest health center.
+                  </li>
+                </ul>
+              ) : illness === "Influenza-like Illness" ? (
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">1. Cover Coughs &amp; Sneezes:</strong> Use a tissue or your elbow, and dispose of tissues properly.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">2. Practice Handwashing:</strong> Wash hands frequently with soap, especially after being in public spaces.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">3. Stay Home When Sick:</strong> If you have fever with cough or sore throat, rest at home and avoid crowded places.
+                  </li>
+                </ul>
+              ) : illness === "Heat-Related Illness" ? (
+                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">1. Stay Hydrated:</strong> Drink plenty of water throughout the day, even if you don't feel thirsty.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">2. Limit Sun Exposure:</strong> Avoid prolonged outdoor activities between 10 AM and 3 PM during heat advisories.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground shrink-0">3. Recognize Warning Signs:</strong> Dizziness, rapid heartbeat, confusion, or cessation of sweating are emergencies — move to shade and seek help.
                   </li>
                 </ul>
               ) : (

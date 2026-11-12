@@ -59,6 +59,10 @@ MONTHLY_FILES = (
     "regional_dengue_monthly.csv",
     "national_fwbd_monthly.csv",
     "regional_fwbd_monthly.csv",
+    "national_ili_monthly.csv",
+    "regional_ili_monthly.csv",
+    "national_leptospirosis_monthly.csv",
+    "regional_leptospirosis_monthly.csv",
 )
 
 
