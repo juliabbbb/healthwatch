@@ -63,15 +63,14 @@ def with_month_of_year(df, date_col="date"):
 
 def compute_thresholds(history):
     h = with_month_of_year(history)
-    thresholds = (
-        h.groupby(["disease", "region", "month"])["cases"]
-        .quantile([0.5, 0.75])
-        .unstack()
-        .rename(columns={0.5: "p50", 0.75: "p75"})
-        .clip(lower=0)
-        .reset_index()
-    )
-    return thresholds.sort_values(["region", "month"], ignore_index=True)
+    keys = ["disease", "region", "month"]
+    groups = h.groupby(keys)["cases"]
+    thresholds = groups.quantile([.5,.75]).unstack().rename(columns={.5:"p50",.75:"p75"})
+    thresholds["n_months"] = groups.count()
+    thresholds.loc[thresholds.n_months < 2, ["p50","p75"]] = np.nan
+    thresholds = thresholds.reset_index()
+    thresholds["pool_end"] = str(pd.to_datetime(h.date).max().date())
+    return thresholds.sort_values(["region","month"], ignore_index=True)
 
 
 def compute_seasonal_thresholds(history, season_func=None):
@@ -100,30 +99,22 @@ def compute_seasonal_thresholds(history, season_func=None):
         .reset_index()
     )
     counts = (
-        h.groupby(["disease", "region", "season"])["cases"].size().rename("n_months")
+        h.groupby(["disease", "region", "season"])["cases"].count().rename("n_months")
     )
     thresholds = thresholds.merge(counts, on=["disease", "region", "season"], how="left")
-    thresholds["p75"] = thresholds["p75"].round(1)
+    thresholds.loc[thresholds.n_months < 6, "p75"] = np.nan
     return thresholds.sort_values(["region", "season"], ignore_index=True)
 
 
 def label(values, p50, p75):
-    values = np.asarray(values, dtype=float)
-    p50 = np.asarray(p50, dtype=float)
-    p75 = np.asarray(p75, dtype=float)
-    return np.where(values < p50, "Low", np.where(values <= p75, "Moderate", "High"))
+    values, p50, p75 = (np.asarray(x, dtype=float) for x in (values, p50, p75))
+    valid = np.isfinite(values) & np.isfinite(p50) & np.isfinite(p75)
+    return np.where(valid, np.where(values < p50, "Low", np.where(values <= p75, "Moderate", "High")), "Unavailable")
 
 
 def _apply_tiers(rows, thresholds):
-    """Join risk tiers (p50/p75) onto monthly forecast rows by month-of-year."""
-    merged = with_month_of_year(rows).merge(
-        thresholds, on=["disease", "region", "month"], how="left"
-    )
-    missing = merged[merged[["p50", "p75"]].isna().any(axis=1)]
-    if not missing.empty:
-        sample = missing[["region", "month"]].drop_duplicates().head(5)
-        raise ValueError(f"Missing historical thresholds for: {sample.to_dict('records')}")
-    merged["risk_level"] = label(merged["yhat"], merged["p50"], merged["p75"])
+    merged = with_month_of_year(rows).merge(thresholds, on=["disease","region","month"], how="left", validate="many_to_one")
+    merged["risk_level"] = label(merged.yhat, merged.p50, merged.p75)
     return merged
 
 
@@ -174,19 +165,23 @@ def tier_backtest(thresholds):
     merged = with_month_of_year(predictions).merge(
         thresholds, on=["disease", "region", "month"], how="left"
     )
-    merged = merged.dropna(subset=["p50", "p75"])
+    merged = merged.dropna(subset=["p50", "p75", "y", "yhat"])
     merged["actual_tier"] = label(merged["y"], merged["p50"], merged["p75"])
     merged["pred_tier"] = label(merged["yhat"], merged["p50"], merged["p75"])
     actual_rank = merged["actual_tier"].map(TIER_ORDER)
     pred_rank = merged["pred_tier"].map(TIER_ORDER)
     merged["correct"] = merged["actual_tier"] == merged["pred_tier"]
     merged["severe_miss"] = (actual_rank - pred_rank).abs() >= 2
+    merged["high_to_low"] = (actual_rank == 2) & (pred_rank == 0)
+    merged["low_to_high"] = (actual_rank == 0) & (pred_rank == 2)
     accuracy = (
         merged.groupby(["disease", "region", "window"])
         .agg(
             tier_accuracy_pct=("correct", "mean"),
             severe_miss_pct=("severe_miss", "mean"),
             months=("correct", "size"),
+            high_to_low_count=("high_to_low", "sum"),
+            low_to_high_count=("low_to_high", "sum"),
         )
         .reset_index()
     )

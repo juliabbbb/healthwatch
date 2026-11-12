@@ -1,3 +1,5 @@
+> Current implementation: see [docs/IMPLEMENTATION_WORKFLOW.md](docs/IMPLEMENTATION_WORKFLOW.md). Earlier architecture, numbers and readiness claims below describe the legacy snapshot and are not current validation evidence.
+
 # HEALTHWATCH — Final Implementation Plan
 
 Scope-locked after codebase audit (option A: keep glass/token design system; include month-of-year chart; drop national donut). Implement in the order below. Verify with `npm run lint`, `npx tsc --noEmit`, and `impeccable detect --json <changed files>`.

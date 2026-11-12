@@ -88,8 +88,8 @@ const TIER_COLORS: Record<string, string> = {
 // Snapshot of the next Prophet forecast point, passed in from ForecastCard
 export interface NextForecastSnapshot {
   value: number;   // metric value (raw or per-100k depending on mode)
-  lower: number;   // 95% CI lower bound
-  upper: number;   // 95% CI upper bound
+  lower: number;   // 80% model interval lower bound
+  upper: number;   // 80% model interval upper bound
   label: string;   // e.g. "2026-11"
   unit: string;    // e.g. "cases" or "per 100k"
   mode: string;    // "raw" | "percapita"
@@ -129,7 +129,7 @@ export function LiveWeatherCard({
 }: {
   regionCode: string;
   illness?: string;
-  nextForecast?: NextForecastSnapshot;
+  nextForecast?: NextForecastSnapshot | undefined;
   className?: string;
 }) {
   const { mode: audienceMode } = useAudienceMode();
@@ -204,7 +204,7 @@ export function LiveWeatherCard({
 
   const isFlood = data.flood_warning;
   const tier = data.risk_tier;
-  const tierColor = TIER_COLORS[tier] ?? TIER_COLORS.NORMAL;
+  const tierColor = TIER_COLORS[tier] ?? TIER_COLORS["NORMAL"];
   const temp = data.extremes?.temperature;
   const rh = data.extremes?.relative_humidity;
   const timeline = data.transmission_timeline;
@@ -215,7 +215,7 @@ export function LiveWeatherCard({
   // Illness-specific advisory keyed by exact SUPPORTED_DISEASES name
   const illnessAdvisory: IllnessAdvisory | undefined = data.disease_advisories[illness];
   const alertLevel = illnessAdvisory?.alert_level ?? tier;
-  const alertColor = ALERT_COLORS[alertLevel] ?? ALERT_COLORS.BASELINE;
+  const alertColor = ALERT_COLORS[alertLevel] ?? ALERT_COLORS["BASELINE"];
   const multiplier = illnessAdvisory?.multiplier ?? data.multiplier ?? 1.0;
 
   return (
@@ -610,7 +610,7 @@ export function LiveWeatherCard({
 
                 {/* Adjusted CI */}
                 <p className="text-[11px] text-muted-foreground">
-                  Adjusted 95% CI:{" "}
+                  Adjusted 80% model interval:{" "}
                   <span className="font-mono tabular-nums text-foreground/75">{adjLoStr} – {adjHiStr}</span>
                   {" "}{nextForecast.unit}
                 </p>

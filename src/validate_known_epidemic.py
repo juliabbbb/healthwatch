@@ -31,7 +31,7 @@ def check_linelist_2019() -> pd.DataFrame:
         ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]
     )
     # This check is specific to the 2019 national *dengue* epidemic; the other
-    # disease groups have no independent 2019 outbreak to validate against.
+    # disease groups have no retrospective 2019 outbreak to validate against.
     national = national[national["disease"] == "Dengue"].copy()
     pool = national[national["date"] <= P75_END].query("region == 'National'").copy()
     thresholds = compute_thresholds(pool)

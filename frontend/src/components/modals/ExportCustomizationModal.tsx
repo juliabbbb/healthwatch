@@ -1,3 +1,4 @@
+import { encodeCsv } from "@/lib/csvExport";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { FileDown, Loader2, Table2, TriangleAlert, X } from "lucide-react";
@@ -8,6 +9,7 @@ import {
   REGION_BY_CODE,
   TOTAL_MONTHS,
   assessRegion,
+  getOutbreak,
   classify,
   formatPHTDateTime,
   getThresholds,
@@ -71,14 +73,9 @@ const CSV_DATASETS: { key: CsvDataset; label: string; desc: string }[] = [
   },
 ];
 
-const csvEscape = (value: string | number | boolean): string => {
-  const s = String(value);
-  return /[",\n]/.test(s) ? `"${s.replaceAll('"', '""')}"` : s;
-};
-
 /** Case count in the active metric as a plain CSV decimal (no grouping). */
 const csvMetric = (cases: number, region: Region, mode: MetricMode): string =>
-  mode === "raw" ? String(Math.round(cases)) : ((cases / region.population) * 100000).toFixed(2);
+  !Number.isFinite(cases) || (mode !== "raw" && region.population <= 0) ? "" : mode === "raw" ? String(Math.round(cases)) : ((cases / region.population) * 100000).toFixed(2);
 
 /** Hotspot tier for a single month point, identical to the dashboard's classify(). */
 const pointRisk = (
@@ -87,15 +84,10 @@ const pointRisk = (
   p: MonthPoint,
   mode: MetricMode,
 ): RiskLevel =>
-  classify(
-    metricValue(p.cases, REGION_BY_CODE[code]!, mode),
-    getThresholds(illness, p.month, mode),
-  );
+  assessRegion(code, illness, p.index, mode).risk;
 
 const downloadCsv = (header: string[], body: (string | number)[][], filename: string) => {
-  const content =
-    "\ufeff" +
-    [header, ...body].map((row) => row.map(csvEscape).join(",")).join("\n");
+  const content = encodeCsv(header, body);
   const blob = new Blob([content], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -196,7 +188,7 @@ export function ExportCustomizationModal({
       });
 
       const riskColor =
-        a.risk === "high" ? "#b82d2a" : a.risk === "moderate" ? "#a06315" : "#007a54";
+        a.risk === "unavailable" ? "#64748b" : a.risk === "high" ? "#b82d2a" : a.risk === "moderate" ? "#a06315" : "#007a54";
 
       trajectoryImage = await svgToPngDataUri(renderTrajectorySVG(trajPoints, riskColor));
       seasonalityImage = await svgToPngDataUri(renderSeasonalitySVG(seasonality));
@@ -205,7 +197,7 @@ export function ExportCustomizationModal({
       regions.push({
         profile: region,
         risk: a.risk,
-        reported: a.value,
+        reported: metricValue([...series].reverse().find((point) => !point.forecast && point.raw >= 0)?.cases ?? NaN, region, mode),
         predicted: a.value,
         lower: metricValue(a.point.lower, region, mode),
         upper: metricValue(a.point.upper, region, mode),
@@ -220,7 +212,8 @@ export function ExportCustomizationModal({
         seasonalityImage,
         season: monthMeta(exportMonthIndex).season,
         driver: a.dominantIllness.driver,
-        forecastWindow: a.forecastWindow,
+        forecastWindow: a.forecastWindow.map((point) => ({ ...point, canonicalRisk: assessRegion(code, illness, point.index, mode).risk })),
+        outbreak: getOutbreak(code, illness)[monthMeta(exportMonthIndex).season],
       });
     }
 
@@ -263,6 +256,10 @@ export function ExportCustomizationModal({
 
     if (csvDataset === "comparison") {
       const header = [
+        "disease",
+        "source_status",
+        "validation_status",
+        "model",
         "region_code",
         "region",
         "short",
@@ -281,15 +278,19 @@ export function ExportCustomizationModal({
         const a = assessRegion(code, illness, exportMonthIndex, mode);
         const region = REGION_BY_CODE[code]!;
         const lastObserved = [...seriesFor(code, illness)].reverse().find((p) => !p.forecast);
-        const reported = lastObserved ? metricValue(lastObserved.cases, region, mode) : a.value;
+        const reported = lastObserved ? lastObserved.cases : a.point.cases;
         return [
+          illness,
+          "conditional_source_interpretation",
+          "legacy_operational_snapshot_not_research_certified",
+          "Prophet",
           region.code,
           region.name,
           region.short,
           unit,
           a.risk,
           csvMetric(reported, region, mode),
-          csvMetric(a.value, region, mode),
+          csvMetric(a.point.cases, region, mode),
           csvMetric(a.point.lower, region, mode),
           csvMetric(a.point.upper, region, mode),
           a.percentileRank,
@@ -304,6 +305,10 @@ export function ExportCustomizationModal({
 
     if (csvDataset === "forecast") {
       const header = [
+        "disease",
+        "source_status",
+        "validation_status",
+        "model",
         "region_code",
         "region",
         "short",
@@ -323,7 +328,11 @@ export function ExportCustomizationModal({
         const region = REGION_BY_CODE[code]!;
         for (const p of a.forecastWindow) {
           body.push([
-            region.code,
+            illness,
+          "conditional_source_interpretation",
+          "legacy_operational_snapshot_not_research_certified",
+          "Prophet",
+          region.code,
             region.name,
             region.short,
             unit,
@@ -367,6 +376,10 @@ export function ExportCustomizationModal({
       const region = REGION_BY_CODE[code]!;
       for (const p of seriesFor(code, illness)) {
         body.push([
+          illness,
+          "conditional_source_interpretation",
+          "legacy_operational_snapshot_not_research_certified",
+          "Prophet",
           region.code,
           region.name,
           region.short,

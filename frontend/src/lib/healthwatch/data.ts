@@ -26,7 +26,7 @@
  * monthly series data.
  */
 
-export type RiskLevel = "low" | "moderate" | "high";
+export type RiskLevel = "low" | "moderate" | "high" | "unavailable";
 export type Season = "wet" | "dry";
 
 export interface Region {
@@ -353,6 +353,8 @@ export const ILLNESSES: Illness[] = [
   {
     id: "Acute Viral Hepatitis",
     name: "Acute Viral Hepatitis",
+    forecastAvailable: false,
+    unavailableReason: "Provisional Hep A measure and label; operational forecasts unavailable.",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
     transmission: "Water-Borne",
@@ -609,6 +611,9 @@ export interface MonthPoint {
   lower: number;
   upper: number;
   raw: number; // unadjusted model output (may be negative / spiked)
+  contributors?: string[];
+  canonicalRisk?: RiskLevel;
+  observation_status?: string;
   adjusted: boolean; // true when a post-processing rule changed the value
   adjustReason?: string;
 }
@@ -639,6 +644,7 @@ export function upcomingSeasonForMonth(month: number): Season {
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
 const seriesCache = new Map<string, MonthPoint[]>();
+const thresholdCache = new Map<string, Thresholds>();
 const metricsCache = new Map<string, ModelMetrics>();
 const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
 
@@ -697,8 +703,9 @@ export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
     forecast_available?: boolean;
+    thresholds?: { region: string; region_code?: string; month: number; p50: number | null; p75: number | null }[];
     series: Record<string, MonthPoint[]>;
-    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
+    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: RiskLevel; note?: string } }>;
     outbreak: OutbreakIndicator[];
   }
 
@@ -716,6 +723,10 @@ export async function loadHealthwatchData(): Promise<void> {
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        for (const row of res.thresholds ?? []) {
+          const code = row.region_code ?? regionCodeForApiLabel(row.region);
+          if (code) thresholdCache.set(`${code}:${disease}:${row.month}`, { p50: row.p50 ?? NaN, p75: row.p75 ?? NaN });
+        }
         // Historical series — always loaded
         for (const [short, points] of Object.entries(res.series)) {
           const code = codeByShort[short];
@@ -733,19 +744,20 @@ export async function loadHealthwatchData(): Promise<void> {
               folds: m.months,
               label: m.confidence.label,
               tone: m.confidence.tone,
-              note:
+              note: m.confidence.note ?? (
                 m.confidence.tone === "low"
                   ? "Model error is small relative to monthly case counts."
                   : m.confidence.tone === "moderate"
                     ? "Reasonable accuracy on holdout months."
-                    : "Volatile series inflates error metrics.",
+                    : "Evaluation unavailable or limited."),
               mae: m.mae,
               rmse: m.rmse,
-              mape: m.mape,
+              mape: m.mape ?? NaN,
             });
           }
 
           for (const item of res.outbreak) {
+            if (item.outbreak == null) continue;
             const code = regionCodeForApiLabel(item.region);
             if (!code) continue;
             const entry = outbreakCache.get(`${code}:${disease}`) ?? {};
@@ -801,7 +813,8 @@ export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
   if (!points.length) return [];
   const dest: MonthPoint[] = [];
   let last = -1;
-  for (const p of points) {
+  for (const input of points) {
+    const p = input.cases == null ? { ...input, cases: NaN, lower: NaN, upper: NaN, raw: NO_DATA_RAW, observation_status: "missing_report" } : input;
     const gi = indexForYearMonth(p.year, p.month);
     if (gi < 0) continue;
     while (dest.length < gi) dest.push(emptyMonth(dest.length));
@@ -822,16 +835,16 @@ function emptyMonth(index: number): MonthPoint {
     date: meta.date,
     season: meta.season,
     forecast: index >= HIST_MONTHS,
-    cases: 0,
-    lower: 0,
-    upper: 0,
+    cases: NaN,
+    lower: NaN,
+    upper: NaN,
     raw: NO_DATA_RAW,
     adjusted: false,
   };
 }
 
 function buildAllSeries(code: string): void {
-  const diseases = ILLNESSES.map((i) => i.id);
+  const diseases = ILLNESSES.filter((i) => i.forecastAvailable !== false && i.id !== "Acute Viral Hepatitis").map((i) => i.id);
   let any = false;
   const out: MonthPoint[] = [];
   for (let i = 0; i < TOTAL_MONTHS; i++) {
@@ -840,10 +853,12 @@ function buildAllSeries(code: string): void {
     let upper = 0;
     let raw = 0;
     let forecast = true;
+    const contributors: string[] = [];
     for (const d of diseases) {
       const p = seriesCache.get(`${code}:${d}`)?.[i];
-      if (!p) continue;
+      if (!p || p.raw < 0 || !Number.isFinite(p.cases)) continue;
       any = true;
+      contributors.push(d);
       cases += p.cases;
       lower += p.lower;
       upper += p.upper;
@@ -859,10 +874,12 @@ function buildAllSeries(code: string): void {
       date: meta.date,
       season: meta.season,
       forecast,
-      cases: Math.round(cases),
-      lower,
-      upper,
-      raw: Math.round(raw),
+      cases: contributors.length ? cases : NaN,
+      lower: NaN, // Sum of marginal bounds is not an aggregate interval.
+      upper: NaN,
+      raw: contributors.length ? raw : NO_DATA_RAW,
+      contributors,
+      observation_status: contributors.length ? "partial_reporting_aggregate" : "missing_report",
       adjusted: false,
     };
   }
@@ -870,7 +887,7 @@ function buildAllSeries(code: string): void {
 }
 
 function buildAllOutbreak(code: string): void {
-  const diseases = ILLNESSES.map((i) => i.id);
+  const diseases = ILLNESSES.filter((i) => i.forecastAvailable !== false && i.id !== "Acute Viral Hepatitis").map((i) => i.id);
   const union: Partial<Record<Season, OutbreakIndicator>> = {};
   for (const d of diseases) {
     for (const [season, ind] of Object.entries(outbreakCache.get(`${code}:${d}`) ?? {})) {
@@ -975,11 +992,14 @@ export const METRIC_META: Record<MetricMode, { label: string; short: string; uni
 
 /** Convert a case count into the active metric for a region. */
 export function metricValue(cases: number, region: Region, mode: MetricMode): number {
+  if (!Number.isFinite(cases)) return NaN;
   if (mode === "raw") return cases;
+  if (!Number.isFinite(region.population) || region.population <= 0) return NaN;
   return Number(((cases / region.population) * 100000).toFixed(2));
 }
 
 export function formatMetric(value: number, mode: MetricMode): string {
+  if (!Number.isFinite(value)) return "Unavailable";
   if (mode === "raw") return Math.round(value).toLocaleString();
   if (value > 0 && value < 0.1) return "<0.1";
   return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
@@ -1033,6 +1053,7 @@ export function getThresholds(
 }
 
 export function classify(value: number, t: Thresholds): RiskLevel {
+  if (![value, t.p50, t.p75].every(Number.isFinite)) return "unavailable";
   if (value > t.p75) return "high";
   if (value >= t.p50) return "moderate";
   return "low";
@@ -1063,7 +1084,7 @@ export function assessRegion(
   const region = REGION_BY_CODE[regionCode]!;
   const series = seriesFor(regionCode, illnessId);
 
-  if (!series.length) {
+  if (!series.length || !series[monthIndex] || series[monthIndex]!.raw < 0 || !Number.isFinite(series[monthIndex]!.cases)) {
     // A region with no series yet (backend incomplete or unreachable) must not
     // take the dashboard down. Report the requested calendar location with a
     // zeroed point so maps and charts render; the tier falls to Low by
@@ -1078,10 +1099,10 @@ export function assessRegion(
       date: safeMeta.date,
       season: safeMeta.season,
       forecast: safeMeta.forecast,
-      cases: 0,
-      lower: 0,
-      upper: 0,
-      raw: 0,
+      cases: NaN,
+      lower: NaN,
+      upper: NaN,
+      raw: NO_DATA_RAW,
       adjusted: false,
     };
     const thresholds = getThresholds(illnessId, point.month, mode);
@@ -1091,9 +1112,9 @@ export function assessRegion(
       monthIndex: idx,
       point,
       mode,
-      value: 0,
+      value: NaN,
       thresholds,
-      risk: classify(0, thresholds),
+      risk: "unavailable",
       percentileRank: Math.round(
         (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
       ),
@@ -1103,9 +1124,10 @@ export function assessRegion(
     };
   }
 
-  const idx = Math.min(Math.max(monthIndex, 0), series.length - 1);
+  const idx = monthIndex;
   const point = series[idx]!;
-  const thresholds = getThresholds(illnessId, point.month, mode);
+  const rawThreshold = thresholdCache.get(`${regionCode}:${illnessId}:${point.month}`);
+  const thresholds = rawThreshold ? { p50: metricValue(rawThreshold.p50, region, mode), p75: metricValue(rawThreshold.p75, region, mode) } : { p50: NaN, p75: NaN };
   const value = metricValue(point.cases, region, mode);
 
   const dist = pooledValues(illnessId, point.month, mode);
@@ -1133,7 +1155,7 @@ export function assessRegion(
     mode,
     value,
     thresholds,
-    risk: classify(value, thresholds),
+    risk: classify(point.cases, rawThreshold ?? { p50: NaN, p75: NaN }),
     percentileRank,
     dominantIllness,
     forecastWindow,
@@ -1211,16 +1233,16 @@ export interface ModelMetrics {
  * each up to 12 months), reported per region by /metrics/{region}.
  */
 export function modelMetrics(regionCode: string, illnessId: string | "all"): ModelMetrics {
-  const key = illnessId === "all" ? "Dengue" : illnessId;
+  const key = illnessId === "all" ? "__all" : illnessId;
   return (
     metricsCache.get(`${regionCode}:${key}`) ?? {
       folds: 0,
-      label: "No data",
-      tone: "moderate",
+      label: "Evaluation unavailable",
+      tone: "unavailable",
       note: "—",
-      mae: 0,
-      rmse: 0,
-      mape: 0,
+      mae: NaN,
+      rmse: NaN,
+      mape: NaN,
     }
   );
 }
@@ -1463,6 +1485,7 @@ export const RISK_META: Record<
   RiskLevel,
   { label: string; color: string; solidColor: string; tone: string }
 > = {
+  unavailable: { label: "Unavailable", color: "var(--muted-foreground)", solidColor: "var(--muted-foreground)", tone: "muted" },
   low: {
     label: "Low",
     color: "var(--risk-low)",
@@ -1553,7 +1576,7 @@ export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-09
  * prospectively against observed 2025).
  */
 export const OUTBREAK_BENCHMARK_SEASON: Season = "wet";
-export const OUTBREAK_BENCHMARK_LABEL = "Validated Outbreak Signal (Jul–Sep 2025 benchmark)";
+export const OUTBREAK_BENCHMARK_LABEL = "Retrospective seasonal reference signal (Jul–Sep 2025 benchmark)";
 /** Calendar window each season's benchmark probe describes (2025 validation). */
 export const OUTBREAK_BENCHMARK_WINDOW: Record<Season, string> = {
   dry: "Jan–Mar 2025",

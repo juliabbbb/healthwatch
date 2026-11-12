@@ -1,3 +1,4 @@
+from .integrity import count_values
 """Canonical regional dengue ingestion from the DOH dengue case line-list
 (2019-01 .. 2026-08).
 
@@ -73,20 +74,8 @@ _WEEK_COL = "Morbidity Week"
 
 
 def _epi_week_month(year, week):
-    """Calendar month that contains the Thursday of a DOH morbidity week.
-
-    Morbidity weeks number the ISO/Sunday-start weeks of a year (1-53). Week 53
-    is clipped into week 52 so its (typically late-December) days stay in the
-    reporting year — matching the retired monthly export's December tagging.
-    """
-    weeks = pd.Series(week, dtype="int64").clip(upper=52)
-    thu = pd.Series(
-        [
-            pd.Timestamp.fromisocalendar(int(y), int(w), 4)
-            for y, w in zip(pd.Series(year).astype("int64"), weeks)
-        ]
-    )
-    return thu.dt.to_period("M").dt.to_timestamp()
+    from .integrity import legacy_week_month
+    return legacy_week_month(year, week)
 
 
 def load_regional_raw(data_dir=None):
@@ -104,6 +93,8 @@ def load_regional_raw(data_dir=None):
             f"({DOH_FILE})."
         )
     df = pd.read_csv(path)
+    source_rows = len(df)
+    df["source_record"] = df.index + 1
     df.columns = [c.strip() for c in df.columns]
     required = ["Year", "Region", _WEEK_COL, _CASE_COL, _DEATH_COL]
     missing = [c for c in required if c not in df.columns]
@@ -121,8 +112,10 @@ def load_regional_raw(data_dir=None):
     # the dengue file itself starts in 2019, so this is a defensive no-op.
     df = config.at_or_after_data_start(df)
 
-    df["cases"] = pd.to_numeric(df[_CASE_COL], errors="coerce").clip(lower=0)
-    df["deaths"] = pd.to_numeric(df[_DEATH_COL], errors="coerce").clip(lower=0)
+    df["cases"] = count_values(df[_CASE_COL], _CASE_COL)
+    df["deaths"] = count_values(df[_DEATH_COL], _DEATH_COL)
+    from .lineage import trace
+    trace(df.assign(disease=DISEASE), path, ingest.PROCESSED_DIR, source_rows)
     out = (
         df.groupby(["date", "region"], as_index=False)[["cases", "deaths"]]
         .sum()

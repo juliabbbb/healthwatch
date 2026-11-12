@@ -75,7 +75,7 @@ function MapView() {
     [illness, monthIndex, mode],
   );
   const counts = useMemo(() => {
-    const c = { high: 0, moderate: 0, low: 0 };
+    const c = { high: 0, moderate: 0, low: 0, unavailable: 0 };
     assessments.forEach((a) => (c[a.risk] += 1));
     return c;
   }, [assessments]);

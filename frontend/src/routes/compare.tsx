@@ -549,7 +549,7 @@ export default function ComparePage() {
                       <th className="px-4 py-3 text-right border-r border-border/50">
                         {currentMonth.forecast ? "Predicted" : "Reported"} ({meta.unit})
                       </th>
-                      <th className="px-4 py-3 text-right border-r border-border/50">95% CI</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">80% model interval</th>
                       <th className="px-4 py-3 text-right border-r border-border/50">Percentile</th>
                       <th className="px-4 py-3 text-right border-r border-border/50">3m Change</th>
                       <th className="px-4 py-3 border-r border-border/50">Dominant Illness</th>
@@ -917,7 +917,7 @@ export default function ComparePage() {
                   </span>
                 </div>
                 <div className="font-mono text-[11px] text-muted-foreground">
-                  <span className="font-medium text-foreground/85">95% CI Range:</span>{" "}
+                  <span className="font-medium text-foreground/85">80% model interval Range:</span>{" "}
                   {formatMetric(
                     metricValue(detailedAssessment.point.lower, detailedAssessment.region, mode),
                     mode,
@@ -1422,7 +1422,7 @@ function DetailedChart({
           <span className="inline-flex items-center gap-1.5">
             <span className="size-2.5 rounded-full" style={{ backgroundColor: riskColor }} />
             <span style={{ color: riskColor }} className="font-semibold">
-              Predicted & 95% CI
+              Predicted & 80% model interval
             </span>
           </span>
         </div>
@@ -1466,7 +1466,7 @@ function DetailedChart({
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
-                <span>95% CI Bounds:</span>
+                <span>80% model interval Bounds:</span>
                 <span className="font-medium text-foreground/80">
                   {formatMetric(hoveredPoint.vLower, mode)} –{" "}
                   {formatMetric(hoveredPoint.vUpper, mode)}
@@ -1540,7 +1540,7 @@ function DetailedChart({
                   className="transition-all duration-150 pointer-events-none"
                 />
 
-                {/* Forecast 95% CI whisker */}
+                {/* Forecast 80% model interval whisker */}
                 {isForecast && (
                   <g className="pointer-events-none">
                     <line

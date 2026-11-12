@@ -45,9 +45,11 @@ def _national_season(date):
 
 def run_override(season_func):
     history = load_history()
-    thresholds = compute_thresholds(history)  # month-anchored, never moves
+    history = history[history.disease == "Dengue"].copy()
+    thresholds = compute_thresholds(history)  # dengue-only, frozen pre-2025 pool
     seasonal = compute_seasonal_thresholds(history, season_func=season_func)
     probes = pd.read_csv(ingest.PROCESSED_DIR / "season_probes.csv")
+    probes = probes[probes.disease == "Dengue"].copy()
     seasonal_cls = classify_seasonal(thresholds, probes=probes, season_func=season_func)
     indicators = outbreak.detect_outbreaks(
         classification=seasonal_cls, seasonal=seasonal
@@ -70,76 +72,31 @@ def _diff_flags(national, override):
 
 
 def _validate_2025_under(indicators, season_func):
-    """Replicates validate_2025 semantics but with a regional season function,
-    so the 'actual' flags use the same monthly P75s with the region-aware
-    seasonal P75 bucket on the observed 2025 months."""
-    observed = pd.concat(
-        [
-            pd.read_csv(ingest.PROCESSED_DIR / "national_monthly.csv", parse_dates=["date"]),
-            pd.read_csv(ingest.PROCESSED_DIR / "regional_dengue_monthly.csv", parse_dates=["date"]),
-        ],
-        ignore_index=True,
-    )
-    monthly = pd.read_csv(ingest.PROCESSED_DIR / "risk_thresholds.csv")
-    seasonal = compute_seasonal_thresholds(
-        observed[observed["date"] <= pd.Timestamp("2024-12-31")],
-        season_func=season_func,
-    )
-
-    rows = []
-    for region in indicators["region"].unique():
-        for season, (start, end) in PROBE_WINDOWS.items():
-            seg = observed[
-                (observed["region"] == region)
-                & (observed["date"] >= start)
-                & (observed["date"] <= end)
-            ].sort_values("date")
-            if seg.empty:
-                continue
-            disease = seg["disease"].iloc[0]
-            avg_actual = float(seg["cases"].mean())
-            thr = monthly[(monthly["disease"] == disease) & (monthly["region"] == region)]
-            seg = with_month_of_year(seg).merge(
-                thr[["month", "p75", "p50"]], on="month", how="left"
-            )
-            p75s = seg["p75"].fillna(0).tolist()
-            classes = ["High" if c > p75 else "not" for c, p75 in zip(seg["cases"].tolist(), p75s)]
-            high_run = outbreak._longest_high_run(classes)
-            rule_a = high_run >= outbreak.CONSECUTIVE_HIGH_N
-            srow = seasonal[
-                (seasonal["disease"] == disease)
-                & (seasonal["region"] == region)
-                & (seasonal["season"] == season)
-            ]
-            season_p75 = float(srow["p75"].iloc[0]) if not srow.empty else float("nan")
-            rule_b = avg_actual > season_p75 if pd.notna(season_p75) else False
-            ind = indicators[
-                (indicators["region"] == region) & (indicators["season"] == season)
-            ]
-            predicted = bool(ind["outbreak"].iloc[0]) if not ind.empty else False
-            rows.append({
-                "region": region, "season": season,
-                "predicted": predicted, "actual": bool(rule_a or rule_b),
-                "rule_a_actual": rule_a, "rule_b_actual": rule_b,
-                "avg_actual": round(avg_actual, 1), "season_p75": round(season_p75, 1),
-            })
-    return pd.DataFrame(rows)
+    from .integrity import seasonal_rules
+    history=load_history();history=history[history.disease=="Dengue"]
+    monthly=compute_thresholds(history)
+    seasonal=compute_seasonal_thresholds(history,season_func=season_func)
+    observed=ingest.load_monthly_series();observed=observed[observed.disease=="Dengue"]
+    rows=[]
+    for ind in indicators[indicators.disease=="Dengue"].itertuples():
+        if not ind.eligible:continue
+        dates=pd.date_range(ind.target_start,ind.target_end,freq="MS")
+        seg=observed[(observed.region==ind.region)&observed.date.isin(dates)].sort_values("date")
+        thr=monthly[monthly.region==ind.region]
+        seg=with_month_of_year(seg).merge(thr[["month","p50","p75"]],on="month",validate="many_to_one")
+        pool=seasonal[(seasonal.region==ind.region)&(seasonal.season==ind.season)]
+        s75=float(pool.p75.iloc[0]) if len(pool)==1 else float("nan")
+        actual=seasonal_rules(seg.date,seg.cases,seg.p50,seg.p75,s75)
+        if not actual["eligible"]:continue
+        rows.append(dict(region=ind.region,disease="Dengue",season=ind.season,predicted=bool(ind.outbreak),actual=actual["combined_flag"],rule_a_actual=actual["rule_a"],rule_b_actual=actual["rule_b"],avg_actual=seg.cases.mean(),season_p75=s75))
+    return pd.DataFrame(rows,columns=["region","disease","season","predicted","actual","rule_a_actual","rule_b_actual","avg_actual","season_p75"])
 
 
 def _confusion(df):
-    df = df.copy()
-    df["tp"] = df["predicted"] & df["actual"]
-    df["fp"] = df["predicted"] & ~df["actual"]
-    df["fn"] = ~df["predicted"] & df["actual"]
-    df["tn"] = ~df["predicted"] & ~df["actual"]
-    tp, fp, fn, tn = (int(df[c].sum()) for c in ("tp", "fp", "fn", "tn"))
-    precision = tp / (tp + fp) if tp + fp else float("nan")
-    recall = tp / (tp + fn) if tp + fn else float("nan")
-    f1 = 2 * precision * recall / (precision + recall) if precision + recall else float("nan")
-    return {
-        "n": int(len(df)), "TP": tp, "FP": fp, "FN": fn, "TN": tn,
-        "precision": round(precision, 3), "recall": round(recall, 3), "F1": round(f1, 3),
-    }
+    from .integrity import binary_metrics
+    p,a=df.predicted.astype(bool),df.actual.astype(bool)
+    result=binary_metrics(int((p&a).sum()),int((p&~a).sum()),int((~p&a).sum()),int((~p&~a).sum()))
+    return {"n":result["n"],"TP":result["tp"],"FP":result["fp"],"FN":result["fn"],"TN":result["tn"],"precision":result["precision"],"recall":result["recall"],"F1":result["f1"]}
 
 
 def run():

@@ -44,7 +44,7 @@ export function ForecastSparkline({ data }: { data: SparklinePoint[] }) {
       viewBox={`0 0 ${VB_W} ${VB_H}`}
       className="w-full"
       role="img"
-      aria-label="6-month forecast with 95% confidence interval"
+      aria-label="6-month forecast with 80% model interval interval"
     >
       <title>6-month forecast — hover bars for exact values</title>
 
@@ -71,7 +71,7 @@ export function ForecastSparkline({ data }: { data: SparklinePoint[] }) {
         const x = PAD.left + i * slot + slot / 2;
         const y = PAD.top + plotH - (d.yhat / maxV) * plotH;
         const h = Math.max(2, baselineY - y);
-        const tooltip = `${d.month} — ${Math.round(d.yhat).toLocaleString()} cases (95% CI ${Math.round(
+        const tooltip = `${d.month} — ${Math.round(d.yhat).toLocaleString()} cases (80% model interval ${Math.round(
           d.lower,
         ).toLocaleString()}–${Math.round(d.upper).toLocaleString()}) · ${d.risk}`;
         return (

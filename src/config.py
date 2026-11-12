@@ -16,7 +16,7 @@ import pandas as pd
 
 DATA_START_YEAR = 2019
 DATA_END_YEAR = 2026
-DATA_END_MONTH = 8  # last complete reported month (2026-09 is in-progress)
+DATA_END_MONTH = 8  # Declared legacy cutoff; completeness still requires source confirmation.
 DATA_START = pd.Timestamp(f"{DATA_START_YEAR}-01-01")
 
 # Single source of truth for all diseases known to HealthWatch.
@@ -124,6 +124,18 @@ DISEASE_METADATA = {
     },
 }
 
+from .source_registry import policy as source_policy
+for _disease, _metadata in DISEASE_METADATA.items():
+    _metadata["source_policy"] = source_policy(_disease)
+    if _disease == "Leptospirosis":
+        _metadata.update(status="excluded_unresolved_measure", analytical_available=False,
+                         unavailable_reason="Case measure unresolved; historical case totals are excluded pending source confirmation.")
+    elif _disease == "Acute Viral Hepatitis":
+        _metadata.update(status="provisional", forecast_available=False,
+                         unavailable_reason="Hep A row-count interpretation and application disease label are provisional.")
+    elif _disease == "Influenza-like Illness":
+        _metadata.update(status="provisional", analytical_available=True,
+                         unavailable_reason="Provisional ILI header/calendar interpretation; research comparison exists separately from operational forecasts.")
 SUPPORTED_DISEASES = list(DISEASE_METADATA.keys())
 FORECAST_READY_DISEASES = [d for d, m in DISEASE_METADATA.items() if m["forecast_available"]]
 DISEASE_GROUPS = {d: m["group"] for d, m in DISEASE_METADATA.items()}

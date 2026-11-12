@@ -49,6 +49,7 @@ Run: python -m src.fwbd_ingest
 import pandas as pd
 
 from . import config, ingest
+from .integrity import count_values
 from .doh_eb_ingest import REGION_LABELS
 
 FWD_GROUP = "Food and Waterborne Diseases"
@@ -108,7 +109,14 @@ def _age_bucket(age):
     (0-4 / 5-14 / 15-24 / 25-64 / 65+); missing ages are 'Unknown'."""
     if pd.isna(age):
         return "Unknown"
-    a = int(age)
+    import math
+    try:
+        value = float(age)
+    except (TypeError, ValueError):
+        return "Unresolved age"
+    if not math.isfinite(value) or value < 0 or value % 1:
+        return "Unresolved age"
+    a = int(value)
     if a <= 4:
         return "0-4"
     if a <= 14:
@@ -132,6 +140,8 @@ def _read_fwd_file(disease, data_dir=None):
             f"({FWD_FILES[disease]})."
         )
     df = pd.read_csv(path)
+    source_rows = len(df)
+    df["source_record"] = df.index + 1
     df.columns = [c.strip() for c in df.columns]
 
     if disease == "Acute Viral Hepatitis":
@@ -142,7 +152,7 @@ def _read_fwd_file(disease, data_dir=None):
         )
     else:
         df["region"] = df["Region"].map(REGION_LABELS)
-        df["age_group"] = df["Age Group"].fillna("Unknown")
+        df["age_group"] = df["Age Group"].fillna("Unknown").mask(df["Age Group"].astype(str).str.match(r"^\d{4}-\d{2}-\d{2}"), "Unresolved date-typed age")
         prov_col = (
             "Province/Highly Urbanized Cities"
             if "Province/Highly Urbanized Cities" in df.columns
@@ -168,16 +178,14 @@ def _read_fwd_file(disease, data_dir=None):
     df = config.at_or_after_data_start(df)
     if _CASE_COL in df.columns:
         df["cases"] = (
-            pd.to_numeric(df[_CASE_COL], errors="coerce")
-            .clip(lower=0)
-            .fillna(0)
+            count_values(df[_CASE_COL], _CASE_COL)
             .astype("float64")
         )
     else:
         # Case-per-row table (Hepatitis): each record IS one case.
         df["cases"] = 1.0
     df["deaths"] = (
-        df["cases"] * df["Outcome"].astype(str).str.upper().eq("D")
+        (df["cases"] * df["Outcome"].astype(str).str.upper().eq("D")).where(df["Outcome"].astype(str).str.upper().isin(["A","D"]))
     ).astype("float64")
     df["province"] = (
         df[prov_col].fillna("").astype(str).str.strip()
@@ -185,6 +193,8 @@ def _read_fwd_file(disease, data_dir=None):
         else ""
     )
     df["disease"] = disease
+    from .lineage import trace
+    trace(df, path, ingest.PROCESSED_DIR, source_rows)
     return df[["date", "region", "disease", "cases", "deaths"]].sort_values(
         ["region", "date"], ignore_index=True
     )
@@ -203,7 +213,7 @@ def _to_monthly(df, sum_cols):
     out["date"] = pd.to_datetime(out["date"]).dt.to_period("M").dt.to_timestamp()
     return (
         out.groupby(["date", "region", "disease"], as_index=False)[sum_cols]
-        .sum()
+        .sum(min_count=1)
         .sort_values(["disease", "region", "date"], ignore_index=True)
     )
 
@@ -224,7 +234,7 @@ def build_regional(regional=None):
         g = (
             group[["date"] + sum_cols]
             .set_index("date")
-            .reindex(idx, fill_value=0)
+            .reindex(idx)
             .rename_axis("date")
             .reset_index()
         )
@@ -247,9 +257,9 @@ def build_national(regional=None):
         idx = pd.date_range(group["date"].min(), group["date"].max(), freq="MS")
         g = (
             group.groupby("date", as_index=False)[sum_cols]
-            .sum()
+            .sum(min_count=1)
             .set_index("date")
-            .reindex(idx, fill_value=0)
+            .reindex(idx)
             .rename_axis("date")
             .reset_index()
         )
@@ -290,7 +300,7 @@ def load_fwbd_case_records(data_dir=None):
             )
         else:
             df["region_label"] = df["Region"]
-            df["age_group"] = df["Age Group"].fillna("Unknown")
+            df["age_group"] = df["Age Group"].fillna("Unknown").mask(df["Age Group"].astype(str).str.match(r"^\d{4}-\d{2}-\d{2}"), "Unresolved date-typed age")
             df["province"] = df["Province/Highly Urbanized Cities"].fillna("").astype(str).str.strip()
 
         df["region"] = df["region_label"].map(REGION_LABELS)
@@ -302,23 +312,23 @@ def load_fwbd_case_records(data_dir=None):
 
         df["case_classification"] = (
             df["Case Classification"].astype(str).str.strip().str.upper()
-        ).map(_CASE_CLASSIFICATION).fillna("Confirmed")
+        ).map(_CASE_CLASSIFICATION).fillna("Unknown")
         df["outcome"] = df["Outcome"].astype(str).str.upper().map(
             {"A": "Alive", "D": "Died"}
-        ).fillna("Alive")
+        ).fillna("Unknown")
         df["admitted"] = df["Admitted"].astype(str).str.upper().map(
             {"Y": True, "N": False}
-        ).fillna(False)
+        ).astype("boolean")
         df["sex"] = df["Sex"].fillna("").astype(str).str.upper()
         df["year"] = df["Year"].astype("int64")
         df["month"] = df[_MONTH_COL].astype("int64")
         if _CASE_COL in df.columns:
             df["cases"] = (
-                pd.to_numeric(df[_CASE_COL], errors="coerce").clip(lower=0).fillna(0)
+                count_values(df[_CASE_COL], _CASE_COL)
             ).astype(int)
         else:
             df["cases"] = 1
-        df["deaths"] = (df["outcome"] == "Died") * df["cases"]
+        df["deaths"] = ((df["outcome"] == "Died") * df["cases"]).where(df["outcome"].isin(["Alive","Died"]))
         df["laboratory_result"] = (
             df["Laboratory Result"].fillna("").astype(str).str.upper()
             if "Laboratory Result" in df.columns
@@ -366,7 +376,7 @@ if __name__ == "__main__":
     agg = (
         national.assign(y=national["date"].dt.year)
         .groupby(["disease", "y"])["cases"]
-        .sum()
+        .sum(min_count=1)
         .round(0)
     )
     print(agg.to_string())

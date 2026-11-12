@@ -89,7 +89,7 @@ function ForecastTooltip({
       </p>
       {row.yhatLower !== null && row.yhatUpper !== null && (
         <p className="text-muted-foreground">
-          95% CI {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
+          80% model interval {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
           {row.yhatUpper.toLocaleString(undefined, { maximumFractionDigits: 1 })}
         </p>
       )}
@@ -219,7 +219,7 @@ export function ForecastChart({
                 stroke="none"
                 fill="transparent"
                 isAnimationActive={false}
-                name="95% CI"
+                name="80% model interval"
                 stackId="band"
               />,
               <Area
@@ -230,7 +230,7 @@ export function ForecastChart({
                 fill="var(--chart-3)"
                 fillOpacity={0.22}
                 isAnimationActive={false}
-                name="95% CI"
+                name="80% model interval"
                 stackId="band"
               />,
               <Line

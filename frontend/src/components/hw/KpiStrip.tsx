@@ -2,7 +2,7 @@ import { RISK_META, type RiskLevel } from "@/lib/healthwatch/data";
 import { KpiCard } from "./KpiCard";
 
 export interface KpiStripData {
-  /** Next-month forecast + 95% CI. */
+  /** Next-month forecast + 80% model interval. */
   nextMonth: { value: string; sub: string };
   /** Current risk tier of the active baseline month. */
   currentRisk: { level: RiskLevel; sub: string };

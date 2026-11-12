@@ -51,61 +51,24 @@ def _longest_high_run(classes):
 
 
 def detect_outbreaks(classification=None, seasonal=None, consecutive_n=None):
-    if classification is None:
-        classification = load_seasonal_classification()
-    if seasonal is None:
-        seasonal = load_seasonal_thresholds()
-    if consecutive_n is None:
-        consecutive_n = CONSECUTIVE_HIGH_N
-
+    from .integrity import seasonal_rules
+    classification = load_seasonal_classification() if classification is None else classification
+    seasonal = load_seasonal_thresholds() if seasonal is None else seasonal
     records = []
-    key = ["disease", "region", "season"]
-    for (disease, region, season), grp in classification.groupby(key):
+    for (disease, region, season), grp in classification.groupby(["disease","region","season"]):
         grp = grp.sort_values("date")
-        n_months = len(grp)
-        high_run = _longest_high_run(grp["risk_level"].tolist())
-        rule_a = high_run >= consecutive_n
-
-        thresh_row = seasonal[
-            (seasonal["disease"] == disease)
-            & (seasonal["region"] == region)
-            & (seasonal["season"] == season)
-        ]
-        if thresh_row.empty:
-            season_p75 = float("nan")
-            season_avg = float("nan")
-            rule_b = False
-        else:
-            season_p75 = float(thresh_row["p75"].iloc[0])
-            season_avg = float(grp["yhat"].mean())
-            rule_b = season_avg > season_p75
-
-        if rule_a and rule_b:
-            trigger = "both"
-        elif rule_a:
-            trigger = "consecutive_high"
-        elif rule_b:
-            trigger = "season_p75"
-        else:
-            trigger = "none"
-
-        records.append(
-            {
-                "disease": disease,
-                "region": region,
-                "season": season,
-                "outbreak": bool(rule_a or rule_b),
-                "trigger": trigger,
-                "consecutive_high_n": int(high_run),
-                "season_avg": round(season_avg, 1),
-                "season_p75": round(season_p75, 1),
-                "n_forecast_months": int(n_months),
-            }
-        )
-
-    return pd.DataFrame(records).sort_values(
-        ["region", "season"], ignore_index=True
-    )
+        pool = seasonal[(seasonal.disease==disease)&(seasonal.region==region)&(seasonal.season==season)]
+        if len(pool)>1:
+            raise ValueError("Duplicate seasonal threshold key")
+        p75 = float(pool.p75.iloc[0]) if len(pool) else float("nan")
+        result = seasonal_rules(grp.date,grp.yhat,grp.p50,grp.p75,p75)
+        a,b = result["rule_a"],result["rule_b"]
+        records.append(dict(disease=disease,region=region,season=season,
+            outbreak=result["combined_flag"],eligible=result["eligible"],exclusion_reason=result["reason"],
+            rule_a=a,rule_b=b,trigger="unavailable" if not result["eligible"] else "both" if a and b else "consecutive_high" if a else "season_p75" if b else "none",
+            consecutive_high_n=_longest_high_run(grp.risk_level.tolist()),season_avg=float(grp.yhat.mean()),
+            season_p75=p75,n_forecast_months=len(grp),target_start=grp.date.min(),target_end=grp.date.max()))
+    return pd.DataFrame(records)
 
 
 def save_indicators(indicators):
@@ -117,7 +80,7 @@ def run():
     path = save_indicators(indicators)
     print(f"Saved {len(indicators)} region-season indicators -> {path}")
 
-    flagged = indicators[indicators["outbreak"]]
+    flagged = indicators[indicators["outbreak"].eq(True)]
     print(f"\nFlagged outbreak regions/seasons: {len(flagged)} / {len(indicators)}")
     if not flagged.empty:
         print(
@@ -127,7 +90,7 @@ def run():
             ].to_string(index=False)
         )
 
-    ok = indicators[~indicators["outbreak"]]
+    ok = indicators[indicators["outbreak"].eq(False)]
     if not ok.empty:
         print("\nNot flagged:")
         print(

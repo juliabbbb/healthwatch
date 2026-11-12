@@ -116,7 +116,7 @@ Map: MapIcon,
 interface PopoverState {
   title: string;
   description: string;
-  icon?: string;
+  icon?: string | undefined;
   /** Viewport-relative anchor rect of the clicked element */
   anchorRect: DOMRect;
 }
@@ -132,7 +132,7 @@ const aiCache = new Map<string, string>();
 interface MatchedTarget {
   title: string;
   description: string;
-  icon?: string;
+  icon?: string | undefined;
   container: Element;
   rect: DOMRect;
 }

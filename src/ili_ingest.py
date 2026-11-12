@@ -20,6 +20,7 @@ from pathlib import Path
 import pandas as pd
 
 from . import config, ingest
+from .integrity import count_values
 
 ILI_RAW_FILE = "data/raw/new_diseases/ILI - Cases - Data.csv"
 DISEASE = "Influenza-like Illness"
@@ -48,24 +49,18 @@ REGION_LABELS = {
 
 
 def _epi_week_month(year_series, week_series):
-    """Calendar month that contains the Thursday of a morbidity week."""
-    weeks = pd.Series(week_series, dtype="int64").clip(upper=52)
-    years = pd.Series(year_series, dtype="int64")
-    thu = pd.Series(
-        [
-            pd.Timestamp.fromisocalendar(int(y), int(w), 4)
-            for y, w in zip(years, weeks)
-        ]
-    )
-    return thu.dt.to_period("M").dt.to_timestamp()
+    from .integrity import legacy_week_month
+    return legacy_week_month(year_series, week_series)
 
 
 def process_ili(raw_path=None):
-    raw_path = Path(raw_path) if raw_path else Path(ILI_RAW_FILE)
+    raw_path = Path(raw_path) if raw_path else ingest.RAW_DIR / "new_diseases" / "ILI - Cases - Data.csv"
     if not raw_path.exists():
         raise FileNotFoundError(f"ILI raw source not found: {raw_path}")
 
     df = pd.read_csv(raw_path, low_memory=False)
+    source_rows = len(df)
+    df["source_record"] = df.index + 1
 
     # Inverted headers: 'Year' is week, 'Morbidity Week' is year
     raw_years = df["Morbidity Week"].astype(int)
@@ -90,13 +85,15 @@ def process_ili(raw_path=None):
         raise ValueError(f"Unmapped ILI region(s): {unmapped}")
 
     # Cases
-    df_valid["cases"] = pd.to_numeric(df_valid["Cases"], errors="coerce").fillna(0).astype(int)
-    df_valid["deaths"] = 0  # No deaths column in ILI raw data
+    df_valid["cases"] = count_values(df_valid["Cases"], "ILI Cases")
+    df_valid["deaths"] = float("nan")  # Unavailable measure, not an observed zero
 
+    from .lineage import trace
+    trace(df_valid.assign(disease=DISEASE), raw_path, ingest.PROCESSED_DIR, source_rows)
     # Aggregate monthly by region
     regional = (
         df_valid.groupby(["date", "region"], as_index=False)[["cases", "deaths"]]
-        .sum()
+        .sum(min_count=1)
         .sort_values(["region", "date"], ignore_index=True)
     )
     regional["disease"] = DISEASE
@@ -110,8 +107,8 @@ def process_ili(raw_path=None):
         reindexed = sub.reindex(idx).rename_axis("date").reset_index()
         reindexed["region"] = reg
         reindexed["disease"] = DISEASE
-        reindexed["cases"] = reindexed["cases"].fillna(0).astype(int)
-        reindexed["deaths"] = reindexed["deaths"].fillna(0).astype(int)
+        reindexed["cases"] = reindexed["cases"]
+        reindexed["deaths"] = reindexed["deaths"]
         full_grid.append(reindexed)
 
     regional_full = pd.concat(full_grid, ignore_index=True)[
@@ -119,9 +116,12 @@ def process_ili(raw_path=None):
     ]
 
     # National series = sum of 18 regions
+    regional_full["observation_status"] = regional_full["cases"].map(lambda x: "missing_report" if pd.isna(x) else "observed_zero" if x == 0 else "observed_positive")
+    regional_full["source_status"] = "provisional"
+    regional_full.to_csv(ingest.PROCESSED_DIR / "ili_observation_ledger.csv", index=False)
     national = (
         regional_full.groupby("date", as_index=False)[["cases", "deaths"]]
-        .sum()
+        .sum(min_count=1)
         .sort_values("date", ignore_index=True)
     )
     national["disease"] = DISEASE

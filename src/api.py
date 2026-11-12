@@ -1,3 +1,5 @@
+from .json_contract import number as _number, FiniteJSONResponse
+import numpy as np
 import hashlib
 import json
 import os
@@ -55,6 +57,7 @@ _FORECASTS: pd.DataFrame = pd.DataFrame()
 _CLASSIFICATION: pd.DataFrame = pd.DataFrame()
 _THRESHOLDS: pd.DataFrame = pd.DataFrame()
 _METRICS: pd.DataFrame = pd.DataFrame()
+_RUN_PROVENANCE = {"run_id": None, "validation_status": "legacy_unverified"}
 _OUTBREAKS: pd.DataFrame = pd.DataFrame()
 _OUTBREAK_VALIDATION: pd.DataFrame = pd.DataFrame()
 _ESCALATION: pd.DataFrame | None = None
@@ -99,7 +102,7 @@ def _load_repo_tables():
     DATABASE_URL and on the schema being built (auto-created via
     `db.ensure_tables()` at startup)."""
     obs = db.read_table("monthly_observations")
-    obs = obs[obs["year"] >= config.DATA_START_YEAR]
+    obs = obs[(obs["year"] >= config.DATA_START_YEAR) & (obs["disease"] != "Leptospirosis")]
     obs = config.at_or_before_data_end(obs)
     obs = _dedupe_latest(obs, ["region_code", "year", "month", "disease"])
     _NATIONAL = obs[obs["region_code"] == db.NATIONAL_CODE]
@@ -119,7 +122,7 @@ def _load_repo_tables():
     _THRESHOLDS = _dedupe_latest(_THRESHOLDS, ["region_code", "month", "disease"])
 
     _METRICS = db.read_table("validation_metrics")
-    _METRICS = _dedupe_latest(_METRICS, ["region_code", "disease"])
+    _METRICS = _dedupe_latest(_METRICS, ["region_code", "disease", "window"])
 
     _OUTBREAKS = db.read_table("outbreak_signals")
     _OUTBREAKS = _dedupe_latest(_OUTBREAKS, ["region_code", "season", "disease"])
@@ -165,6 +168,14 @@ def _load_all_data() -> None:
         _ESCALATION,
     ) = _load_repo_tables()
 
+    global _RUN_PROVENANCE
+    runs = db.read_table("pipeline_runs")
+    if not runs.empty:
+        try:
+            notes = json.loads(runs.sort_values("id").iloc[-1]["notes"])
+            _RUN_PROVENANCE = dict(notes, validation_status="verified_local_operational" if notes.get("manifest_sha256") else "legacy_unverified")
+        except (ValueError, TypeError):
+            _RUN_PROVENANCE = {"run_id": None, "validation_status": "legacy_unverified"}
     _data_ready = True
     print(f"Backend data loaded in {time.monotonic() - t0:.1f}s")
 
@@ -194,21 +205,16 @@ def _season(dt):
 
 
 def _month_point(i, dt, cases, forecast, lower=None, upper=None):
-    c = int(round(float(cases)))
-    return {
-        "index": i,
-        "year": int(dt.year),
-        "month": int(dt.month),
-        "label": f"{dt.year}-{int(dt.month):02d}",
-        "date": dt.date().isoformat(),
-        "season": _season(dt),
-        "forecast": forecast,
-        "cases": c,
-        "lower": int(round(float(lower))) if lower is not None else c,
-        "upper": int(round(float(upper))) if upper is not None else c,
-        "raw": c,
-        "adjusted": False,
-    }
+    def finite(value):
+        return float(value) if value is not None and pd.notna(value) and np.isfinite(float(value)) else None
+    c = finite(cases)
+    return {"index": i, "year": int(dt.year), "month": int(dt.month),
+            "label": f"{dt.year}-{int(dt.month):02d}", "date": dt.date().isoformat(),
+            "season": _season(dt), "forecast": forecast, "cases": c,
+            "lower": finite(lower) if forecast else c, "upper": finite(upper) if forecast else c,
+            "raw": c, "adjusted": False,
+            "observation_status": "forecast" if forecast else "missing_report" if c is None else "observed_zero" if c == 0 else "observed_positive",
+            "interval_level": 0.8 if forecast and lower is not None else None}
 
 
 def _check_disease(disease):
@@ -240,34 +246,14 @@ def _history(region_code, disease=None):
 
 
 def _confidence(mape, skill_vs_naive, months):
-    """Calibrated on data/processed/validation_metrics.csv.
+    """Descriptive error badge; never calibrated uncertainty or outbreak probability."""
+    mape,skill_vs_naive=_number(mape),_number(skill_vs_naive)
+    if mape is None or skill_vs_naive is None or not months:
+        return {"label":"Evaluation unavailable","tone":"unavailable","note":"Undefined error/skill denominator or no scoreable observations."}
+    tone="low" if skill_vs_naive>=15 and mape<=100 else "high" if skill_vs_naive<=0 else "moderate"
+    return {"label":"Lower observed error" if tone=="low" else "Baseline not exceeded" if tone=="high" else "Mixed observed error",
+            "tone":tone,"note":f"Descriptive benchmark only: {months} paired months; {skill_vs_naive:.1f}% skill versus seasonal naive. Not outbreak probability or calibrated confidence."}
 
-    Raw MAPE alone is misleading for low-incidence counts: a forecast of 4
-    against an actual of 1 reads as 300% error, so near-zero months push
-    regional MAPE into triple digits even when the model beats its baseline.
-    Skill vs the seasonal-naive baseline is a ratio of two errors and stays
-    meaningful, so it drives the tiers:
-      High     - clearly beats the naive baseline (skill >= 15%) with MAPE <= 100%
-      Low      - fails to beat the naive baseline (skill <= 0%)
-      Moderate - everything in between
-    """
-    if skill_vs_naive >= 15 and mape <= 100:
-        return {
-            "label": "High confidence",
-            "tone": "low",
-            "note": f"Beats the seasonal-naive baseline by {skill_vs_naive:.0f}% across {months} walk-forward months - the seasonal signal is stable enough to plan against.",
-        }
-    if skill_vs_naive <= 0:
-        return {
-            "label": "Low confidence - volatile series",
-            "tone": "high",
-            "note": f"Does not beat the seasonal-naive baseline ({skill_vs_naive:+.0f}% skill) over {months} walk-forward months: month-to-month case counts swing more than the seasonal signal explains. Treat the point forecast as a range, not a target.",
-        }
-    return {
-        "label": "Moderate confidence",
-        "tone": "moderate",
-        "note": f"Beats the naive baseline by {skill_vs_naive:+.0f}% (MAPE {mape:.0f}%, inflated by near-zero months) over {months} walk-forward months. Direction of change is reliable; exact case volume is not.",
-    }
 
 
 # Objective 5 interpretability: the LLM is strictly a narration layer over
@@ -582,40 +568,33 @@ def _numeric_violation(narrative, grounding):
 
 
 def _safe_element_narrative(g):
-    """Deterministic fallback for click-to-explain: restates only the payload
-    fields the user clicked, no LLM, no derived figures."""
-    parts = []
-    desc = str(g.get("description") or g.get("title") or "").strip().rstrip(".")
-    if desc:
-        parts.append(desc + ".")
-    if g.get("metric_value"):
-        parts.append(f"The current reading is {g['metric_value']}.")
-    if g.get("region"):
-        parts.append(f"This applies to {g['region']}.")
-    if g.get("month"):
-        parts.append(f"For {g['month']}.")
-    text = " ".join(parts).strip()
-    return text or (
-        f"This element explains a {g.get('illness', 'dengue')} surveillance "
-        "dashboard reading."
-    )
+    # Client descriptions are labels, not verified analytical evidence.
+    return ("This element presents dashboard information. Check the selected disease, region and date, "
+            "and distinguish reported values, forecasts and unavailable data. Source interpretations may remain provisional.")
 
 
 def _guarded_narrative(system_prompt, user_prompt, grounding, safe_fn):
-    """Generate, then deterministically guard: weather-lexicon check, then
-    numeric-fidelity check against the grounding payload. On either violation
-    the narration is replaced by a templated fallback built from the same
-    grounding (no LLM). Returns narrative, model, flag, and both violation
-    reports for auditability."""
+    """Preserve raw output and enforce deterministic payload fidelity.
+
+    This conservative gate is not a completed live semantic or user study.
+    """
+    from .narrative_contract import guard
+    import hashlib, json
     narrative, model = _llm_narrate(system_prompt, user_prompt)
     weather = _weather_violation(narrative)
     numbers = _numeric_violation(narrative, grounding)
-    if weather or numbers:
-        narrative = safe_fn(grounding)
-        used_safe_fallback = True
-    else:
-        used_safe_fallback = False
-    return narrative, model, used_safe_fallback, weather, numbers
+    result = guard(narrative, grounding, safe_fn(grounding), model)
+    if result["fallback"]:
+        numbers = list(numbers or []) + ["unverified_semantic_claim"]
+    # Output audit contains no credential or request headers. Explicit opt-in path.
+    audit_path = os.environ.get("HEALTHWATCH_NARRATIVE_AUDIT")
+    if audit_path:
+        from pathlib import Path
+        path = Path(audit_path); path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as log:
+            log.write(json.dumps(result, default=str) + "\n")
+    return result["text"], model, bool(result["fallback"] or weather or numbers), weather, numbers
+
 
 
 def _seasonality_grounding(db_region, disease):
@@ -883,6 +862,7 @@ async def lifespan(_app):
 
 
 app = FastAPI(
+    default_response_class=FiniteJSONResponse,
     title="HEALTHWATCH API",
     description=(
         "Regional time-series analysis system for seasonal illness outbreak "
@@ -965,7 +945,11 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
         raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
     _check_disease(disease)
 
-    forecast_available = config.DISEASE_METADATA.get(disease, {}).get("forecast_available", False)
+    source_info = config.DISEASE_METADATA.get(disease, {})
+    if source_info.get("analytical_available") is False:
+        return {"disease": disease, "forecast_available": False, "unavailable_reason": source_info["unavailable_reason"],
+                "source_policy": source_info["source_policy"], "series": {}, "metrics": {}, "outbreak": []}
+    forecast_available = source_info.get("forecast_available", False)
     unavailable_reason = config.DISEASE_METADATA.get(disease, {}).get("unavailable_reason")
 
     series_out = {}
@@ -1009,13 +993,13 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
                     "region": region["name"],
                     "mae": float(row["MAE"]),
                     "rmse": float(row["RMSE"]),
-                    "mape": float(row["MAPE"]),
+                    "mape": _number(row["MAPE"]),
                     "months": int(row["months"]),
                     "skill_vs_naive_pct": (
-                        None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"])
+                        None if pd.isna(row["skill_vs_naive_pct"]) else _number(row["skill_vs_naive_pct"])
                     ),
                     "confidence": _confidence(
-                        float(row["MAPE"]), float(row["skill_vs_naive_pct"]), int(row["months"])
+                        _number(row["MAPE"]), _number(row["skill_vs_naive_pct"]), int(row["months"])
                     ),
                     "windows": rows.assign(
                         region=rows["region_code"].map(lambda c: NAME_BY_CODE.get(c, c))
@@ -1033,8 +1017,11 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
 
     return {
         "disease": disease,
+        "provenance": _RUN_PROVENANCE,
         "forecast_available": forecast_available,
         "unavailable_reason": unavailable_reason,
+        "source_policy": source_info["source_policy"],
+        "thresholds": [{"region": NAME_BY_CODE.get(row.region_code,row.region_code), "region_code": row.region_code, "month": int(row.month), "p50": None if pd.isna(row.p50) else float(row.p50), "p75": None if pd.isna(row.p75) else float(row.p75)} for row in _THRESHOLDS[_THRESHOLDS["disease"] == disease].itertuples()],
         "series": series_out,
         "metrics": metrics_out,
         "outbreak": outbreak_items,
@@ -1089,7 +1076,7 @@ def series(
         _month_point(i, dt, cases, False)
         for i, (dt, cases) in enumerate(zip(hist["date"], hist["cases"]))
     ]
-    if include_forecast:
+    if include_forecast and config.DISEASE_METADATA[disease].get("forecast_available", False):
         fcst = _FORECASTS[
             (_FORECASTS["region_code"] == db_region) & (_FORECASTS["disease"] == disease)
         ].sort_values("target_date")
@@ -1104,7 +1091,13 @@ def series(
                     upper=row.yhat_upper,
                 )
             )
-    return {"region": _label(db_region), "disease": disease, "points": points}
+    if db_region == db.NATIONAL_CODE:
+        for point in points:
+            if point["forecast"]: continue
+            reports = _REGIONAL[(_REGIONAL.disease == disease) & (_REGIONAL.year == point["year"]) & (_REGIONAL.month == point["month"]) & _REGIONAL.cases.notna()]
+            point["reporting_regions"] = int(reports.region_code.nunique())
+            point["coverage_status"] = "sum_of_available_regional_reports"
+    return {"region": _label(db_region), "disease": disease, "source_policy": config.DISEASE_METADATA[disease]["source_policy"], "provenance": _RUN_PROVENANCE, "points": points}
 
 
 # Canonical presentation orders for the reported-data breakdown dimensions.
@@ -1439,55 +1432,22 @@ def heat_events(region: str | None = Query(default=None)):
 
 
 @app.get("/validation/outbreak", tags=["objective_3_classification"])
-def outbreak_validation():
-    """Prospective 2025 validation of the outbreak indicator.
-
-    Compares the dry (Jan-Mar) and wet (Jul-Sep) 2025 season flags — forecasts
-    fit with data through 2024-12-31 — against observed DOH-EB monthly data."""
+def outbreak_validation(disease: str | None = None):
+    """Retrospective rule-derived reference comparison, not official outbreak truth."""
+    from .integrity import binary_metrics
     v = _OUTBREAK_VALIDATION
+    if disease is not None:
+        _check_disease(disease)
+        v = v[v["disease"] == disease]
+    if "region" in v:
+        v = v[v["region"] != "National"]
     if v.empty:
-        raise HTTPException(status_code=404, detail="2025 outbreak validation not generated yet")
-    overall = {
-        "tp": int(v["tp"].sum()),
-        "fp": int(v["fp"].sum()),
-        "fn": int(v["fn"].sum()),
-        "tn": int(v["tn"].sum()),
-    }
-    tp, fp, fn = overall["tp"], overall["fp"], overall["fn"]
-    overall["precision"] = round(tp / (tp + fp), 3) if tp + fp else None
-    overall["recall"] = round(tp / (tp + fn), 3) if tp + fn else None
-    f1 = (
-        2 * overall["precision"] * overall["recall"]
-        / (overall["precision"] + overall["recall"])
-        if overall["precision"] and overall["recall"]
-        else None
-    )
-    overall["f1"] = round(f1, 3) if f1 else None
-
-    by_season = {}
-    for s in ("dry", "wet"):
-        sub = v[v["season"] == s]
-        stp, sfp, sfn = int(sub["tp"].sum()), int(sub["fp"].sum()), int(sub["fn"].sum())
-        precision = stp / (stp + sfp) if stp + sfp else None
-        recall = stp / (stp + sfn) if stp + sfn else None
-        s_f1 = (
-            2 * precision * recall / (precision + recall) if precision and recall else None
-        )
-        by_season[s] = {
-            "tp": stp,
-            "fp": sfp,
-            "fn": sfn,
-            "tn": int(sub["tn"].sum()),
-            "precision": round(precision, 3) if precision else None,
-            "recall": round(recall, 3) if recall else None,
-            "f1": round(s_f1, 3) if s_f1 else None,
-        }
-    return {
-        "scope": "2025 dry (Jan-Mar) + wet (Jul-Sep) season probes, forecast "
-        "with data through 2024-12-31 and compared against observed DOH-EB 2025",
-        "overall": overall,
-        "by_season": by_season,
-    }
+        raise HTTPException(status_code=404, detail="Outbreak validation unavailable")
+    def summary(frame):
+        return binary_metrics(*(int(frame[c].sum()) for c in ("tp", "fp", "fn", "tn")))
+    return {"scope": "Retrospective 2025 complete regional seasonal reference probes; National excluded",
+            "disease": disease or "all eligible diseases", "reference_type": "rule-derived",
+            "overall": summary(v), "by_season": {s: summary(v[v.season == s]) for s in ("dry", "wet")}}
 
 
 @app.get("/metrics/{region}", tags=["objective_4_dashboard"])
@@ -1508,7 +1468,7 @@ def metrics(
     if primary.empty:
         raise HTTPException(status_code=404, detail=f"Window '{window}' not found")
     row = primary.iloc[0]
-    confidence = _confidence(row["MAPE"], float(row["skill_vs_naive_pct"]), int(row["months"]))
+    confidence = _confidence(row["MAPE"], _number(row["skill_vs_naive_pct"]), int(row["months"]))
     return {
         "region": _label(db_region),
         "disease": disease,
@@ -1516,8 +1476,8 @@ def metrics(
         "primary_window": window,
         "mae": float(row["MAE"]),
         "rmse": float(row["RMSE"]),
-        "mape": float(row["MAPE"]),
-        "skill_vs_naive_pct": None if pd.isna(row["skill_vs_naive_pct"]) else float(row["skill_vs_naive_pct"]),
+        "mape": _number(row["MAPE"]),
+        "skill_vs_naive_pct": None if pd.isna(row["skill_vs_naive_pct"]) else _number(row["skill_vs_naive_pct"]),
         "confidence": confidence,
     }
 
@@ -1834,4 +1794,8 @@ def live_weather_region(request: Request, region: str, refresh: bool = Query(def
             "source": data["national"]["source"],
             "source_url": data["national"]["source_url"],
         },
-    }
+    }
+
+
+from .research_api import router as research_router
+app.include_router(research_router)

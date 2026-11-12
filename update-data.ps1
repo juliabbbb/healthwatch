@@ -1,13 +1,17 @@
-# HEALTHWATCH data update: raw file -> processed CSVs -> PostgreSQL.
+param([Parameter(Mandatory=$true)][string]$OutputDirectory)
+$env:HEALTHWATCH_OUTPUT_DIR = [System.IO.Path]::GetFullPath($OutputDirectory)
+if (Test-Path -LiteralPath $env:HEALTHWATCH_OUTPUT_DIR) { throw "Choose a new run directory; existing artifacts must remain immutable." }
+New-Item -ItemType Directory -Path $env:HEALTHWATCH_OUTPUT_DIR | Out-Null
+# HEALTHWATCH local build: source preflight -> processed artifacts -> verification.
+# Database publication is always a separate explicit command.
 # Run after dropping a new DOH-EB export in data/raw/. The ML pipeline runs
-# offline on this machine; the final step (src.db) mirrors data/processed into
-# the shared Postgres, which is what the deployed dashboard serves.
+# offline in the chosen run directory and does not connect to shared PostgreSQL.
 # Fails loudly: any failed step stops the run, so Postgres is never half-synced.
 
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
 Set-Location -LiteralPath $root
-$py = Join-Path $root '.venv\Scripts\python.exe'
+$py = if ($env:HEALTHWATCH_PYTHON) { $env:HEALTHWATCH_PYTHON } else { Join-Path $root '.venv\Scripts\python.exe' }
 $raw = Join-Path $root 'data\raw\DOH-Epi-Dengue-2019-2026-line-list.csv'
 
 if (-not (Test-Path -LiteralPath $py)) {
@@ -16,13 +20,13 @@ if (-not (Test-Path -LiteralPath $py)) {
 if (-not (Test-Path -LiteralPath $raw)) {
     throw "Raw data file not found: $raw`nDrop the updated DOH-EB export in data\raw\ first."
 }
-$hasDb = (Test-Path -LiteralPath '.env') -and (Select-String -LiteralPath '.env' -Pattern '^\ufeff?DATABASE_URL=.' -Quiet)
-if (-not $hasDb) {
-    Write-Warning "No DATABASE_URL in .env - the final sync step (src.db) will fail; the pipeline steps will still run."
-}
+& $py -m src.preflight --output $env:HEALTHWATCH_OUTPUT_DIR
+if ($LASTEXITCODE -ne 0) { throw "Source preflight failed. No fitting or publication occurred." }
 
 $steps = @(
     'src.fwbd_ingest'           # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> monthly series
+    'src.ili_ingest'            # Provisional observed history only; lepto excluded
+    'src.heat_ingest'           # Annual reference only
     'src.doh_eb_ingest'          # canonical DOH-EB file -> monthly series
     'src.forecast'               # Prophet fits + 12-month forecasts, validation folds
     'src.classify'               # month-of-year thresholds, risk + probe classification
@@ -30,7 +34,7 @@ $steps = @(
     'src.outbreak'               # season-level outbreak flags
     'src.validate_2025'          # prospective check of the 2025 flags (real data)
     'src.validate_known_epidemic' # independent 2019 dengue outbreak check (line-list 2019 monthly cross-check)
-    'src.db'                     # mirrors processed CSVs into PostgreSQL (DATABASE_URL)
+    # Database publication is a separate explicit command after verification.
 )
 
 foreach ($step in $steps) {
@@ -43,5 +47,8 @@ foreach ($step in $steps) {
 }
 
 Write-Host ''
-Write-Host "Data update complete. Processed CSVs in data\processed\; Postgres is synced." -ForegroundColor Green
-Write-Host "Commit the regenerated data\processed\*.csv to the repo to version the new artifacts."
+Write-Host "Local build finished. Run verification before any separate publication." -ForegroundColor Green
+Write-Host "Review the run directory and manifest; no database was changed."
+& $py -m src.verify_build --run $env:HEALTHWATCH_OUTPUT_DIR --run-id (Split-Path -Leaf $env:HEALTHWATCH_OUTPUT_DIR)
+if ($LASTEXITCODE -ne 0) { throw "Build verification failed. Publication blocked." }
+Write-Host "Verified local run. No database was published."

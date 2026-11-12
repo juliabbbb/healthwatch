@@ -218,7 +218,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
             )}
-            title="Healthcare Worker Mode: Comprehensive surveillance, admission rates, Prophet 95% CIs, and clinical response protocols"
+            title="Healthcare Worker Mode: Comprehensive surveillance, admission rates, Prophet 80% model intervals, and clinical response protocols"
           >
             <Stethoscope className="size-3.5 shrink-0" />
             <span className="hidden lg:inline">Healthcare</span>

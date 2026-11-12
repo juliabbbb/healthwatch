@@ -1,3 +1,5 @@
+> Current implementation: see [docs/IMPLEMENTATION_WORKFLOW.md](docs/IMPLEMENTATION_WORKFLOW.md). Earlier architecture, numbers and readiness claims below describe the legacy snapshot and are not current validation evidence.
+
 # HEALTHWATCH
 
 Regional time-series analysis system for seasonal illness outbreak prediction and hotspot classification.

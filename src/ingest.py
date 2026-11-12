@@ -1,14 +1,16 @@
 from pathlib import Path
+import os
 
 import pandas as pd
 
 from . import config
 
-RAW_DIR = Path("data/raw")
-PROCESSED_DIR = Path("data/processed")
+ROOT = Path(__file__).resolve().parent.parent
+RAW_DIR = Path(os.environ.get("HEALTHWATCH_RAW_DIR", ROOT / "data/raw"))
+PROCESSED_DIR = Path(os.environ.get("HEALTHWATCH_OUTPUT_DIR", ROOT / "data/processed"))
 
 
-def to_monthly(df, fill_missing="zero"):
+def to_monthly(df, fill_missing="preserve"):
     """Aggregate any cleaned series to calendar-month totals (month-start dates).
 
     Preserves deaths when present alongside cases."""
@@ -21,19 +23,21 @@ def to_monthly(df, fill_missing="zero"):
     sum_cols = ["cases"] + (["deaths"] if "deaths" in out.columns else [])
     monthly = (
         out.groupby(["date", "region", "disease"], as_index=False)[sum_cols]
-        .sum()
+        .sum(min_count=1)
         .sort_values(["disease", "region", "date"], ignore_index=True)
     )
-    if fill_missing == "zero":
+    if fill_missing in {"zero", "preserve"}:
         idx = pd.date_range(monthly["date"].min(), monthly["date"].max(), freq="MS")
         parts = []
         for (disease, region), group in monthly.groupby(["disease", "region"]):
             g = (
                 group.set_index("date")
-                .reindex(idx, fill_value=0)
+                .reindex(idx)
                 .rename_axis("date")
                 .reset_index()
             )
+            if fill_missing == "zero":
+                g[sum_cols] = g[sum_cols].fillna(0)
             g["disease"] = disease
             g["region"] = region
             parts.append(g)
@@ -77,13 +81,14 @@ def load_monthly_series():
     frames = []
     for name in MONTHLY_FILES:
         path = PROCESSED_DIR / name
-        if path.exists():
+        if path.exists() and "leptospirosis" not in name:
             frames.append(pd.read_csv(path, parse_dates=["date"]))
     if not frames:
         raise FileNotFoundError(
             f"No monthly series CSVs in {PROCESSED_DIR}; run the ingest first."
         )
     combined = pd.concat(frames, ignore_index=True)
+    combined = combined[combined.disease != "Leptospirosis"]
     return config.assert_data_window(
         config.at_or_after_data_start(combined),
         date_col="date",

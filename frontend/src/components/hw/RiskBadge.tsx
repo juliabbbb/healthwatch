@@ -24,7 +24,7 @@ export function RiskBadge({
       }}
     >
       <span className="size-1.5 rounded-full bg-white/80" />
-      {meta.label} risk
+      {meta.label}{risk === "unavailable" ? "" : " risk"}
     </span>
   );
 }

@@ -1,3 +1,4 @@
+import { ResearchComparison } from "./ResearchComparison";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
@@ -112,7 +113,7 @@ export function ForecastCard({
     : nextPt
     ? {
         value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
-        sub: `95% CI ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
+        sub: `80% model interval ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
           metricValue(nextPt.upper, a.region, mode),
           mode,
         )}`,
@@ -358,7 +359,7 @@ export function ForecastCard({
                 {meta.forecast
                   ? isForecastUnavailable
                     ? "Historical Surveillance Only — Forecast Pending"
-                    : `Prophet Forecast · 95% CI ${formatMetric(
+                    : `Prophet Forecast · 80% model interval ${formatMetric(
                       metricValue(a.point.lower, a.region, mode),
                       mode,
                     )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
@@ -405,6 +406,10 @@ export function ForecastCard({
         </section>
       )}
 
+      {illness === "all" && <p className="px-5 py-2 text-xs text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "Unavailable"}. Aggregate prediction intervals are unavailable.</p>}
+      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold.</p>}
+      {(illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
+      {audienceMode === "clinical" && <ResearchComparison disease={illness} region={a.region.name} regionCode={regionCode} />}
       {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}
       {audienceMode === "clinical" && !isForecastUnavailable && (
         <section className="border-b border-border/70 px-5 py-3 shrink-0">
@@ -413,10 +418,10 @@ export function ForecastCard({
               6-MONTH PROJECTION TRAJECTORY
             </span>
             <span className="text-[10px] font-mono text-muted-foreground">
-              95% Confidence Bounds
+              80% model interval (uncalibrated)
             </span>
           </div>
-          <ForecastSparkline data={sparkData} unit={unit} height={52} />
+          <ForecastSparkline data={sparkData} />
         </section>
       )}
 

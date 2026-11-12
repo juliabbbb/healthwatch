@@ -2,10 +2,9 @@
 
 Builds and reads the HEALTHWATCH schema (the ERD source of truth — 12 tables)
 through SQLAlchemy against a Supabase PostgreSQL server. Requires DATABASE_URL
-to be set in the environment. This is the only relational store: the SQLite
-fallback was removed, so every component reads from this PostgreSQL database.
+to be set in the environment. This is the only relational store: the No silent SQLite fallback is allowed; SQLite must be explicitly selected for local tests.
 
-The pipeline never hand-writes tables: `build_db()` drops and recreates rows
+The pipeline never hand-writes tables: `build_db()` replaces rows transactionally after verification
 from the processed CSVs, so a rebuild is fully idempotent. Because this module
 parses the repo .env itself, both the API and the CLI rebuild pick up
 DATABASE_URL regardless of launch context.
@@ -176,8 +175,8 @@ monthly_observations = Table(
     Column("disease", String(32), primary_key=True),
     Column("year", Integer, primary_key=True),
     Column("month", Integer, primary_key=True),
-    Column("cases", Integer, nullable=False),
-    Column("deaths", Integer, nullable=False),
+    Column("cases", Integer, nullable=True),
+    Column("deaths", Integer, nullable=True),
 )
 
 forecasts = Table(
@@ -197,8 +196,8 @@ risk_thresholds = Table(
     Column("region_code", String(9), primary_key=True),
     Column("disease", String(32), primary_key=True),
     Column("month", Integer, primary_key=True),
-    Column("p50", Float, nullable=False),
-    Column("p75", Float, nullable=False),
+    Column("p50", Float, nullable=True),
+    Column("p75", Float, nullable=True),
 )
 
 risk_classifications = Table(
@@ -208,8 +207,8 @@ risk_classifications = Table(
     Column("disease", String(32), primary_key=True),
     Column("date", Date, primary_key=True),
     Column("yhat", Float, nullable=False),
-    Column("p50", Float, nullable=False),
-    Column("p75", Float, nullable=False),
+    Column("p50", Float, nullable=True),
+    Column("p75", Float, nullable=True),
     Column("risk_level", String(12), nullable=False),
 )
 
@@ -219,11 +218,15 @@ outbreak_signals = Table(
     Column("region_code", String(9), primary_key=True),
     Column("disease", String(32), primary_key=True),
     Column("season", String(6), primary_key=True),
-    Column("outbreak", Boolean, nullable=False),
+    Column("outbreak", Boolean, nullable=True),
+    Column("eligible", Boolean),
+    Column("exclusion_reason", String(128)),
+    Column("target_start", Date),
+    Column("target_end", Date),
     Column("trigger", String(24), nullable=False),
     Column("consecutive_high_n", Integer, nullable=False),
     Column("season_avg", Float, nullable=False),
-    Column("season_p75", Float, nullable=False),
+    Column("season_p75", Float, nullable=True),
     Column("n_forecast_months", Integer, nullable=False),
 )
 
@@ -239,6 +242,9 @@ validation_metrics = Table(
     Column("months", Integer, nullable=False),
     Column("excluded_zero_actual", Integer, nullable=False, default=0),
     Column("naive_MAE", Float),
+    Column("mape_denominator", Integer),
+    Column("missing_targets", Integer),
+
     Column("skill_vs_naive_pct", Float),
 )
 
@@ -249,7 +255,7 @@ walk_forward_folds = Table(
     Column("disease", String(32), primary_key=True),
     Column("window", String(32), primary_key=True),
     Column("month", Date, primary_key=True),
-    Column("actual", Integer, nullable=False),
+    Column("actual", Integer, nullable=True),
     Column("predicted", Float, nullable=False),
 )
 
@@ -275,7 +281,7 @@ outbreak_validation = Table(
     Column("forecast_avg", Float, nullable=False),
     Column("actual_avg", Float, nullable=False),
     Column("actual_max", Float, nullable=False),
-    Column("season_p75", Float, nullable=False),
+    Column("season_p75", Float, nullable=True),
     Column("actual_high_run", Integer, nullable=False),
     Column("predicted", Boolean, nullable=False),
     Column("actual_outbreak", Boolean, nullable=False),
@@ -293,7 +299,7 @@ pipeline_runs = Table(
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("generated_at", String(32), nullable=False),
     Column("data_through", Date, nullable=False),
-    Column("version", String(32), nullable=False),
+    Column("version", String(128), nullable=False),
     Column("model", String(64), nullable=False),
     Column("notes", Text),
 )
@@ -301,7 +307,7 @@ pipeline_runs = Table(
 dengue_case_records = Table(
     "dengue_case_records",
     metadata,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
+    Column("id", BigInteger().with_variant(Integer, "sqlite"), primary_key=True, autoincrement=True),
     Column("region_code", String(9), nullable=False),
     Column("province", String(120), nullable=False),
     Column("year", Integer, nullable=False),
@@ -311,7 +317,7 @@ dengue_case_records = Table(
     Column("sex", String(8), nullable=False),
     Column("clinical_classification", String(28), nullable=False),
     Column("final_case_classification", String(28), nullable=False),
-    Column("admitted", Boolean, nullable=False),
+    Column("admitted", Boolean, nullable=True),
     Column("cases", Integer, nullable=False),
     Column("deaths", Integer, nullable=False),
     Index("ix_dengue_case_records_region_year_month", "region_code", "year", "month"),
@@ -320,7 +326,7 @@ dengue_case_records = Table(
 fwbd_case_records = Table(
     "fwbd_case_records",
     metadata,
-    Column("id", BigInteger, primary_key=True, autoincrement=True),
+    Column("id", BigInteger().with_variant(Integer, "sqlite"), primary_key=True, autoincrement=True),
     Column("region_code", String(9), nullable=False),
     Column("disease", String(48), nullable=False),
     Column("province", String(160), nullable=False),
@@ -329,7 +335,7 @@ fwbd_case_records = Table(
     Column("age_group", String(16), nullable=False),
     Column("sex", String(8), nullable=False),
     Column("case_classification", String(16), nullable=False),
-    Column("admitted", Boolean, nullable=False),
+    Column("admitted", Boolean, nullable=True),
     Column("outcome", String(8), nullable=False),
     Column("laboratory_result", String(24), nullable=False),
     Column("organism", String(160), nullable=False),
@@ -396,43 +402,21 @@ def _ensure_sqlite_data(eng):
 
 
 def engine():
-    """Accessor for the shared database engine.
-
-    Prefers PostgreSQL if DATABASE_URL is configured and reachable.
-    If DATABASE_URL is missing or fails (e.g. Supabase paused, network offline),
-    seamlessly falls back to local SQLite so the system never fails to start."""
+    """An explicit database target is required. Never silently falls back."""
     if not hasattr(_engine, "_cached"):
-        eng = None
-        db_url = os.environ.get("DATABASE_URL")
-        if db_url and not db_url.startswith("sqlite"):
-            try:
-                candidate = _engine()
-                with candidate.connect() as conn:
-                    conn.execute(text("SELECT 1"))
-                print("[db] Connected to PostgreSQL database.")
-                eng = candidate
-            except Exception as exc:
-                print(f"[db] PostgreSQL connection failed ({exc}).")
-                print(f"[db] Falling back to local SQLite at {LOCAL_SQLITE_PATH}.")
-        elif db_url and db_url.startswith("sqlite"):
-            eng = create_engine(db_url)
-
-        if eng is None:
-            LOCAL_SQLITE_PATH.parent.mkdir(parents=True, exist_ok=True)
-            eng = create_engine(f"sqlite:///{LOCAL_SQLITE_PATH}")
-
-        _engine._cached = eng
+        url = os.environ.get("DATABASE_URL")
+        if not url:
+            raise RuntimeError("DATABASE_URL required; choose PostgreSQL or an explicit local SQLite test target")
+        if url.startswith("sqlite"):
+            _engine._cached = create_engine(url)
+        else:
+            _engine._cached = _engine()
     return _engine._cached
 
 
 def ensure_tables():
-    """Idempotent schema bootstrap (create-if-absent, never drops).
-
-    Safe to call on every API startup: keeps tables from drifting on deploy."""
     eng = engine()
     metadata.create_all(eng)
-    if eng.dialect.name == "sqlite":
-        _ensure_sqlite_data(eng)
     return eng
 
 
@@ -450,21 +434,47 @@ def _to_mid(dates, col="target_date"):
 
 
 def _load_csv(name):
+    if "leptospirosis" in name:
+        return None
     path = ingest.PROCESSED_DIR / name
     if not path.exists():
         return None
-    return pd.read_csv(path)
+    df = pd.read_csv(path)
+    table_names = {"forecasts.csv":"forecasts", "risk_thresholds.csv":"risk_thresholds", "risk_classification.csv":"risk_classifications", "outbreak_indicators.csv":"outbreak_signals", "evaluation_outbreak_indicators_2025.csv":"outbreak_signals", "validation_metrics.csv":"validation_metrics", "outbreak_validation_2025.csv":"outbreak_validation"}
+    if name in table_names:
+        table = metadata.tables[table_names[name]]
+        allowed = set(table.columns.keys()) | {"region"}
+        df = df[[c for c in df if c in allowed]]
+        for date_field in ("target_start", "target_end"):
+            if date_field in df:
+                df[date_field] = pd.to_datetime(df[date_field]).dt.date
+        df = df.astype(object).where(pd.notna(df), None)
+    return df
 
 
-def build_db():
+def build_db(eng=None, manifest_path=None, fail_after_clear=False, fail_after_seed=False):
     """(Re)build every table from the processed CSVs. Idempotent: each build
     replaces the previous contents, so a full pipeline rerun fully resyncs it.
     Only the HEALTHWATCH metadata tables are dropped/recreated."""
-    eng = engine()
-    metadata.drop_all(eng)
+    from .artifacts import verify
+    if manifest_path is None:
+        raise ValueError("Publication requires a verified run directory and explicit target")
+    manifest = verify(manifest_path)
+    if manifest["experiment_id"] != "operational_prophet_monthly_refit" and not fail_after_clear:
+        raise ValueError("Research experiment cannot be published as an operational snapshot")
+    if not fail_after_clear:
+        from .verify_build import verify_operational
+        verify_operational(manifest_path, write_evidence=False)
+    if Path(manifest_path).resolve() != ingest.PROCESSED_DIR.resolve():
+        raise ValueError("Verified directory must equal HEALTHWATCH_OUTPUT_DIR")
+    eng = engine() if eng is None else eng
     metadata.create_all(eng)
-
+    # DML replacement is one transaction; do not drop tables before inserting.
     with eng.begin() as conn:
+        for table in reversed(metadata.sorted_tables):
+            conn.execute(table.delete())
+        if fail_after_clear:
+            raise RuntimeError("Injected rebuild failure")
         conn.execute(
             regions.insert(),
             [
@@ -516,7 +526,7 @@ def build_db():
                 out[date_col] = _to_mid(out[date_col])
             if drop:
                 out = out.drop(columns=[c for c in drop if c in out.columns])
-            return out
+            return out.astype(object).where(pd.notna(out), None)
 
         fcst = _remap(_load_csv("forecasts.csv"), "region_code", date_col="target_date")
         if fcst is not None and not fcst.empty:
@@ -530,7 +540,7 @@ def build_db():
         if cls is not None and not cls.empty:
             conn.execute(risk_classifications.insert(), cls.to_dict(orient="records"))
 
-        obk = _remap(_load_csv("outbreak_indicators.csv"), "region_code")
+        obk = _remap(_load_csv("evaluation_outbreak_indicators_2025.csv"), "region_code")
         if obk is not None and not obk.empty:
             conn.execute(outbreak_signals.insert(), obk.to_dict(orient="records"))
 
@@ -575,6 +585,8 @@ def build_db():
 
         _seed_case_records(conn)
         _seed_fwbd_case_records(conn)
+        if fail_after_seed:
+            raise RuntimeError("Injected post-seed activation failure")
 
         # Read each monthly CSV exactly once: the previous comprehension called
         # _load_csv(name) three times per file, tripling disk reads, and
@@ -599,9 +611,9 @@ def build_db():
                     if latest_date is not None
                     else None
                 ),
-                "version": "monthly-2019-2026",
-                "model": "prophet-monthly",
-                "notes": PROVIDENCE_NOTES,
+                "version": manifest["run_id"],
+                "model": "Prophet",
+                "notes": __import__("json").dumps({"run_id": manifest["run_id"], "experiment_id": manifest["experiment_id"], "metadata": manifest["metadata"], "manifest_sha256": __import__("hashlib").sha256((Path(manifest_path)/"manifest.json").read_bytes()).hexdigest()}),
             },
         )
 
@@ -637,14 +649,13 @@ def _seed_case_records(conn):
     ]
     payload = recs[cols]
     if conn.dialect.name == "sqlite":
-        payload.to_sql("dengue_case_records", conn.connection, if_exists="replace", index=False)
-        try:
-            conn.connection.execute(
-                "CREATE INDEX IF NOT EXISTS idx_dengue_cases ON dengue_case_records(year, month, region_code)"
-            )
-        except Exception:
-            pass
-        print(f"[db] seeded {len(payload)} dengue case records -> dengue_case_records (SQLite)")
+        # Use the caller's transaction. pandas replace/raw DBAPI connections can
+        # drop constraints or commit independently and must never be used here.
+        for start in range(0,len(payload),10000):
+            chunk=payload.iloc[start:start+10000].astype(object)
+            chunk=chunk.where(pd.notna(chunk),None)
+            conn.execute(dengue_case_records.insert(),chunk.to_dict(orient="records"))
+        print(f"[db] seeded {len(payload)} dengue case records transactionally (SQLite)")
         return
 
     stmt = (
@@ -690,14 +701,13 @@ def _seed_fwbd_case_records(conn):
     ]
     payload = recs[cols]
     if conn.dialect.name == "sqlite":
-        payload.to_sql("fwbd_case_records", conn.connection, if_exists="replace", index=False)
-        try:
-            conn.connection.execute(
-                "CREATE INDEX IF NOT EXISTS idx_fwbd_cases ON fwbd_case_records(year, month, region_code, disease)"
-            )
-        except Exception:
-            pass
-        print(f"[db] seeded {len(payload)} FWD case records -> fwbd_case_records (SQLite)")
+        # Use the caller's transaction. pandas replace/raw DBAPI connections can
+        # drop constraints or commit independently and must never be used here.
+        for start in range(0,len(payload),10000):
+            chunk=payload.iloc[start:start+10000].astype(object)
+            chunk=chunk.where(pd.notna(chunk),None)
+            conn.execute(fwbd_case_records.insert(),chunk.to_dict(orient="records"))
+        print(f"[db] seeded {len(payload)} FWD case records transactionally (SQLite)")
         return
 
     stmt = (
@@ -738,13 +748,12 @@ PROVIDENCE_NOTES = (
 
 
 def _monthly_observation_rows(regional):
-    regional = regional.copy()
+    regional = regional[regional.disease != "Leptospirosis"].copy()
     regional["region_code"] = regional["region"].map(_region_code)
     regional["year"] = pd.to_datetime(regional["date"]).dt.year
     regional["month"] = pd.to_datetime(regional["date"]).dt.month
-    return regional[["region_code", "disease", "year", "month", "cases", "deaths"]].to_dict(
-        orient="records"
-    )
+    cols = ["region_code","disease","year","month","cases","deaths"]
+    return regional[cols].astype(object).where(pd.notna(regional[cols]), None).to_dict(orient="records")
 
 
 def read_table(table):
@@ -759,7 +768,7 @@ _CASE_DIM_PICK = {
     "age_group": "age_group AS value",
     "sex": "sex AS value",
     "clinical_classification": "clinical_classification AS value",
-    "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
+    "admitted": "CASE WHEN admitted IS NULL THEN 'Unknown' WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
 }
 
 # The FWD line-lists carry no clinical/final split — a single Suspect/Probable/
@@ -768,7 +777,7 @@ _FWD_DIM_PICK = {
     "final_classification": "case_classification AS value",
     "age_group": "age_group AS value",
     "sex": "sex AS value",
-    "admitted": "CASE WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
+    "admitted": "CASE WHEN admitted IS NULL THEN 'Unknown' WHEN admitted THEN 'Admitted' ELSE 'Not admitted' END AS value",
     "outcome": "outcome AS value",
 }
 
@@ -840,7 +849,11 @@ def region_label_to_code(label):
 
 
 if __name__ == "__main__":
-    eng = build_db()
+    import argparse
+    parser = argparse.ArgumentParser(description="Explicit verified database publication")
+    parser.add_argument("--verified-run", required=True)
+    args = parser.parse_args()
+    eng = build_db(manifest_path=args.verified_run)
     with eng.connect() as conn:
         for t in metadata.sorted_tables:
             n = pd.read_sql_table(t.name, conn).shape[0]

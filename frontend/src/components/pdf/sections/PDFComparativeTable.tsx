@@ -25,7 +25,7 @@ export interface PDFComparativeTableProps {
 const COLS = [
   { key: "region", label: "Region", flex: 5, align: "left" },
   { key: "predicted", label: "Predicted", flex: 3, align: "right" },
-  { key: "ci", label: "95% CI", flex: 3, align: "right" },
+  { key: "ci", label: "80% model interval", flex: 3, align: "right" },
   { key: "percentile", label: "Percentile", flex: 2.5, align: "right" },
   { key: "trajectory", label: "3-Mo", flex: 2.5, align: "right" },
   { key: "risk", label: "Risk", flex: 3, align: "center" },

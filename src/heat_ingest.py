@@ -36,7 +36,7 @@ REGION_NORMALIZATION = {
 
 
 def process_heat(audit_path=None):
-    audit_path = Path(audit_path) if audit_path else Path(HEAT_AUDIT_CSV)
+    audit_path = Path(audit_path) if audit_path else ingest.ROOT / HEAT_AUDIT_CSV
     if not audit_path.exists():
         raise FileNotFoundError(f"Heat events audit file not found: {audit_path}")
 

@@ -37,6 +37,8 @@ export const PAGE = {
 
 export function riskAccent(risk: string): string {
   switch (risk) {
+    case "unavailable":
+      return COLORS.slate;
     case "high":
       return COLORS.high;
     case "moderate":
