@@ -1193,6 +1193,16 @@ export function assessAll(
   return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
 }
 
+/** Missing regional values do not erase the available reports or become zeros.
+ * Per-capita totals retain the full selected regional population denominator.
+ */
+export function summarizeRegionalValues(assessments: RegionAssessment[]) {
+  const reporting = assessments.filter((a) => a.point.raw >= 0 && Number.isFinite(a.point.cases));
+  const cases = reporting.length ? reporting.reduce((sum, a) => sum + a.point.cases, 0) : NaN;
+  const population = assessments.reduce((sum, a) => sum + a.region.population, 0);
+  return { reportingRegions: reporting.length, cases, per100k: population > 0 ? cases / population * 100000 : NaN };
+}
+
 export interface NationalDominant {
   illness: Illness;
   /** Summed raw national cases at the month across all regions. */
@@ -1213,20 +1223,21 @@ export function nationalDominant(
   mode: MetricMode = "percapita",
 ): NationalDominant {
   const pool = ILLNESSES.filter((i) => illnessId === "all" ? PRIMARY_AGGREGATE_DISEASES.includes(i.id) : i.id === illnessId);
-  let best: Illness = ILLNESSES[0]!;
-  let bestCases = -1;
+  let best: Illness = pool[0] ?? ILLNESSES[0]!;
+  let bestCases = NaN;
   for (const ill of pool) {
     let cases = 0;
+    let supplied = false;
     for (const region of REGIONS) {
       const p = getSeries(region.code, ill.id)[monthIndex];
-      if (p && p.raw >= 0) cases += p.cases;
+      if (p && p.raw >= 0 && Number.isFinite(p.cases)) { cases += p.cases; supplied = true; }
     }
-    if (cases > bestCases) {
+    if (supplied && (!Number.isFinite(bestCases) || cases > bestCases)) {
       bestCases = cases;
       best = ill;
     }
   }
-  const cases = Math.max(0, bestCases);
+  const cases = bestCases;
   const population = REGIONS.reduce((s, r) => s + r.population, 0);
   return {
     illness: best,

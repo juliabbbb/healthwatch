@@ -50,3 +50,8 @@ The Chapters 4–5 PDF is the original separate research snapshot. Its empirical
 See AVAILABILITY_RESOLUTION.md for the new local operational ILI snapshot, exact Cholera eligibility counts, heat region mapping correction, availability API/UI and deployment boundaries. Provisional ILI operational forecasting is now enabled in source policy and the verified local database (18 regions plus National); it remains outside the primary four-disease aggregate and model-selection cohort. Hep A forecasts, leptospirosis totals and monthly heat forecasts remain excluded for their documented source limitations. Source clarification is drafted in SOURCE_CLARIFICATION_REQUEST.md and has not been sent.
 
 The shared connection is still unresolved; no shared publication or hosted activation follows from these local changes. Existing local application code was directly corrected on UI-gerald. The user's pre-existing src/features.py edit was preserved and left outside this change.
+
+
+## Port 8080 correction
+
+The canonical local frontend is http://localhost:8080 (backend 8000); the earlier 5173 launcher instruction was incorrect. See docs/PORT_8080_FIX.md. App and contract-test Vite caches are isolated. Default map selection is Dengue; All remains a descriptive combined count with an explicit disease-selection message for risk tiers. National totals preserve available reports when some regions are missing and display coverage; absent totals/dominant counts are unavailable rather than invented zeros. Provisional/excluded source gates remain in force.

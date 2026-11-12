@@ -286,7 +286,7 @@ export function ForecastCard({
           </div>
 
           <div className="flex flex-col items-end gap-1.5 shrink-0">
-            <RiskBadge risk={a.risk} />
+            {illness === "all" ? <StatusChip>Combined counts</StatusChip> : <RiskBadge risk={a.risk} />}
             <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
             {audienceMode === "clinical" && onLayerChange && (
               <div className="mt-1 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30">
@@ -403,7 +403,7 @@ export function ForecastCard({
       )}
 
       {illness === "all" && <p className="px-5 py-2 text-xs text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "Unavailable"}. Aggregate prediction intervals are unavailable.</p>}
-      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold.</p>}
+      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "Combined counts are descriptive. Select a disease for its regional risk tiers; no combined disease threshold is defined." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
       {(illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
       {audienceMode === "clinical" && <ResearchComparison disease={illness} region={a.region.name} regionCode={regionCode} />}
       {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}

@@ -86,7 +86,7 @@ export const Route = createFileRoute("/compare")({
   component: ComparePage,
 });
 
-export default function ComparePage() {
+function ComparePage() {
   const search = Route.useSearch();
   // Spec #1: Top region selection row is the single source of truth (starts empty per #2)
   const [selected, setSelected] = useState<string[]>([]);

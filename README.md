@@ -79,7 +79,7 @@ cd frontend
 npm run dev
 ```
 
-Open whichever URL Vite prints (`localhost:5173`, `8080`, `8081`… — any localhost port works).
+Open `http://localhost:8080`. Both Vite and `run-dev.ps1` use this port with strict selection; an occupied port is reported instead of silently switching. The backend remains on port 8000.
 Interactive API docs: <http://localhost:8000/docs>
 
 ## Troubleshooting

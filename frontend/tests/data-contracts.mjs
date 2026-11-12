@@ -23,6 +23,10 @@ try{
  const absent=data.assessRegion('130000000','Dengue',90,'raw');
  assert.equal(absent.risk,'unavailable');assert.ok(Number.isNaN(absent.changePct));assert.ok(Number.isNaN(absent.percentileRank));assert.ok(Number.isNaN(absent.value));assert.equal(absent.point.year,2026);
  assert.equal(data.formatMetric(NaN,'raw'),'Unavailable');
+ const partial=data.summarizeRegionalValues([raw,absent]);
+ assert.equal(partial.cases,3);assert.equal(partial.reportingRegions,1);assert.ok(Number.isFinite(partial.per100k));
+ assert.ok(Number.isNaN(data.summarizeRegionalValues([absent]).cases));
+ assert.ok(Number.isNaN(data.nationalDominant('Dengue',90,'raw').cases));
  assert.ok(Number.isNaN(data.metricValue(5,{population:0},'percapita')));
  const all=data.getSeries('130000000','all')[0];
  assert.deepEqual(all.contributors,['Dengue']);assert.ok(Number.isNaN(all.lower));assert.ok(Number.isNaN(all.upper));

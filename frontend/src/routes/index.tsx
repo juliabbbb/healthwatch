@@ -17,6 +17,7 @@ import {
   formatMetric,
   monthMeta,
   nationalDominant,
+  summarizeRegionalValues,
   type MetricMode,
   type Season,
 } from "@/lib/healthwatch/data";
@@ -51,7 +52,7 @@ export const Route = createFileRoute("/")({
 
 function MapView() {
   const [mounted, setMounted] = useState(false);
-  const [illness, setIllness] = useState("all");
+  const [illness, setIllness] = useState("Dengue");
   const [monthIndex, setMonthIndex] = useState(CURRENT_MONTH_INDEX);
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
@@ -88,9 +89,9 @@ function MapView() {
     [assessments, illness, outbreakSeason],
   );
 
-  const totalCases = assessments.reduce((a, r) => a + r.point.cases, 0);
-  const nationalPer100k =
-    (totalCases / assessments.reduce((s, a) => s + a.region.population, 0)) * 100000;
+  const national = summarizeRegionalValues(assessments);
+  const totalCases = national.cases;
+  const nationalPer100k = national.per100k;
 
   const meta = monthMeta(monthIndex);
 
@@ -132,9 +133,10 @@ function MapView() {
           illness={illness}
           onIllnessChange={setIllness}
           counts={counts}
+          reportingRegions={national.reportingRegions}
           dominantIllness={dominant.illness.name}
           dominantValue={formatMetric(dominant.metric, mode)}
-          dominantCases={dominant.cases.toLocaleString()}
+          dominantCases={formatMetric(dominant.cases, "raw")}
           showOutbreakMarkers={showOutbreakMarkers}
           onOutbreakMarkersChange={setShowOutbreakMarkers}
           className="shrink-0"
@@ -185,7 +187,7 @@ function MapView() {
           className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-foreground shadow-md hover:shadow-lg hover:border-primary/50 hover:bg-secondary/60 active:scale-95 transition-all duration-150 border border-border/80 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
         >
           <Globe className="size-3.5 text-primary shrink-0 transition-transform group-hover:scale-110" />
-          <span>PH · {counts.high} High</span>
+          <span>{illness === "all" ? "PH · Counts" : counts.unavailable === 18 ? "PH · No tier" : `PH · ${counts.high} High`}</span>
           <ChevronDown className="size-3 text-muted-foreground/80 shrink-0 ml-0.5 transition-transform duration-150 group-hover:translate-y-0.5" />
         </button>
       </div>
@@ -260,9 +262,10 @@ function MapView() {
                 illness={illness}
                 onIllnessChange={setIllness}
                 counts={counts}
+                reportingRegions={national.reportingRegions}
                 dominantIllness={dominant.illness.name}
                 dominantValue={formatMetric(dominant.metric, mode)}
-                dominantCases={dominant.cases.toLocaleString()}
+                dominantCases={formatMetric(dominant.cases, "raw")}
                 className="shadow-none border-none bg-transparent"
               />
 
