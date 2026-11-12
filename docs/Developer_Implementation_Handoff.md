@@ -55,3 +55,8 @@ The shared connection is still unresolved; no shared publication or hosted activ
 ## Port 8080 correction
 
 The canonical local frontend is http://localhost:8080 (backend 8000); the earlier 5173 launcher instruction was incorrect. See docs/PORT_8080_FIX.md. App and contract-test Vite caches are isolated. Default map selection is Dengue; All remains a descriptive combined count with an explicit disease-selection message for risk tiers. National totals preserve available reports when some regions are missing and display coverage; absent totals/dominant counts are unavailable rather than invented zeros. Provisional/excluded source gates remain in force.
+
+
+## New source decisions — awaiting analytical rebuild
+
+See GAP_RESOLUTION_PLAN.md for the user's agreed provisional one-case-per-row rules for leptospirosis/Hep A and the user-relayed DOH zero-reporting convention limited to documented FWBD reporting periods. The attached DOH PDF confirms classification categories but not row grain. Read-only leptospirosis diagnostics yield 29,476 in-window records and 58–92 record-containing months per region using the current conditional weekly calendar. These decisions have not yet changed the active verified snapshot or its model results; implement the bounded coverage register and versioned reruns before changing availability flags.
