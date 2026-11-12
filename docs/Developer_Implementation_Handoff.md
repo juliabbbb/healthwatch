@@ -1,5 +1,8 @@
 # Updated developer implementation handoff — local correction branch
 
+> Integration update — 12 November 2026: tested implementation commit `829de47` has now been applied directly to the original repository on `UI-gerald`. All 32 backend tests and frontend type checking passed in this checkout. The original-checkout-unchanged statement below describes the earlier isolated implementation stage. Nothing has been pushed, deployed, or published to the shared database.
+
+
 Implementation date: 12 November 2026 (Asia/Manila). Branch: fix/handoff-integrity. Base: 0401d28fc7d548e1c4af3e52eb1aa1878cbeeb9c (UI-gerald). The original checkout, Google Doc and shared database were not changed. This is the isolated implementation worktree at HealthWatch/implementation. No push, deployment or shared activation occurred.
 
 ## What changed
