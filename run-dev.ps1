@@ -1,27 +1,10 @@
-# Starts the HEALTHWATCH stack: FastAPI (:8000) + Vite dev server (:5173).
-# Close either window to stop that service.
+param([ValidateSet('Local','Configured')][string]$BackendMode = 'Local')
+$ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
-
-# Fallback: surface user-scope secrets (e.g. GROQ_API_KEY) even when this
-# shell was opened before `setx` ran. api.py also reads a repo-root .env file.
-foreach ($name in @('GROQ_API_KEY')) {
-    if (-not [Environment]::GetEnvironmentVariable($name, 'Process')) {
-        $userVal = [Environment]::GetEnvironmentVariable($name, 'User')
-        if ($userVal) { Set-Item -Path "Env:$name" -Value $userVal }
-    }
+& (Join-Path $root 'run-backend.ps1') -Mode $BackendMode -Background
+if (-not (Get-NetTCPConnection -LocalPort 5173 -State Listen -ErrorAction SilentlyContinue)) {
+    $frontend = (Join-Path $root 'frontend').Replace("'", "''")
+    Start-Process -FilePath powershell -ArgumentList @('-NoProfile', '-Command', "Set-Location -LiteralPath '$frontend'; npm.cmd run dev") -WindowStyle Hidden -RedirectStandardOutput (Join-Path $root 'frontend_start_out.log') -RedirectStandardError (Join-Path $root 'frontend_start_err.log') | Out-Null
 }
-
-Start-Process powershell -ArgumentList @(
-    "-NoExit", "-Command",
-    "Set-Location '$root'; & '.venv\Scripts\python.exe' -m uvicorn src.api:app --port 8000"
-) | Out-Null
-
-Start-Process powershell -ArgumentList @(
-    "-NoExit", "-Command",
-    "Set-Location '$root\frontend'; npm run dev"
-) | Out-Null
-
-Write-Host ""
-Write-Host "HEALTHWATCH starting:" -ForegroundColor Cyan
-Write-Host "  Backend : http://localhost:8000/docs"
-Write-Host "  Frontend: http://localhost:5173"
+Write-Host 'HEALTHWATCH backend: http://localhost:8000/docs'
+Write-Host 'HEALTHWATCH frontend: http://localhost:5173'

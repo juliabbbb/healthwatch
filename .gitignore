@@ -9,3 +9,5 @@ __pycache__/
 error.txt
 *.db
 data/*.db
+
+data/local/

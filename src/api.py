@@ -929,10 +929,11 @@ def root():
 
 @app.get("/health", tags=["info"])
 def health():
-    """Lightweight health check — always 200 once the process is up, even
-    while data is still loading. Render uses this to confirm the instance
-    is alive during cold start."""
-    return {"status": "ok", "data_ready": _data_ready}
+    ready = bool(_data_ready and not _REGIONAL.empty)
+    dialect = db.engine().dialect.name if _data_ready else None
+    return {"system": "HEALTHWATCH", "status": "ok" if ready else "starting", "data_ready": ready,
+            "database": dialect, "snapshot_run_id": _RUN_PROVENANCE.get("run_id"),
+            "shared_database": dialect == "postgresql"}
 
 
 @app.get("/dashboard", tags=["objective_4_dashboard"])

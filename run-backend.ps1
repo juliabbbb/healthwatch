@@ -1,0 +1,68 @@
+param(
+    [ValidateSet('Local', 'Configured')][string]$Mode = 'Local',
+    [string]$DatabasePath,
+    [int]$Port = 8000,
+    [switch]$Background
+)
+$ErrorActionPreference = 'Stop'
+$root = $PSScriptRoot
+$py = Join-Path $root '.venv\Scripts\python.exe'
+if (-not (Test-Path -LiteralPath $py)) { throw 'Create the repo .venv and install requirements.txt first.' }
+& $py -c 'import fastapi, uvicorn, sqlalchemy, bs4'
+if ($LASTEXITCODE -ne 0) { throw "Runtime dependencies missing. Run: .venv\Scripts\python.exe -m pip install -r requirements.txt" }
+if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue) {
+    if ($Mode -eq 'Local' -and -not $DatabasePath) {
+        try {
+            $existing = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -TimeoutSec 3
+            if ($existing.system -eq 'HEALTHWATCH' -and $existing.data_ready -and $existing.database -eq 'sqlite') {
+                Write-Host "Using the existing ready local HEALTHWATCH backend: http://127.0.0.1:$Port/docs"
+                return
+            }
+        } catch { }
+    }
+    throw "Port $Port is already in use. Leave the existing service running or choose another port."
+}
+$previous = @{}
+foreach ($key in @('DATABASE_URL', 'HEALTHWATCH_RESEARCH_RUN')) {
+    $previous[$key] = [Environment]::GetEnvironmentVariable($key, 'Process')
+}
+try {
+    if ($Mode -eq 'Local') {
+        if (-not $DatabasePath) { $DatabasePath = Join-Path $root 'data\local\healthwatch_verified.db' }
+        $DatabasePath = [System.IO.Path]::GetFullPath($DatabasePath)
+        if (-not (Test-Path -LiteralPath $DatabasePath -PathType Leaf)) {
+            throw 'Verified local database missing. See docs/LOCAL_BACKEND.md to build a local snapshot; no remote fallback is attempted.'
+        }
+        $env:DATABASE_URL = 'sqlite:///' + $DatabasePath.Replace('\', '/')
+        $research = Join-Path $root 'data\local\research_run'
+        if (Test-Path -LiteralPath (Join-Path $research 'manifest.json')) { $env:HEALTHWATCH_RESEARCH_RUN = $research }
+        Write-Host 'Backend mode: explicit local verified snapshot (SQLite). Shared PostgreSQL is not used.'
+    } else {
+        Write-Host 'Backend mode: configured DATABASE_URL. Connection errors will stop startup; no fallback is used.'
+    }
+    if ($Background) {
+        $process = Start-Process -FilePath $py -ArgumentList @('-m', 'uvicorn', 'src.api:app', '--host', '127.0.0.1', '--port', "$Port") -WorkingDirectory $root -WindowStyle Hidden -RedirectStandardOutput (Join-Path $root 'api_start_out.log') -RedirectStandardError (Join-Path $root 'api_start_err.log') -PassThru
+        for ($attempt = 0; $attempt -lt 30; $attempt++) {
+            $process.Refresh()
+            if ($process.HasExited) { throw 'Backend exited. Inspect api_start_err.log for the startup error.' }
+            try {
+                $health = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -TimeoutSec 2
+                if ($health.data_ready -and $health.status -in @('ok', 'ready')) {
+                    Write-Host "Backend ready: http://127.0.0.1:$Port/docs (PID $($process.Id))"
+                    return
+                }
+            } catch { }
+            Start-Sleep -Milliseconds 500
+        }
+        throw 'Backend did not report readiness. Inspect api_start_err.log.'
+    } else {
+        Push-Location -LiteralPath $root
+        try { & $py -m uvicorn src.api:app --host 127.0.0.1 --port $Port }
+        finally { Pop-Location }
+    }
+} finally {
+    foreach ($key in $previous.Keys) {
+        if ($null -eq $previous[$key]) { Remove-Item -LiteralPath "Env:$key" -ErrorAction SilentlyContinue }
+        else { Set-Item -LiteralPath "Env:$key" -Value $previous[$key] }
+    }
+}

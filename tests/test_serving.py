@@ -49,6 +49,12 @@ class ServingAndNarrationTests(unittest.TestCase):
                     for window,mae in [('2025_prospective',1.),('last_12m',2.)]:
                         conn.execute(db.validation_metrics.insert(),dict(region_code=db.NATIONAL_CODE,disease='Dengue',window=window,MAE=mae,RMSE=3.,MAPE=20.,months=12,naive_MAE=4.,skill_vs_naive_pct=50.))
                 with TestClient(app) as client:
+                    health=client.get('/health')
+                    self.assertEqual(health.status_code,200)
+                    self.assertEqual(health.json()['system'],'HEALTHWATCH')
+                    self.assertEqual(health.json()['database'],'sqlite')
+                    self.assertFalse(health.json()['shared_database'])
+                    self.assertFalse(health.json()['data_ready'])  # A metrics-only fixture is not a populated dashboard.
                     for window,mae in [('2025_prospective',1.),('last_12m',2.)]:
                         res=client.get('/metrics/National',params={'disease':'Dengue','window':window})
                         self.assertEqual(res.status_code,200,res.text)
