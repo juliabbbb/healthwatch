@@ -133,7 +133,6 @@ function MapView() {
           illness={illness}
           onIllnessChange={setIllness}
           counts={counts}
-          reportingRegions={national.reportingRegions}
           dominantIllness={dominant.illness.name}
           dominantValue={formatMetric(dominant.metric, mode)}
           dominantCases={formatMetric(dominant.cases, "raw")}
@@ -262,7 +261,6 @@ function MapView() {
                 illness={illness}
                 onIllnessChange={setIllness}
                 counts={counts}
-                reportingRegions={national.reportingRegions}
                 dominantIllness={dominant.illness.name}
                 dominantValue={formatMetric(dominant.metric, mode)}
                 dominantCases={formatMetric(dominant.cases, "raw")}

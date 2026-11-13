@@ -30,7 +30,6 @@ export function NationalSnapshot({
   illness = "all",
   onIllnessChange,
   counts,
-  reportingRegions,
   valueKind,
   dominantIllness,
   dominantValue,
@@ -48,7 +47,6 @@ export function NationalSnapshot({
   illness?: string;
   onIllnessChange?: (i: string) => void;
   counts: Record<RiskLevel, number>;
-  reportingRegions?: number;
   valueKind?: string;
   dominantIllness: string;
   dominantValue: string;
@@ -127,12 +125,10 @@ export function NationalSnapshot({
       {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {/* Card A: National reported aggregate */}
-        <div className="col-span-2 sm:col-span-1 rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
+        <div className="col-span-2 sm:col-span-1 rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col min-w-0">
           <p className="label-caps text-xs leading-tight">
             National {valueKind === "mixed" ? "mixed" : isForecast ? "forecast" : "reported"} aggregate
           </p>
-          <p className="text-xs text-muted-foreground">Sum of available regional reports; coverage may be incomplete. Reports across diseases are not unique persons.</p>
-          {reportingRegions != null && <p className="mt-1 text-xs text-muted-foreground">{reportingRegions}/18 regions with values for this month.</p>}
           <div className="mt-2">
             <p className="font-mono text-2xl sm:text-3xl font-bold tabular-nums tracking-tight text-foreground leading-none">
               {formatMetric(value, mode)}
