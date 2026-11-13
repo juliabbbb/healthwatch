@@ -115,6 +115,26 @@ Check all six diseases, forecast provenance, hotspot/outbreak views, rankings, a
 
 ## Structure and deployment
 
+### Prepare the Supabase candidate
+
+`render.yaml` pins both services to `input-sarimax`. Existing Render services still need their dashboard branch setting checked; committing this file alone does not update a service that is not Blueprint-managed.
+
+Verify the saved local SARIMAX run without connecting to a database:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "./publish-supabase.ps1" -VerifyOnly
+```
+
+For a **new, empty Supabase project**, publish the verified run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "./publish-supabase.ps1"
+```
+
+The script privately prompts for the new project's PostgreSQL connection string (Session pooler, port 5432). It refuses non-Supabase destinations and any public schema with existing tables, creates the current schema, enables row-level security before inserting records, and uses the existing verified publisher. A failed run is not retried automatically. It restores the calling process's database/output settings and does not store credentials.
+
+This is an explicit database publication command, separate from normal local startup. Test the newly loaded candidate through the configured API before switching the live Render `DATABASE_URL`. Keep the prior database available for rollback. Connection/account access and hosted PostgreSQL acceptance remain required; local verification alone does not prove a successful cloud upload.
+
 | Path | Purpose |
 |---|---|
 | `src/` | FastAPI backend, SARIMAX pipeline, classification, validation, database loading |
