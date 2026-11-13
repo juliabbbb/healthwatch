@@ -1,5 +1,4 @@
 import { AvailabilityNotice } from "./AvailabilityNotice";
-import { HeatReferencePanel } from "./HeatReferencePanel";
 import { ResearchComparison } from "./ResearchComparison";
 import { Link } from "@tanstack/react-router";
 import {
@@ -233,7 +232,6 @@ export function ForecastCard({
       )}
 
       <AvailabilityNotice regionCode={regionCode} disease={illness} monthIndex={monthIndex} onSelectMonth={onSelectMonth} />
-      {illness === "Heat-Related Illness" && <HeatReferencePanel regionCode={regionCode} />}
 
       {/* 2. Current Status Card */}
       <section className="border-b border-border/70 px-5 py-3.5">
@@ -537,7 +535,6 @@ export function ForecastCard({
                 {illness === "Dengue" ? "DOH 4S Strategy to Protect Your Family"
                   : illness === "Leptospirosis" ? "Flood-Water Safety Precautions"
                   : illness === "Influenza-like Illness" ? "Respiratory Illness Prevention"
-                  : illness === "Heat-Related Illness" ? "Beat the Heat Safety Tips"
                   : "Safe Water & Hygiene Precautions"}
               </p>
               {illness === "Dengue" ? (
@@ -577,18 +574,6 @@ export function ForecastCard({
                   </li>
                   <li className="flex items-start gap-1.5">
                     <strong className="text-foreground shrink-0">3. Stay Home When Sick:</strong> If you have fever with cough or sore throat, rest at home and avoid crowded places.
-                  </li>
-                </ul>
-              ) : illness === "Heat-Related Illness" ? (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Stay Hydrated:</strong> Drink plenty of water throughout the day, even if you don't feel thirsty.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Limit Sun Exposure:</strong> Avoid prolonged outdoor activities between 10 AM and 3 PM during heat advisories.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Recognize Warning Signs:</strong> Dizziness, rapid heartbeat, confusion, or cessation of sweating are emergencies — move to shade and seek help.
                   </li>
                 </ul>
               ) : (

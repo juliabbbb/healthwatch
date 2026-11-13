@@ -11,12 +11,10 @@
  * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
  * presentation tag only.
  *
- * Three additional disease sources are available with historical data only
+ * Two additional disease sources are available with historical data only
  * (no 12-month SARIMAX forecast yet):
  * - Leptospirosis: DOH line-list (2019-2026), monthly time series
  * - Influenza-like Illness (ILI): DOH sentinel surveillance (2019-2026), monthly
- * - Heat-Related Illness: DOH reference data, annual aggregates only (no
- *   monthly time series; not included in the shared calendar or "All" sum)
  *
  * Series, validation metrics and outbreak probes are fetched once at startup
  * via `loadHealthwatchData()` (one /dashboard call per disease); every
@@ -268,7 +266,7 @@ export interface Illness {
   id: string; // canonical API disease label (backend SUPPORTED_DISEASES)
   name: string;
   shortName: string;
-  group: "Dengue" | "Food and Waterborne Diseases" | "Zoonotic Diseases" | "Respiratory Diseases" | "Environmental and Climate Hazards";
+  group: "Dengue" | "Food and Waterborne Diseases" | "Zoonotic Diseases" | "Respiratory Diseases";
   /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
   transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
@@ -295,7 +293,6 @@ export const DISEASE_GROUPS = {
   "Acute Viral Hepatitis": "Food and Waterborne Diseases",
   "Leptospirosis": "Zoonotic Diseases",
   "Influenza-like Illness": "Respiratory Diseases",
-  "Heat-Related Illness": "Environmental and Climate Hazards",
 } as const;
 
 // Forecast capability does not silently expand the primary aggregate cohort.
@@ -395,20 +392,6 @@ export const ILLNESSES: Illness[] = [
     trend: 0.03,
     forecastAvailable: true,
     unavailableReason: "Provisional ILI forecast; header/calendar interpretation is not source-confirmed.",
-  },
-  {
-    id: "Heat-Related Illness",
-    name: "Heat-Related Illness",
-    shortName: "Heat",
-    group: "Environmental and Climate Hazards",
-    driver: "Extreme heat events and prolonged high heat-index exposure",
-    peakMonth: 4,
-    season: "dry",
-    amplitude: 0.0,
-    baseRate: 0.0,
-    trend: 0.0,
-    forecastAvailable: false,
-    unavailableReason: "Reference-only — annual aggregate data; no monthly time series available for forecasting.",
   },
 ];
 
@@ -516,22 +499,6 @@ const ILI_CASE_NOTES: ReportedCaseNotes = {
   source: "Source: DOH ILI sentinel surveillance data (2019-2026)",
 };
 
-const HEAT_CASE_NOTES: ReportedCaseNotes = {
-  disclaimer: [
-    "Heat-related illness data are annual reference aggregates, not monthly time series.",
-    "Counts may include heat stroke, heat exhaustion, and heat cramp events reported to DOH.",
-  ],
-  heading: "Heat-Related Illness Events",
-  classes: [
-    {
-      label: "Heat-Related Event",
-      definition:
-        "An illness episode attributed to excessive environmental heat exposure, including heat stroke, heat exhaustion, and heat cramps.",
-    },
-  ],
-  source: "Source: DOH heat-related illness reports (reference data)",
-};
-
 /** Reported-case classification notes per canonical disease id. */
 export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Dengue": DENGUE_CASE_NOTES,
@@ -541,7 +508,6 @@ export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Acute Viral Hepatitis": FWD_CASE_NOTES,
   "Leptospirosis": LEPTO_CASE_NOTES,
   "Influenza-like Illness": ILI_CASE_NOTES,
-  "Heat-Related Illness": HEAT_CASE_NOTES,
 };
 
 /** One-line source attribution per disease for the reported-case tables. */
@@ -553,7 +519,6 @@ export const REPORTED_SOURCE: Record<string, string> = {
   "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
   "Leptospirosis": "Source: DOH leptospirosis case line-list (2019-2026)",
   "Influenza-like Illness": "Source: DOH ILI sentinel surveillance data (2019-2026)",
-  "Heat-Related Illness": "Source: DOH heat-related illness reports (reference data)",
 };
 
 /** Resolve display notes (and source) for any illness selection, incl. "all". */
@@ -723,10 +688,7 @@ async function hydratePopulations(): Promise<void> {
  * diseases) is derived client-side after every disease series lands.
  *
  * Diseases with `forecastAvailable === false` still load historical series via
- * /dashboard but skip forecast metrics and outbreak probes. Heat-Related
- * Illness is reference-only (annual aggregates) and is loaded separately via
- * /reference/heat-events — it does not participate in the shared calendar or
- * the "all" aggregate.
+ * /dashboard but skip forecast metrics and outbreak probes.
  */
 export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
@@ -742,8 +704,7 @@ export async function loadHealthwatchData(): Promise<void> {
 
   await hydratePopulations();
 
-  // Separate diseases into dashboard-eligible and reference-only
-  const dashboardDiseases = ILLNESSES.filter((i) => i.id !== "Heat-Related Illness").map((i) => i.id);
+  const dashboardDiseases = ILLNESSES.map((i) => i.id);
   const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
 
   await Promise.all([
@@ -805,21 +766,10 @@ export async function loadHealthwatchData(): Promise<void> {
         console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
       }
     }),
-    // Heat-Related Illness — reference-only, fetched from dedicated endpoint
-    (async () => {
-      try {
-        await fetchJson<{ count: number; items: unknown[] }>("/reference/heat-events");
-        // Heat data is reference-only (annual aggregates per region) and does
-        // not map onto the monthly shared calendar — we load it for the /diseases
-        // metadata but do not inject it into seriesCache.
-      } catch (err) {
-        console.warn("[healthwatch] heat reference load failed", err);
-      }
-    })(),
   ]);
 
   // Derive the primary four-disease aggregate. Provisional ILI/Hep A, unresolved
-  // leptospirosis and annual heat data do not change this cohort when enabled
+  // leptospirosis do not change this cohort when enabled
   // individually. Contributors remain explicit for every month.
   for (const region of REGIONS) {
     buildAllSeries(region.code);

@@ -17,7 +17,7 @@ function Methodology() {
     <div className="mt-6 space-y-4 text-sm leading-relaxed">
       <CollapsibleSection title="Sources and unresolved interpretations" defaultOpen={true}>
         <p>Dengue, acute bloody diarrhea, cholera and typhoid use explicit numeric count fields. ILI uses corrected year/week headers and numeric reported cases; it and Leptospirosis are main diseases. The weekly ISO-Thursday mapping and week-53 folding remain conditional on source confirmation. Hep A uses a provisional row count and must not be treated as a confirmed broader acute viral hepatitis measure.</p>
-        <p className="mt-3">Leptospirosis uses a user-authorized one-S/P/C-coded-record-per-reported-record rule across all years. S/P/C are classifications; numeric Cases/Deaths fields are retained for audit and are not added to record counts. Fatality measures remain unresolved. Heat records are annual reference aggregates, with no monthly forecast or risk series.</p>
+        <p className="mt-3">Leptospirosis uses a user-authorized one-S/P/C-coded-record-per-reported-record rule across all years. S/P/C are classifications; numeric Cases/Deaths fields are retained for audit and are not added to record counts. Fatality measures remain unresolved.</p>
       </CollapsibleSection>
       <CollapsibleSection title="Preprocessing, missingness and coverage" defaultOpen={true}>
         <p>Rows retain source identifiers and duplicate candidates. Missing reports, valid zero, invalid values and out-of-coverage dates have different meanings. Date-typed age labels remain unresolved. National values sum available regional reports and do not establish complete national incidence. Geographic changes, reporting delays and sparse coverage limit comparisons.</p>

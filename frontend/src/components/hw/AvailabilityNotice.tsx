@@ -10,8 +10,7 @@ export function AvailabilityNotice({ regionCode, disease, monthIndex, onSelectMo
   const last = facts?.last_observed ?? history.at(-1)?.date;
   let title = "Selected month unavailable";
   let reason = `No reported value or forecast for ${monthMeta(monthIndex).label}.`;
-  if (disease === "Heat-Related Illness") { title = "Annual reference data"; reason = "View the annual event table below. Monthly cases, forecasts and risk tiers are not supplied."; }
-  else if (facts?.reason_code === "unresolved_measure") { title = "Source clarification required"; reason = facts.message ?? "Case totals cannot be interpreted from the supplied schema."; }
+  if (facts?.reason_code === "unresolved_measure") { title = "Source clarification required"; reason = facts.message ?? "Case totals cannot be interpreted from the supplied schema."; }
   else if (facts?.reason_code === "request_failed") { title = "Data request failed"; reason = facts.message ?? "Retry loading the dashboard."; }
   else if (facts && !facts.forecast_available) { title = facts.history_available ? "History available; forecast unavailable" : "Data unavailable"; reason = facts.message ?? "No eligible forecast in this snapshot."; }
   else if (selectedAvailable) return null;
