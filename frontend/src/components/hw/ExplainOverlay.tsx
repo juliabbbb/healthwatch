@@ -1,187 +1,91 @@
 /**
  * ExplainOverlay.tsx
  * ─────────────────────────────────────────────────────────────────────────────
- * Click-to-explain inspector overlay.
- *
- * When `active` is true:
- *  - A semi-transparent overlay fills the screen with a crosshair cursor.
- *  - Hovering highlights the element under the cursor.
- *  - Clicking any element looks it up in EXPLAIN_REGISTRY (walking up the DOM
- *    until a match is found), then shows a floating card with the static explanation.
- *  - If AI-assisted analysis is enabled in Settings, an on-demand "Deep-dive with AI"
- *    button appears to fetch live context interpretation from Groq AI.
- *  - In-memory caching prevents duplicate network requests.
- *  - Clicking outside the card while it's open dismisses the card (but stays in mode).
- *  - Pressing Esc or clicking the active ? button exits explain mode.
+ * Guided Tour & Click-to-Explain Overlay with Spotlight Highlight and Tooltips.
  */
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import {
-  X,
-  HelpCircle,
-  Info,
-  Map as MapIcon,
-  Search,
-  Navigation,
-  Sun,
-  Settings,
-  Share2,
-  ZoomIn,
-  BarChart2,
-  AlertTriangle,
-  TrendingUp,
-  Clock,
-  ArrowLeft,
-  Layers,
-  Filter,
-  MapPin,
-  Activity,
-  Calendar,
-  CloudRain,
-  SlidersHorizontal,
-  LayoutGrid,
-  Waves,
-  Percent,
-  RefreshCw,
-  RotateCcw,
-  Sparkles,
-  FileDown,
-  FileText,
-  CalendarRange,
-  ChevronDown,
-  CheckCircle,
-  BookOpen,
-  Globe,
-  Menu,
-  LayoutDashboard,
-  GitCompare,
-  Table,
-  Sliders,
-  Loader2,
-  Bot,
-  Mail,
-  type LucideIcon,
+  X, HelpCircle, Info, Map as MapIcon, Search, Navigation, Sun,
+  Activity, CloudRain, Users, ChevronRight,
+  type LucideIcon, Globe, Clock, ArrowRight,
 } from "lucide-react";
 import { EXPLAIN_REGISTRY } from "@/lib/explainRegistry";
-import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
+import { useExplainMode } from "@/hooks/useTour";
 
-const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
-
-/** Map icon name strings from the registry to actual Lucide components. */
 const ICON_MAP: Record<string, LucideIcon> = {
-  Activity,
-  AlertTriangle,
-  ArrowLeft,
-  BarChart2,
-  BookOpen,
-  Calendar,
-  CalendarRange,
-  CheckCircle,
-  ChevronDown,
-  Clock,
-  CloudRain,
-  FileDown,
-  FileText,
-  Filter,
-  GitCompare,
-  Globe,
-  HelpCircle,
-  Info,
-  LayoutDashboard,
-  LayoutGrid,
-  Layers,
-  Mail,
-Map: MapIcon,
-  MapPin,
-  Menu,
-  Navigation,
-  Percent,
-  RefreshCw,
-  RotateCcw,
-  Search,
-  Settings,
-  Share2,
-  Sliders,
-  SlidersHorizontal,
-  Sparkles,
-  Sun,
-  Table,
-  TrendingUp,
-  Waves,
-  ZoomIn,
+  Activity, HelpCircle, Info, Map: MapIcon, Search, Navigation, Sun,
+  CloudRain, Users, ChevronRight, Globe, Clock, ArrowRight,
 };
 
-interface PopoverState {
-  title: string;
-  description: string;
-  icon?: string | undefined;
-  /** Viewport-relative anchor rect of the clicked element */
-  anchorRect: DOMRect;
-}
+const TOUR_STEPS = [
+  {
+    target: "header, [data-explain='top-nav']",
+    title: "Welcome to HealthWatch",
+    description: "HealthWatch is an early-warning outbreak forecasting system for the Philippines. Use this header bar to toggle views (Map, Seasonality, Compare, Methodology) and switch light/dark themes.",
+    icon: "Activity",
+  },
+  {
+    target: "[data-explain='audience-mode']",
+    title: "Healthcare Worker vs Citizen Perspective",
+    description: "Toggle between Healthcare Worker Mode (detailed clinical demographics, admission projections, Prophet 95% confidence bands) and General Public Mode (simplified risk alerts and household 4S guides).",
+    icon: "Users",
+  },
+  {
+    target: "input[aria-label='Search regions'], .hw-search-input, [data-explain='region-search']",
+    title: "Instant Region Search",
+    description: "Search for any Philippine region or PSGC code (e.g. 'NCR', 'Davao', 'Region III') to quickly jump the map view directly to that area.",
+    icon: "Search",
+  },
+  {
+    target: "#hw-map-canvas, [data-explain='map-canvas']",
+    title: "Interactive Outbreak Hotspot Map",
+    description: "Color-coded choropleth displaying regional risk tiers (Low, Moderate, High) across all 18 Philippine regions. Click any region to open its 12-month forecast and historical trend.",
+    icon: "Map",
+  },
+  {
+    target: "#hw-timeline, [data-explain='timeline']",
+    title: "Time-Series Playback & 12-Month Forecast",
+    description: "Drag the scrubber or click Play to animate disease progression. Look ahead with our 12-month Prophet forecast baseline combined with PAGASA weather nowcasts.",
+    icon: "Clock",
+  },
+  {
+    target: "[data-explain='national-snapshot'], #hw-national-card, .hw-alerts-panel",
+    title: "National Summary & Escalation Alerts",
+    description: "Displays nationwide projected cases, risk distribution summary, and automated early-warning alerts for rapidly escalating outbreak hotspots.",
+    icon: "Globe",
+  },
+];
 
-interface ExplainOverlayProps {
-  active: boolean;
-  onExit: () => void;
-}
+interface PopoverState { title: string; description: string; icon?: string | undefined; anchorRect: DOMRect; }
+interface ExplainOverlayProps { active: boolean; onExit: () => void; }
+interface MatchedTarget { title: string; description: string; icon?: string | undefined; rect: DOMRect; }
 
-/** Client-side in-memory cache for Groq AI responses */
-const aiCache = new Map<string, string>();
-
-interface MatchedTarget {
-  title: string;
-  description: string;
-  icon?: string | undefined;
-  container: Element;
-  rect: DOMRect;
-}
-
-/** Walk up from `el` towards document.body to find the most specific container matching the registry. */
 function findMatchingTarget(el: Element): MatchedTarget | null {
   let node: Element | null = el;
   while (node && node !== document.body && node !== document.documentElement) {
-    if (node.id === "hw-explain-overlay" || node.closest("#hw-explain-popover")) {
-      return null;
-    }
     for (const entry of EXPLAIN_REGISTRY) {
       try {
-        // Exclude the generic "main" selector during child tree-walking unless node is literally <main>
-        if (entry.selector === "main" && node.tagName.toLowerCase() !== "main") {
-          continue;
-        }
+        if (entry.selector === "main" && node.tagName.toLowerCase() !== "main") continue;
         if (node.matches(entry.selector)) {
-          return {
-            title: entry.title,
-            description: entry.description,
-            icon: entry.icon,
-            container: node,
-            rect: node.getBoundingClientRect(),
-          };
+          return { title: entry.title, description: entry.description, icon: entry.icon, rect: node.getBoundingClientRect() };
         }
-      } catch {
-        // ignore invalid selectors
-      }
+      } catch {}
     }
     node = node.parentElement;
   }
   return null;
 }
 
-/** Compute best position for the popover card (avoid viewport edges). */
-function computePopoverStyle(
-  anchorRect: DOMRect,
-  cardW = 340,
-  cardH = 200,
-): React.CSSProperties {
+function computePopoverStyle(anchorRect: DOMRect, cardW = 360, cardH = 180): React.CSSProperties {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
-  const margin = 12;
-
-  let top: number;
-  let left: number;
-
-  left = anchorRect.left;
+  const margin = 16;
+  let top: number, left: number;
+  
+  left = anchorRect.left + anchorRect.width / 2 - cardW / 2;
   if (left + cardW + margin > vw) left = vw - cardW - margin;
   if (left < margin) left = margin;
 
@@ -192,292 +96,132 @@ function computePopoverStyle(
   } else {
     top = vh / 2 - cardH / 2;
   }
-
-  return { position: "fixed", top, left, width: cardW, zIndex: 9999 };
+  return { position: "fixed", top, left, width: cardW, zIndex: 10001 };
 }
-
 export function ExplainOverlay({ active, onExit }: ExplainOverlayProps) {
+  const { isTour, stepIndex, nextStep, prevStep } = useExplainMode();
   const [popover, setPopover] = useState<PopoverState | null>(null);
   const [hoverTarget, setHoverTarget] = useState<MatchedTarget | null>(null);
   const [hoverRect, setHoverRect] = useState<DOMRect | null>(null);
-  const [aiEnabled] = useAiAnalysisSetting();
-  const [aiState, setAiState] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [aiNarrative, setAiNarrative] = useState<string | null>(null);
-  const [aiError, setAiError] = useState<string | null>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
+  const [tourTargetRect, setTourTargetRect] = useState<DOMRect | null>(null);
 
-  // Reset states when mode or popover changes
+  const currentTourStep = isTour ? TOUR_STEPS[stepIndex] : null;
+
   useEffect(() => {
-    if (!active || !popover) {
-      setAiState("idle");
-      setAiNarrative(null);
-      setAiError(null);
-      if (!active) {
-        setPopover(null);
-        setHoverTarget(null);
-        setHoverRect(null);
-      }
-    } else {
-      // Check if cache already has an entry for this title
-      const cached = aiCache.get(popover.title);
-      if (cached) {
-        setAiNarrative(cached);
-        setAiState("success");
-      } else {
-        setAiState("idle");
-        setAiNarrative(null);
-        setAiError(null);
-      }
+    if (!active || !isTour || !currentTourStep) {
+      setTourTargetRect(null); return;
     }
-  }, [active, popover]);
+    const updateRect = () => {
+      const selectors = currentTourStep.target.split(",").map((s) => s.trim());
+      let el: Element | null = null;
+      for (const sel of selectors) { el = document.querySelector(sel); if (el) break; }
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => el && setTourTargetRect(el.getBoundingClientRect()), 350);
+      } else { setTourTargetRect(null); }
+    };
+    updateRect();
+    window.addEventListener("resize", updateRect);
+    return () => window.removeEventListener("resize", updateRect);
+  }, [active, isTour, stepIndex, currentTourStep]);
 
-  // Global Esc key handler
+  useEffect(() => {
+    if (!active) { setPopover(null); setHoverTarget(null); setHoverRect(null); }
+  }, [active]);
+
   useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (popover) {
-          setPopover(null);
-        } else {
-          onExit();
-        }
+      if (e.key === "Escape") { if (popover) setPopover(null); else onExit(); }
+      else if (isTour) {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "Enter") { e.preventDefault(); nextStep(TOUR_STEPS.length); }
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); prevStep(); }
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, popover, onExit]);
+  }, [active, popover, isTour, nextStep, prevStep, onExit]);
 
-  // Hover tracking
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    if (isTour) return;
     const els = document.elementsFromPoint(e.clientX, e.clientY);
     for (const el of els) {
       if (el.id === "hw-explain-overlay" || el.closest("#hw-explain-popover")) continue;
       const match = findMatchingTarget(el);
-      if (match) {
-        setHoverTarget(match);
-        setHoverRect(match.rect);
-      } else {
-        setHoverTarget(null);
-        setHoverRect(null);
-      }
+      if (match) { setHoverTarget(match); setHoverRect(match.rect); }
+      else { setHoverTarget(null); setHoverRect(null); }
       return;
     }
-    setHoverTarget(null);
-    setHoverRect(null);
-  }, []);
+    setHoverTarget(null); setHoverRect(null);
+  }, [isTour]);
 
-  const handleMouseLeave = useCallback(() => {
-    setHoverTarget(null);
-    setHoverRect(null);
-  }, []);
-
-  // Click handler
   const handleClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-
+    if (isTour) return;
+    e.stopPropagation(); e.preventDefault();
     const els = document.elementsFromPoint(e.clientX, e.clientY);
     for (const el of els) {
       if (el.id === "hw-explain-overlay" || el.closest("#hw-explain-popover")) continue;
-
       const match = findMatchingTarget(el);
-      if (match) {
-        setPopover({
-          title: match.title,
-          description: match.description,
-          icon: match.icon,
-          anchorRect: match.rect,
-        });
-      } else {
-        setPopover({
-          title: "UI Workspace",
-          icon: "Info",
-          description:
-            "This area doesn't have a specific explanation yet. Click a highlighted card, navigation bar, active alerts, or scrubber for detailed info.",
-          anchorRect: el.getBoundingClientRect(),
-        });
-      }
+      if (match) setPopover({ title: match.title, description: match.description, icon: match.icon, anchorRect: match.rect });
+      else setPopover({ title: "UI Workspace", icon: "Info", description: "This area doesn't have a specific explanation yet.", anchorRect: el.getBoundingClientRect() });
       return;
     }
-  }, []);
+  }, [isTour]);
 
-  // Fetch AI deep-dive explanation on explicit user request
-  const handleFetchAi = useCallback(async () => {
-    if (!popover) return;
-    const cacheKey = popover.title;
-    if (aiCache.has(cacheKey)) {
-      setAiNarrative(aiCache.get(cacheKey)!);
-      setAiState("success");
-      return;
-    }
-
-    setAiState("loading");
-    setAiError(null);
-    try {
-      const res = await fetch(`${API_BASE}/analysis/explain-element`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: popover.title,
-          description: popover.description,
-        }),
-      });
-
-      if (!res.ok) {
-        let detail = "AI analysis unavailable: AI provider keys (GROQ_API_KEY / OPENAI_API_KEY) are not configured on the server.";
-        try {
-          const errData = (await res.json()) as { detail?: string };
-          if (errData?.detail) detail = errData.detail;
-        } catch {
-          // ignore JSON parse error
-        }
-        setAiError(detail);
-        setAiState("error");
-        return;
-      }
-      const data = (await res.json()) as { narrative: string };
-      aiCache.set(cacheKey, data.narrative);
-      setAiNarrative(data.narrative);
-      setAiState("success");
-    } catch {
-      setAiError("AI analysis unavailable: cannot reach backend server.");
-      setAiState("error");
-    }
-  }, [popover]);
 
   if (!active || typeof document === "undefined") return null;
-
-  const popoverStyle = popover ? computePopoverStyle(popover.anchorRect) : undefined;
-  const PopoverIcon: LucideIcon =
-    (popover?.icon ? ICON_MAP[popover.icon] : undefined) ?? Info;
+  const activeAnchorRect = isTour ? tourTargetRect : popover?.anchorRect;
+  const popoverStyle = activeAnchorRect ? computePopoverStyle(activeAnchorRect) : undefined;
+  const activeIconName = isTour ? currentTourStep?.icon : popover?.icon;
+  const PopoverIcon: LucideIcon = (activeIconName ? ICON_MAP[activeIconName] : undefined) ?? Info;
+  const activeTitle = isTour ? currentTourStep?.title : popover?.title;
+  const activeDescription = isTour ? currentTourStep?.description : popover?.description;
 
   return createPortal(
     <>
-      {/* Dim overlay */}
-      <div
-        id="hw-explain-overlay"
-        ref={overlayRef}
-        role="presentation"
-        aria-label="Explain mode active — click any element to learn what it does"
-        className="hw-explain-overlay"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
-        onClick={handleClick}
-      >
-        {/* Hover highlight box & container label */}
-        {hoverRect && hoverTarget && (
-          <div
-            className="hw-explain-hover"
-            style={{
-              top: hoverRect.top,
-              left: hoverRect.left,
-              width: hoverRect.width,
-              height: hoverRect.height,
-            }}
-          >
-            <div
-              className={cn(
-                "hw-explain-hover-label",
-                hoverRect.top < 34 ? "hw-explain-hover-label-bottom" : "hw-explain-hover-label-top",
-              )}
-            >
-              {(() => {
-                const HoverIcon = (hoverTarget.icon ? ICON_MAP[hoverTarget.icon] : undefined) ?? Info;
-                return <HoverIcon className="size-3 shrink-0 text-primary" aria-hidden="true" />;
-              })()}
-              <span className="truncate max-w-[220px]">{hoverTarget.title}</span>
-              <span className="text-[10px] text-muted-foreground font-normal ml-0.5">· Click to inspect</span>
-            </div>
-          </div>
+      <div id="hw-explain-overlay" role="presentation" className="hw-explain-overlay" onMouseMove={handleMouseMove} onClick={handleClick}>
+        {isTour && tourTargetRect && (
+          <div className="absolute rounded-xl ring-4 ring-primary/60 shadow-[0_0_0_9999px_rgba(0,0,0,0.75)] transition-all duration-300 pointer-events-none" style={{ top: tourTargetRect.top - 8, left: tourTargetRect.left - 8, width: tourTargetRect.width + 16, height: tourTargetRect.height + 16, zIndex: 10000 }} />
         )}
-
-        {/* Top-center banner */}
-        <div className="hw-explain-banner">
-          <HelpCircle className="size-3.5 shrink-0" aria-hidden="true" />
-          <span>Explain Mode — click anything to learn what it does</span>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onExit();
-            }}
-            aria-label="Exit explain mode"
-            className="hw-explain-banner-close"
-          >
-            <X className="size-3.5" />
-          </button>
-        </div>
+      <div className="fixed bottom-4 left-4 z-[10000] rounded-full border border-primary/50 bg-card/80 backdrop-blur px-3 py-1.5 text-xs font-semibold text-primary shadow-lg flex items-center gap-1.5 animate-in slide-in-from-bottom-2">
+        <HelpCircle className="size-3.5" />
+        <span>Explain Mode Active</span>
       </div>
 
-      {/* Explanation popover card */}
-      {popover && popoverStyle && (
-        <div id="hw-explain-popover" style={popoverStyle} className="hw-explain-popover">
-          {/* Header */}
-          <div className="hw-explain-popover-header">
-            <PopoverIcon className="size-3.5 shrink-0 text-primary" aria-hidden="true" />
-            <span className="hw-explain-popover-title">{popover.title}</span>
-            <button
-              onClick={() => setPopover(null)}
-              aria-label="Close explanation"
-              className="hw-explain-popover-close"
-            >
-              <X className="size-3.5" />
-            </button>
+      </div>
+      {(popover || (isTour && currentTourStep)) && popoverStyle && (
+        <div id="hw-explain-popover" style={popoverStyle} className="rounded-2xl border border-border/80 bg-card p-5 shadow-2xl backdrop-blur-2xl z-[10001] animate-in fade-in-0 zoom-in-95 duration-200">
+          <div className="flex items-start justify-between gap-3 mb-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary"><PopoverIcon className="size-4" /></div>
+              <h3 className="text-sm font-bold text-foreground leading-snug">{activeTitle}</h3>
+            </div>
+            <button onClick={() => isTour ? onExit() : setPopover(null)} className="rounded-lg p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"><X className="size-4" /></button>
           </div>
-
-          {/* Body - Static Description */}
-          <p className="hw-explain-popover-body">{popover.description}</p>
-
-          {/* Optional On-Demand Groq AI Section */}
-          {aiEnabled && (
-            <div className="mt-3 pt-2.5 border-t border-border/60">
-              {aiState === "idle" && (
-                <button
-                  type="button"
-                  onClick={handleFetchAi}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary/80 transition-colors cursor-pointer"
-                >
-                  <Sparkles className="size-3.5 shrink-0" aria-hidden="true" />
-                  <span>Deep-dive with AI</span>
+          <p className="text-xs text-muted-foreground leading-relaxed mb-4">{activeDescription}</p>
+          {isTour ? (
+            <div className="flex items-center justify-between pt-3 border-t border-border/80">
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={prevStep} disabled={stepIndex === 0} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground hover:bg-secondary/80 disabled:opacity-40 cursor-pointer">Back</button>
+                <span className="font-mono text-[11px] text-muted-foreground">{stepIndex + 1}/{TOUR_STEPS.length}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button type="button" onClick={onExit} className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 cursor-pointer">Skip</button>
+                <button type="button" onClick={() => nextStep(TOUR_STEPS.length)} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-1.5 text-xs font-bold text-primary-foreground shadow-md hover:opacity-90 active:scale-95 cursor-pointer">
+                  <span>{stepIndex === TOUR_STEPS.length - 1 ? "Finish Tour" : "Next"}</span><ArrowRight className="size-3.5" />
                 </button>
-              )}
-              {aiState === "loading" && (
-                <div className="flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
-                  <Loader2 className="size-3.5 animate-spin text-primary shrink-0" aria-hidden="true" />
-                  <span>Fetching AI analysis...</span>
-                </div>
-              )}
-              {aiState === "success" && aiNarrative && (
-                <div className="rounded-lg border border-primary/30 bg-primary/5 p-2.5 text-xs text-foreground/90 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-bold text-primary uppercase tracking-wider">
-                    <Bot className="size-3 shrink-0" aria-hidden="true" /> AI Live Interpretation
-                  </div>
-                  <p className="leading-relaxed text-[12px]">{aiNarrative}</p>
-                </div>
-              )}
-              {aiState === "error" && (
-                <p className="text-[11px] text-amber-500 leading-snug">
-                  {aiError || "AI analysis unavailable right now."}
-                </p>
-              )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between pt-3 border-t border-border/80 text-xs">
+              <span className="text-muted-foreground">Click another element to inspect</span>
+              <button onClick={(e) => { e.stopPropagation(); onExit(); }} className="rounded-lg bg-secondary px-3 py-1 text-secondary-foreground hover:bg-foreground hover:text-background font-semibold">Exit (Esc)</button>
             </div>
           )}
-
-          {/* Footer */}
-          <div className="hw-explain-popover-footer">
-            <span>Click another element to inspect it</span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onExit();
-              }}
-              className="hw-explain-exit-btn"
-            >
-              Exit (Esc)
-            </button>
-          </div>
         </div>
       )}
     </>,
-    document.body,
+    document.body
   );
 }
+

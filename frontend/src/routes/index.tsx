@@ -68,8 +68,10 @@ function MapView() {
 
   useEffect(() => setMounted(true), []);
 
-  // Onboarding guided tour — auto-launches once for first-time visitors
-  const { explainActive, toggleExplain, exitExplain } = useExplainMode();
+  // Onboarding guided tour — trigger available for first-time visitors
+  const { explainActive, toggleExplain, exitExplain, isCompleted, startTour } = useExplainMode();
+
+  // Auto-launch removed as requested — users can start tour via "Explain Mode" button
 
   const assessments = useMemo(
     () => assessAll(illness, monthIndex, mode),
