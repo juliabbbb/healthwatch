@@ -87,20 +87,20 @@ export function AlertsPanel({
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
         aria-label={open ? "Collapse alerts panel" : "Expand alerts panel"}
-        className="flex w-full items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
+        className="flex w-full flex-wrap items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
       >
         <TriangleAlert
           className="size-4 shrink-0"
           style={{ color: hasSevere ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
-        <span className="label-caps flex-1 text-xs font-bold text-foreground">
+        <span className="label-caps min-w-0 flex-1 text-[13px] font-bold text-foreground">
           {audienceMode === "clinical" ? "Surveillance & Weather Alerts" : "Health & Weather Alerts"}
         </span>
 
         {/* Live Weather Warning Badge */}
         {floodCount > 0 && (
           <span
-            className="rounded-full px-2 py-0.5 font-mono text-xs font-bold tabular-nums inline-flex items-center gap-1"
+            className="rounded-full px-2 py-0.5 font-mono text-[13px] font-bold tabular-nums inline-flex items-center gap-1"
             style={{
               color: "var(--risk-high)",
               backgroundColor: "color-mix(in oklab, var(--risk-high), transparent 86%)",
@@ -115,7 +115,7 @@ export function AlertsPanel({
         {/* Disease Alerts Count */}
         {alerts.length > 0 && (
           <span
-            className="rounded-full px-2 py-0.5 font-mono text-xs font-bold tabular-nums"
+            className="rounded-full px-2 py-0.5 font-mono text-[13px] font-bold tabular-nums"
             style={{
               color: severeCount > 0 ? "var(--risk-high)" : "var(--risk-moderate)",
               backgroundColor: `color-mix(in oklab, ${severeCount > 0 ? "var(--risk-high)" : "var(--risk-moderate)"}, transparent 86%)`,
@@ -138,7 +138,7 @@ export function AlertsPanel({
           {/* Section 1: Live PAGASA Flood Threats */}
           {floodRegions.length > 0 && (
             <div className="bg-secondary/20 p-2">
-              <div className="flex items-center gap-1.5 px-2 py-1 text-xs font-bold text-foreground">
+              <div className="flex items-center gap-1.5 px-2 py-1 text-[13px] font-bold text-foreground">
                 <Waves className="size-3.5 text-primary" />
                 <span>PAGASA Flood Hazards · Active Now</span>
               </div>
@@ -149,16 +149,16 @@ export function AlertsPanel({
                     onClick={() => onFocusRegion(fr.region_code)}
                     className="flex flex-col text-left px-2.5 py-1.5 rounded-lg bg-card/70 border border-border/60 hover:bg-secondary/70 transition-colors"
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-foreground">{fr.region_short}</span>
+                    <div className="flex flex-wrap items-center justify-between gap-1">
+                      <span className="text-[13px] font-bold text-foreground">{fr.region_short}</span>
                       <span
-                        className="font-mono text-[11px] font-bold"
+                        className="font-mono text-xs font-bold"
                         style={{ color: "var(--risk-high)" }}
                       >
                         {"Flood Warning"}
                       </span>
                     </div>
-                    <span className="text-[11px] text-muted-foreground truncate">{fr.caused_by}</span>
+                    <span className="text-xs text-muted-foreground truncate">{fr.caused_by}</span>
                   </button>
                 ))}
               </div>
@@ -168,7 +168,7 @@ export function AlertsPanel({
           {/* Section 2: Model Hotspots & Outbreak Indicators */}
           <ul className="hw-scroll max-h-[34vh] sm:max-h-60 divide-y divide-border/60 overflow-y-auto">
             {alerts.length === 0 && (
-              <li className="px-4 py-6 text-center text-xs text-muted-foreground">
+              <li className="px-4 py-6 text-center text-[13px] text-muted-foreground">
                 No active disease alerts — all regions are within baseline ranges.
               </li>
             )}
@@ -200,17 +200,17 @@ export function AlertsPanel({
                     <span
                       className={
                         a.kind === "outbreak"
-                          ? "block text-xs font-semibold text-foreground"
-                          : "block truncate text-xs font-medium"
+                          ? "block text-[13px] font-semibold text-foreground"
+                          : "block truncate text-[13px] font-medium"
                       }
                     >
                       {a.title}
                     </span>
-                    <span className="mt-0.5 block text-xs leading-snug text-muted-foreground line-clamp-2">
+                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground line-clamp-2">
                       {a.detail}
                     </span>
                   </span>
-                  <span className="shrink-0 pt-0.5 font-mono text-xs font-medium tabular-nums text-muted-foreground">
+                  <span className="shrink-0 pt-0.5 font-mono text-[13px] font-medium tabular-nums text-muted-foreground">
                     {formatMonthYear(a.month)}
                   </span>
                 </button>
@@ -219,7 +219,7 @@ export function AlertsPanel({
           </ul>
 
           <div className="px-4 py-2 bg-secondary/15">
-            <p className="text-xs leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               Click any alert or weather hazard above to instantly focus on that region.
             </p>
           </div>

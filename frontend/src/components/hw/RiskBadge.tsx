@@ -14,8 +14,8 @@ export function RiskBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full font-medium uppercase tracking-wider",
-        size === "sm" ? "px-2 py-0.5 text-[10px]" : "px-3 py-1 text-xs",
+        "inline-flex whitespace-nowrap items-center gap-1.5 rounded-full font-medium uppercase tracking-wider",
+        size === "sm" ? "px-2 py-0.5 text-xs" : "px-3 py-1 text-[13px]",
         className,
       )}
       style={{
@@ -51,7 +51,7 @@ export function SeasonTag({
   return (
     <span
       className={cn(
-        "rounded px-1.5 py-0.5 text-[10px] uppercase tracking-wider font-medium",
+        "inline-flex whitespace-nowrap rounded px-1.5 py-0.5 text-xs uppercase tracking-wider font-medium",
         className,
       )}
       style={{ color, backgroundColor: `color-mix(in oklab, ${color}, transparent 88%)` }}

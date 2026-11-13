@@ -17,9 +17,9 @@ export function AvailabilityNotice({ regionCode, disease, monthIndex, onSelectMo
   const lastIndex = last ? indexForYearMonth(Number(last.slice(0, 4)), Number(last.slice(5, 7))) : -1;
   return <section className="mx-5 mt-3 rounded-lg border border-border/70 bg-secondary/30 px-4 py-3" aria-label="Data availability">
     <p className="text-sm font-medium">{title}</p>
-    <p className="mt-1 text-xs leading-relaxed text-muted-foreground" role="status">{reason}</p>
-    {last && <p className="mt-1 text-xs text-muted-foreground">Last reported month: {last.slice(0, 7)}.{facts ? ` Observed months: ${facts.observed_months}.` : ""}</p>}
-    {(facts?.zero_rule_months ?? 0) > 0 && <p className="mt-1 text-xs text-muted-foreground">Includes {facts?.zero_rule_months} internal zero-report months under the user-relayed DOH rule. Wider coverage remains unresolved.</p>}
-    {onSelectMonth && lastIndex >= 0 && !selectedAvailable && <button type="button" onClick={() => onSelectMonth(lastIndex)} className="mt-2 rounded border border-border px-3 py-1.5 text-xs font-medium hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring">View latest reported month</button>}
+    <p className="mt-1 text-sm leading-relaxed text-muted-foreground" role="status">{reason}</p>
+    {last && <p className="mt-1 text-sm text-muted-foreground">Last reported month: {last.slice(0, 7)}.{facts ? ` Observed months: ${facts.observed_months}.` : ""}</p>}
+    {(facts?.zero_rule_months ?? 0) > 0 && <p className="mt-1 text-sm text-muted-foreground">Includes {facts?.zero_rule_months} internal zero-report months under the user-relayed DOH rule. Wider coverage remains unresolved.</p>}
+    {onSelectMonth && lastIndex >= 0 && !selectedAvailable && <button type="button" onClick={() => onSelectMonth(lastIndex)} className="mt-2 rounded border border-border px-3 py-1.5 text-[13px] font-medium hover:bg-secondary focus-visible:outline-2 focus-visible:outline-ring">View latest reported month</button>}
   </section>;
 }

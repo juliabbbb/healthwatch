@@ -35,7 +35,7 @@ export function OutbreakBanner({
     <div
       role="alert"
       className={cn(
-        "flex items-start gap-2 rounded-lg border px-3 py-2 text-xs leading-snug",
+        "flex items-start gap-2 rounded-lg border px-3 py-2 text-sm leading-snug",
         className,
       )}
       style={{

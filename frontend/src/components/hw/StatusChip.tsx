@@ -14,7 +14,7 @@ export function StatusChip({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-muted-foreground",
+        "inline-flex whitespace-nowrap items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 font-mono text-xs font-semibold uppercase tracking-[0.06em] text-muted-foreground",
         className,
       )}
     >

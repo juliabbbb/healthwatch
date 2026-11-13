@@ -103,7 +103,7 @@ function MapView() {
   }, []);
 
   return (
-    <main className="relative h-screen w-full overflow-hidden bg-background">
+    <main className="hw-map-page hw-home-chrome relative h-screen w-full overflow-hidden bg-background">
       {/* 1. Interactive Map Layer */}
       <div id="hw-map" className="absolute inset-0 z-0">
         {mounted && (
@@ -122,7 +122,7 @@ function MapView() {
       </div>
 
       {/* 2. DESKTOP ONLY: Top-Left Dock (National Snapshot + Active Alerts) - Perfectly matched widths */}
-      <div className="pointer-events-none absolute left-4 top-4 z-30 hidden md:flex max-h-[calc(100vh-11rem)] w-[22rem] lg:w-[30rem] xl:w-[31.5rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-hidden">
+      <div className="pointer-events-auto absolute left-4 top-[5.5rem] z-30 hidden xl:flex max-h-[calc(100vh-15rem)] w-[24rem] xl:w-[32rem] max-w-[calc(100vw-2rem)] flex-col items-start gap-3 overflow-y-auto hw-scroll">
         <NationalSnapshot
           id="hw-legend-card"
           monthLabel={meta.label}
@@ -149,7 +149,7 @@ function MapView() {
 
       {/* 5. DESKTOP ONLY: Floating Forecast Card on Right */}
       {selected && (
-        <div id="hw-forecast-card" className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden md:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
+        <div id="hw-forecast-card" className="pointer-events-auto absolute right-4 top-[5.5rem] z-30 hidden xl:block max-h-[calc(100vh-11rem)] overflow-y-auto hw-scroll">
           <ForecastCard
             regionCode={selected}
             illness={illness}
@@ -165,20 +165,20 @@ function MapView() {
       )}
 
       {/* 7. DESKTOP ONLY: Repositioned Logo (Bottom-Left) */}
-      <div className="pointer-events-none absolute left-4 bottom-20 z-30 hidden md:block">
+      <div className="pointer-events-none absolute left-4 bottom-20 z-30 hidden xl:block">
         <div className="glass-panel pointer-events-auto flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 shadow-md">
           <Activity className="size-5 text-primary" />
           <div>
             <p className="text-sm font-bold leading-none tracking-wide text-foreground">
               HEALTHWATCH
             </p>
-            <p className="mt-1 label-caps text-[10px]">Regional Outbreak Hotspot Map & Forecasts</p>
+            <p className="mt-1 label-caps text-xs">Regional Outbreak Hotspot Map & Forecasts</p>
           </div>
         </div>
       </div>
 
       {/* 3. MOBILE ONLY: Top-Left Floating National Overview Trigger Pill */}
-      <div className="pointer-events-auto absolute left-3 top-3 z-30 flex md:hidden items-center">
+      <div className="pointer-events-auto absolute left-3 top-3 z-30 flex xl:hidden items-center">
         <button
           onClick={() => setMobileNationalOpen(true)}
           aria-label="Open national surveillance overview"
@@ -216,7 +216,7 @@ function MapView() {
       {/* 8. DatePlayer / Timeline Scrubber (Mutually exclusive with MobileBottomSheet on mobile) */}
       <div
         id="hw-timeline"
-        className={`absolute inset-x-3 md:inset-x-4 z-30 transition-all duration-300 ease-in-out md:bottom-4 md:translate-y-0 md:opacity-100 md:pointer-events-auto ${
+        className={`absolute inset-x-3 md:inset-x-4 z-30 transition-all duration-300 ease-in-out xl:bottom-4 xl:translate-y-0 xl:opacity-100 xl:pointer-events-auto ${
           selected || mobileNationalOpen
             ? "bottom-3 translate-y-16 opacity-0 pointer-events-none"
             : "bottom-3 translate-y-0 opacity-100 pointer-events-auto"
@@ -232,7 +232,7 @@ function MapView() {
 
       {/* 9. MOBILE ONLY: Slide-Over Drawer for National Overview & Alerts (Full width alignment) */}
       {mobileNationalOpen && (
-        <div className="fixed inset-0 z-[700] flex flex-col justify-end bg-black/70 backdrop-blur-sm md:hidden animate-in fade-in-0 duration-200">
+        <div className="fixed inset-0 z-[700] flex flex-col justify-end bg-black/70 backdrop-blur-sm xl:hidden animate-in fade-in-0 duration-200">
           <div onClick={() => setMobileNationalOpen(false)} className="flex-1" aria-hidden="true" />
           <div className="flex max-h-[88vh] flex-col rounded-t-2xl border-t border-border/80 bg-card/98 backdrop-blur-2xl p-4 sm:p-5 shadow-2xl animate-in slide-in-from-bottom duration-300 overflow-y-auto hw-scroll">
             <div className="flex items-center justify-between border-b border-border/70 pb-3 mb-3">

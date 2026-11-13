@@ -271,9 +271,12 @@ svg.lucide {
 }
 
 .leaflet-control-attribution {
+  max-width: calc(100vw - 2rem);
+  white-space: normal;
+  overflow-wrap: anywhere;
   background: oklch(1 0 0 / 75%) !important;
   color: var(--color-muted-foreground) !important;
-  font-size: 10px !important;
+  font-size: 12px !important;
 }
 
 .dark .leaflet-control-attribution {
@@ -289,12 +292,15 @@ svg.lucide {
 }
 
 .hw-tooltip {
+  max-width: calc(100vw - 2rem);
+  white-space: normal !important;
+  overflow-wrap: anywhere;
   background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
   backdrop-filter: blur(10px);
   font-family: var(--font-mono);
-  font-size: 10px !important;
+  font-size: 12px !important;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   border-radius: 6px !important;
@@ -356,7 +362,7 @@ svg.lucide {
 
 .hw-outbreak-tip-badge {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -365,7 +371,7 @@ svg.lucide {
 
 .hw-outbreak-tip-month {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-muted-foreground);
 }
@@ -394,13 +400,13 @@ svg.lucide {
 }
 
 .hw-outbreak-tip-unit {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-muted-foreground);
 }
 
 .hw-outbreak-tip-subval {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--color-muted-foreground);
 }
 
@@ -415,7 +421,7 @@ svg.lucide {
 
 .hw-outbreak-tip-pill {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -427,7 +433,7 @@ svg.lucide {
 }
 
 .hw-outbreak-tip-note {
-  font-size: 9.5px;
+  font-size: 12px;
   color: var(--color-muted-foreground);
   line-height: 1.2;
 }
@@ -728,3 +734,18 @@ input[type="range"]:focus-visible {
   }
 }
 
+
+/* Home-page text floor for nested chart, clock and disclosure content. */
+.hw-home-chrome :is([class*="text-[9px]"], [class*="text-[10px]"], [class*="text-[11px]"]),
+.hw-home-chrome svg text {
+  font-size: 12px;
+}
+
+body:has(.hw-map-page) :is(.hw-explain-hover-label, .hw-explain-popover-footer > span, .hw-explain-exit-btn, .hw-explain-banner) {
+  font-size: 12px;
+}
+
+.hw-map-page .hw-outbreak-tip-header,
+.hw-map-page .hw-outbreak-tip-footer {
+  flex-wrap: wrap;
+}
