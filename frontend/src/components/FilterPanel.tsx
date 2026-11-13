@@ -1,3 +1,5 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
+import { ILLNESS_BY_ID } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -137,7 +139,8 @@ export function FilterPanel({
                 active={selectedIllness === i.id}
                 onClick={() => onIllnessChange(i.id)}
               >
-                {i.shortName ?? i.name}
+                {i.shortName ?? i.name}{" "}
+                {ILLNESS_BY_ID[i.id]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[i.id]?.provisionalNote} />}
               </Chip>
             ))}
           </div>

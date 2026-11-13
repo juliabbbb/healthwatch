@@ -1,8 +1,10 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Info, X, Stethoscope, Users } from "lucide-react";
 import {
   ILLNESSES,
+  ILLNESS_BY_ID,
   METRIC_META,
   RISK_META,
   formatMetric,
@@ -262,7 +264,8 @@ export function NationalSnapshot({
                       : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {i.shortName}
+                  {i.shortName}{" "}
+                  {ILLNESS_BY_ID[i.id]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[i.id]?.provisionalNote} />}
                 </button>
               ))}
             </div>

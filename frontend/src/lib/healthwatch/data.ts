@@ -282,6 +282,8 @@ export interface Illness {
   forecastAvailable?: boolean;
   /** Human-readable explanation when forecastAvailable is false. */
   unavailableReason?: string;
+  provisional?: boolean;
+  provisionalNote?: string;
 }
 
 /** Presentation grouping only — the pipeline runs each disease independently. */
@@ -354,7 +356,8 @@ export const ILLNESSES: Illness[] = [
     id: "Acute Viral Hepatitis",
     name: "Hepatitis A",
     forecastAvailable: true,
-    unavailableReason: "Provisional Hepatitis A source-record counts; forecasts depend on regional history and target dates.",
+    provisional: true,
+    provisionalNote: "Provisional Hepatitis A source-record counts; forecasts depend on regional history and target dates.",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
     transmission: "Water-Borne",

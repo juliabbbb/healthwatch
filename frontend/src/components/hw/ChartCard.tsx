@@ -1,3 +1,4 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { useEffect, useState, type ReactNode } from "react";
 import { Maximize2 } from "lucide-react";
 import {
@@ -7,10 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ILLNESS_BY_ID } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 export interface ChartCardProps {
   title: string;
+  illness?: string;
   subtitle?: string;
   /** Optional right-aligned control (e.g. a chart-type toggle). */
   action?: ReactNode;
@@ -31,6 +34,7 @@ export interface ChartCardProps {
  */
 export function ChartCard({
   title,
+  illness,
   subtitle,
   action,
   children,
@@ -60,7 +64,10 @@ export function ChartCard({
       >
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+            <h3 className="flex flex-wrap items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+              {title}
+              {illness && ILLNESS_BY_ID[illness]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[illness]?.provisionalNote} />}
+            </h3>
             {subtitle && <p className="mt-0.5 text-xs text-muted-foreground">{subtitle}</p>}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
@@ -86,8 +93,9 @@ export function ChartCard({
           className="z-[600] glass-panel max-w-5xl max-h-[92vh] overflow-y-auto rounded-2xl border-border/80 p-6 shadow-2xl"
         >
           <DialogHeader className="space-y-1 pr-8">
-            <DialogTitle className="text-lg font-bold tracking-tight text-foreground">
-              {title}
+            <DialogTitle className="flex flex-wrap items-center gap-2 text-lg font-bold tracking-tight text-foreground">
+              {title}{" "}
+              {illness && ILLNESS_BY_ID[illness]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[illness]?.provisionalNote} />}
             </DialogTitle>
             {subtitle && (
               <DialogDescription className="text-xs text-muted-foreground">

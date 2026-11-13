@@ -1,3 +1,4 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { AvailabilityNotice } from "./AvailabilityNotice";
 import { ResearchComparison } from "./ResearchComparison";
 import { Link } from "@tanstack/react-router";
@@ -114,7 +115,7 @@ export function ForecastCard({
 
   const nextPt = a.forecastWindow.find((point) => point.forecast && Number.isFinite(point.cases));
   const nextMonthKpi = isForecastUnavailable
-    ? { value: "—", sub: availability?.message ?? illnessMeta?.unavailableReason ?? "Forecast not available" }
+    ? { value: "—", sub: availability?.message ?? (illnessMeta?.forecastAvailable === false ? illnessMeta.unavailableReason : undefined) ?? "Forecast not available" }
     : nextPt
     ? {
         value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
@@ -192,7 +193,8 @@ export function ForecastCard({
                 ? `${a.region.classification} · ${a.region.density.toLocaleString()} persons/km²`
                 : "Philippine Administrative Region · Community Health Outlook"}
             </p>
-            {availability?.source_status === "provisional" && <p className="mt-1 text-xs text-muted-foreground">Provisional source interpretation</p>}
+            {illnessMeta?.provisional && <ProvisionalTag note={illnessMeta.provisionalNote} />}
+            {!illnessMeta?.provisional && availability?.source_status === "provisional" && <p className="mt-1 text-xs text-muted-foreground">Provisional source interpretation</p>}
             <div className="flex items-center gap-1.5 mt-1.5">
               <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border border-border/70 bg-secondary/50">
                 {audienceMode === "clinical" ? (
@@ -404,7 +406,7 @@ export function ForecastCard({
 
       {illness === "all" && <p className="px-5 py-2 text-xs text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "Unavailable"}. Aggregate prediction intervals are unavailable.</p>}
       {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "Combined counts are descriptive. Select a disease for its regional risk tiers; no combined disease threshold is defined." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
-      {(illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" || illness === "Leptospirosis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
+      {(illness === "Influenza-like Illness" || illness === "Leptospirosis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
       {audienceMode === "clinical" && <ResearchComparison disease={illness} region={a.region.name} regionCode={regionCode} />}
       {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}
       {audienceMode === "clinical" && !isForecastUnavailable && (
