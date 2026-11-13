@@ -1,41 +1,29 @@
-# Run the backend locally
+# Local SARIMAX startup
 
-The default developer launcher explicitly selects a local database. Local mode uses only the named SQLite file. Configured mode never falls back to another database. Your existing .env and its Supabase connection string are preserved.
+Run `powershell -ExecutionPolicy Bypass -File ./run-dev.ps1` from the repository root. The frontend listens on http://localhost:8080 and the API on http://127.0.0.1:8000.
 
-```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\run-backend.ps1 -Mode Local -Background
-```
+The launcher prefers `.venv-sarimax/Scripts/python.exe`, then `.venv`, unless `HEALTHWATCH_PYTHON` is explicitly set. Install `requirements-ml.txt` in a dedicated Python 3.12 environment for building or publishing a local snapshot.
 
-The foreground form is `./run-backend.ps1 -Mode Local`. Use `./run-dev.ps1` for the backend plus frontend. A matching healthy local backend is reused rather than starting a second server on port 8000. Startup checks required imports and waits for a populated `/health` response, not merely an open port. Background windows are hidden and logs go to api_start_out.log/api_start_err.log.
+## Active snapshot
 
-Local paths are `data/local/healthwatch_verified.db` and, optionally, `data/local/research_run`. These ignored files contain the verified local snapshot and research artifacts prepared for this computer. They are not committed or published to the shared database. The local data reports source uncertainty and excluded datasets normally; selecting local mode does not establish source confirmation.
+`data/local/active_run.json` is an ignored machine-local object containing `directory`, `database_path`, `run_id` and `manifest_sha256`. Both paths must refer to the same verified operational SARIMAX run. Startup verifies the artifact hashes and model/experiment identity, then checks the API's model and snapshot run ID. Legacy or mismatched snapshots fail rather than silently serving Prophet.
 
-## Fresh checkout without a local snapshot
+On this computer, the November 14 activation uses:
 
-Install requirements-ml.txt as well, choose a new output directory, and run the offline build described in IMPLEMENTATION_WORKFLOW.md. After its manifest verifies, explicitly publish to a new **local** SQLite file:
+- Run: `data/local/runs/sarimax_20261114`
+- Database: `data/local/healthwatch_sarimax_20261114.db`
+- Preserved rollback database: `data/local/healthwatch_verified.db` (Prophet; not the current branch's default)
 
-```powershell
-$localRun = 'C:/path/to/new-verified-run'
-.\update-data.ps1 -OutputDirectory $localRun
-$env:HEALTHWATCH_OUTPUT_DIR = $localRun
-$env:DATABASE_URL = 'sqlite:///C:/path/to/healthwatch/data/local/healthwatch_verified.db'
-.\.venv\Scripts\python.exe -m src.db --verified-run $localRun
-```
+`GET /health` reports `model: SARIMAX`, `snapshot_run_id: sarimax_20261114`, `data_ready: true` and `shared_database: false`.
 
-Create the local database's parent directory first. The build can take time and needs the original raw inputs; no empty or invented snapshot is automatically seeded. A separately generated, verified four-model run may be placed at data/local/research_run or selected explicitly through HEALTHWATCH_RESEARCH_RUN.
+For an explicit alternative, use both `-DatabasePath` and `-OutputDirectory` with `run-backend.ps1 -Mode Local -Background`. If the port is occupied by a different run, stop that identified local backend before restarting; the launcher does not kill unrelated services.
 
-## Shared/configured database mode
+## Rebuild on another computer
 
-`./run-backend.ps1 -Mode Configured` uses DATABASE_URL from the environment or the existing .env. An invalid/paused/unavailable Supabase connection stops startup rather than changing targets. The configured connection currently rejects the tenant/user and must be corrected by the project owner before this mode can work. Never commit credentials. Existing-database schema migration and shared publication remain separate reviewed actions.
+Use the offline commands in `docs/SARIMAX_SWITCH.md` to create a new output directory, verify it, and publish to a new explicitly named local SQLite file. Create the active pointer only after publication succeeds. Do not reuse the Prophet file or a shared PostgreSQL URL. Generated snapshots are intentionally not tracked by Git.
 
-The launcher restores the parent process's database/research environment settings after starting its child process. `/health` exposes only readiness, database type and snapshot identity; it does not expose connection credentials.
+Research artifacts are optional and separately selected through `active_research.json` or `-ResearchDirectory`; when present, their source-decision identity must match the operational run. A missing research run does not invalidate operational forecasts.
 
-## Matching local reference artifacts
+## Configured/shared mode
 
-The local launcher now reads data/local/active_run.json when using the default local database. It verifies that artifact directory and checks that its run identity matches the database's health response. This keeps the annual heat endpoint on the same explicitly selected run. The pointer is local and ignored. For another explicit snapshot, pass both -DatabasePath and -OutputDirectory; the caller's environment values are restored after launch.
-
-On this computer the active local snapshot is gap-rules-ddb64e035033 from data/local/runs/gap-rules-v1. The previous local database is preserved at data/local/healthwatch_before_gap_rules_20261112.db. Neither file is the shared Supabase database. A restart can use ./run-dev.ps1; its frontend now explicitly uses port 8080 with strict port selection and waits for an HTTP response, matching the project's Vite configuration. The earlier launcher incorrectly used a separate port; it has been corrected.
-
-
-The matching research pointer is data/local/active_research.json, currently selecting data/local/runs/research-gap-v2 (research-gap-945fb497f392). Local startup verifies both runs and rejects different source-decision hashes. Use -ResearchDirectory for another explicit verified research root. The old data/local/research_run remains preserved as the prior research snapshot. The new monthly observation columns (observation_status, source_record_count, coverage_basis) were built in a fresh local database; existing shared databases require an explicit reviewed migration rather than relying on create_all.
+`run-backend.ps1 -Mode Configured` uses the explicitly configured DATABASE_URL. Schema migration, publication, rollback preparation and deployment require a separate reviewed operation. The local verification workflow does not publish to the shared database.

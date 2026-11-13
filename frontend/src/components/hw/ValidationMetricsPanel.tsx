@@ -170,14 +170,14 @@ export function ValidationMetricsPanel({
             <div className="grid grid-cols-3 gap-2">
               <MetricTile label="MAE" value={metrics.mae.toLocaleString()} unit="" context="Mean Absolute Error" />
               <MetricTile label="RMSE" value={metrics.rmse.toLocaleString()} unit="" context="Root Mean Squared Error" />
-              <MetricTile label="MAPE" value={metrics.mape == null ? "Unavailable" : `${metrics.mape}`} unit="%" context="Mean Absolute % Error" quality={mapeQuality(metrics.mape)} />
+              <MetricTile label="MAPE" value={metrics.mape == null ? "Unavailable" : metrics.mape.toFixed(1)} unit="%" context="Mean Absolute % Error" quality={mapeQuality(metrics.mape)} />
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
               <span className="label-caps text-[9px]">Skill vs seasonal-naive</span>
               <p className="font-mono text-sm font-semibold tabular-nums">
                 {metrics.skill_vs_naive_pct == null
                   ? "—"
-                  : `${metrics.skill_vs_naive_pct > 0 ? "+" : ""}${metrics.skill_vs_naive_pct}%`}
+                  : `${metrics.skill_vs_naive_pct > 0 ? "+" : ""}${metrics.skill_vs_naive_pct.toFixed(1)}%`}
               </p>
             </div>
             {confidence && (
@@ -207,7 +207,7 @@ export function ValidationMetricsPanel({
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2 text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">{o.tp} TP</span> ·{" "}
               <span>{o.fp} FP</span> · <span>{o.fn} FN</span> ·{" "}
-              <span>{o.tn} TN</span> — 2025 prospective validation
+              <span>{o.tn} TN</span> — 2025 retrospective evaluation
             </div>
           </div>
         ) : (

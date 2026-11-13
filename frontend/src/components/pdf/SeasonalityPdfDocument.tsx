@@ -15,6 +15,7 @@ export interface SeasonalityPdfDocumentProps {
   forecastPeriod: { start: string; end: string };
   charts: SeasonalityPdfChart[];
   generatedAt: string;
+  provenance?: string;
   /** Decomposition summary stats. */
   decomposition: {
     trendDirection: string;
@@ -64,9 +65,11 @@ export interface SeasonalityPdfDocumentProps {
   };
 }
 
+const fmt = (value: number, digits = 0) => Number.isFinite(value) ? value.toLocaleString(undefined, { maximumFractionDigits: digits }) : "Unavailable";
+
 function RiskBadgeInline({ level }: { level: RiskLevel }) {
   const color =
-    level === "high" ? COLORS.high : level === "moderate" ? COLORS.moderate : COLORS.low;
+    level === "high" ? COLORS.high : level === "moderate" ? COLORS.moderate : level === "low" ? COLORS.low : COLORS.muted;
   return (
     <View
       style={{
@@ -120,6 +123,7 @@ export function SeasonalityPdfDocument({
   forecastPeriod,
   charts,
   generatedAt,
+  provenance,
   decomposition,
   risk,
   outbreak,
@@ -138,6 +142,7 @@ export function SeasonalityPdfDocument({
             `Region: ${regionName}`,
             `Illness: ${illnessLabel}`,
             `Forecast Period: ${forecastPeriod.start} – ${forecastPeriod.end}`,
+            ...(provenance ? [provenance] : []),
           ]}
         />
 
@@ -248,13 +253,13 @@ export function SeasonalityPdfDocument({
         >
           <RiskBadgeInline level={risk.level} />
           <Text style={[pdfStyles.value, { fontSize: 14, marginLeft: 4 }]}>
-            {risk.level === "high" ? "High" : risk.level === "moderate" ? "Moderate" : "Low"} Risk
+            {risk.level === "high" ? "High" : risk.level === "moderate" ? "Moderate" : risk.level === "low" ? "Low" : "Unavailable"} Risk
           </Text>
         </View>
-        <MetaRow label="Current value" value={`${risk.value.toFixed(1)} ${risk.unit}`} />
-        <MetaRow label="Reported cases" value={risk.cases.toLocaleString()} />
-        <MetaRow label="P50 threshold (seasonal median)" value={risk.p50.toFixed(1)} />
-        <MetaRow label="P75 threshold (seasonal upper quartile)" value={risk.p75.toFixed(1)} />
+        <MetaRow label="Current value" value={`${fmt(risk.value, 1)} ${risk.unit}`} />
+        <MetaRow label="Predicted cases" value={fmt(risk.cases)} />
+        <MetaRow label="P50 threshold (seasonal median)" value={fmt(risk.p50, 1)} />
+        <MetaRow label="P75 threshold (seasonal upper quartile)" value={fmt(risk.p75, 1)} />
 
         {/* ---- Seasonal Outbreak Indicator ---- */}
         {outbreak && (
@@ -328,7 +333,7 @@ export function SeasonalityPdfDocument({
             <MetaRow label="Forecast horizon" value={`${forecast.horizon} months`} />
             <MetaRow
               label="Predicted cases"
-              value={`${forecast.predictedCases.toLocaleString()} (CI ${forecast.predictedLower.toLocaleString()}–${forecast.predictedUpper.toLocaleString()})`}
+              value={`${fmt(forecast.predictedCases)} (80% model interval ${fmt(forecast.predictedLower)}–${fmt(forecast.predictedUpper)})`}
             />
             <MetaRow label="Historical percentile" value={Number.isFinite(forecast.percentileRank) ? `${forecast.percentileRank}th` : "Unavailable"} />
             <MetaRow
