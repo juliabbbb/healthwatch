@@ -12,7 +12,7 @@
  * presentation tag only.
  *
  * Three additional disease sources are available with historical data only
- * (no 12-month Prophet forecast yet):
+ * (no 12-month SARIMAX forecast yet):
  * - Leptospirosis: DOH line-list (2019-2026), monthly time series
  * - Influenza-like Illness (ILI): DOH sentinel surveillance (2019-2026), monthly
  * - Heat-Related Illness: DOH reference data, annual aggregates only (no
@@ -278,7 +278,7 @@ export interface Illness {
   baseRate: number; // cases / 100k / month
   trend: number; // yearly multiplicative drift
   /**
-   * Whether a 12-month Prophet forecast is available for this disease.
+   * Whether a 12-month SARIMAX forecast is available for this disease.
    * False for diseases pending model evaluation or with reference-only data.
    */
   forecastAvailable?: boolean;
@@ -663,9 +663,10 @@ export interface SeriesAvailability {
   reason_code: string | null;
   message: string | null;
 }
-interface OperationalProvenance { run_id?: string; validation_status?: string }
+interface OperationalProvenance { run_id?: string; validation_status?: string; metadata?: { production_model?: string }; model?: string }
 const provenanceCache = new Map<string, OperationalProvenance>();
 export function provenanceForDisease(disease: string) { return provenanceCache.get(disease === "all" ? "Dengue" : disease); }
+export function operationalModelForDisease(disease: string) { const p = provenanceForDisease(disease); return p?.metadata?.production_model ?? p?.model ?? "Unverified model"; }
 const availabilityCache = new Map<string, SeriesAvailability>();
 export function availabilityForRegion(code: string, disease: string): SeriesAvailability | undefined {
   return availabilityCache.get(`${code}:${disease}`);
@@ -1271,7 +1272,7 @@ export interface ModelMetrics {
 }
 
 /**
- * Walk-forward backtest metrics from the pipeline: the Prophet monthly model
+ * Walk-forward backtest metrics from the pipeline: the SARIMAX monthly model
  * is refit every month and scored on holdout months it never saw (two windows,
  * each up to 12 months), reported per region by /metrics/{region}.
  */

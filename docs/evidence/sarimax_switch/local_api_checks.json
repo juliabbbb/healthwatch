@@ -1,0 +1,51 @@
+[
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Dengue",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Acute Bloody Diarrhea",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Cholera",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Typhoid Fever",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Influenza-like Illness",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Leptospirosis",
+    "model": "SARIMAX",
+    "region": "NCR"
+  },
+  {
+    "forecast_months": 12,
+    "run_id": "sarimax_advisory_final_20261113",
+    "disease": "Dengue",
+    "model": "SARIMAX",
+    "region": "National"
+  }
+]

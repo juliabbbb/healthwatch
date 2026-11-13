@@ -1,3 +1,5 @@
+> SARIMAX switch: see [docs/SARIMAX_SWITCH.md](docs/SARIMAX_SWITCH.md). The operational engine is SARIMAX; PAGASA is advisory-only. Older Prophet results below describe historical development, not the new model.
+
 > Current implementation: see [docs/IMPLEMENTATION_WORKFLOW.md](docs/IMPLEMENTATION_WORKFLOW.md). Earlier architecture, numbers and readiness claims below describe the legacy snapshot and are not current validation evidence.
 
 # HEALTHWATCH
@@ -118,7 +120,7 @@ re-run the pipeline modules in `src/` to regenerate everything in `data/processe
 ```powershell
 .venv\Scripts\python -m src.fwbd_ingest         # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> 4 monthly series
 .venv\Scripts\python -m src.doh_eb_ingest       # canonical DOH-EB file -> monthly series
-.venv\Scripts\python -m src.forecast            # Prophet fits + 12-month forecasts, validation folds
+.venv\Scripts\python -m src.forecast            # SARIMAX fits + 12-month forecasts, validation folds
 .venv\Scripts\python -m src.classify            # month-of-year thresholds, risk + probe classification
 .venv\Scripts\python -m src.rank_escalation     # risk-tier escalation ranking (hotspot priority)
 .venv\Scripts\python -m src.outbreak            # season-level outbreak flags
@@ -153,7 +155,7 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 - `regions` — 19 rows (18 + National `000000000`); population/density/centroid power per-100k
   normalization and map fills; the hub every other table joins on.
 - `monthly_observations` — raw reported cases/deaths per region+disease+year+month (dengue 2019-2026; four FWD diseases 2018-2026).
-- `forecasts` — Prophet point/interval output per region+disease+target_date (12-month horizon).
+- `forecasts` — SARIMAX point/uncalibrated-interval output per region+disease+target_date (12-month horizon).
 - `risk_thresholds` — p50/p75 per region + calendar month (month-of-year seasonality).
 - `risk_classifications` — dated Low/Moderate/High labels from classifying forecasts vs thresholds.
 - `outbreak_signals` — per region+season: outbreak flag, triggering rule, season average/P75.
@@ -168,15 +170,13 @@ PostgreSQL via SQLAlchemy — Postgres-only, on Supabase (deploy) or any Postgre
 - **Disease: dengue + four food/waterborne diseases** (Acute Bloody Diarrhea, Cholera, Typhoid Fever,
   Acute Viral Hepatitis) from the DOH FWD line-lists; each runs its own forecast, risk tiers, outbreak
   flags and escalation ranking. The FWD group tag is presentation-only. Other notifiable illnesses
-  (e.g., leptospirosis, ILI) are out of scope until their regional datasets are available; the pipeline
+  ILI and Leptospirosis are now main diseases using corrected inputs; the pipeline
   and schema stay disease-agnostic, so adding one is an extension, not a rewrite.
-- Prediction: Prophet only (monthly, `freq="MS"`)
+- Prediction: SARIMAX only (monthly, `freq="MS"`)
 - Risk classes: percentile thresholds (&lt; 50 Low, 50–75 Moderate, &gt; 75 High) per region-month and
   per region-calendar-month (month-of-year P75 alert line)
 - Outbreak indicator: Rule A (≥ 3 consecutive High **months** in the 3-month probe window) or
-  Rule B (upcoming season forecast average > seasonal P75); locked without tuning after 2025
-  prospective validation — precision 0.316, recall 0.300, F1 0.308 across all 38 rows
-  (6 true positives, 13 false positives, 14 false negatives, 5 true negatives)
+  Rule B (upcoming season forecast average > seasonal P75); evaluated retrospectively against 2025 reference labels; new SARIMAX metrics are recorded in docs/SARIMAX_SWITCH_RESULTS.md
 - Rules: deterministic post-processing only (non-negativity clipping, dry/wet season regressor)
 - Training data: 92 observed months (2019-01…2026-08); holdout windows `last_12m` and
   `2025_prospective` (fits through 2024-12-31); known-epidemic cross-check on the 2019 weekly

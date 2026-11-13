@@ -155,9 +155,7 @@ export function AlertsPanel({
                         className="font-mono text-[11px] font-bold"
                         style={{ color: "var(--risk-high)" }}
                       >
-                        {audienceMode === "clinical"
-                          ? `+${Math.round((fr.multiplier - 1) * 100)}% Surge`
-                          : "Flood Warning"}
+                        {"Flood Warning"}
                       </span>
                     </div>
                     <span className="text-[11px] text-muted-foreground truncate">{fr.caused_by}</span>

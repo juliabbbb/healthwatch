@@ -1,4 +1,4 @@
-import { assessRegion, availabilityForRegion, METRIC_META, metricValue, monthMeta, provenanceForDisease, REGION_BY_CODE, seriesFor, type MetricMode, type MonthPoint } from "./data";
+import { operationalModelForDisease, assessRegion, availabilityForRegion, METRIC_META, metricValue, monthMeta, provenanceForDisease, REGION_BY_CODE, seriesFor, type MetricMode, type MonthPoint } from "./data";
 
 export function buildExportData(dataset: "comparison" | "forecast" | "timeseries", codes: string[], disease: string, index: number, mode: MetricMode) {
   const common = ["disease", "source_status", "operational_run_id", "validation_status", "model", "region_code", "region", "unit"];
@@ -10,7 +10,7 @@ export function buildExportData(dataset: "comparison" | "forecast" | "timeseries
     const assessment = assessRegion(code, disease, index, mode);
     const history = seriesFor(code, disease);
     const provenance = provenanceForDisease(disease);
-    const prefix = [disease, availabilityForRegion(code,disease)?.source_status ?? "conditional_aggregate", provenance?.run_id ?? "unavailable", provenance?.validation_status ?? "unavailable", "Prophet", code, region.name, METRIC_META[mode].unit];
+    const prefix = [disease, availabilityForRegion(code,disease)?.source_status ?? "conditional_aggregate", provenance?.run_id ?? "unavailable", provenance?.validation_status ?? "unavailable", operationalModelForDisease(disease), code, region.name, METRIC_META[mode].unit];
     const points = dataset === "comparison" ? [assessment.point] : dataset === "forecast" ? assessment.forecastWindow.filter((p) => p.forecast && Number.isFinite(p.cases)) : history;
     for (const p of points) {
       const value = (n: number) => metricValue(n, region, mode);

@@ -18,6 +18,7 @@ import type { DataLayer } from "./MapCanvas";
 import { cn } from "@/lib/utils";
 import { useAudienceMode } from "@/hooks/useAudienceMode";
 import {
+  operationalModelForDisease,
   METRIC_META,
   assessRegion,
   availabilityForRegion,
@@ -356,7 +357,7 @@ export function ForecastCard({
                   : a.point.forecast
                   ? isForecastUnavailable
                     ? "Forecast unavailable for this series"
-                    : `Prophet Forecast · 80% model interval ${formatMetric(
+                    : `${operationalModelForDisease(illness)} Forecast · 80% model interval ${formatMetric(
                       metricValue(a.point.lower, a.region, mode),
                       mode,
                     )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`

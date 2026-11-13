@@ -226,7 +226,7 @@ export function ExportCustomizationModal({
       baseline: baselineLabel,
       generatedAt,
       pathology: reportPathology,
-      provenance: `Source status: ${illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" || illness === "Leptospirosis" ? "provisional; source interpretation unconfirmed" : "conditional source interpretation"}. Operational Prophet; uncalibrated 80% model interval. Run: ${provenanceForDisease(illness)?.run_id ?? "unavailable"}. FWBD zeros apply only inside existing regional report bounds.`,
+      provenance: `Source status: ${illness === "Influenza-like Illness" || illness === "Acute Viral Hepatitis" || illness === "Leptospirosis" ? "provisional; source interpretation unconfirmed" : "conditional source interpretation"}. Operational model: ${provenanceForDisease(illness)?.metadata?.production_model ?? "unverified"}; uncalibrated 80% model interval. Run: ${provenanceForDisease(illness)?.run_id ?? "unavailable"}. Missing source months remain unknown in the approved cleaned snapshot.`,
       sections,
       regions,
     };

@@ -1,3 +1,5 @@
+> SARIMAX switch: see [docs/SARIMAX_SWITCH.md](SARIMAX_SWITCH.md). The operational engine is SARIMAX; PAGASA is advisory-only. Older Prophet results below describe historical development, not the new model.
+
 # HEALTHWATCH API Contract
 
 Base URL (dev): `http://localhost:8000`
@@ -22,7 +24,7 @@ ids reported by `GET /status` in `supported_diseases`:
 | `Typhoid Fever` | Food and Waterborne Diseases | 2018-01 … 2026-09 (105 mo) |
 | `Acute Viral Hepatitis` | Food and Waterborne Diseases | 2018-01 … 2025-09 (93 mo) |
 
-Each disease is modelled independently: its own series, Prophet fit, risk tiers,
+Each disease is modelled independently: its own series, SARIMAX fit, risk tiers,
 outbreak flags and escalation ranking. "Food and Waterborne Diseases" is a
 presentation grouping only, never an analytical rollup. Dengue is the default
 for every `disease`-scoped endpoint that omits the parameter.
@@ -54,7 +56,7 @@ headless consumers. Their OpenAPI entries remain available under
 - **`target_date` / `date`** — ISO `YYYY-MM-DD`, always month-start (`…-01`).
 - **`yhat`** — point forecast of monthly cases. **Non-negative by construction**
   (production floor of 1); never log-scale. Rounding to an integer is safe.
-- **`yhat_lower` / `yhat_upper`** — 80% Prophet interval, floor applied.
+- **`yhat_lower` / `yhat_upper`** — uncalibrated 80% SARIMAX model interval, floor applied.
 - **`p50` / `p75`** — historical 50th/75th percentile of monthly cases for that
   region-month, computed from that disease's own observed baseline (dengue
   2019-01..2026-08; FWD 2018-01..2026-09, or 2018-01..2025-09 for acute viral

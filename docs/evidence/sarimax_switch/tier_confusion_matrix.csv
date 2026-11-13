@@ -1,0 +1,37 @@
+disease,window,actual_tier,Low,Moderate,High
+Acute Bloody Diarrhea,2025_prospective,Low,49,16,6
+Acute Bloody Diarrhea,2025_prospective,Moderate,8,15,11
+Acute Bloody Diarrhea,2025_prospective,High,3,13,82
+Acute Bloody Diarrhea,last_12m,Low,70,21,11
+Acute Bloody Diarrhea,last_12m,Moderate,10,11,8
+Acute Bloody Diarrhea,last_12m,High,3,10,59
+Cholera,2025_prospective,Low,33,6,5
+Cholera,2025_prospective,Moderate,4,4,2
+Cholera,2025_prospective,High,2,4,10
+Cholera,last_12m,Low,29,2,6
+Cholera,last_12m,Moderate,4,4,4
+Cholera,last_12m,High,2,5,11
+Dengue,2025_prospective,Low,44,19,11
+Dengue,2025_prospective,Moderate,8,30,17
+Dengue,2025_prospective,High,3,12,72
+Dengue,last_12m,Low,73,19,11
+Dengue,last_12m,Moderate,16,38,14
+Dengue,last_12m,High,6,11,28
+Influenza-like Illness,2025_prospective,Low,29,18,10
+Influenza-like Illness,2025_prospective,Moderate,10,22,20
+Influenza-like Illness,2025_prospective,High,13,28,66
+Influenza-like Illness,last_12m,Low,43,21,15
+Influenza-like Illness,last_12m,Moderate,6,28,16
+Influenza-like Illness,last_12m,High,11,19,57
+Leptospirosis,2025_prospective,Low,4,5,9
+Leptospirosis,2025_prospective,Moderate,4,8,8
+Leptospirosis,2025_prospective,High,9,18,149
+Leptospirosis,last_12m,Low,6,7,14
+Leptospirosis,last_12m,Moderate,1,9,13
+Leptospirosis,last_12m,High,7,20,137
+Typhoid Fever,2025_prospective,Low,38,12,10
+Typhoid Fever,2025_prospective,Moderate,7,25,14
+Typhoid Fever,2025_prospective,High,5,15,90
+Typhoid Fever,last_12m,Low,87,16,8
+Typhoid Fever,last_12m,Moderate,8,27,13
+Typhoid Fever,last_12m,High,2,16,39

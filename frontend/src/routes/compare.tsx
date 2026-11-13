@@ -856,7 +856,7 @@ function ComparePage() {
                 <div className="rounded-xl border border-border/60 bg-secondary/15 p-5 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="label-caps text-[10px] font-semibold text-muted-foreground">
-                      Prophet Model Backtest & Reliability
+                      Forecast Model Backtest & Reliability
                     </p>
                     <span
                       className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase font-mono"

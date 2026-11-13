@@ -7,7 +7,7 @@ import { z } from "zod";
  * These schemas guard the smaller on-demand endpoints the UI calls directly.
  */
 
-/** Single month's Prophet forecast row. */
+/** Single month's SARIMAX forecast row. */
 export const ForecastPointSchema = z.object({
   disease: z.string().optional(),
   region: z.string().optional(),

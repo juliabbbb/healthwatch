@@ -1,6 +1,10 @@
+# Current SARIMAX switch contract
+
+The user-approved `SARIMAX IMPLEMENTATION.zip` takes precedence for this branch: SARIMAX-only forecasting; PAGASA bulletin advisory only; unchanged percentile tiers, Rule A/B and validation windows; no shared DB publication. Use `docs/SARIMAX_SWITCH.md` and `update-data.ps1` for the approved cleaned-input path. Six main diseases include corrected ILI and Leptospirosis; Hep A remains provisional. Older provisional/source-calendar limitations below remain factual cautions, but older blocked/supplementary role labels are superseded. The legacy raw-ingest/zero-fill paths are not the default cleaned-input build.
+
 # HealthWatch implementation workflow
 
-This branch implements the reviewed local correction plan. Operational Prophet and the four-model research experiment are separate. A verified research comparison does not automatically replace the operational model. The 2025 evaluation is retrospective, not an untouched prospective test. Source-owner confirmations, interval calibration, live AI fidelity and participant comprehension are not established by this implementation.
+This branch implements the reviewed local correction plan. Operational SARIMAX and the four-model research experiment are separate. A verified research comparison does not automatically replace the operational model. The 2025 evaluation is retrospective, not an untouched prospective test. Source-owner confirmations, interval calibration, live AI fidelity and participant comprehension are not established by this implementation.
 
 ## Source status
 
@@ -23,9 +27,9 @@ Backend checks: `python -m unittest discover -s tests -v`. Frontend: `npm ci`, `
 
 ## Offline operational build
 
-Run `./update-data.ps1 -OutputDirectory <new-absolute-run-directory>`. The launcher creates a new run directory, ingests supported sources, forecasts operational Prophet and separate exact 2025 probes, computes classifications, escalation, seasonal reference validation and the retrospective 2019 check, then verifies/seals the result. It never publishes a database. It rejects an existing output directory to prevent mixed runs. The direct Python modules support HEALTHWATCH_RAW_DIR and HEALTHWATCH_OUTPUT_DIR and resolve defaults relative to the checkout.
+Run `./update-data.ps1 -OutputDirectory <new-absolute-run-directory>`. The launcher creates a new run directory, ingests supported sources, forecasts operational SARIMAX and separate exact 2025 probes, computes classifications, escalation, seasonal reference validation and the retrospective 2019 check, then verifies/seals the result. It never publishes a database. It rejects an existing output directory to prevent mixed runs. The direct Python modules support HEALTHWATCH_RAW_DIR and HEALTHWATCH_OUTPUT_DIR and resolve defaults relative to the checkout.
 
-The declared legacy observation cutoff is August 2026; source completeness remains unconfirmed. Fitting and serving use that cutoff. The operational horizon follows each series' actual declared training calendar; benchmark probes are exactly Jan-Mar/Jul-Sep 2025. Missing target actuals remain in the evaluation calendar and exclusions are explicit. Minimum observed training history is 24; all-zero series require a separately declared deterministic method. All prediction floors permit zero. Prophet's explicit 80% model interval is uncalibrated; an error badge is not outbreak probability.
+The declared legacy observation cutoff is August 2026; source completeness remains unconfirmed. Fitting and serving use that cutoff. The operational horizon follows each series' actual declared training calendar; benchmark probes are exactly Jan-Mar/Jul-Sep 2025. Missing target actuals remain in the evaluation calendar and exclusions are explicit. Minimum observed training history is 24; all-zero series require a separately declared deterministic method. All prediction floors permit zero. The SARIMAX 80% model interval is uncalibrated; an error badge is not outbreak probability.
 
 Long model builds use independent per-region worker processes, default four, and input/code-hashed checkpoints. Set HEALTHWATCH_WORKERS to control local CPU use. Failed jobs prevent final publication; completed checkpoint values are not paper findings by themselves. Preserve failure logs and exclusion ledgers.
 
@@ -37,7 +41,7 @@ The input must be an audited observed-only disease/region/date/cases/provisional
 
 The verified local integration reproduced the earlier numeric primary/ILI results exactly; sparse provisional Hep A remains outside this application benchmark. The research PDF's Hep A appendix remains a separately labeled earlier analysis, not a deployed result.
 
-To expose a verified research run, set HEALTHWATCH_RESEARCH_RUN explicitly. `/research/status` and `/research/comparison?disease=Dengue&region=National&fold=TEST2025` verify artifact hashes and return run/experiment identities. A missing or ineligible series/window is unavailable, never substituted. The clinical Forecast card includes this research comparison. The operational model remains Prophet until a separate approved selection/deployment decision.
+To expose a verified research run, set HEALTHWATCH_RESEARCH_RUN explicitly. `/research/status` and `/research/comparison?disease=Dengue&region=National&fold=TEST2025` verify artifact hashes and return run/experiment identities. A missing or ineligible series/window is unavailable, never substituted. The clinical Forecast card includes this research comparison. This branch uses SARIMAX operationally after a separately verified local rebuild; historical research scores are not future forecasts.
 
 ## Publication and schema
 
