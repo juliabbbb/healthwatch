@@ -9,6 +9,7 @@ import { ForecastCard } from "./ForecastCard";
 
 export interface MobileBottomSheetProps {
   regionCode: string | null;
+  tourExpanded?: boolean;
   illness: string;
   monthIndex: number;
   mode?: MetricMode;
@@ -21,6 +22,7 @@ export interface MobileBottomSheetProps {
 
 export function MobileBottomSheet({
   regionCode,
+  tourExpanded = false,
   illness,
   monthIndex,
   mode = "percapita",
@@ -46,10 +48,10 @@ export function MobileBottomSheet({
   useEffect(() => {
     if (regionCode) {
       setLastRegionCode(regionCode);
-      setIsExpanded(false);
+      setIsExpanded(tourExpanded);
       setDragOffsetY(0);
     }
-  }, [regionCode]);
+  }, [regionCode, tourExpanded]);
 
   const activeCode = regionCode || lastRegionCode;
   const isVisible = Boolean(regionCode);
@@ -191,6 +193,7 @@ export function MobileBottomSheet({
 
       {/* 2. State-driven Sheet / Floating Card Container */}
       <div
+        data-tour="region-card"
         className={cn(
           "hw-home-chrome fixed z-[600] flex flex-col xl:hidden",
           isExpanded

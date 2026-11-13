@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ChevronDown, Globe, X } from "lucide-react";
 import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
@@ -8,8 +8,8 @@ import { ForecastCard } from "@/components/hw/ForecastCard";
 import { MobileBottomSheet } from "@/components/hw/MobileBottomSheet";
 import { NationalSnapshot } from "@/components/hw/NationalSnapshot";
 import { AlertsPanel } from "@/components/hw/AlertsPanel";
-import { ExplainOverlay } from "@/components/hw/ExplainOverlay";
-import { ExplainModeBanner } from "@/components/hw/ExplainModeBanner";
+import { TourOverlay } from "@/components/hw/TourOverlay";
+import { HOME_TOUR_STEPS } from "@/lib/explainRegistry";
 import {
   CURRENT_MONTH_INDEX,
   OUTBREAK_BENCHMARK_SEASON,
@@ -24,7 +24,7 @@ import {
 import { deriveAlerts } from "@/lib/healthwatch/alerts";
 import { formatMonthYear } from "@/utils/formatDate";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
-import { useExplainMode } from "@/hooks/useTour";
+import { useTour } from "@/hooks/useTour";
 
 const MapCanvas = lazy(() => import("@/components/hw/MapCanvas"));
 
@@ -68,8 +68,10 @@ function MapView() {
 
   useEffect(() => setMounted(true), []);
 
-  // Onboarding guided tour — auto-launches once for first-time visitors
-  const { explainActive, toggleExplain, exitExplain } = useExplainMode();
+  const tour = useTour(HOME_TOUR_STEPS);
+  useEffect(() => { tour.start(); }, [tour.start]);
+  const selectionRef = useRef({ selected, flyTo, mobileNationalOpen });
+  selectionRef.current = { selected, flyTo, mobileNationalOpen };
 
   const assessments = useMemo(
     () => assessAll(illness, monthIndex, mode),
@@ -101,6 +103,18 @@ function MapView() {
     setFlyTo(code);
     setMobileNationalOpen(false);
   }, []);
+
+  // Open a sample through the regular map-selection handler, then restore the user state.
+  useEffect(() => {
+    if (!tour.active || tour.step?.id !== "region") return;
+    const previous = selectionRef.current;
+    handleFocusRegion(previous.selected ?? "130000000");
+    return () => {
+      setSelected(previous.selected);
+      setFlyTo(previous.flyTo);
+      setMobileNationalOpen(previous.mobileNationalOpen);
+    };
+  }, [tour.active, tour.step?.id, handleFocusRegion]);
 
   return (
     <main className="hw-map-page hw-home-chrome relative h-screen w-full overflow-hidden bg-background">
@@ -193,15 +207,24 @@ function MapView() {
 
       {/* 4. Top Navigation Bar (Desktop Toolbar / Mobile Hamburger Bar) */}
       <div className="absolute right-3 top-3 md:right-4 md:top-4 z-30">
-        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} onStartTour={toggleExplain} explainActive={explainActive} />
+        <TopToolbar onPick={handleFocusRegion} selectedRegionCode={selected} onStartTour={tour.start} explainActive={tour.active} />
       </div>
 
-      {/* Explain Mode Inspector Overlay */}
-      <ExplainOverlay active={explainActive} onExit={exitExplain} />
-      <ExplainModeBanner active={explainActive} onStart={toggleExplain} onExit={exitExplain} />
+      <TourOverlay
+        active={tour.active}
+        index={tour.index}
+        step={tour.step}
+        total={tour.total}
+        steps={HOME_TOUR_STEPS}
+        onNext={tour.next}
+        onBack={tour.back}
+        onExit={tour.exit}
+        onOmit={tour.omit}
+      />
 
       {/* 6. MOBILE ONLY: Collapsible Bottom Sheet for Region Data (Mutually exclusive with DatePlayer) */}
       <MobileBottomSheet
+        tourExpanded={tour.active && tour.step?.id === "region"}
         regionCode={mobileNationalOpen ? null : selected}
         illness={illness}
         monthIndex={monthIndex}

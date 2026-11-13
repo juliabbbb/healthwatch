@@ -64,7 +64,6 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { BackToTop } from "@/components/BackToTop";
-import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -656,7 +655,6 @@ function SeasonalityPage() {
             {region.island}
           </span>
           <div className="flex items-center gap-2">
-            <ExplainModeButton />
             <button
               type="button"
               onClick={() => void exportPdf()}

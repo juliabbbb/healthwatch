@@ -235,7 +235,7 @@ export function NationalSnapshot({
         {onIllnessChange && (
           <div className="flex min-w-0 flex-wrap items-start gap-2">
             <span className="label-caps text-[13px] text-muted-foreground shrink-0">Illness:</span>
-            <div className="flex min-w-0 flex-wrap items-center gap-1.5 py-0.5">
+            <div data-tour="illness-filter" className="flex min-w-0 flex-wrap items-center gap-1.5 py-0.5">
               <button
                 type="button"
                 onClick={() => onIllnessChange("all")}

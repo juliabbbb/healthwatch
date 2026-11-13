@@ -35,9 +35,9 @@ export interface TopToolbarProps {
   trailing?: React.ReactNode;
   /** Currently selected region on the map; carried as ?region= into Seasonality links. */
   selectedRegionCode?: string | null;
-  /** Callback to toggle the Explain Mode inspector. */
+  /** Callback to replay the guided tour from its first step. */
   onStartTour?: () => void;
-  /** Whether Explain Mode is currently active (highlights the ? button). */
+  /** Whether the guided tour is currently active (highlights the ? button). */
   explainActive?: boolean;
 }
 
@@ -248,8 +248,8 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           id="hw-tour-btn"
           onClick={onStartTour}
           aria-pressed={explainActive}
-          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
-          title={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
+          aria-label="Replay guided tour"
+          title="Replay guided tour"
           className={cn(
             "glass-panel flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[13px] font-semibold shadow-xs transition-all cursor-pointer border",
             explainActive
@@ -258,7 +258,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           )}
         >
           <HelpCircle className="size-4 shrink-0" />
-          <span>{explainActive ? "Exit Explain" : "Explain Mode"}</span>
+          <span>{"Explain Mode"}</span>
           {!explainActive && (
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -309,8 +309,9 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
         {/* Mobile Explain trigger button */}
         <button
+          data-tour="replay-tour"
           onClick={onStartTour}
-          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode"}
+          aria-label="Replay guided tour"
           className={cn(
             "glass-panel flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[13px] font-semibold transition-colors border",
             explainActive
@@ -319,7 +320,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           )}
         >
           <HelpCircle className="size-3.5" />
-          <span>{explainActive ? "Exit" : "Explain"}</span>
+          <span>{"Explain"}</span>
         </button>
 
         {/* Trailing item (Notification bell) */}
@@ -555,9 +556,9 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                 >
                   <div className="flex items-center gap-2">
                     <HelpCircle className="size-4 shrink-0" />
-                    <span>{explainActive ? "Exit Explain Mode" : "Activate Explain Mode"}</span>
+                    <span>{"Replay guided tour"}</span>
                   </div>
-                  <span className="text-xs opacity-80">Click-to-inspect UI</span>
+                  <span className="text-xs opacity-80">Step-by-step tour</span>
                 </button>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -601,7 +602,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                     }`}
                   >
                     <HelpCircle className="size-4" />
-                    <span>{explainActive ? "Exit Explain Mode" : "Explain Mode"}</span>
+                    <span>{"Explain Mode"}</span>
                   </button>
                 </div>
               </div>
