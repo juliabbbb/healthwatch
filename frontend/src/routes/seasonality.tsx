@@ -617,7 +617,7 @@ function SeasonalityPage() {
       </div>
 
       {/* 12-Month Risk Outlook */}
-      <div className="mt-5 glass-panel rounded-2xl p-4" data-explain="risk-outlook">
+      <div className="mt-5 glass-panel rounded-2xl p-4" data-text-card data-explain="risk-outlook">
           <p className="label-caps mb-2 text-[10px] text-muted-foreground">
             Saved 12-Month Risk Outlook · {region.name}
           </p>
@@ -848,7 +848,7 @@ function SeasonalityPage() {
           <button
             onClick={(e) => openMenu(e, "decomposition", "Full Decomposition")}
             aria-label="Open AI analysis overview menu"
-            data-explain="ai-overview"
+            data-text-card data-explain="ai-overview"
             className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer touch-manipulation"
           >
             <Sparkles className="size-3.5" />
@@ -858,7 +858,7 @@ function SeasonalityPage() {
         </div>
 
         {/* Plain-language seasonal summary */}
-        <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="seasonal-summary">
+        <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-text-card data-explain="seasonal-summary">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-primary/15 p-2 text-primary shrink-0 mt-0.5">
                 <Sparkles className="size-4" />

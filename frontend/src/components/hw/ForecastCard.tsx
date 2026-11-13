@@ -109,7 +109,7 @@ export function ForecastCard({
   });
 
   if (illness === "Heat-Related Illness") return (
-    <div className={cn(isSheet ? "w-full space-y-3" : "glass-panel w-[24rem] xl:w-[30rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden", className)}>
+    <div data-text-card className={cn(isSheet ? "w-full space-y-3" : "glass-panel w-[24rem] xl:w-[30rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden", className)}>
       <div className="flex items-center justify-between gap-3 px-5 py-4">
         <h2 className="text-base font-semibold">{a.region.name}</h2>
         {onClose && <button type="button" onClick={onClose} className="rounded border border-border px-3 py-1.5 text-sm hover:bg-secondary">Close</button>}
@@ -119,7 +119,7 @@ export function ForecastCard({
   );
 
   return (
-    <div
+    <div data-text-card
       className={cn(
         isSheet
           ? "w-full space-y-3"

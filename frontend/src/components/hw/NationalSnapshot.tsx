@@ -83,7 +83,7 @@ export function NationalSnapshot({
   }, [legendOpen]);
 
   return (
-    <div
+    <div data-text-card
       id={id}
       className={cn(
         "glass-panel pointer-events-auto flex flex-col gap-3.5 rounded-xl p-5 shadow-xl w-full",

@@ -9,6 +9,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 
+import { SelectionExplanation } from "@/components/SelectionExplanation";
+
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { reloadHealthwatchData } from "@/lib/healthwatch/data";
@@ -243,6 +245,7 @@ function RootComponent() {
       <DataGate>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
+        <SelectionExplanation />
       </DataGate>
       <Toaster theme={theme} position="top-center" toastOptions={{ duration: 3000 }} />
     </QueryClientProvider>

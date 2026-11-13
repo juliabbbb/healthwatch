@@ -85,7 +85,7 @@ export function SeasonalityChartCard({
   };
 
   return (
-    <div
+    <div data-text-card
       data-explain={`seasonality-chart-${component}`}
       onContextMenu={(e) => onOpenMenu(e, component)}
       className={cn(

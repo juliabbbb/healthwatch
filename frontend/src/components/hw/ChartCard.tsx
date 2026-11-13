@@ -56,7 +56,7 @@ export function ChartCard({
 
   return (
     <>
-      <section
+      <section data-text-card
         className={cn(
           "glass-panel rounded-2xl p-5 shadow-sm flex flex-col",
           className,

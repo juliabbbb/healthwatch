@@ -999,12 +999,13 @@ function RegionalOverviewCard({
 
   return (
     <div
+      data-text-card
       role="button"
       tabIndex={0}
-      onClick={() => onOpenModal(a.region.code)}
+      onClick={() => { if (!window.getSelection()?.toString().trim()) onOpenModal(a.region.code); }}
       onKeyDown={handleKeyDown}
       aria-label={`Open detailed analysis for ${a.region.name}`}
-      className="group relative flex flex-col justify-between rounded-xl glass-panel p-5 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+      className="group relative flex flex-col justify-between rounded-xl glass-panel p-5 transition-all duration-200 cursor-pointer select-text hover:border-teal-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
     >
       <div>
         {/* Card Header: Region short code, density & action buttons */}

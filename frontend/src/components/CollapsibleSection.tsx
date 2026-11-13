@@ -26,7 +26,7 @@ export function CollapsibleSection({
   const contentId = `collapsible-content-${baseId}`;
 
   return (
-    <div
+    <div data-text-card
       className={cn(
         "rounded-xl border border-border/80 bg-card/40 backdrop-blur-xs transition-colors hover:border-border/90",
         className,
@@ -37,11 +37,11 @@ export function CollapsibleSection({
         id={triggerId}
         aria-expanded={isOpen}
         aria-controls={contentId}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => { if (!window.getSelection()?.toString().trim()) setIsOpen((prev) => !prev); }}
         className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors rounded-xl hover:bg-secondary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer touch-manipulation"
       >
         <div className="flex flex-wrap items-center gap-2.5 min-w-0">
-          <span className="text-base sm:text-lg font-semibold tracking-tight text-foreground truncate">
+          <span data-explain-title className="text-base sm:text-lg font-semibold tracking-tight text-foreground truncate">
             {title}
           </span>
           {badge && <span className="shrink-0">{badge}</span>}

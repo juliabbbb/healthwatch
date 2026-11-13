@@ -76,7 +76,7 @@ export function AlertsPanel({
     : [];
 
   return (
-    <div
+    <div data-text-card
       data-explain="alerts-panel"
       className={cn(
         "hw-alerts-panel glass-panel pointer-events-auto w-full rounded-xl shadow-xl overflow-hidden border border-border/80",
@@ -84,7 +84,7 @@ export function AlertsPanel({
       )}
     >
       <button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => { if (!window.getSelection()?.toString().trim()) setOpen((o) => !o); }}
         aria-expanded={open}
         aria-label={open ? "Collapse alerts panel" : "Expand alerts panel"}
         className="flex w-full flex-wrap items-center gap-2.5 px-4 py-3 text-left transition-colors hover:bg-secondary/40"
@@ -93,7 +93,7 @@ export function AlertsPanel({
           className="size-4 shrink-0"
           style={{ color: hasSevere ? "var(--risk-high)" : "var(--muted-foreground)" }}
         />
-        <span className="label-caps min-w-0 flex-1 text-[13px] font-bold text-foreground">
+        <span data-explain-title className="label-caps min-w-0 flex-1 text-[13px] font-bold text-foreground">
           {audienceMode === "clinical" ? "Surveillance & Weather Alerts" : "Health & Weather Alerts"}
         </span>
 

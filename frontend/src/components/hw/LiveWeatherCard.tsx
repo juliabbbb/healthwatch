@@ -177,7 +177,7 @@ export function LiveWeatherCard({
   // Loading skeleton
   if (status === "loading" && !data) {
     return (
-      <div className={cn("rounded-xl border border-border/60 bg-secondary/20 p-4 animate-pulse", className)}>
+      <div data-text-card className={cn("rounded-xl border border-border/60 bg-secondary/20 p-4 animate-pulse", className)}>
         <div className="flex items-center gap-2 mb-3">
           <CloudRain className="size-4 text-primary opacity-50" />
           <div className="h-3 w-36 rounded bg-secondary/60" />
@@ -214,7 +214,7 @@ export function LiveWeatherCard({
 
   return (
     <div
-      data-explain="live-weather"
+      data-text-card data-explain="live-weather"
       className={cn(
         "rounded-xl border border-border/80 overflow-hidden transition-all shadow-xs text-left",
         isFlood ? "border-l-4" : "",

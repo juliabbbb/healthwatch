@@ -292,9 +292,12 @@ svg.lucide {
 }
 
 .hw-tooltip {
-  max-width: calc(100vw - 2rem);
-  white-space: normal !important;
-  overflow-wrap: anywhere;
+  width: max-content !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  writing-mode: horizontal-tb;
   background: var(--panel) !important;
   border: 1px solid var(--panel-border) !important;
   color: var(--color-foreground) !important;
@@ -749,3 +752,11 @@ body:has(.hw-map-page) :is(.hw-explain-hover-label, .hw-explain-popover-footer >
 .hw-map-page .hw-outbreak-tip-footer {
   flex-wrap: wrap;
 }
+
+[data-text-card] { user-select: text; }
+.selection-explanation { position: fixed; z-index: 10000; width: min(24rem, calc(100vw - 2rem)); max-height: min(20rem, 45vh); overflow-y: auto; }
+@media (max-width: 640px) {
+  .selection-explanation { left: 1rem !important; top: auto !important; bottom: max(1rem, env(safe-area-inset-bottom)); }
+}
+
+h1, h2, h3, h4, h5, h6, [data-explain-title], p.label-caps, span.label-caps { user-select: text; }
