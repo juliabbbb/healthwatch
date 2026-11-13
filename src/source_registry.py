@@ -10,7 +10,7 @@ POLICIES = {
     'Typhoid Fever': dict(measure='Total Cases', status='numeric_count', calendar='explicit_month', forecast=True),
     'Acute Viral Hepatitis': dict(measure='provisional_row_count', status='provisional', calendar='explicit_month', forecast=True, source_label='Hepatitis A', operational_mode='provisional'),
     'Influenza-like Illness': dict(measure='Cases', status='provisional', calendar='provisional_reversed_headers_iso_thursday_w53_fold52', forecast=True, operational_mode='provisional'),
-    'Leptospirosis': dict(measure='provisional_source_record_count', status='provisional', calendar='provisional_iso_thursday_w53_fold52', forecast=True, operational_mode='provisional', fatality_measure='unresolved'),
+    'Leptospirosis': dict(measure='provisional_source_record_count', status='provisional', calendar='provisional_iso_thursday_w53_fold52', forecast=True, operational_mode='provisional', fatality_measure='unresolved', reported_records_research=True, research_target_unit='reported_records', counting_decision='user_reported_records_2026_11_13'),
     'Heat-Related Illness': dict(measure='annual_events_cases_deaths', status='reference_only', calendar='annual', forecast=False),
 }
 

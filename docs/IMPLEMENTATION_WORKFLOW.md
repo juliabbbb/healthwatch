@@ -64,3 +64,13 @@ Consult the current implementation handoff and per-test acceptance status. Passi
 ## Source-rule rebuild and local activation
 
 The operational gap-rules-ddb64e035033 and research-gap-945fb497f392 runs implement source_decisions.json. Research was rerun for ABD/Cholera/Typhoid/Hep A/leptospirosis; unchanged Dengue/ILI research outputs were retained only after an exact 2019-2025 source comparison. Use src.rebuild_operational and src.rebuild_research for this path, or the full offline build for a fresh checkout. `--include-provisional` includes all three provisional research sources; `--diseases` selects independent reruns. The active local database and artifact pointers are ignored local files; no shared target was published. Research and operational source-decision hashes must match at local startup. See GAP_RULE_IMPLEMENTATION.md for executed acceptance and rollback evidence.
+
+## Reproducible supplementary RF runs
+
+ILI preprocessing now normalizes Year/Morbidity Week headers after validating both axes. Reversed and already-normal layouts are supported; mixed, fractional, or missing axes fail. The raw file is never rewritten. ili_header_audit.json records the source hash and transformation; ISO-Thursday/W53-to52 remains provisional.
+
+`python -m src.ili_rf --output <new-research-directory> --weka-jar <weka.jar>` runs native RF for CV2022/CV2023/CV2024 and retrospective TEST2025, using monthly numeric Cases and a deterministic wet flag. No actual targets are filled.
+
+`python -m src.leptospirosis_rf --output <new-research-directory> --weka-jar <weka.jar>` runs the user-defined supplementary reported_records target. Each S/P/C-coded nonblank row counts once; all numeric weights and death fields are ignored, including 2023. See leptospirosis_reported_records_decision.json. This target is not validated individual infections.
+
+Both supplementary experiments retain the frozen RF settings, min-history/paired-target gates, missing-month handling and nonnegative floor. They are excluded from primary model selection and require common cells/dates for cross-model comparisons. National is supplemental, not evidence of complete reporting. These commands do not publish a DB or replace operational forecasts.
