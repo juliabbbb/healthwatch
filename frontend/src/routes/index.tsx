@@ -163,6 +163,7 @@ function MapView() {
           dominantIllness={dominant.illness.name}
           dominantValue={formatMetric(dominant.metric, mode)}
           dominantCases={formatMetric(dominant.cases, "raw")}
+          dominantAvailable={Number.isFinite(dominant.cases)}
           showOutbreakMarkers={showOutbreakMarkers}
           onOutbreakMarkersChange={setShowOutbreakMarkers}
           className="shrink-0"
@@ -213,7 +214,7 @@ function MapView() {
           className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-foreground shadow-md hover:shadow-lg hover:border-primary/50 hover:bg-secondary/60 active:scale-95 transition-all duration-150 border border-border/80 group focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
         >
           <Globe className="size-3.5 text-primary shrink-0 transition-transform group-hover:scale-110" />
-          <span>{illness === "all" ? "PH · Counts" : counts.unavailable === 18 ? "PH · No tier" : `PH · ${counts.high} High`}</span>
+          <span>{counts.unavailable === 18 ? "PH · No tier" : `PH · ${counts.high} High`}</span>
           <ChevronDown className="size-3 text-muted-foreground/80 shrink-0 ml-0.5 transition-transform duration-150 group-hover:translate-y-0.5" />
         </button>
       </div>
@@ -300,6 +301,7 @@ function MapView() {
                 dominantIllness={dominant.illness.name}
                 dominantValue={formatMetric(dominant.metric, mode)}
                 dominantCases={formatMetric(dominant.cases, "raw")}
+                dominantAvailable={Number.isFinite(dominant.cases)}
                 className="shadow-none border-none bg-transparent"
               />
 

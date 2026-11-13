@@ -20,7 +20,7 @@ Regional disease surveillance and forecast exploration for Philippine public-hea
 - Canonical risk uses the disease's own region/calendar-month P50 and P75: Low below P50, Moderate from P50 through P75, High above P75. Changing raw counts to per 100,000 scales the value and thresholds equally without changing its tier.
 - Cross-region percentile is a separate descriptive burden comparison.
 - Missing observations, forecasts or thresholds are unavailable, not zero or Low.
-- All Illnesses sums the explicit available primary contributors: Dengue, ABD, Cholera and Typhoid. It does not silently expand to provisional sources. It has no combined risk tier or summed uncertainty interval; the seasonality outlook shows each contributor's tier separately.
+- All Illnesses sums the explicit available primary contributors: Dengue, ABD, Cholera and Typhoid. It does not silently expand to provisional sources. Its map color summarizes the highest available individual contributor tier, skipping missing values and missing thresholds. This is not a risk threshold on summed cases. No summed uncertainty interval is estimated; the seasonality outlook shows each contributor separately.
 - Outbreak Rule A/B results shown by the API are the January–March and July–September 2025 retrospective benchmark, using pre-2025 pools. They are not future seasonal alerts or confirmed official outbreaks.
 
 ## Experience and architecture

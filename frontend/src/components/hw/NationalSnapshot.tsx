@@ -36,6 +36,7 @@ export function NationalSnapshot({
   dominantIllness,
   dominantValue,
   dominantCases,
+  dominantAvailable,
   showOutbreakMarkers = false,
   onOutbreakMarkersChange,
   className,
@@ -53,11 +54,14 @@ export function NationalSnapshot({
   dominantIllness: string;
   dominantValue: string;
   dominantCases: string;
+  dominantAvailable?: boolean;
   showOutbreakMarkers?: boolean;
   onOutbreakMarkersChange?: (v: boolean) => void;
   className?: string;
   id?: string;
 }) {
+  const hasValue = Number.isFinite(value);
+  const hasDominant = dominantAvailable ?? (dominantCases !== "Unavailable" && dominantValue !== "Unavailable");
   const [legendOpen, setLegendOpen] = useState(false);
   const legendRef = useRef<HTMLDivElement>(null);
   const { mode: audienceMode } = useAudienceMode();
@@ -128,16 +132,16 @@ export function NationalSnapshot({
       {illness === "Heat-Related Illness" ? <HeatReferencePanel /> : (
       <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
         {/* Card A: National reported aggregate */}
-        <div className="min-[420px]:col-span-2 sm:col-span-1 rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col min-w-0">
+        <div className="min-[420px]:col-span-2 sm:col-span-1 [container-type:inline-size] rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col min-w-0">
           <p className="label-caps text-[13px] leading-tight">
             National {valueKind === "mixed" ? "mixed" : isForecast ? "forecast" : "reported"} aggregate
           </p>
           <div className="mt-2">
-            <p className="font-mono text-2xl sm:text-3xl font-bold tabular-nums tracking-tight text-foreground leading-none">
-              {formatMetric(value, mode)}
+            <p className="font-mono text-[clamp(1.125rem,12cqw,1.875rem)] font-bold tabular-nums tracking-tight text-foreground leading-tight break-words">
+              {hasValue ? formatMetric(value, mode) : "—"}
             </p>
             <p className="mt-1 text-sm text-muted-foreground font-medium truncate">
-              {METRIC_META[mode].unit}
+              {hasValue ? METRIC_META[mode].unit : "No data this month"}
             </p>
           </div>
         </div>
@@ -146,7 +150,7 @@ export function NationalSnapshot({
         <div className="relative rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <div className="flex items-start justify-between gap-1 min-w-0">
             <p className="label-caps text-[13px] leading-tight">
-              Risk Distribution
+              {illness === "all" ? "Highest illness risk" : "Risk Distribution"}
             </p>
             <div
               ref={legendRef}
@@ -182,7 +186,7 @@ export function NationalSnapshot({
                     </button>
                   </div>
                   <p className="text-sm leading-relaxed text-muted-foreground">
-                    Colors show monthly risk tier (
+                    {illness === "all" ? "All uses the highest available contributing illness tier. Missing illness values are skipped. Individual monthly tiers are " : "Colors show monthly risk tier "}(
                     <span className="text-risk-low font-semibold">Low</span> /{" "}
                     <span className="text-risk-moderate font-semibold">Moderate</span> /{" "}
                     <span className="text-risk-high font-semibold">High</span>).
@@ -196,7 +200,7 @@ export function NationalSnapshot({
               )}
             </div>
           </div>
-          {illness === "all" ? <p className="mt-2 text-sm leading-relaxed text-muted-foreground">Combined counts only. Select a disease to view its regional risk tiers.</p> : <div className="flex flex-col gap-1 mt-2">
+          <div className="flex flex-col gap-1 mt-2">
             {(["high", "moderate", "low", "unavailable"] as RiskLevel[]).map((r) => (
               <div key={r} className="flex items-center justify-between gap-1 text-[13px]">
                 <span className="flex items-center gap-1.5 min-w-0">
@@ -213,7 +217,7 @@ export function NationalSnapshot({
                 </span>
               </div>
             ))}
-          </div>}
+          </div>
         </div>
 
         {/* Card C: Dominant Illness */}
@@ -222,17 +226,19 @@ export function NationalSnapshot({
             Dominant Illness
           </p>
           <div className="mt-2">
-            <p className="text-base sm:text-lg font-bold text-foreground leading-snug">
-              {dominantIllness}
+            <p className="min-w-0 break-words text-base sm:text-lg font-bold text-foreground leading-snug">
+              {hasDominant ? dominantIllness : "No data"}
             </p>
-            <p className="mt-1 text-sm text-muted-foreground leading-tight">
-              {dominantValue} · {dominantCases} cases
+            <p className="mt-1 min-w-0 break-words text-sm text-muted-foreground leading-relaxed">
+              {hasDominant ? <>{dominantValue} · {dominantCases} cases</> : "No available illness for this month."}
             </p>
           </div>
         </div>
       </div>
 
       )}
+
+      {illness === "all" && <p className="text-xs leading-relaxed text-muted-foreground">Totals use available Dengue, ABD, Cholera and Typhoid values. Map color shows the highest available individual tier.</p>}
 
       {/* 3. Controls Section: Structured Clean Rows */}
       <div className="flex flex-col gap-2.5 border-t border-border/70 pt-3">

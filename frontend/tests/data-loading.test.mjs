@@ -37,9 +37,10 @@ test('all original illness series load once, retain missing reports, and recover
         const sample = disease === 'Typhoid Fever' ? 123 : disease === 'Influenza-like Illness' ? 456 : 10;
         const point = (year, month, cases, forecast = false) => ({ year, month, cases, raw: cases, lower: cases, upper: cases, forecast, date: year + '-' + String(month).padStart(2, '0') + '-01', label: year + '-' + String(month).padStart(2, '0'), adjusted: false });
         const historyEnd = disease === 'Acute Viral Hepatitis' ? point(2025, 9, sample) : point(2026, 8, sample);
-        const series = Object.fromEntries(data.REGIONS.map((region) => [region.short, [point(2019, 1, sample), point(2019, 2, null), historyEnd, point(2026, 9, sample + 1, true)]]));
+        const series = Object.fromEntries(data.REGIONS.map((region) => [region.short, [point(2019, 1, disease === 'Cholera' && region.code === data.REGIONS[0].code ? null : sample), point(2019, 2, null), point(2019, 3, 0), historyEnd, point(2026, 9, sample + 1, true)]]));
         const availability = Object.fromEntries(data.REGIONS.map((region) => [region.code, { source_status: 'observed', history_available: true, forecast_available: true, observed_months: 92, first_observed: '2019-01-01', last_observed: historyEnd.date, required_observed_months: 24, forecast_start: '2026-09-01', forecast_end: '2026-09-01', reason_code: null, message: null }]));
-        return { ok: true, json: async () => ({ disease, forecast_available: disease !== 'Heat-Related Illness', series: disease === 'Heat-Related Illness' ? {} : series, availability, metrics: {}, outbreak: [], annual_reference: disease === 'Heat-Related Illness' ? [{ year: 2024, canonical_region: data.REGIONS[0].name, province: 'Source province', illness: 'Heat Exhaustion', events: 1, cases: 23, deaths: 0 }] : undefined }) };
+        const thresholds = data.REGIONS.slice(0, 2).flatMap((region, regionIndex) => regionIndex === 1 && disease === 'Typhoid Fever' ? [] : [1, 3].map((month) => ({ region: region.name, region_code: region.code, month, p50: 5, p75: 20 })));
+        return { ok: true, json: async () => ({ disease, thresholds, forecast_available: disease !== 'Heat-Related Illness', series: disease === 'Heat-Related Illness' ? {} : series, availability, metrics: {}, outbreak: [], annual_reference: disease === 'Heat-Related Illness' ? [{ year: 2024, canonical_region: data.REGIONS[0].name, province: 'Source province', illness: 'Heat Exhaustion', events: 1, cases: 23, deaths: 0 }] : undefined }) };
       } finally { active -= 1; }
     };
     data = createRequire(import.meta.url)(output);
@@ -53,6 +54,21 @@ test('all original illness series load once, retain missing reports, and recover
     assert.equal(data.seriesFor(region, 'Typhoid Fever')[0].cases, 123);
     assert.equal(data.seriesFor(region, 'Influenza-like Illness')[0].cases, 456);
     assert.ok(Number.isNaN(data.seriesFor(region, 'Influenza-like Illness')[1].cases), 'Missing source month must not become zero');
+    const allJanuary = data.assessRegion(region, 'all', 0, 'raw');
+    assert.equal(allJanuary.point.cases, 143, 'All must sum only available contributors');
+    assert.deepEqual(allJanuary.point.contributors, ['Dengue', 'Acute Bloody Diarrhea', 'Typhoid Fever']);
+    assert.equal(allJanuary.risk, 'high', 'A missing illness must not erase an available High tier');
+    assert.equal(data.assessRegion(region, 'all', 0, 'percapita').risk, allJanuary.risk);
+    assert.equal(data.assessRegion(data.REGIONS[1].code, 'all', 0, 'raw').risk, 'moderate', 'Missing thresholds must be excluded from the color rule');
+    assert.equal(data.assessRegion(data.REGIONS[2].code, 'all', 0, 'raw').risk, 'unavailable', 'Unknown thresholds must never become Low');
+    const allFebruary = data.assessRegion(region, 'all', 1, 'raw');
+    assert.ok(Number.isNaN(allFebruary.point.cases));
+    assert.equal(allFebruary.risk, 'unavailable', 'Entirely missing dates must remain unavailable');
+    assert.equal(data.assessRegion(region, 'all', 2, 'raw').point.cases, 0);
+    assert.equal(data.assessRegion(region, 'all', 2, 'raw').risk, 'low', 'Reported zero remains valid');
+    assert.equal(data.nationalDominant('all', 0, 'raw').illness.id, 'Typhoid Fever');
+    assert.ok(Number.isNaN(data.nationalDominant('all', 1, 'raw').cases));
+
     for (const disease of data.ILLNESSES.filter((item) => item.id !== 'Heat-Related Illness')) assert.ok(data.seriesFor(region, disease.id).some((point) => !point.forecast && Number.isFinite(point.cases)), disease.id);
     const lastHepA = data.indexForYearMonth(2025, 9);
     assert.equal(data.availableMonthForDisease('Acute Viral Hepatitis', data.indexForYearMonth(2026, 11)), lastHepA);
@@ -70,6 +86,32 @@ test('all original illness series load once, retain missing reports, and recover
     assert.match(annualHtml, /annual source/);
     const absentHtml = renderToStaticMarkup(createElement(panelModule.exports.HeatReferencePanel, { regionCode: data.REGIONS[1].code }));
     assert.match(absentHtml, /No annual events are listed/);
+    const snapshotSource = await readFile(join(root, 'src/components/hw/NationalSnapshot.tsx'), 'utf8');
+    const snapshotCode = ts.transpileModule(snapshotSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText;
+    const snapshotModule = { exports: {} };
+    const stubs = {
+      '@/lib/healthwatch/data': data,
+      '@/lib/utils': { cn: (...values) => values.filter(Boolean).join(' ') },
+      '@/utils/formatDate': { formatMonthYear: (value) => value },
+      '@/hooks/useAudienceMode': { useAudienceMode: () => ({ mode: 'public' }) },
+      './LiveClock': { LiveClock: () => null },
+      './HeatReferencePanel': panelModule.exports,
+      './ProvisionalTag': { ProvisionalTag: () => null },
+      '@/components/hw/ProvisionalTag': { ProvisionalTag: () => null },
+      '@tanstack/react-router': { Link: ({ children }) => createElement('a', {}, children) },
+    };
+    new Function('require', 'module', 'exports', snapshotCode)((name) => stubs[name] ?? localRequire(name), snapshotModule, snapshotModule.exports);
+    const baseProps = { monthLabel: '2026-11', isForecast: false, value: NaN, mode: 'raw', illness: 'Acute Viral Hepatitis', counts: { high: 0, moderate: 0, low: 0, unavailable: 18 }, dominantIllness: 'Hepatitis A', dominantValue: 'Unavailable', dominantCases: 'Unavailable', dominantAvailable: false, valueKind: 'unavailable' };
+    const emptySnapshot = renderToStaticMarkup(createElement(snapshotModule.exports.NationalSnapshot, baseProps));
+    assert.match(emptySnapshot, /No data this month/);
+    assert.match(emptySnapshot, /No available illness for this month/);
+    assert.doesNotMatch(emptySnapshot, /Unavailable cases/);
+    assert.match(emptySnapshot, /break-words/);
+    const allSnapshot = renderToStaticMarkup(createElement(snapshotModule.exports.NationalSnapshot, { ...baseProps, illness: 'all', value: 143, dominantAvailable: true, dominantValue: '123', dominantCases: '123', dominantIllness: 'Typhoid Fever', valueKind: 'reported', counts: { high: 1, moderate: 1, low: 0, unavailable: 16 } }));
+    assert.match(allSnapshot, /Highest illness risk/);
+    assert.match(allSnapshot, /highest available individual tier/);
+    assert.doesNotMatch(allSnapshot, /No data this month/);
+
 
     const completedCalls = calls.length;
     await data.ensureHealthwatchData();

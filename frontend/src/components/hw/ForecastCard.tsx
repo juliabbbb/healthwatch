@@ -36,7 +36,6 @@ import {
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
-import { StatusChip } from "./StatusChip";
 import { OutbreakBanner } from "./OutbreakBanner";
 import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
 import { LiveWeatherCard } from "./LiveWeatherCard";
@@ -175,14 +174,15 @@ export function ForecastCard({
             <p className="label-caps text-[13px]">
               {a.point.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
-            <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
-              {formatMetric(a.value, mode)}
+            <p className="font-mono text-2xl sm:text-3xl font-bold leading-tight tracking-tight tabular-nums text-foreground mt-1 break-words">
+              {Number.isFinite(a.value) ? formatMetric(a.value, mode) : "—"}
             </p>
 
           </div>
 
           <div className="flex flex-col items-end gap-1.5 shrink-0">
-            {illness === "all" ? <StatusChip>Combined counts</StatusChip> : <RiskBadge risk={a.risk} />}
+            {illness === "all" && <span className="text-xs text-muted-foreground">Highest available tier</span>}
+            <RiskBadge risk={a.risk} />
             <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
           </div>
         </div>
@@ -251,8 +251,8 @@ export function ForecastCard({
         )}
       </section>
 
-      {illness === "all" && <p className="px-5 py-2 text-sm text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "Unavailable"}. Aggregate prediction intervals are unavailable.</p>}
-      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "Combined counts are descriptive. Select a disease for its regional risk tiers; no combined disease threshold is defined." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
+      {illness === "all" && <p className="px-5 py-2 text-sm text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "None for this month"}. Color shows the highest available individual illness tier; there is no combined prediction interval.</p>}
+      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "No contributing illness has both a value and a valid risk tier for this month." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
       {(illness === "Influenza-like Illness" || illness === "Leptospirosis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
       {/* Projected Horizon Sparkline (forecast-ready diseases) */}
       {!isForecastUnavailable && (

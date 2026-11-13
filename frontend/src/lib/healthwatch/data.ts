@@ -1128,6 +1128,21 @@ export interface RegionAssessment {
   changePct: number;
 }
 
+/** All colors summarize existing individual tiers, never a threshold on summed cases. */
+function highestAvailableContributorRisk(regionCode: string, point: MonthPoint): RiskLevel {
+  let highest: RiskLevel = "unavailable";
+  const rank: Record<RiskLevel, number> = { unavailable: -1, low: 0, moderate: 1, high: 2 };
+  for (const disease of point.contributors ?? []) {
+    const source = getSeries(regionCode, disease)[point.index];
+    if (!source || source.raw < 0 || !Number.isFinite(source.cases)) continue;
+    const threshold = thresholdCache.get(regionCode + ":" + disease + ":" + source.month);
+    if (!threshold) continue;
+    const risk = classify(source.cases, threshold);
+    if (rank[risk] > rank[highest]) highest = risk;
+  }
+  return highest;
+}
+
 export function assessRegion(
   regionCode: string,
   illnessId: string | "all",
@@ -1204,7 +1219,7 @@ export function assessRegion(
     mode,
     value,
     thresholds,
-    risk: classify(point.cases, rawThreshold ?? { p50: NaN, p75: NaN }),
+    risk: illnessId === "all" ? highestAvailableContributorRisk(regionCode, point) : classify(point.cases, rawThreshold ?? { p50: NaN, p75: NaN }),
     percentileRank,
     dominantIllness,
     forecastWindow,

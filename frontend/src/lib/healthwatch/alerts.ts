@@ -59,8 +59,8 @@ export function deriveAlerts(
         id: `high-${a.region.code}`,
         kind: "high-now",
         regionCode: a.region.code,
-        title: `${a.region.short} — High risk this month`,
-        detail: `${formatMetric(a.value, a.mode)} ${METRIC_META[a.mode].unit} — ${a.percentileRank}th percentile of the seasonal norm.`,
+        title: illnessId === "all" ? `${a.region.short} — High tier in a contributing illness` : `${a.region.short} — High risk this month`,
+        detail: illnessId === "all" ? `At least one available contributing illness is High. Combined count: ${formatMetric(a.value, a.mode)} ${METRIC_META[a.mode].unit}. Select a disease for its own thresholds.` : `${formatMetric(a.value, a.mode)} ${METRIC_META[a.mode].unit} — ${a.percentileRank}th percentile of the seasonal norm.`,
         month: monthLabel(a.monthIndex),
         order: a.percentileRank,
       });
