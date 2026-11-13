@@ -29,7 +29,7 @@ def rebuild(baseline, output):
     from .verify_build import verify_operational
     checks = verify_operational(output)
     checks['baseline_run_id'] = previous['run_id']
-    seal(output, 'gap-rules-'+__import__('uuid').uuid4().hex[:12], 'operational_prophet_monthly_refit', checks)
+    seal(output, 'gap-rules-'+__import__('uuid').uuid4().hex[:12], 'operational_sarimax_monthly_refit', checks)
     print('VERIFIED SOURCE-RULE REBUILD',output,flush=True)
 
 

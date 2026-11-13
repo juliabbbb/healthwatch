@@ -1,0 +1,260 @@
+[
+  {
+    "file": "02_original_cleaned_exports/primary/regional_dengue_monthly.csv",
+    "source": "implementation_runs\\data_quality_20261113\\regional_dengue_monthly.csv",
+    "role": "existing cleaned monthly source export; original columns retained",
+    "source_sha256": "4eff3c2a52b57a68644da6f3fb876b397720b6a8aafc3d21aa74f29fd5856fcd"
+  },
+  {
+    "file": "02_original_cleaned_exports/primary/national_monthly.csv",
+    "source": "implementation_runs\\data_quality_20261113\\national_monthly.csv",
+    "role": "existing cleaned monthly source export; original columns retained",
+    "source_sha256": "1cc9bd850e63ac7309129765579582342d24c77f700a859d966bf129ecefb70e"
+  },
+  {
+    "file": "02_original_cleaned_exports/primary/regional_fwbd_monthly.csv",
+    "source": "implementation_runs\\data_quality_20261113\\regional_fwbd_monthly.csv",
+    "role": "existing cleaned monthly source export; original columns retained",
+    "source_sha256": "eb1481dad8575d5b43433a654a66574e70e4b065ffb88d95d7e8dd8b567cb1ee"
+  },
+  {
+    "file": "02_original_cleaned_exports/primary/national_fwbd_monthly.csv",
+    "source": "implementation_runs\\data_quality_20261113\\national_fwbd_monthly.csv",
+    "role": "existing cleaned monthly source export; original columns retained",
+    "source_sha256": "55c9befbbdf532e2e49425202328907eb79ea18f29ebdedb60dcdfee42b35c5b"
+  },
+  {
+    "file": "02_original_cleaned_exports/ILI/regional_ili_monthly.csv",
+    "source": "implementation_runs\\ili_rf_headers_20261113_v2\\regional_ili_monthly.csv",
+    "role": "corrected header-normalized ILI export; full available monthly calendar",
+    "source_sha256": "b9b5aeb7ea2fd8c385881a9f622c305100e7d62439476cdf016159960d62452b"
+  },
+  {
+    "file": "02_original_cleaned_exports/ILI/national_ili_monthly.csv",
+    "source": "implementation_runs\\ili_rf_headers_20261113_v2\\national_ili_monthly.csv",
+    "role": "corrected header-normalized ILI export; full available monthly calendar",
+    "source_sha256": "c0cca63c211af9fc08acbd57575d5e5100f26e72d054bcb8617382563e09a210"
+  },
+  {
+    "file": "02_original_cleaned_exports/ILI/ili_observation_ledger.csv",
+    "source": "implementation_runs\\ili_rf_headers_20261113_v2\\ili_observation_ledger.csv",
+    "role": "corrected header-normalized ILI export; full available monthly calendar",
+    "source_sha256": "b9b5aeb7ea2fd8c385881a9f622c305100e7d62439476cdf016159960d62452b"
+  },
+  {
+    "file": "02_original_cleaned_exports/ILI/ili_header_audit.json",
+    "source": "implementation_runs\\ili_rf_headers_20261113_v2\\ili_header_audit.json",
+    "role": "corrected header-normalized ILI export; full available monthly calendar",
+    "source_sha256": "f3fb71edbc42e7601f1a65c18556fc295c0a765fc2e0ee9d5d59067a990383f3"
+  },
+  {
+    "file": "02_original_cleaned_exports/Hep_A/provisional_monthly_reported_records.csv",
+    "source": "implementation_runs\\hepa_rf_provisional_20261113\\observed_records.csv",
+    "role": "latest approved Hep A provisional target",
+    "source_sha256": "90783f7f10ed229c5adcb1cafb7c373da1c8419665676ea137c727227d539aa5"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/annual_reported_records.csv",
+    "source": "output\\Leptospirosis_Reported_Records\\data\\annual_reported_records.csv",
+    "role": "existing full-coverage aggregate export; September2026 excluded from analysis-ready monthly data",
+    "source_sha256": "e08d0c0388d1d2c887be0345a590981139fca22275b2fb0b2014694bcc90fd3f"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/monthly_regional_reported_records.csv",
+    "source": "output\\Leptospirosis_Reported_Records\\data\\monthly_regional_reported_records.csv",
+    "role": "existing full-coverage aggregate export; September2026 excluded from analysis-ready monthly data",
+    "source_sha256": "63ef2ac0b0850671b5630ad03187167e077bf8cd5dd2680f99495f46083fdc89"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/observed_records.csv",
+    "source": "output\\Leptospirosis_Reported_Records\\data\\observed_records.csv",
+    "role": "existing full-coverage aggregate export; September2026 excluded from analysis-ready monthly data",
+    "source_sha256": "bdc4501b119cc685cd9f9189668f169ea246c2d7cb26ed876c4364637af15a38"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/rejected_records.csv",
+    "source": "output\\Leptospirosis_Reported_Records\\data\\rejected_records.csv",
+    "role": "existing full-coverage aggregate export; September2026 excluded from analysis-ready monthly data",
+    "source_sha256": "5131c81b2f2c4909bf06a50658747c1ec0d086825a0d41639ea5f2aaf824695a"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/weekly_reported_records.csv",
+    "source": "output\\Leptospirosis_Reported_Records\\data\\weekly_reported_records.csv",
+    "role": "existing full-coverage aggregate export; September2026 excluded from analysis-ready monthly data",
+    "source_sha256": "5daee540c2e184ec9bd16189a2c8892b1289447a05d8d86cda74df8cc8fde0cc"
+  },
+  {
+    "file": "02_original_cleaned_exports/Leptospirosis/decision_and_manifest.json",
+    "source": "output\\Leptospirosis_Reported_Records\\decision_and_manifest.json",
+    "role": "approved counting decision and source audit; no new model fits",
+    "source_sha256": "edfdbb8e455c8103820837f34808a21f770a2c9c93a2589ecc45e1388ac076f4"
+  },
+  {
+    "file": "03_annual_reference_only/heat_reference_events.csv",
+    "source": "ui-gerald-work\\data\\processed\\heat_reference_events.csv",
+    "role": "existing cleaned annual event reference; not monthly forecasting data",
+    "source_sha256": "278e5cfd01d337cc52b8e6c49c29828207c89bdd3a510f74fc7aecc45e4af893"
+  },
+  {
+    "file": "04_record_level_lineage/DOH-Epi-Dengue-2019-2026-line-list.csv",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\DOH-Epi-Dengue-2019-2026-line-list.csv",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "35a26d01ab1daa5a6e30dcc73efd1c7bb31988504aff8592c3c9badf9e191fc6"
+  },
+  {
+    "file": "04_record_level_lineage/DOH-Epi-Dengue-2019-2026-line-list.json",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\DOH-Epi-Dengue-2019-2026-line-list.json",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "35e6dfc8b84f9c9e48fc14fa2e3e986e23eece36b3b48d5a8d8713ffa69d053d"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - ABD.csv",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - ABD.csv",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "747aa4d809496c46bdf8ffa54cf82805e0ced5c11b0934b4361239567c7b8094"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - ABD.json",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - ABD.json",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "2b2082c90c7b45c311c631155a1a9cbbbfafc90eb63ffb6f44053523c196dc6f"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Cholera.csv",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Cholera.csv",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "a42b074ba1f6d2d66d9227c5fe67d0cba88e6b19ca7e5a50e9dfd0d79f7df71f"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Cholera.json",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Cholera.json",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "8b3fd8994912e7fc39a06c3b6efd373f70a15ac40d11ebbb27d6a39817aacf31"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Hep A.csv",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Hep A.csv",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "db2c924687529b6da4eb116de1da1a3b65ccec30ca38439816833e8086f922a5"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Hep A.json",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Hep A.json",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "4831a64131ea001022013d5d3422dc268fc539601d77f3334e73f80427ac866f"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Typhoid.csv",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Typhoid.csv",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "c74b525aa6096fb840830f3f32f9126dfd3ca407ec50c61fc68c8dbca802386d"
+  },
+  {
+    "file": "04_record_level_lineage/_FWBD_2018-2026 Data  - Typhoid.json",
+    "source": "implementation_runs\\data_quality_20261113\\lineage\\_FWBD_2018-2026 Data  - Typhoid.json",
+    "role": "earlier audited standardized source-row lineage; not a substitute for updated monthly targets",
+    "source_sha256": "440ecc6ce67be58a32f1b5e1733fa213411961c7a4c4863c54b917955718443f"
+  },
+  {
+    "file": "05_audit_notes/current_checks/data_quality_checks.json",
+    "source": "implementation_runs\\data_quality_20261113\\data_quality_checks.json",
+    "role": "existing source-quality audit; not newly repeated in this packaging task",
+    "source_sha256": "94e80b877d8c45c54be7dd455bf6de30a7e509c491f091dcb658399365a390e9"
+  },
+  {
+    "file": "05_audit_notes/current_checks/missing_region_months.csv",
+    "source": "implementation_runs\\data_quality_20261113\\missing_region_months.csv",
+    "role": "existing source-quality audit; not newly repeated in this packaging task",
+    "source_sha256": "2d055f0778aef8a98c1f40b1e767c5d6bdc9b5ea376daf1661006a1776e64190"
+  },
+  {
+    "file": "05_audit_notes/current_checks/hep_a_workbook_comparison.json",
+    "source": "implementation_runs\\data_quality_20261113\\hep_a_workbook_comparison.json",
+    "role": "existing source-quality audit; not newly repeated in this packaging task",
+    "source_sha256": "b5f913d6a7ca27aa781eb5735f7a20a281cf4c029917a530f0c75028927ca2f2"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/anomaly_flags.csv",
+    "source": "Step_2_Data_Audit_v2\\anomaly_flags.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "f1627c9eda12a07c4771f7b21ecfb5a0d563f27b4e9f7567dcdecd158f42f4b5"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/audit_findings.md",
+    "source": "Step_2_Data_Audit_v2\\audit_findings.md",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "9b64945011e667ffaa701b3b0bc9472d8c851ab0c08bcec4c6694dbf0b0446f9"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/categorical_values.csv",
+    "source": "Step_2_Data_Audit_v2\\categorical_values.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "22e580d5e5b716e9d52c4cd7f8b172d891a0c0231316e12b53a1091982caac92"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/column_audit.csv",
+    "source": "Step_2_Data_Audit_v2\\column_audit.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "daf89a1b6f241caf708a74cace20caaff676cc96127d13096db8370ef1ba29eb"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/dataset_inventory.csv",
+    "source": "Step_2_Data_Audit_v2\\dataset_inventory.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "1307b40b21aa7176a14beef38d578d8ba4f3ee7cbadafe84a71c8a6b16781b6b"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/data_audit.csv",
+    "source": "Step_2_Data_Audit_v2\\data_audit.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "f0680fcfa342b70121a986e8443241fe0a9c07b6c4bf40230aaa917462f4f6b0"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/fwbd_audit_findings.md",
+    "source": "Step_2_Data_Audit_v2\\fwbd_audit_findings.md",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "baba75557e8ec61e4d991efb73f03a2a8aa25bdcbcc25a170a2176f2b6b0fe1a"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/fwbd_cell_types.csv",
+    "source": "Step_2_Data_Audit_v2\\fwbd_cell_types.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "94b4c19c514af8f850564eb2b5d6d52385e6d98caea08f5a6ffb18e09e656570"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/fwbd_monthly_coverage.csv",
+    "source": "Step_2_Data_Audit_v2\\fwbd_monthly_coverage.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "181267ff47bb7fd4271b9f23bd9f1e408570430dc0aa2a6211aafe84bf3f1fa9"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/heat_events.csv",
+    "source": "Step_2_Data_Audit_v2\\heat_events.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "8ae9423503ffc154e49b0fc19b074a0e2ebb08347911c208c6a4d95488d5d978"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/leptospirosis_schema_by_year.csv",
+    "source": "Step_2_Data_Audit_v2\\leptospirosis_schema_by_year.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "af6e7968dc170bd9bc47eeab2e63e82114821d19f56bbc9c36b0a2b3d3eba60c"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/observed_periods.csv",
+    "source": "Step_2_Data_Audit_v2\\observed_periods.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "0fdd32edd3d0e2d102c901b5d167fc68134ed83d3a64dac32d8bd4ae31c77b34"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/regional_coverage.csv",
+    "source": "Step_2_Data_Audit_v2\\regional_coverage.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "8d6b2d5b313e0d3f997e94099d0e6d8c00960d2a202c51159779b0eaa71e7bb5"
+  },
+  {
+    "file": "05_audit_notes/earlier_source_audit/schema_and_quality_issues.csv",
+    "source": "Step_2_Data_Audit_v2\\schema_and_quality_issues.csv",
+    "role": "historical source audit; older disease-status statements are superseded by current README",
+    "source_sha256": "4b9de612bde857a85cd1163d10436a4f1730f7e19c0e649de93c2ff2f22a4c6b"
+  }
+]

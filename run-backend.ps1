@@ -8,7 +8,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
-$py = Join-Path $root '.venv\Scripts\python.exe'
+$py = if ($env:HEALTHWATCH_PYTHON) { $env:HEALTHWATCH_PYTHON } else { Join-Path $root '.venv\Scripts\python.exe' }
 if (-not (Test-Path -LiteralPath $py)) { throw 'Create the repo .venv and install requirements.txt first.' }
 & $py -c 'import fastapi, uvicorn, sqlalchemy, bs4'
 if ($LASTEXITCODE -ne 0) { throw "Runtime dependencies missing. Run: .venv\Scripts\python.exe -m pip install -r requirements.txt" }

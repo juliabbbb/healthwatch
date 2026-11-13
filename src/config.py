@@ -137,6 +137,12 @@ for _disease, _metadata in DISEASE_METADATA.items():
         _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
                          unavailable_reason=None,
                          source_warning="Provisional ILI year/week header reversal and calendar mapping; not source-confirmed.")
+    _metadata['main_disease']=_disease not in {'Acute Viral Hepatitis','Heat-Related Illness'}
+    _metadata['target_unit']='reported_records' if _disease=='Leptospirosis' else 'reported_records_provisional' if _disease=='Acute Viral Hepatitis' else 'reported_cases'
+    if _disease in {'Influenza-like Illness','Leptospirosis'}:
+        _metadata['status']='forecast_ready'
+        _metadata['source_warning']=('Corrected main-disease input; source calendar/geography remain conditional and not source-confirmed. '
+                                     + ('Target counts S/P/C-coded reported records; deaths excluded.' if _disease=='Leptospirosis' else 'Numeric reported cases after header normalization.'))
 SUPPORTED_DISEASES = list(DISEASE_METADATA.keys())
 FORECAST_READY_DISEASES = [d for d, m in DISEASE_METADATA.items() if m["forecast_available"]]
 DISEASE_GROUPS = {d: m["group"] for d, m in DISEASE_METADATA.items()}

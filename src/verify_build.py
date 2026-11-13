@@ -27,6 +27,8 @@ def verify_operational(root, write_evidence=True):
     fcst=pd.read_csv(root/'forecasts.csv')
     if not np.isfinite(fcst[['yhat','yhat_lower','yhat_upper']]).all().all(): raise ValueError('Nonfinite forecast')
     if not (fcst.yhat_lower<=fcst.yhat_upper).all(): raise ValueError('Invalid interval')
+    if not ((fcst.yhat_lower<=fcst.yhat)&(fcst.yhat<=fcst.yhat_upper)&fcst.yhat_lower.ge(0)).all():
+        raise ValueError('Point forecast must lie inside finite nonnegative interval')
     from .source_decisions import require_lepto_audit
     require_lepto_audit(root)
     observations=[]
@@ -47,7 +49,16 @@ def verify_operational(root, write_evidence=True):
     ledger=pd.concat(observations,ignore_index=True)
     fallback=pd.Series(np.where(ledger.cases.isna(),'missing_report',np.where(ledger.cases.eq(0),'observed_zero','observed_positive')),index=ledger.index)
     ledger['observation_status']=ledger.get('observation_status',fallback).fillna(fallback)
-    if write_evidence:
+    cleaned=(root/'cleaned_input.json').is_file()
+    if cleaned:
+        import hashlib
+        record=json.loads((root/'cleaned_input.json').read_text())
+        if hashlib.sha256((root/'cleaned_input_source.csv').read_bytes()).hexdigest()!=record['sha256']:
+            raise ValueError('Cleaned input snapshot hash mismatch')
+        if write_evidence:
+            ledger.to_csv(root/'observation_ledger.csv',index=False)
+            (root/'source_registry.json').write_text(json.dumps(dict(kind='approved_cleaned_input',sources=[record]),indent=2))
+    elif write_evidence:
         ledger.to_csv(root/'observation_ledger.csv',index=False)
         write_registry(ingest.RAW_DIR,root)
     else:
@@ -57,10 +68,12 @@ def verify_operational(root, write_evidence=True):
             if file_record(ingest.RAW_DIR/item['file'])['sha256'] != item['sha256']:
                 raise ValueError('Raw input changed after build: '+item['file'])
     from .source_decisions import decisions,digest
-    return dict(target_dates=True,probe_dates=True,finite_forecasts=True,national_arithmetic=True,source_status='conditional',production_model='Prophet',interval_level=.8,interval_calibration='not_established',case_record_rules_version=decisions()['version'],source_decisions_sha256=digest())
+    from .operational_model import model_name, fingerprint
+    return dict(target_dates=True,probe_dates=True,finite_forecasts=True,national_arithmetic=True,source_status='conditional',production_model=model_name(),model_fingerprint=fingerprint(),interval_level=.8,interval_calibration='not_established',case_record_rules_version=decisions()['version'],source_decisions_sha256=digest(),input_kind='approved_cleaned' if cleaned else 'raw_ingest')
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--run',required=True);p.add_argument('--run-id',required=True);a=p.parse_args()
     checks=verify_operational(a.run)
-    seal(a.run,a.run_id,'operational_prophet_monthly_refit',checks)
+    from .operational_model import experiment_id
+    seal(a.run,a.run_id,experiment_id(),checks)
     print(json.dumps(checks,indent=2))

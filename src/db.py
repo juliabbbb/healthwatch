@@ -464,7 +464,7 @@ def build_db(eng=None, manifest_path=None, fail_after_clear=False, fail_after_se
     if manifest_path is None:
         raise ValueError("Publication requires a verified run directory and explicit target")
     manifest = verify(manifest_path)
-    if manifest["experiment_id"] != "operational_prophet_monthly_refit" and not fail_after_clear:
+    if manifest["experiment_id"] != "operational_sarimax_monthly_refit" and not fail_after_clear:
         raise ValueError("Research experiment cannot be published as an operational snapshot")
     if not fail_after_clear:
         from .verify_build import verify_operational
@@ -616,7 +616,7 @@ def build_db(eng=None, manifest_path=None, fail_after_clear=False, fail_after_se
                     else None
                 ),
                 "version": manifest["run_id"],
-                "model": "Prophet",
+                "model": manifest.get('metadata',{}).get('production_model','Prophet'),
                 "notes": __import__("json").dumps({"run_id": manifest["run_id"], "experiment_id": manifest["experiment_id"], "metadata": manifest["metadata"], "manifest_sha256": __import__("hashlib").sha256((Path(manifest_path)/"manifest.json").read_bytes()).hexdigest()}),
             },
         )

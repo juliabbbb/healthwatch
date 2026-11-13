@@ -12,6 +12,7 @@ DISEASE='Influenza-like Illness'
 
 
 def extend(baseline,output,workers=4):
+    raise ValueError('Use src.build_cleaned for a full SARIMAX rebuild; do not mix Prophet and SARIMAX series')
     baseline,output=Path(baseline).resolve(),Path(output).resolve()
     previous=verify(baseline)
     if previous['experiment_id']!='operational_prophet_monthly_refit':raise ValueError('Expected operational baseline')
@@ -48,7 +49,7 @@ def extend(baseline,output,workers=4):
     classify.run();rank_escalation.run();outbreak.run();validate_2025.run()
     checks=verify_operational(output)
     checks.update(provisional_ili_enabled=True,baseline_run_id=previous['run_id'],baseline_manifest_sha256=sha(baseline/'manifest.json'),primary_artifacts_unchanged=True)
-    seal(output,'operational-ili-'+__import__('uuid').uuid4().hex[:12],'operational_prophet_monthly_refit',checks)
+    seal(output,'operational-ili-'+__import__('uuid').uuid4().hex[:12],'operational_sarimax_monthly_refit',checks)
     print('VERIFIED ILI EXTENSION',output,flush=True)
 
 if __name__=='__main__':

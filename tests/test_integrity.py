@@ -17,7 +17,7 @@ class AnalyticalRegressionTests(unittest.TestCase):
     def test_validation_calendar_survives_missing_target(self):
         s = pd.DataFrame({'ds': pd.date_range('2019-01-01', '2025-12-01', freq='MS'), 'y': 4.})
         s = s[s.ds != '2025-03-01']
-        with patch.object(forecast, 'fit_prophet', return_value=object()), patch.object(forecast, 'predict', side_effect=lambda _, dates, **kwargs: pd.DataFrame({'yhat': [2.] * len(dates)})):
+        with patch.object(forecast, 'fit_model', return_value=object()), patch.object(forecast, 'predict', side_effect=lambda _, dates, **kwargs: pd.DataFrame({'yhat': [2.] * len(dates)})):
             out = forecast.walk_forward_validation(s, end_date='2024-12-31')
         self.assertEqual(len(out), 12)
         self.assertTrue(pd.isna(out.loc[out.ds == '2025-03-01', 'y'].iloc[0]))
@@ -29,7 +29,7 @@ class AnalyticalRegressionTests(unittest.TestCase):
             fits.append(frame.ds.max());return frame.ds.max()
         def predict(origin,dates,**kwargs):
             self.assertLess(origin,dates[0]);return pd.DataFrame({'yhat':[2.]})
-        with patch.object(forecast,'fit_prophet',side_effect=fit),patch.object(forecast,'predict',side_effect=predict):
+        with patch.object(forecast,'fit_model',side_effect=fit),patch.object(forecast,'predict',side_effect=predict):
             result=forecast.walk_forward_validation(s,end_date='2024-12-31')
         self.assertEqual(len(fits),12)
         self.assertEqual(fits[1],pd.Timestamp('2025-01-01'))
@@ -38,7 +38,7 @@ class AnalyticalRegressionTests(unittest.TestCase):
         s = pd.DataFrame({'ds': pd.date_range('2019-01-01', '2023-12-01', freq='MS'), 'y': 4.})
         def predict(_, dates):
             return pd.DataFrame({'ds': dates, 'yhat': 2., 'yhat_lower': 1., 'yhat_upper': 3.})
-        with patch.object(forecast, 'fit_prophet', return_value=object()), patch.object(forecast, 'predict', side_effect=predict):
+        with patch.object(forecast, 'fit_model', return_value=object()), patch.object(forecast, 'predict', side_effect=predict):
             out = forecast.build_season_probes(s)
         self.assertEqual(out.ds.dt.strftime('%Y-%m').tolist(), ['2025-01','2025-02','2025-03','2025-07','2025-08','2025-09'])
 
@@ -46,7 +46,7 @@ class AnalyticalRegressionTests(unittest.TestCase):
         s = pd.DataFrame({'ds': pd.date_range('2019-01-01', '2026-08-01', freq='MS'), 'y': 4.})
         def predict(_, dates):
             return pd.DataFrame({'ds': dates, 'yhat': 2., 'yhat_lower': 1., 'yhat_upper': 3.})
-        with patch.object(forecast, 'fit_prophet', return_value=object()), patch.object(forecast, 'predict', side_effect=predict):
+        with patch.object(forecast, 'fit_model', return_value=object()), patch.object(forecast, 'predict', side_effect=predict):
             out = forecast.build_forecast(s)
         self.assertEqual(out.ds.iloc[0],pd.Timestamp('2026-09-01'))
         self.assertEqual(out.ds.iloc[-1],pd.Timestamp('2027-08-01'))
