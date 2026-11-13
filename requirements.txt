@@ -13,4 +13,6 @@ openai>=1.0.0
 # anthropic  # keep commented until the Groq swap is verified end-to-end
 sqlalchemy
 psycopg2-binary
+# Support existing Supabase postgresql+psycopg URLs on Render.
+psycopg[binary]==3.3.9
 beautifulsoup4>=4.12.0
