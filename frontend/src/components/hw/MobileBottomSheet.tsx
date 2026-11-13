@@ -298,7 +298,7 @@ export function MobileBottomSheet({
             </div>
           </div>
 
-          {/* Deep-Dive Content — always mounted, visibility controlled by height */}
+          {/* Expanded region content — always mounted, visibility controlled by height */}
           <div
             className="min-h-0 overflow-y-auto hw-scroll overscroll-contain"
             style={{
