@@ -1,9 +1,11 @@
+import { HeatReferencePanel } from "./HeatReferencePanel";
 import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Info, X, Stethoscope, Users } from "lucide-react";
 import {
   ILLNESSES,
+  REFERENCE_ILLNESSES,
   ILLNESS_BY_ID,
   METRIC_META,
   RISK_META,
@@ -92,7 +94,7 @@ export function NationalSnapshot({
           </span>
           <span className="text-muted-foreground text-[13px]">·</span>
           <span className="font-mono text-[13px] font-semibold text-foreground">
-            {formatMonthYear(monthLabel)}
+            {illness === "Heat-Related Illness" ? "Annual records" : formatMonthYear(monthLabel)}
           </span>
           <span
             className="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold uppercase tracking-wider"
@@ -103,7 +105,7 @@ export function NationalSnapshot({
                 : "var(--secondary)",
             }}
           >
-            {valueKind === "mixed" ? "Mixed" : valueKind === "unavailable" ? "Unavailable" : isForecast ? "Predicted" : "Reported"}
+            {illness === "Heat-Related Illness" ? "Source available" : valueKind === "mixed" ? "Mixed" : valueKind === "unavailable" ? "Unavailable" : isForecast ? "Predicted" : "Reported"}
           </span>
           <span className="rounded-full px-2 py-0.5 font-mono text-xs font-bold tracking-wider flex items-center gap-1 border border-border/60 bg-secondary/60 text-foreground">
             {audienceMode === "clinical" ? (
@@ -123,6 +125,7 @@ export function NationalSnapshot({
       </div>
 
       {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
+      {illness === "Heat-Related Illness" ? <HeatReferencePanel /> : (
       <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
         {/* Card A: National reported aggregate */}
         <div className="min-[420px]:col-span-2 sm:col-span-1 rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col min-w-0">
@@ -229,6 +232,8 @@ export function NationalSnapshot({
         </div>
       </div>
 
+      )}
+
       {/* 3. Controls Section: Structured Clean Rows */}
       <div className="flex flex-col gap-2.5 border-t border-border/70 pt-3">
         {/* Top Controls Row: Illness Filter */}
@@ -248,7 +253,7 @@ export function NationalSnapshot({
               >
                 All
               </button>
-              {ILLNESSES.map((i) => (
+              {[...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => (
                 <button
                   type="button"
                   key={i.id}

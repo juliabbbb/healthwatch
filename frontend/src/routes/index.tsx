@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ChevronDown, Globe, X } from "lucide-react";
+import { toast } from "sonner";
 import type { DataLayer } from "@/components/hw/MapCanvas";
 import { TimelineScrubber } from "@/components/hw/TimelineScrubber";
 import { TopToolbar } from "@/components/hw/TopToolbar";
@@ -12,6 +13,8 @@ import { TourOverlay } from "@/components/hw/TourOverlay";
 import { HOME_TOUR_STEPS } from "@/lib/explainRegistry";
 import {
   CURRENT_MONTH_INDEX,
+  latestReportedMonthForDisease,
+  availableMonthForDisease,
   OUTBREAK_BENCHMARK_SEASON,
   assessAll,
   formatMetric,
@@ -53,7 +56,7 @@ export const Route = createFileRoute("/")({
 function MapView() {
   const [mounted, setMounted] = useState(false);
   const [illness, setIllness] = useState("Dengue");
-  const [monthIndex, setMonthIndex] = useState(CURRENT_MONTH_INDEX);
+  const [monthIndex, setMonthIndex] = useState(() => latestReportedMonthForDisease("Dengue") ?? CURRENT_MONTH_INDEX);
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [flyTo, setFlyTo] = useState<string | null>(null);
@@ -97,6 +100,15 @@ function MapView() {
   const nationalPer100k = national.per100k;
 
   const meta = monthMeta(monthIndex);
+
+  const handleIllnessChange = useCallback((nextIllness: string) => {
+    const nextMonth = availableMonthForDisease(nextIllness, monthIndex);
+    setIllness(nextIllness);
+    if (nextMonth !== monthIndex) {
+      setMonthIndex(nextMonth);
+      toast.info("Showing latest reported month: " + formatMonthYear(monthMeta(nextMonth).label));
+    }
+  }, [monthIndex]);
 
   const handleSelect = useCallback((code: string | null) => setSelected(code), []);
   const handleFocusRegion = useCallback((code: string) => {
@@ -146,7 +158,7 @@ function MapView() {
           mode={mode}
           onModeChange={setMode}
           illness={illness}
-          onIllnessChange={setIllness}
+          onIllnessChange={handleIllnessChange}
           counts={counts}
           dominantIllness={dominant.illness.name}
           dominantValue={formatMetric(dominant.metric, mode)}
@@ -283,7 +295,7 @@ function MapView() {
                 mode={mode}
                 onModeChange={setMode}
                 illness={illness}
-                onIllnessChange={setIllness}
+                onIllnessChange={handleIllnessChange}
                 counts={counts}
                 dominantIllness={dominant.illness.name}
                 dominantValue={formatMetric(dominant.metric, mode)}

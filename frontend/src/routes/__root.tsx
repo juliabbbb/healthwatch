@@ -142,6 +142,7 @@ function DataGate({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState(0);
   const [fading, setFading] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("Please retry to load the reported records.");
 
   useEffect(() => {
     const start = performance.now();
@@ -171,6 +172,7 @@ function DataGate({ children }: { children: ReactNode }) {
         done = true;
         cancelAnimationFrame(raf);
         console.error("Failed to load HEALTHWATCH data from API", err);
+        setErrorMessage(err instanceof Error ? err.message : "Please retry to load the reported records.");
         setState("error");
       });
 
@@ -208,11 +210,10 @@ function DataGate({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <div className="max-w-md text-center">
           <h1 className="text-xl font-semibold tracking-tight text-foreground">
-            Surveillance API unreachable
+            Illness data could not load
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            HEALTHWATCH could not load case data. Make sure the backend is running (uvicorn
-            src.api:app --port 8000).
+            {errorMessage}
           </p>
           <button
             type="button"

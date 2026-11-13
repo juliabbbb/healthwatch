@@ -266,15 +266,15 @@ export interface Illness {
   id: string; // canonical API disease label (backend SUPPORTED_DISEASES)
   name: string;
   shortName: string;
-  group: "Dengue" | "Food and Waterborne Diseases" | "Zoonotic Diseases" | "Respiratory Diseases";
+  group: "Dengue" | "Food and Waterborne Diseases" | "Zoonotic Diseases" | "Respiratory Diseases" | "Environmental and Climate Hazards";
   /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
   transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
-  peakMonth: number; // month-of-year of climatological peak
-  season: Season;
-  amplitude: number; // seasonal swing strength
-  baseRate: number; // cases / 100k / month
-  trend: number; // yearly multiplicative drift
+  peakMonth?: number; // month-of-year of climatological peak
+  season?: Season;
+  amplitude?: number; // seasonal swing strength
+  baseRate?: number; // cases / 100k / month
+  trend?: number; // yearly multiplicative drift
   /**
    * Whether a 12-month SARIMAX forecast is available for this disease.
    * False for diseases pending model evaluation or with reference-only data.
@@ -529,7 +529,17 @@ export function caseNotesFor(illness: string): ReportedCaseNotes {
   return REPORTED_CASE_NOTES[illness] ?? DENGUE_CASE_NOTES;
 }
 
-export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
+/** Annual references are selectable on the map, separate from monthly analyses. */
+export const REFERENCE_ILLNESSES: Illness[] = [{
+  id: "Heat-Related Illness",
+  name: "Heat-Related Illness",
+  shortName: "Heat (annual)",
+  group: "Environmental and Climate Hazards",
+  driver: "Annual events listed in the supplied DOH report",
+  forecastAvailable: false,
+  unavailableReason: "The original source contains annual event records, not monthly surveillance.",
+}];
+export const ILLNESS_BY_ID = Object.fromEntries([...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => [i.id, i]));
 
 export const MONTHS_PER_YEAR = 12;
 /**
@@ -631,6 +641,21 @@ export interface SeriesAvailability {
   reason_code: string | null;
   message: string | null;
 }
+export interface HeatReferenceEvent {
+  year: number;
+  canonical_region: string;
+  province: string;
+  illness: string;
+  events: number;
+  cases: number;
+  deaths: number;
+}
+let heatReferenceEvents: HeatReferenceEvent[] = [];
+export function heatReferenceForRegion(regionCode?: string): HeatReferenceEvent[] {
+  if (!regionCode || regionCode === "000000000") return heatReferenceEvents;
+  return heatReferenceEvents.filter((event) => event.canonical_region === REGION_BY_CODE[regionCode]?.name);
+}
+
 interface OperationalProvenance { run_id?: string; validation_status?: string; metadata?: { production_model?: string }; model?: string }
 const provenanceCache = new Map<string, OperationalProvenance>();
 export function provenanceForDisease(disease: string) { return provenanceCache.get(disease === "all" ? "Dengue" : disease); }
@@ -650,7 +675,7 @@ async function fetchJson<T>(path: string, attempts = 3): Promise<T> {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(`${API_BASE}${path}`, {
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(60000),
       });
       if (!res.ok) throw new Error(`API ${path} failed: HTTP ${res.status}`);
       return (await res.json()) as T;
@@ -700,6 +725,7 @@ export async function loadHealthwatchData(): Promise<void> {
     provenance?: OperationalProvenance;
     availability?: Record<string, SeriesAvailability>;
     thresholds?: { region: string; region_code?: string; month: number; p50: number | null; p75: number | null }[];
+    annual_reference?: HeatReferenceEvent[];
     series: Record<string, MonthPoint[]>;
     metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: RiskLevel; note?: string } }>;
     outbreak: OutbreakIndicator[];
@@ -707,17 +733,17 @@ export async function loadHealthwatchData(): Promise<void> {
 
   await hydratePopulations();
 
-  const dashboardDiseases = ILLNESSES.map((i) => i.id);
+  const dashboardDiseases = [...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => i.id);
   const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
 
-  await Promise.all([
-    // Dashboard diseases (historical + optional forecast)
-    ...dashboardDiseases.map(async (disease) => {
+  const failedDiseases: string[] = [];
+  const loadDisease = async (disease: string) => {
       try {
         const res = await fetchJson<DashboardResponse>(
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        if (res.annual_reference) heatReferenceEvents = res.annual_reference;
         if (res.provenance) provenanceCache.set(disease,res.provenance);
         const diseaseMeta = ILLNESS_BY_ID[disease];
         if (diseaseMeta && res.forecast_available != null) diseaseMeta.forecastAvailable = res.forecast_available;
@@ -766,10 +792,19 @@ export async function loadHealthwatchData(): Promise<void> {
         }
       } catch (err) {
         for (const region of REGIONS) availabilityCache.set(`${region.code}:${disease}`, { source_status: "request_failed", history_available: false, observed_months: 0, required_observed_months: 24, first_observed: null, last_observed: null, forecast_available: false, forecast_start: null, forecast_end: null, reason_code: "request_failed", message: "Data request failed. Retry loading the dashboard; this is not a zero-case report." });
+        failedDiseases.push(disease);
         console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
       }
-    }),
-  ]);
+  };
+  // Avoid saturating the free API CPU with all illnesses and duplicate batches.
+  const pending = [...dashboardDiseases];
+  await Promise.all(Array.from({ length: 2 }, async () => {
+    let disease: string | undefined;
+    while ((disease = pending.shift()) !== undefined) await loadDisease(disease);
+  }));
+  if (failedDiseases.length) {
+    throw new Error("Could not load reported data for " + failedDiseases.join(", ") + ". Please retry the connection.");
+  }
 
   // Derive the primary four-disease aggregate. Provisional ILI/Hep A, unresolved
   // leptospirosis do not change this cohort when enabled
@@ -886,14 +921,37 @@ function buildAllOutbreak(code: string): void {
 }
 
 let loadPromise: Promise<void> | null = null;
+let dataLoaded = false;
 
 export function reloadHealthwatchData(): Promise<void> {
-  loadPromise = loadHealthwatchData();
+  if (!loadPromise) {
+    dataLoaded = false;
+    loadPromise = loadHealthwatchData()
+      .then(() => { dataLoaded = true; })
+      .finally(() => { loadPromise = null; });
+  }
   return loadPromise;
 }
 
-/** Starts loading immediately on module import. */
-export const dataReady = reloadHealthwatchData();
+/** Loading starts at the page gate, never during module import or server rendering. */
+export function ensureHealthwatchData(): Promise<void> {
+  return dataLoaded ? Promise.resolve() : reloadHealthwatchData();
+}
+
+export function latestReportedMonthForDisease(disease: string): number | undefined {
+  const indices = REGIONS.flatMap((region) => seriesFor(region.code, disease)
+    .filter((point) => !point.forecast && point.raw >= 0 && Number.isFinite(point.cases))
+    .map((point) => point.index));
+  return indices.length ? Math.max(...indices) : undefined;
+}
+
+export function availableMonthForDisease(disease: string, selected: number): number {
+  const hasValue = REGIONS.some((region) => {
+    const point = seriesFor(region.code, disease)[selected];
+    return point && point.raw >= 0 && Number.isFinite(point.cases);
+  });
+  return hasValue ? selected : latestReportedMonthForDisease(disease) ?? selected;
+}
 
 /** Cached per region+illness so charts and the map share one source of truth. */
 export function getSeries(regionCode: string, illnessId: string): MonthPoint[] {

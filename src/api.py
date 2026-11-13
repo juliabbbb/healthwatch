@@ -6,6 +6,11 @@ import os
 import re
 import time
 from contextlib import asynccontextmanager
+from functools import lru_cache
+
+from fastapi.encoders import jsonable_encoder
+from starlette.middleware.gzip import GZipMiddleware
+from starlette.responses import Response
 from pathlib import Path
 
 
@@ -189,6 +194,7 @@ def _load_all_data() -> None:
         except (ValueError, TypeError):
             _RUN_PROVENANCE = {"run_id": None, "validation_status": "legacy_unverified"}
     _data_ready = True
+    _dashboard_snapshot.cache_clear()
     print(f"Backend data loaded in {time.monotonic() - t0:.1f}s")
 
 
@@ -872,6 +878,9 @@ def _llm_narrate(system_prompt: str, user_prompt: str) -> tuple[str, str]:
 @asynccontextmanager
 async def lifespan(_app):
     _load_all_data()
+    # Materialize once per immutable database snapshot, before accepting traffic.
+    for disease in SUPPORTED_DISEASES:
+        _dashboard_snapshot(disease)
     yield
 
 
@@ -886,6 +895,8 @@ app = FastAPI(
     version="0.2.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=3)
 
 _origins = os.environ.get(
     "ALLOWED_ORIGINS",
@@ -970,9 +981,7 @@ def availability(disease: str = Query(default=DISEASE_DEFAULT)):
     return {"disease":disease,"regions":_region_availability(disease),"source_policy":config.DISEASE_METADATA[disease]["source_policy"]}
 
 
-@app.get("/dashboard", tags=["objective_4_dashboard"])
-@limiter.limit("300/minute")
-def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
+def _dashboard_payload(disease: str):
     """Single batched endpoint returning all regions' series + metrics +
     outbreak data in one response. Replaces the 37 individual calls the
     frontend previously made on every page load."""
@@ -981,6 +990,11 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
     _check_disease(disease)
 
     source_info = config.DISEASE_METADATA.get(disease, {})
+    if disease == "Heat-Related Illness":
+        reference = heat_events(region=None, region_code=None)
+        return {"disease": disease, "forecast_available": False, "source_policy": source_info["source_policy"],
+                "provenance": _RUN_PROVENANCE, "availability": _region_availability(disease),
+                "series": {}, "metrics": {}, "outbreak": [], "annual_reference": reference["items"]}
     if source_info.get("analytical_available") is False:
         return {"disease": disease, "forecast_available": False, "unavailable_reason": source_info["unavailable_reason"],
                 "source_policy": source_info["source_policy"], "availability": _region_availability(disease), "series": {}, "metrics": {}, "outbreak": []}
@@ -1062,6 +1076,22 @@ def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
         "metrics": metrics_out,
         "outbreak": outbreak_items,
     }
+
+
+@lru_cache(maxsize=16)
+def _dashboard_snapshot(disease: str) -> bytes:
+    """Encode the reported records and forecasts once for this loaded snapshot."""
+    return FiniteJSONResponse(jsonable_encoder(_dashboard_payload(disease))).body
+
+
+@app.get("/dashboard", tags=["objective_4_dashboard"])
+@limiter.limit("300/minute")
+def dashboard(request: Request, disease: str = Query(default=DISEASE_DEFAULT)):
+    if not _data_ready:
+        raise HTTPException(status_code=503, detail="Data still loading, retry shortly")
+    _check_disease(disease)
+    # Fresh headers are required: compression middleware mutates response headers.
+    return Response(_dashboard_snapshot(disease), media_type="application/json")
 
 
 @app.get("/regions", tags=["objective_4_dashboard"])
@@ -1461,6 +1491,8 @@ def diseases():
 def heat_events(region: str | None = Query(default=None), region_code: str | None = Query(default=None)):
     """Reference-only heat-related health events transcribed from DOH surveillance reports."""
     path = ingest.PROCESSED_DIR / "heat_reference_events.csv"
+    if not path.exists():
+        path = Path(__file__).resolve().parents[1] / "data" / "cleaned" / "heat_reference_events.csv"
     if not path.exists():
         raise HTTPException(status_code=404, detail="Heat reference data not available")
     from .heat_ingest import normalize_heat
