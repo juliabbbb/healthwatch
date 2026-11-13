@@ -112,6 +112,7 @@ export function ExportCustomizationModal({
 }: ExportCustomizationModalProps) {
   useBodyScrollLock(open);
 
+  const [format, setFormat] = useState<"csv" | "pdf" | null>(null);
   const [horizon, setHorizon] = useState(0);
   const [sections, setSections] = useState<Record<SectionKey, boolean>>({
     overview: true,
@@ -129,6 +130,8 @@ export function ExportCustomizationModal({
   // Sync the date slider with the dashboard each time the modal opens.
   useEffect(() => {
     if (open) {
+      setFormat(null);
+      setExportError(null);
       setHorizon(Math.max(-12, Math.min(12, monthIndex - CURRENT_MONTH_INDEX)));
     }
   }, [open, monthIndex]);
@@ -289,7 +292,7 @@ export function ExportCustomizationModal({
             <div>
               <h2 className="text-base font-bold text-foreground">Export Surveillance Report</h2>
               <p className="text-xs text-muted-foreground">
-                Customize the epidemiological PDF · Baseline{" "}
+                Choose CSV data or a formatted PDF report · Baseline{" "}
                 <span className="font-mono text-foreground">{formatMonthYear(baselineLabel)}</span>
               </p>
             </div>
@@ -306,6 +309,32 @@ export function ExportCustomizationModal({
 
         {/* Body */}
         <div className="overflow-y-auto p-5 space-y-5 hw-scroll">
+          <fieldset disabled={merging} className="space-y-2">
+            <legend className="label-caps text-foreground mb-2">Export format</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {([
+                { key: "csv", label: "CSV dataset", description: "Tabular data for spreadsheets and analysis." },
+                { key: "pdf", label: "PDF report", description: "Formatted report with charts and selected sections." },
+              ] as const).map((option) => (
+                <button
+                  key={option.key}
+                  type="button"
+                  aria-pressed={format === option.key}
+                  onClick={() => { setFormat(option.key); setExportError(null); }}
+                  className={cn(
+                    "text-left rounded-lg border px-3 py-2.5 transition-colors",
+                    format === option.key
+                      ? "border-primary/50 bg-primary/10 text-foreground"
+                      : "border-border/70 bg-secondary/15 text-muted-foreground hover:text-foreground",
+                  )}
+                >
+                  <span className="block text-sm font-semibold">{option.label}</span>
+                  <span className="mt-1 block text-xs">{option.description}</span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+          {format !== null && <>
           {/* 1. Report Date */}
           <div className="rounded-xl border border-border/70 bg-secondary/15 p-4 space-y-3">
             <p className="label-caps text-[11px] font-semibold text-foreground">Report Date</p>
@@ -352,7 +381,7 @@ export function ExportCustomizationModal({
           </div>
 
           {/* 2. Modular Sections */}
-          <div>
+          {format === "pdf" && <div>
             <p className="label-caps text-[11px] font-semibold text-foreground mb-2">
               Report Sections
             </p>
@@ -372,10 +401,10 @@ export function ExportCustomizationModal({
                 </label>
               ))}
             </div>
-          </div>
+          </div>}
 
           {/* 3. CSV Dataset Export */}
-          <div>
+          {format === "csv" && <div>
             <p className="label-caps text-[11px] font-semibold text-foreground mb-2">
               CSV Time-Series Datasets
             </p>
@@ -398,7 +427,8 @@ export function ExportCustomizationModal({
                 </button>
               ))}
             </div>
-          </div>
+          </div>}
+          </>}
         </div>
 
         {/* Footer / progress + export */}
@@ -435,14 +465,14 @@ export function ExportCustomizationModal({
           ) : (
             <div className="flex items-center justify-between gap-3">
               <p className="text-[11px] text-muted-foreground leading-snug max-w-[11rem]">
-                Generates{" "}
-                <span className="font-mono text-foreground">
-                  Epidemiological_Report_{baselineLabel}.pdf
-                </span>{" "}
-                in {unit}.
+                {format === "pdf"
+                  ? `PDF report in ${unit}.`
+                  : format === "csv"
+                    ? `${CSV_DATASETS.find((dataset) => dataset.key === csvDataset)?.label} CSV in ${unit}.`
+                    : "Choose a format to see its export options."}
               </p>
               <div className="flex items-center gap-2">
-                <button
+                {format === "csv" && <button
                   type="button"
                   disabled={effectiveRegions.length === 0}
                   onClick={buildCSV}
@@ -451,16 +481,16 @@ export function ExportCustomizationModal({
                 >
                   <Table2 className="size-4" />
                   <span>Export CSV</span>
-                </button>
-                <button
+                </button>}
+                {format === "pdf" && <button
                   type="button"
                   disabled={effectiveRegions.length === 0}
                   onClick={buildExport}
                   className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-foreground shadow-sm hover:opacity-95 transition-all disabled:opacity-50 min-h-[40px]"
                 >
                   <FileDown className="size-4" />
-                  <span>Export Report</span>
-                </button>
+                  <span>Export PDF</span>
+                </button>}
               </div>
             </div>
           )}

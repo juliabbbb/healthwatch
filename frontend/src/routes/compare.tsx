@@ -95,7 +95,6 @@ function ComparePage() {
   // Spec #2: Month slider extended to include past & forecast months (-12m to +12m)
   // Default to 0m (Current baseline Now: 2026-09)
   const [horizon, setHorizon] = useState<number>(() => search.horizon ?? 0);
-  const [season, setSeason] = useState<"all" | "wet" | "dry">("all");
   const [mode, setMode] = useState<MetricMode>("percapita");
 
   // Spec #3 & #4: Centered floating modal state for Regional Benchmark Reference Table
@@ -242,7 +241,7 @@ function ComparePage() {
             title={
               selected.length === 0
                 ? "Select at least one region to export"
-                : "Export a customizable epidemiological report PDF"
+                : "Export a CSV dataset or PDF surveillance report"
             }
           >
             <FileDown className="size-4" />
@@ -385,21 +384,8 @@ function ComparePage() {
         />
       </div>
 
-      {/* Season & Metric Mode filters */}
+      {/* Metric Mode filters */}
       <div className="flex flex-wrap items-center gap-1.5 mt-6">
-        {/* Season convention */}
-        {(["all", "wet", "dry"] as const).map((s) => (
-          <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
-            {s === "all"
-              ? "All seasons"
-              : s === "wet"
-                ? SEASON_CONFIG.wet.display
-                : SEASON_CONFIG.dry.display}
-          </Chip>
-        ))}
-
-        <span className="mx-1.5 h-4 w-px bg-border/80" />
-
         {/* Metric Mode */}
         {(["percapita", "raw"] as const).map((m) => (
           <Chip key={m} active={mode === m} onClick={() => setMode(m)}>
