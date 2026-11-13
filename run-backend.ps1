@@ -8,27 +8,35 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $root = $PSScriptRoot
-$py = if ($env:HEALTHWATCH_PYTHON) { $env:HEALTHWATCH_PYTHON } else { Join-Path $root '.venv\Scripts\python.exe' }
+$py = if ($env:HEALTHWATCH_PYTHON) { $env:HEALTHWATCH_PYTHON } elseif (Test-Path (Join-Path $root '.venv-sarimax\Scripts\python.exe')) { Join-Path $root '.venv-sarimax\Scripts\python.exe' } else { Join-Path $root '.venv\Scripts\python.exe' }
 if (-not (Test-Path -LiteralPath $py)) { throw 'Create the repo .venv and install requirements.txt first.' }
 & $py -c 'import fastapi, uvicorn, sqlalchemy, bs4'
 if ($LASTEXITCODE -ne 0) { throw "Runtime dependencies missing. Run: .venv\Scripts\python.exe -m pip install -r requirements.txt" }
 $expectedRunId = $null
+$explicitDatabase = [bool]$DatabasePath
 if ($Mode -eq 'Local' -and -not $OutputDirectory -and -not $DatabasePath) {
     $pointerPath = Join-Path $root 'data\local\active_run.json'
-    if (Test-Path -LiteralPath $pointerPath) { $OutputDirectory = (Get-Content -LiteralPath $pointerPath -Raw | ConvertFrom-Json).directory }
+    if (Test-Path -LiteralPath $pointerPath) {
+        $active = Get-Content -LiteralPath $pointerPath -Raw | ConvertFrom-Json
+        $OutputDirectory = $active.directory
+        $DatabasePath = $active.database_path
+    }
+}
+if ($Mode -eq 'Local' -and (-not $OutputDirectory -or -not $DatabasePath)) {
+    throw 'Select a verified SARIMAX run and database using data/local/active_run.json or both -OutputDirectory and -DatabasePath. Legacy snapshots are not started on this branch.'
 }
 if ($OutputDirectory) {
     $OutputDirectory = [System.IO.Path]::GetFullPath($OutputDirectory)
     Push-Location -LiteralPath $root
-    try { $expectedRunId = & $py -c "import sys; from src.artifacts import verify; print(verify(sys.argv[1])['run_id'])" $OutputDirectory }
+    try { $expectedRunId = & $py -c "import sys; from src.artifacts import verify; m=verify(sys.argv[1]); assert m['experiment_id']=='operational_sarimax_monthly_refit' and m.get('metadata',{}).get('production_model')=='SARIMAX', 'Expected verified operational SARIMAX'; print(m['run_id'])" $OutputDirectory }
     finally { Pop-Location }
     if ($LASTEXITCODE -ne 0) { throw 'The selected artifact directory did not verify.' }
 }
 if (Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue) {
-    if ($Mode -eq 'Local' -and -not $DatabasePath) {
+    if ($Mode -eq 'Local' -and -not $explicitDatabase) {
         try {
             $existing = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -TimeoutSec 3
-            if ($existing.system -eq 'HEALTHWATCH' -and $existing.data_ready -and $existing.database -eq 'sqlite') {
+            if ($existing.system -eq 'HEALTHWATCH' -and $existing.data_ready -and $existing.database -eq 'sqlite' -and $existing.model -eq 'SARIMAX') {
                 if ($expectedRunId -and $existing.snapshot_run_id -ne $expectedRunId) { throw 'Running snapshot differs from the selected artifacts. Restart the local backend.' }
                 Write-Host "Using the existing ready local HEALTHWATCH backend: http://127.0.0.1:$Port/docs"
                 return
@@ -74,7 +82,7 @@ try {
             try {
                 $health = Invoke-RestMethod -Uri "http://127.0.0.1:$Port/health" -TimeoutSec 2
                 if ($health.data_ready -and $health.status -in @('ok', 'ready')) {
-                    if ($expectedRunId -and $health.snapshot_run_id -ne $expectedRunId) {
+                    if ($expectedRunId -and ($health.snapshot_run_id -ne $expectedRunId -or $health.model -ne 'SARIMAX')) {
                         Stop-Process -Id $process.Id -ErrorAction SilentlyContinue
                         throw 'Database and selected artifact run identities do not match.'
                     }

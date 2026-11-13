@@ -43,10 +43,9 @@ export function ClassificationInfo({
 
         <ol className="space-y-2.5 text-xs leading-relaxed text-muted-foreground">
           <li>
-            <span className="text-foreground">1. Pool the national distribution.</span> Every
-            historical month (2019–2026) from all 18 regions is collected for the selected illness
-            and converted into the active metric, so regions are ranked against the whole country,
-            not against themselves.
+            <span className="text-foreground">1. Use this region's history.</span> Risk compares
+            the selected disease with its own regional baseline. Cross-region percentile rank
+            is a separate burden comparison.
           </li>
           <li>
             <span className="text-foreground">2. Restrict to the same calendar month.</span> Only
@@ -55,12 +54,12 @@ export function ClassificationInfo({
           </li>
           <li>
             <span className="text-foreground">3. Take percentiles.</span> The 50th and 75th
-            percentiles of that pooled window become the tier cut-offs.
+            percentiles of that regional calendar-month window become the tier cut-offs.
           </li>
           <li>
             <span className="text-foreground">4. Classify the forecast value.</span> Below P50 is
             Low, P50–P75 is Moderate, above P75 is High. The percentile rank shown on each region is
-            its position inside the same pooled distribution.
+            a separate comparison across regions, not the basis for its risk tier.
           </li>
         </ol>
 
@@ -75,7 +74,7 @@ export function ClassificationInfo({
                 <span className="capitalize">{r}</span>
               </span>
               <span className="tabular-nums text-muted-foreground">
-                {thresholds
+                {thresholds && Number.isFinite(thresholds.p50) && Number.isFinite(thresholds.p75)
                   ? r === "low"
                     ? `< ${fmt(thresholds.p50)} ${meta.unit}`
                     : r === "moderate"
@@ -92,9 +91,7 @@ export function ClassificationInfo({
         </div>
 
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          Switching between raw cases and per 100,000 re-pools the distribution: raw mode lets
-          large-population regions dominate the upper percentiles, while per-capita mode surfaces
-          intense transmission in smaller regions.
+          Switching between raw cases and per 100,000 scales both the value and its thresholds equally, so the risk tier does not change. Missing thresholds produce an unavailable tier.
         </p>
       </DialogContent>
     </Dialog>

@@ -947,6 +947,7 @@ def health():
     dialect = db.engine().dialect.name if _data_ready else None
     return {"system": "HEALTHWATCH", "status": "ok" if ready else "starting", "data_ready": ready,
             "database": dialect, "snapshot_run_id": _RUN_PROVENANCE.get("run_id"),
+            "model": _RUN_PROVENANCE.get("metadata", {}).get("production_model"),
             "shared_database": dialect == "postgresql"}
 
 

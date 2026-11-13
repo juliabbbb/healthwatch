@@ -806,7 +806,7 @@ export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
     const gi = indexForYearMonth(p.year, p.month);
     if (gi < 0) continue;
     while (dest.length < gi) dest.push(emptyMonth(dest.length));
-    dest[gi] = p;
+    dest[gi] = { ...p, index: gi };
     last = gi;
   }
   if (last < 0) return [];
@@ -1047,6 +1047,13 @@ export function classify(value: number, t: Thresholds): RiskLevel {
   return "low";
 }
 
+/** Saved forecast months, anchored to each series' training cutoff, not today's date. */
+export function forecastPoints(regionCode: string, illnessId: string, horizon = 12): MonthPoint[] {
+  return seriesFor(regionCode, illnessId)
+    .filter((point) => point.forecast && point.raw >= 0 && Number.isFinite(point.cases))
+    .slice(0, horizon);
+}
+
 export interface RegionAssessment {
   region: Region;
   monthIndex: number;
@@ -1118,7 +1125,7 @@ export function assessRegion(
   const below = dist.filter((v) => v <= value).length;
   const percentileRank = dist.length && Number.isFinite(value) ? Math.round((below / dist.length) * 100) : NaN;
 
-  const dominantIllness = ILLNESSES.reduce((best, ill) => {
+  const dominantIllness = illnessId !== "all" ? ILLNESS_BY_ID[illnessId]! : ILLNESSES.filter((ill) => PRIMARY_AGGREGATE_DISEASES.includes(ill.id)).reduce((best, ill) => {
     const ra =
       metricValue(getSeries(regionCode, ill.id)[idx]?.cases ?? 0, region, mode) /
       (getThresholds(ill.id, point.month, mode).p75 || 1);
@@ -1264,7 +1271,7 @@ export function decompose(
   endIndex?: number,
 ): DecompPoint[] {
   const series = seriesFor(regionCode, illnessId).filter((p) =>
-    (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+    !p.forecast && (endIndex === undefined || p.index <= endIndex) && p.raw >= 0,
   );
   const values = series.map((p) => p.cases);
   const half = 6;
@@ -1304,7 +1311,7 @@ export function acf(regionCode: string, illnessId: string | "all", maxLag = 24, 
   const values = seriesFor(regionCode, illnessId)
     .filter(
       (p) =>
-        (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+        !p.forecast && (endIndex === undefined || p.index <= endIndex) && p.raw >= 0,
     )
     .map((p) => p.cases);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
@@ -1330,6 +1337,7 @@ export interface Recommendation {
 }
 
 export function recommendations(a: RegionAssessment): Recommendation[] {
+  if (a.risk === "unavailable") return [];
   const ill = a.dominantIllness;
   const base: Recommendation[] = [];
   if (a.risk === "high") {
