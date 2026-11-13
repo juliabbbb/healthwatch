@@ -183,26 +183,6 @@ function SeasonalityPage() {
   const currentSeasonLabel =
     currentMonth.season === "wet" ? SEASON_CONFIG.wet.display : SEASON_CONFIG.dry.display;
 
-  // Simple / Advanced View mode toggle with localStorage persistence (defaults to "simple")
-  const [viewMode, setViewMode] = useState<"simple" | "advanced">(() => {
-    if (typeof window === "undefined") return "simple";
-    try {
-      const saved = localStorage.getItem("hw_seasonality_view");
-      return saved === "advanced" ? "advanced" : "simple";
-    } catch {
-      return "simple";
-    }
-  });
-
-  const handleViewModeChange = (mode: "simple" | "advanced") => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem("hw_seasonality_view", mode);
-    } catch {
-      // ignore
-    }
-  };
-
   // Active decomposition chart tab
   const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">("observed");
 
@@ -604,50 +584,6 @@ function SeasonalityPage() {
             the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
 
-          {/* Simple / Advanced View Toggle */}
-          <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
-            <span className="label-caps text-[10px] text-muted-foreground">View:</span>
-            <div
-              role="radiogroup"
-              aria-label="Seasonality view mode"
-              data-explain="view-toggle"
-              className="inline-flex items-center rounded-lg border border-border/80 bg-card/60 p-1 shadow-xs"
-            >
-              <button
-                type="button"
-                role="radio"
-                aria-checked={viewMode === "simple"}
-                onClick={() => handleViewModeChange("simple")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
-                  viewMode === "simple"
-                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span>Simple</span>
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={viewMode === "advanced"}
-                onClick={() => handleViewModeChange("advanced")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
-                  viewMode === "advanced"
-                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span>Advanced</span>
-              </button>
-            </div>
-            <span className="text-[11px] text-muted-foreground hidden sm:inline">
-              {viewMode === "simple"
-                ? "Showing plain-language summary & observed cases"
-                : "Showing full statistical indicators & decomposition tabs"}
-            </span>
-          </div>
         </div>
         <div className="flex flex-col items-start md:items-end gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
@@ -676,15 +612,13 @@ function SeasonalityPage() {
         </div>
       </div>
 
-      {/* 12-Month Risk Strip (shown in Advanced view) */}
-      {viewMode === "advanced" && (
-        <div className="mt-5 glass-panel rounded-2xl p-4" data-explain="risk-outlook">
+      {/* 12-Month Risk Outlook */}
+      <div className="mt-5 glass-panel rounded-2xl p-4" data-explain="risk-outlook">
           <p className="label-caps mb-2 text-[10px] text-muted-foreground">
             12-Month Risk Outlook · {region.name}
           </p>
           <HotspotTimeline regionCode={code} illness={illness} />
         </div>
-      )}
 
       {/* Unified Filter Panel */}
       <div className="mt-8" data-explain="filter-panel">
@@ -837,9 +771,8 @@ function SeasonalityPage() {
           ))}
         </span>
       </div>
-      {/* Summary Metrics (shown in Advanced view with hover/focus tooltips) */}
-      {viewMode === "advanced" && (
-        <div className="mt-8">
+      {/* Summary metrics with hover/focus tooltips */}
+      <div className="mt-8">
           <div className="mb-2.5 flex items-center justify-between gap-2">
             <p className="label-caps text-xs">Summary Metrics</p>
             <button
@@ -893,9 +826,8 @@ function SeasonalityPage() {
             </div>
           </TooltipProvider>
         </div>
-      )}
 
-      {/* Decomposition Section: Single Observed chart + summary in Simple; Tabbed decomposition in Advanced */}
+      {/* Unified seasonal summary and decomposition charts */}
       <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
@@ -905,9 +837,7 @@ function SeasonalityPage() {
             <p className="mt-0.5 text-xs text-muted-foreground">
               {region.name} · {illness === "all" ? "all illnesses" : illness} · window{" "}
               {formatMonthYear(monthMeta(0).label)} – {formatMonthYear(currentMonth.label)}
-              {viewMode === "advanced"
-                ? " split into a 12-month centred moving-average trend, a month-of-year seasonal index and the irregular remainder."
-                : " monthly reported surveillance records."}
+              {" monthly reported surveillance records, split into a 12-month centred moving-average trend, a month-of-year seasonal index and the irregular remainder."}
             </p>
           </div>
           <button
@@ -922,9 +852,8 @@ function SeasonalityPage() {
           </button>
         </div>
 
-        {/* In Simple View: Plain-language seasonal summary banner */}
-        {viewMode === "simple" && (
-          <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="simple-summary">
+        {/* Plain-language seasonal summary */}
+        <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="seasonal-summary">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-primary/15 p-2 text-primary shrink-0 mt-0.5">
                 <Sparkles className="size-4" />
@@ -939,11 +868,9 @@ function SeasonalityPage() {
               </div>
             </div>
           </div>
-        )}
 
-        {/* In Advanced View: Chart Tabs with colored dots matching series color */}
-        {viewMode === "advanced" && (
-          <div className="mb-4">
+        {/* Decomposition tabs with dots matching the series colour */}
+        <div className="mb-4">
             <div
               role="tablist"
               aria-label="Decomposition series tabs"
@@ -989,9 +916,8 @@ function SeasonalityPage() {
               </span>
             </div>
           </div>
-        )}
 
-        {/* Charts: In Simple mode, only Observed is shown. In Advanced mode, only active tab is shown.
+        {/* Charts: show the active decomposition tab.
             All chart cards remain in DOM with hidden/block to preserve refs for PDF export. */}
         <div>
           {/* 1. Observed Series */}
@@ -999,7 +925,7 @@ function SeasonalityPage() {
             id="tabpanel-observed"
             role="tabpanel"
             aria-labelledby="tab-observed"
-            className={viewMode === "simple" || decompTab === "observed" ? "block" : "hidden"}
+            className={decompTab === "observed" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1018,12 +944,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 2. Trend Component (Advanced only) */}
+          {/* 2. Trend Component */}
           <div
             id="tabpanel-trend"
             role="tabpanel"
             aria-labelledby="tab-trend"
-            className={viewMode === "advanced" && decompTab === "trend" ? "block" : "hidden"}
+            className={decompTab === "trend" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1045,12 +971,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 3. Seasonality Component (Advanced only) */}
+          {/* 3. Seasonality Component */}
           <div
             id="tabpanel-seasonal"
             role="tabpanel"
             aria-labelledby="tab-seasonal"
-            className={viewMode === "advanced" && decompTab === "seasonal" ? "block" : "hidden"}
+            className={decompTab === "seasonal" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1069,12 +995,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 4. Noise (Residual) (Advanced only) */}
+          {/* 4. Noise (Residual) */}
           <div
             id="tabpanel-residual"
             role="tabpanel"
             aria-labelledby="tab-residual"
-            className={viewMode === "advanced" && decompTab === "residual" ? "block" : "hidden"}
+            className={decompTab === "residual" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}

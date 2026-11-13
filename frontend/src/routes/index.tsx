@@ -69,8 +69,8 @@ function MapView() {
   useEffect(() => setMounted(true), []);
 
   const tour = useTour(HOME_TOUR_STEPS);
-  const { start: startTour } = tour;
-  useEffect(() => { startTour(); }, [startTour]);
+  const { startOnce: startTourOnce } = tour;
+  useEffect(() => { startTourOnce(); }, [startTourOnce]);
   const selectionRef = useRef({ selected, flyTo, mobileNationalOpen });
   selectionRef.current = { selected, flyTo, mobileNationalOpen };
 
