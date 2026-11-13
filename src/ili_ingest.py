@@ -20,6 +20,7 @@ from pathlib import Path
 import pandas as pd
 
 from . import config, ingest
+from .integrity import count_values
 
 ILI_RAW_FILE = "data/raw/new_diseases/ILI - Cases - Data.csv"
 DISEASE = "Influenza-like Illness"
@@ -48,28 +49,54 @@ REGION_LABELS = {
 
 
 def _epi_week_month(year_series, week_series):
-    """Calendar month that contains the Thursday of a morbidity week."""
-    weeks = pd.Series(week_series, dtype="int64").clip(upper=52)
-    years = pd.Series(year_series, dtype="int64")
-    thu = pd.Series(
-        [
-            pd.Timestamp.fromisocalendar(int(y), int(w), 4)
-            for y, w in zip(years, weeks)
-        ]
-    )
-    return thu.dt.to_period("M").dt.to_timestamp()
+    from .integrity import legacy_week_month
+    return legacy_week_month(year_series, week_series)
+
+
+
+def normalize_ili_headers(frame):
+    """Normalize declared year/week axes without rewriting the raw source."""
+    required = {"Year", "Morbidity Week"}
+    if not required.issubset(frame.columns) or frame.empty:
+        raise ValueError("ILI requires nonempty Year and Morbidity Week fields")
+    out = frame.copy()
+    a = pd.to_numeric(out["Year"], errors="raise")
+    b = pd.to_numeric(out["Morbidity Week"], errors="raise")
+    if (a.isna().any() or b.isna().any() or a.mod(1).ne(0).any()
+            or b.mod(1).ne(0).any()):
+        raise ValueError("ILI year/week values must be finite integers")
+    normal = a.between(1900, 2100).all() and b.between(1, 53).all()
+    reversed_headers = a.between(1, 53).all() and b.between(1900, 2100).all()
+    if reversed_headers:
+        out = out.rename(columns={"Year": "Morbidity Week", "Morbidity Week": "Year"})
+        out.attrs["ili_source_headers"] = "reversed_normalized"
+    elif normal:
+        out.attrs["ili_source_headers"] = "already_normal"
+    else:
+        raise ValueError("ILI header/value layout is mixed or invalid; source review required")
+    out["Year"] = pd.to_numeric(out["Year"]).astype(int)
+    out["Morbidity Week"] = pd.to_numeric(out["Morbidity Week"]).astype(int)
+    return out
 
 
 def process_ili(raw_path=None):
-    raw_path = Path(raw_path) if raw_path else Path(ILI_RAW_FILE)
+    raw_path = Path(raw_path) if raw_path else ingest.RAW_DIR / "new_diseases" / "ILI - Cases - Data.csv"
     if not raw_path.exists():
         raise FileNotFoundError(f"ILI raw source not found: {raw_path}")
 
-    df = pd.read_csv(raw_path, low_memory=False)
+    df = normalize_ili_headers(pd.read_csv(raw_path, low_memory=False))
+    source_rows = len(df)
+    import json, hashlib
+    ingest.PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    (ingest.PROCESSED_DIR / "ili_header_audit.json").write_text(json.dumps(dict(
+        source_headers=df.attrs["ili_source_headers"], rows=source_rows,
+        raw_sha256=hashlib.sha256(raw_path.read_bytes()).hexdigest(),
+        raw_file_modified=False, calendar="provisional_iso_thursday_w53_fold52"), indent=2))
+    df["source_record"] = df.index + 1
 
-    # Inverted headers: 'Year' is week, 'Morbidity Week' is year
-    raw_years = df["Morbidity Week"].astype(int)
-    raw_weeks = df["Year"].astype(int)
+    # Headers are normalized before dates are mapped.
+    raw_years = df["Year"]
+    raw_weeks = df["Morbidity Week"]
 
     # Filter >= 2019
     mask_2019 = raw_years >= config.DATA_START_YEAR
@@ -90,13 +117,15 @@ def process_ili(raw_path=None):
         raise ValueError(f"Unmapped ILI region(s): {unmapped}")
 
     # Cases
-    df_valid["cases"] = pd.to_numeric(df_valid["Cases"], errors="coerce").fillna(0).astype(int)
-    df_valid["deaths"] = 0  # No deaths column in ILI raw data
+    df_valid["cases"] = count_values(df_valid["Cases"], "ILI Cases")
+    df_valid["deaths"] = float("nan")  # Unavailable measure, not an observed zero
 
+    from .lineage import trace
+    trace(df_valid.assign(disease=DISEASE), raw_path, ingest.PROCESSED_DIR, source_rows)
     # Aggregate monthly by region
     regional = (
         df_valid.groupby(["date", "region"], as_index=False)[["cases", "deaths"]]
-        .sum()
+        .sum(min_count=1)
         .sort_values(["region", "date"], ignore_index=True)
     )
     regional["disease"] = DISEASE
@@ -110,8 +139,8 @@ def process_ili(raw_path=None):
         reindexed = sub.reindex(idx).rename_axis("date").reset_index()
         reindexed["region"] = reg
         reindexed["disease"] = DISEASE
-        reindexed["cases"] = reindexed["cases"].fillna(0).astype(int)
-        reindexed["deaths"] = reindexed["deaths"].fillna(0).astype(int)
+        reindexed["cases"] = reindexed["cases"]
+        reindexed["deaths"] = reindexed["deaths"]
         full_grid.append(reindexed)
 
     regional_full = pd.concat(full_grid, ignore_index=True)[
@@ -119,9 +148,12 @@ def process_ili(raw_path=None):
     ]
 
     # National series = sum of 18 regions
+    regional_full["observation_status"] = regional_full["cases"].map(lambda x: "missing_report" if pd.isna(x) else "observed_zero" if x == 0 else "observed_positive")
+    regional_full["source_status"] = "provisional"
+    regional_full.to_csv(ingest.PROCESSED_DIR / "ili_observation_ledger.csv", index=False)
     national = (
         regional_full.groupby("date", as_index=False)[["cases", "deaths"]]
-        .sum()
+        .sum(min_count=1)
         .sort_values("date", ignore_index=True)
     )
     national["disease"] = DISEASE

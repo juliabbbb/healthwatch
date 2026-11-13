@@ -3,7 +3,7 @@ yearly seasonality that Prophet's Fourier terms already model?
 
 Config A - yearly_seasonality=True, is_wet_season regressor omitted
 Config B - yearly_seasonality=False, is_wet_season regressor present
-Config C - both (deployed configuration, forecast.fit_prophet defaults)
+Config C - both (comparison only; deployed baseline is Config B)
 
 For every region and every walk-forward window we report MAE / RMSE / MAPE on
 the held-out months, the seasonal-naive baseline and skill, and the mean
@@ -31,7 +31,7 @@ CONFIGS = {
     "C": {"use_year_seasonality": True, "use_wet_regressor": True},
 }
 
-OUT = Path(__file__).resolve().parent.parent / "data" / "processed"
+OUT = ingest.PROCESSED_DIR
 
 
 def fit_model(train, use_year_seasonality, use_wet_regressor):
@@ -45,26 +45,9 @@ def predict(model, dates, use_wet_regressor):
     return forecast.predict(model, dates, use_wet_regressor=use_wet_regressor)
 
 
-def walk_forward_validation(series, use_year_seasonality, use_wet_regressor,
-                            val_months=forecast.VAL_MONTHS, end_date=None):
-    series = series.reset_index(drop=True)
-    split = forecast._split_index(series, val_months, end_date)
-    if split < forecast.MIN_TRAIN_MONTHS:
-        return None
-    preds = []
-    model = None
-    for step in range(val_months):
-        cutoff = split + step
-        if model is None or step % forecast.REFIT_EVERY == 0:
-            model = fit_model(
-                series.iloc[:cutoff][["ds", "y"]],
-                use_year_seasonality, use_wet_regressor,
-            )
-        raw = predict(model, [series.loc[cutoff, "ds"]], use_wet_regressor)["yhat"].iloc[0]
-        preds.append(raw)
-    out = series.iloc[split: split + val_months][["ds", "y"]].copy()
-    out["yhat"] = np.clip(preds, 0, None)
-    return out
+def walk_forward_validation(series, use_year_seasonality, use_wet_regressor, val_months=forecast.VAL_MONTHS, end_date=None):
+    return forecast.walk_forward_validation(series,val_months=val_months,end_date=end_date,
+        use_year_seasonality=use_year_seasonality,use_wet_regressor=use_wet_regressor)
 
 
 def score_row(validation, naive_mae):

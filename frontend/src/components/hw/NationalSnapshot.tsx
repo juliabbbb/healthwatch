@@ -1,8 +1,12 @@
+import { HeatReferencePanel } from "./HeatReferencePanel";
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Info, X, Stethoscope, Users } from "lucide-react";
 import {
   ILLNESSES,
+  REFERENCE_ILLNESSES,
+  ILLNESS_BY_ID,
   METRIC_META,
   RISK_META,
   formatMetric,
@@ -28,9 +32,11 @@ export function NationalSnapshot({
   illness = "all",
   onIllnessChange,
   counts,
+  valueKind,
   dominantIllness,
   dominantValue,
   dominantCases,
+  dominantAvailable,
   showOutbreakMarkers = false,
   onOutbreakMarkersChange,
   className,
@@ -44,14 +50,18 @@ export function NationalSnapshot({
   illness?: string;
   onIllnessChange?: (i: string) => void;
   counts: Record<RiskLevel, number>;
+  valueKind?: string;
   dominantIllness: string;
   dominantValue: string;
   dominantCases: string;
+  dominantAvailable?: boolean;
   showOutbreakMarkers?: boolean;
   onOutbreakMarkersChange?: (v: boolean) => void;
   className?: string;
   id?: string;
 }) {
+  const hasValue = Number.isFinite(value);
+  const hasDominant = dominantAvailable ?? (dominantCases !== "Unavailable" && dominantValue !== "Unavailable");
   const [legendOpen, setLegendOpen] = useState(false);
   const legendRef = useRef<HTMLDivElement>(null);
   const { mode: audienceMode } = useAudienceMode();
@@ -73,7 +83,7 @@ export function NationalSnapshot({
   }, [legendOpen]);
 
   return (
-    <div
+    <div data-text-card
       id={id}
       className={cn(
         "glass-panel pointer-events-auto flex flex-col gap-3.5 rounded-xl p-5 shadow-xl w-full",
@@ -83,15 +93,15 @@ export function NationalSnapshot({
       {/* 1. Header Row */}
       <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-border/70 pb-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="label-caps text-[11px] font-bold text-foreground">
+          <span className="label-caps text-xs font-bold text-foreground">
             National Snapshot
           </span>
-          <span className="text-muted-foreground text-xs">·</span>
-          <span className="font-mono text-xs font-semibold text-foreground">
-            {formatMonthYear(monthLabel)}
+          <span className="text-muted-foreground text-[13px]">·</span>
+          <span className="font-mono text-[13px] font-semibold text-foreground">
+            {illness === "Heat-Related Illness" ? "Annual records" : formatMonthYear(monthLabel)}
           </span>
           <span
-            className="rounded-full px-2.5 py-0.5 font-mono text-[11px] font-bold uppercase tracking-wider"
+            className="rounded-full px-2.5 py-0.5 font-mono text-xs font-bold uppercase tracking-wider"
             style={{
               color: isForecast ? "var(--risk-moderate)" : "var(--muted-foreground)",
               backgroundColor: isForecast
@@ -99,9 +109,9 @@ export function NationalSnapshot({
                 : "var(--secondary)",
             }}
           >
-            {isForecast ? "Predicted" : "Reported"}
+            {illness === "Heat-Related Illness" ? "Source available" : valueKind === "mixed" ? "Mixed" : valueKind === "unavailable" ? "Unavailable" : isForecast ? "Predicted" : "Reported"}
           </span>
-          <span className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider flex items-center gap-1 border border-border/60 bg-secondary/60 text-foreground">
+          <span className="rounded-full px-2 py-0.5 font-mono text-xs font-bold tracking-wider flex items-center gap-1 border border-border/60 bg-secondary/60 text-foreground">
             {audienceMode === "clinical" ? (
               <>
                 <Stethoscope className="size-3 text-primary" />
@@ -119,18 +129,19 @@ export function NationalSnapshot({
       </div>
 
       {/* 2. Key Metrics Grid (3 Cards: grid of 3 with balanced padding and complete visible titles) */}
-      <div className="grid grid-cols-3 gap-3">
-        {/* Card A: National Incidence */}
-        <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps text-xs leading-tight">
-            National Incidence
+      {illness === "Heat-Related Illness" ? <HeatReferencePanel /> : (
+      <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-2 sm:grid-cols-3">
+        {/* Card A: National reported aggregate */}
+        <div className="min-[420px]:col-span-2 sm:col-span-1 [container-type:inline-size] rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col min-w-0">
+          <p className="label-caps text-[13px] leading-tight">
+            National {valueKind === "mixed" ? "mixed" : isForecast ? "forecast" : "reported"} aggregate
           </p>
           <div className="mt-2">
-            <p className="font-mono text-2xl sm:text-3xl font-bold tabular-nums tracking-tight text-foreground leading-none">
-              {formatMetric(value, mode)}
+            <p className="font-mono text-[clamp(1.125rem,12cqw,1.875rem)] font-bold tabular-nums tracking-tight text-foreground leading-tight break-words">
+              {hasValue ? formatMetric(value, mode) : "—"}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground font-medium truncate">
-              {METRIC_META[mode].unit}
+            <p className="mt-1 text-sm text-muted-foreground font-medium truncate">
+              {hasValue ? METRIC_META[mode].unit : "No data this month"}
             </p>
           </div>
         </div>
@@ -138,8 +149,8 @@ export function NationalSnapshot({
         {/* Card B: Regional Risk Breakdown with legend tooltip */}
         <div className="relative rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
           <div className="flex items-start justify-between gap-1 min-w-0">
-            <p className="label-caps text-xs leading-tight">
-              Risk Distribution
+            <p className="label-caps text-[13px] leading-tight">
+              {illness === "all" ? "Highest illness risk" : "Risk Distribution"}
             </p>
             <div
               ref={legendRef}
@@ -157,9 +168,9 @@ export function NationalSnapshot({
                 <Info className="size-2.5" />
               </button>
               {legendOpen && (
-                <div className="absolute right-0 top-full z-50 mt-2 w-64 sm:w-72 rounded-xl border border-border bg-card/95 p-3 text-xs text-foreground shadow-2xl backdrop-blur-md">
+                <div className="absolute right-0 top-full z-50 mt-2 w-64 max-w-[calc(100vw-4rem)] sm:w-72 rounded-xl border border-border bg-card/95 p-3 text-[13px] text-foreground shadow-2xl backdrop-blur-md">
                   <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-border/60">
-                    <span className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
+                    <span className="font-mono text-[13px] font-bold uppercase tracking-wider text-foreground">
                       Risk Tier Guide
                     </span>
                     <button
@@ -168,19 +179,19 @@ export function NationalSnapshot({
                         e.stopPropagation();
                         setLegendOpen(false);
                       }}
-                      className="text-muted-foreground hover:text-foreground text-xs p-0.5 rounded cursor-pointer"
+                      className="text-muted-foreground hover:text-foreground text-[13px] p-0.5 rounded cursor-pointer"
                       aria-label="Close"
                     >
                       <X className="size-3" />
                     </button>
                   </div>
-                  <p className="text-xs leading-relaxed text-muted-foreground">
-                    Colors show monthly risk tier (
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {illness === "all" ? "All uses the highest available contributing illness tier. Missing illness values are skipped. Individual monthly tiers are " : "Colors show monthly risk tier "}(
                     <span className="text-risk-low font-semibold">Low</span> /{" "}
                     <span className="text-risk-moderate font-semibold">Moderate</span> /{" "}
                     <span className="text-risk-high font-semibold">High</span>).
                   </p>
-                  <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                     The alert marker shows a seasonal outbreak flag from the validated 2025
                     benchmark (Jul–Sep wet window) — a fixed signal, not a live upcoming-season
                     feed.
@@ -190,18 +201,18 @@ export function NationalSnapshot({
             </div>
           </div>
           <div className="flex flex-col gap-1 mt-2">
-            {(["high", "moderate", "low"] as RiskLevel[]).map((r) => (
-              <div key={r} className="flex items-center justify-between gap-1 text-xs">
+            {(["high", "moderate", "low", "unavailable"] as RiskLevel[]).map((r) => (
+              <div key={r} className="flex items-center justify-between gap-1 text-[13px]">
                 <span className="flex items-center gap-1.5 min-w-0">
                   <span
                     className="size-2 rounded-full shrink-0"
                     style={{ backgroundColor: RISK_META[r].color }}
                   />
-                  <span className="text-muted-foreground text-xs font-medium truncate capitalize">
+                  <span className="text-muted-foreground text-[13px] font-medium truncate capitalize">
                     {r}
                   </span>
                 </span>
-                <span className="font-mono text-xs font-bold tabular-nums text-foreground shrink-0">
+                <span className="font-mono text-[13px] font-bold tabular-nums text-foreground shrink-0">
                   {counts[r]}
                 </span>
               </div>
@@ -211,32 +222,36 @@ export function NationalSnapshot({
 
         {/* Card C: Dominant Illness */}
         <div className="rounded-xl border border-border/60 bg-secondary/20 p-3 sm:p-3.5 flex flex-col justify-between min-w-0">
-          <p className="label-caps text-xs leading-tight">
+          <p className="label-caps text-[13px] leading-tight">
             Dominant Illness
           </p>
           <div className="mt-2">
-            <p className="text-base sm:text-lg font-bold text-foreground leading-snug">
-              {dominantIllness}
+            <p className="min-w-0 break-words text-base sm:text-lg font-bold text-foreground leading-snug">
+              {hasDominant ? dominantIllness : "No data"}
             </p>
-            <p className="mt-1 text-xs text-muted-foreground leading-tight">
-              {dominantValue} · {dominantCases} cases
+            <p className="mt-1 min-w-0 break-words text-sm text-muted-foreground leading-relaxed">
+              {hasDominant ? <>{dominantValue} · {dominantCases} cases</> : "No available illness for this month."}
             </p>
           </div>
         </div>
       </div>
 
+      )}
+
+      {illness === "all" && <p className="text-xs leading-relaxed text-muted-foreground">Totals use available Dengue, ABD, Cholera and Typhoid values. Map color shows the highest available individual tier.</p>}
+
       {/* 3. Controls Section: Structured Clean Rows */}
       <div className="flex flex-col gap-2.5 border-t border-border/70 pt-3">
         {/* Top Controls Row: Illness Filter */}
         {onIllnessChange && (
-          <div className="flex items-center justify-between gap-2">
-            <span className="label-caps text-xs text-muted-foreground shrink-0">Illness:</span>
-            <div className="flex items-center gap-1.5 overflow-x-auto hw-scroll py-0.5">
+          <div className="flex min-w-0 flex-wrap items-start gap-2">
+            <span className="label-caps text-[13px] text-muted-foreground shrink-0">Illness:</span>
+            <div data-tour="illness-filter" className="flex min-w-0 flex-wrap items-center gap-1.5 py-0.5">
               <button
                 type="button"
                 onClick={() => onIllnessChange("all")}
                 className={cn(
-                  "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer shrink-0",
+                  "whitespace-nowrap rounded-lg border px-2.5 py-1 text-[13px] font-medium transition-colors cursor-pointer shrink-0",
                   illness === "all"
                     ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
                     : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
@@ -244,19 +259,20 @@ export function NationalSnapshot({
               >
                 All
               </button>
-              {ILLNESSES.map((i) => (
+              {[...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => (
                 <button
                   type="button"
                   key={i.id}
                   onClick={() => onIllnessChange(i.id)}
                   className={cn(
-                    "rounded-lg border px-2.5 py-1 text-xs font-medium transition-colors cursor-pointer shrink-0",
+                    "whitespace-nowrap rounded-lg border px-2.5 py-1 text-[13px] font-medium transition-colors cursor-pointer shrink-0",
                     illness === i.id
                       ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
                       : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {i.shortName}
+                  {i.shortName}{" "}
+                  {ILLNESS_BY_ID[i.id]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[i.id]?.provisionalNote} />}
                 </button>
               ))}
             </div>
@@ -266,8 +282,8 @@ export function NationalSnapshot({
         {/* Bottom Controls Row: Metric Mode & Outbreak Marker Toggle */}
         <div className="flex items-center justify-between gap-2 flex-wrap">
           {onModeChange && (
-            <div className="flex items-center gap-2 shrink-0">
-              <span className="label-caps text-xs text-muted-foreground shrink-0">Metric:</span>
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="label-caps text-[13px] text-muted-foreground shrink-0">Metric:</span>
               <div className="flex items-center rounded-lg border border-border/80 bg-secondary/30 p-0.5">
                 {(["percapita", "raw"] as MetricMode[]).map((m) => (
                   <button
@@ -276,7 +292,7 @@ export function NationalSnapshot({
                     onClick={() => onModeChange(m)}
                     aria-pressed={mode === m}
                     className={cn(
-                      "rounded-md px-2.5 py-0.5 text-[11px] font-medium whitespace-nowrap transition-colors cursor-pointer",
+                      "rounded-md px-2.5 py-0.5 text-xs font-medium whitespace-nowrap transition-colors cursor-pointer",
                       mode === m
                         ? "bg-primary/20 text-primary font-semibold shadow-xs"
                         : "text-muted-foreground hover:text-foreground",
@@ -295,7 +311,7 @@ export function NationalSnapshot({
               onClick={() => onOutbreakMarkersChange(!showOutbreakMarkers)}
               aria-pressed={showOutbreakMarkers}
               className={cn(
-                "rounded-lg border px-2.5 py-1 text-[11px] font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer",
+                "rounded-lg border px-2.5 py-1 text-xs font-medium whitespace-nowrap shrink-0 transition-colors cursor-pointer",
                 showOutbreakMarkers
                   ? "border-primary/60 bg-primary/20 text-primary font-semibold shadow-xs"
                   : "border-border/80 bg-secondary/20 text-muted-foreground hover:text-foreground",
@@ -309,10 +325,10 @@ export function NationalSnapshot({
       </div>
 
       {/* 4. Methodology Link */}
-      <div className="border-t border-border/70 pt-2 text-xs flex items-center justify-between">
+      <div className="border-t border-border/70 pt-2 text-[13px] flex items-center justify-between">
         <Link
           to="/methodology"
-          className="inline-flex items-center gap-1 text-primary hover:underline font-medium text-[11px]"
+          className="inline-flex items-center gap-1 text-primary hover:underline font-medium text-xs"
         >
           Data sources &amp; methodology →
         </Link>

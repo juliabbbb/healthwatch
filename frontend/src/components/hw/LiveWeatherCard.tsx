@@ -1,6 +1,6 @@
+import { illnessDisplayName } from "@/lib/illnessGroups";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  ArrowRight,
   CheckCircle2,
   ChevronDown,
   ChevronUp,
@@ -12,7 +12,6 @@ import {
   Thermometer,
   Waves,
   Wind,
-  Zap,
   Calculator,
   ShieldAlert,
   Stethoscope,
@@ -47,6 +46,8 @@ interface LiveWeatherResponse {
   impacts: string;
   flood_warning: boolean;
   risk_tier: "NORMAL" | "MODERATE" | "ELEVATED" | "HIGH";
+  data_status?: string;
+  primary_forecasts_modified?: boolean;
   multiplier: number;
   transmission_timeline?: {
     immediate_days_1_3: string;
@@ -79,21 +80,12 @@ const ALERT_COLORS: Record<string, string> = {
 };
 
 const TIER_COLORS: Record<string, string> = {
+  UNAVAILABLE: "var(--muted-foreground)",
   HIGH: "var(--risk-high)",
   ELEVATED: "var(--risk-moderate)",
   MODERATE: "var(--risk-moderate)",
   NORMAL: "var(--risk-low)",
 };
-
-// Snapshot of the next Prophet forecast point, passed in from ForecastCard
-export interface NextForecastSnapshot {
-  value: number;   // metric value (raw or per-100k depending on mode)
-  lower: number;   // 95% CI lower bound
-  upper: number;   // 95% CI upper bound
-  label: string;   // e.g. "2026-11"
-  unit: string;    // e.g. "cases" or "per 100k"
-  mode: string;    // "raw" | "percapita"
-}
 
 // Cache keyed by regionCode — cleared on manual refresh
 const weatherCache = new Map<string, { data: LiveWeatherResponse; fetchedAt: number }>();
@@ -124,12 +116,10 @@ function formatFetchTime(ts: number): string {
 export function LiveWeatherCard({
   regionCode,
   illness = "Dengue",
-  nextForecast,
   className,
 }: {
   regionCode: string;
   illness?: string;
-  nextForecast?: NextForecastSnapshot;
   className?: string;
 }) {
   const { mode: audienceMode } = useAudienceMode();
@@ -187,7 +177,7 @@ export function LiveWeatherCard({
   // Loading skeleton
   if (status === "loading" && !data) {
     return (
-      <div className={cn("rounded-xl border border-border/60 bg-secondary/20 p-4 animate-pulse", className)}>
+      <div data-text-card className={cn("rounded-xl border border-border/60 bg-secondary/20 p-4 animate-pulse", className)}>
         <div className="flex items-center gap-2 mb-3">
           <CloudRain className="size-4 text-primary opacity-50" />
           <div className="h-3 w-36 rounded bg-secondary/60" />
@@ -201,10 +191,15 @@ export function LiveWeatherCard({
   }
 
   if (!data) return null;
+  if (data.data_status === "unavailable") return (
+    <div className="rounded-lg border border-border p-3 text-xs text-muted-foreground">
+      PAGASA weather is unavailable for this region. The main forecast remains unchanged.
+    </div>
+  );
 
   const isFlood = data.flood_warning;
   const tier = data.risk_tier;
-  const tierColor = TIER_COLORS[tier] ?? TIER_COLORS.NORMAL;
+  const tierColor = TIER_COLORS[tier] ?? TIER_COLORS["NORMAL"];
   const temp = data.extremes?.temperature;
   const rh = data.extremes?.relative_humidity;
   const timeline = data.transmission_timeline;
@@ -215,12 +210,11 @@ export function LiveWeatherCard({
   // Illness-specific advisory keyed by exact SUPPORTED_DISEASES name
   const illnessAdvisory: IllnessAdvisory | undefined = data.disease_advisories[illness];
   const alertLevel = illnessAdvisory?.alert_level ?? tier;
-  const alertColor = ALERT_COLORS[alertLevel] ?? ALERT_COLORS.BASELINE;
-  const multiplier = illnessAdvisory?.multiplier ?? data.multiplier ?? 1.0;
+  const alertColor = ALERT_COLORS[alertLevel] ?? ALERT_COLORS["BASELINE"];
 
   return (
     <div
-      data-explain="live-weather"
+      data-text-card data-explain="live-weather"
       className={cn(
         "rounded-xl border border-border/80 overflow-hidden transition-all shadow-xs text-left",
         isFlood ? "border-l-4" : "",
@@ -234,10 +228,11 @@ export function LiveWeatherCard({
           <CloudRain className="size-4 text-primary shrink-0" />
           <div>
             <span className="label-caps text-xs text-foreground font-bold tracking-wider block">
-              PAGASA WEATHER NOWCAST
+              PAGASA WEATHER ADVISORY
             </span>
+            <p className="text-[10px] text-muted-foreground">Bulletin advisory only; it does not change forecasts, hotspot tiers or outbreak flags.</p>
             <span className="text-[11px] text-muted-foreground">
-              {illness} · {data.region_short ?? data.region_name}
+              {illnessDisplayName(illness)} · {data.region_short ?? data.region_name}
             </span>
           </div>
         </div>
@@ -463,51 +458,22 @@ export function LiveWeatherCard({
             >
               <span className="flex items-center gap-1.5">
                 <Calculator className="size-3.5 text-primary" />
-                Prediction Model &amp; Weather Basis
+                Forecast model &amp; advisory basis
               </span>
               {showModelBasis ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
             </button>
 
             {showModelBasis && (
-              <div className="mt-2 space-y-2 rounded-lg border border-primary/30 bg-card/80 p-3 text-xs leading-relaxed">
-                <div className="border-b border-border/50 pb-2">
-                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                    1. STATISTICAL BASELINE (PROPHET MODEL)
-                  </span>
-                  <p className="text-muted-foreground text-[11px]">
-                    Fitted onto canonical DOH surveillance data (2019–2026). The model decomposes the regional monthly time-series into:
-                    <code className="mx-1 rounded bg-secondary px-1.5 py-0.5 font-mono text-[10px]">
-                      y(t) = Trend(t) + MonthlySeasonality(t) + ε
-                    </code>
-                    generating the baseline expected case trajectory and 95% uncertainty interval.
-                  </p>
-                </div>
-
-                <div className="border-b border-border/50 pb-2">
-                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                    2. METEOROLOGICAL FORCING (PAGASA NOWCAST)
-                  </span>
-                  <p className="text-muted-foreground text-[11px]">
-                    Live meteorological conditions act as physical amplifiers on transmission vectors:
-                  </p>
-                  <ul className="mt-1 space-y-1 text-[11px] text-muted-foreground pl-3 list-disc">
-                    <li>
-                      <strong>Dengue:</strong> Rainfall accumulation generates outdoor standing water, expanding <em>Aedes aegypti</em> breeding pools with a characteristic <strong>2–4 week incubation lag</strong>.
-                    </li>
-                    <li>
-                      <strong>Diarrheal &amp; Waterborne:</strong> Heavy precipitation and flood run-off inundate open wells and disrupt water pipelines, triggering waterborne pathogen transmission within <strong>1–3 days</strong>.
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <span className="label-caps text-[10px] text-primary font-bold block mb-1">
-                    3. INTEGRATED FORMULATION
-                  </span>
-                  <div className="rounded bg-secondary/60 p-2 font-mono text-[11px] text-center font-bold text-foreground">
-                    Operational Projection = Prophet Baseline × Weather Modifier ({multiplier.toFixed(2)}×)
-                  </div>
-                </div>
+              <div className="mt-3 space-y-3 text-xs text-muted-foreground">
+                <p><strong>1. STATISTICAL FORECAST (SARIMAX)</strong><br />
+                  y(t) = c + beta wet(t) + u(t), with autoregressive structure at lag 1 and seasonal lag 12.
+                  The 80% model interval is not empirically calibrated.</p>
+                <p><strong>2. WEATHER ADVISORY (PAGASA BULLETIN)</strong><br />
+                  Bulletin rain and flood conditions provide context for health officers.
+                  They are not measured weather regressors in the illness forecast.</p>
+                <p><strong>3. SEPARATION OF FORECAST AND ADVISORY</strong><br />
+                  Forecast values come only from reported history and the calendar wet/dry indicator.
+                  The PAGASA advisory does not change forecast values, hotspot tiers or outbreak flags.</p>
               </div>
             )}
           </div>
@@ -527,7 +493,7 @@ export function LiveWeatherCard({
                 className="label-caps text-[11px] font-bold tracking-wider"
                 style={{ color: alertColor }}
               >
-                {illness} · Meteorological Risk Tier
+                {illnessDisplayName(illness)} · Meteorological Risk Tier
               </span>
               <span
                 className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-mono font-bold"
@@ -542,94 +508,17 @@ export function LiveWeatherCard({
             <p className="text-xs text-foreground/80 leading-relaxed">
               {illnessAdvisory.guidance}
             </p>
-            {audienceMode === "clinical" && illnessAdvisory.multiplier > 1.01 && (
-              <div className="flex items-center gap-1.5 pt-0.5">
-                <Zap className="size-3 shrink-0" style={{ color: alertColor }} />
-                <span className="text-[11px] font-mono font-semibold" style={{ color: alertColor }}>
-                  +{((illnessAdvisory.multiplier - 1) * 100).toFixed(0)}% weather surge modifier
-                </span>
-              </div>
-            )}
+
           </div>
         )}
 
-        {/* ── Weather-Adjusted Forecast Impact (Healthcare Worker Mode only) ── */}
-        {audienceMode === "clinical" && illnessAdvisory && nextForecast && (
-          (() => {
-            const m = illnessAdvisory.multiplier;
-            const isRaw = nextForecast.mode === "raw";
-            const adjValue  = isRaw ? Math.round(nextForecast.value * m)  : Math.round(nextForecast.value * m * 10) / 10;
-            const adjLower  = isRaw ? Math.round(nextForecast.lower * m)  : Math.round(nextForecast.lower * m * 10) / 10;
-            const adjUpper  = isRaw ? Math.round(nextForecast.upper * m)  : Math.round(nextForecast.upper * m * 10) / 10;
-            const baseStr   = isRaw ? nextForecast.value.toLocaleString() : nextForecast.value.toLocaleString(undefined, { maximumFractionDigits: 1 });
-            const adjStr    = isRaw ? adjValue.toLocaleString()            : adjValue.toLocaleString(undefined, { maximumFractionDigits: 1 });
-            const adjLoStr  = isRaw ? adjLower.toLocaleString()            : adjLower.toLocaleString(undefined, { maximumFractionDigits: 1 });
-            const adjHiStr  = isRaw ? adjUpper.toLocaleString()            : adjUpper.toLocaleString(undefined, { maximumFractionDigits: 1 });
-            const monthLabel = nextForecast.label
-              ? new Date(nextForecast.label + "-01").toLocaleDateString("en-PH", { month: "long", year: "numeric" })
-              : "Next month";
-            return (
-              <div className="rounded-lg border border-border/60 bg-card/70 p-3 space-y-2">
-                <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
-                  WEATHER-ADJUSTED FORECAST · {monthLabel.toUpperCase()}
-                </p>
-                {/* Baseline → Adjusted comparison row */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <div className="flex flex-col items-center rounded-md bg-secondary/50 border border-border/50 px-2.5 py-1.5 min-w-0">
-                    <span className="label-caps text-[9px] text-muted-foreground">Prophet Baseline</span>
-                    <span className="font-mono text-sm font-bold text-foreground tabular-nums">
-                      {baseStr}
-                    </span>
-                    <span className="text-[10px] text-muted-foreground">{nextForecast.unit}</span>
-                  </div>
 
-                  <div className="flex flex-col items-center gap-0.5">
-                    <ArrowRight className="size-4" style={{ color: alertColor }} />
-                    <span
-                      className="text-[10px] font-mono font-bold"
-                      style={{ color: alertColor }}
-                    >
-                      ×{m.toFixed(2)}
-                    </span>
-                  </div>
-
-                  <div
-                    className="flex flex-col items-center rounded-md border px-2.5 py-1.5 min-w-0"
-                    style={{
-                      borderColor: `color-mix(in oklab, ${alertColor}, transparent 55%)`,
-                      background: `color-mix(in oklab, ${alertColor}, transparent 88%)`,
-                    }}
-                  >
-                    <span className="label-caps text-[9px]" style={{ color: alertColor }}>Weather-Adjusted</span>
-                    <span className="font-mono text-sm font-bold tabular-nums" style={{ color: alertColor }}>
-                      {adjStr}
-                    </span>
-                    <span className="text-[10px]" style={{ color: alertColor }}>{nextForecast.unit}</span>
-                  </div>
-                </div>
-
-                {/* Adjusted CI */}
-                <p className="text-[11px] text-muted-foreground">
-                  Adjusted 95% CI:{" "}
-                  <span className="font-mono tabular-nums text-foreground/75">{adjLoStr} – {adjHiStr}</span>
-                  {" "}{nextForecast.unit}
-                </p>
-
-                {/* Disclaimer */}
-                <p className="text-[10px] text-muted-foreground/70 leading-relaxed border-t border-border/40 pt-1.5">
-                  ⚠️ This is an operational nowcast adjustment applied to the Prophet model output.
-                  It reflects current weather conditions only — not a re-run of the forecasting model.
-                </p>
-              </div>
-            );
-          })()
-        )}
 
         {/* ── Transmission Timeline (Healthcare Worker Mode only) ── */}
         {audienceMode === "clinical" && timeline && (
           <div className="space-y-2 border-t border-border/50 pt-3">
             <p className="label-caps text-[10px] text-muted-foreground tracking-wider font-bold">
-              CLINICAL TRANSMISSION HORIZON
+              TYPICAL TRANSMISSION CONTEXT
             </p>
             <div className="rounded-lg bg-card/60 border border-border/50 p-2.5 space-y-1">
               <div className="flex items-center gap-1.5">
@@ -639,7 +528,7 @@ export function LiveWeatherCard({
                 </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
-                {timeline.immediate_days_1_3}
+                {timeline.immediate_days_1_3.replace(/expected/gi, "typically associated")}
               </p>
             </div>
             <div className="rounded-lg bg-card/60 border border-border/50 p-2.5 space-y-1">
@@ -650,7 +539,7 @@ export function LiveWeatherCard({
                 </span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed pl-4">
-                {timeline.short_term_weeks_2_4}
+                {timeline.short_term_weeks_2_4.replace(/expected/gi, "typically associated")}
               </p>
             </div>
           </div>

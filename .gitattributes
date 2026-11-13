@@ -1,0 +1,2 @@
+# Preserve the API file's existing CRLF blob instead of renormalizing it during this correction.
+src/api.py -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

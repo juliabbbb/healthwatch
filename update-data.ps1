@@ -1,47 +1,6 @@
-# HEALTHWATCH data update: raw file -> processed CSVs -> PostgreSQL.
-# Run after dropping a new DOH-EB export in data/raw/. The ML pipeline runs
-# offline on this machine; the final step (src.db) mirrors data/processed into
-# the shared Postgres, which is what the deployed dashboard serves.
-# Fails loudly: any failed step stops the run, so Postgres is never half-synced.
-
+param([Parameter(Mandatory=$true)][string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
-$root = $PSScriptRoot
-Set-Location -LiteralPath $root
-$py = Join-Path $root '.venv\Scripts\python.exe'
-$raw = Join-Path $root 'data\raw\DOH-Epi-Dengue-2019-2026-line-list.csv'
-
-if (-not (Test-Path -LiteralPath $py)) {
-    throw "Python venv not found: $py`nCreate it first: python -m venv .venv && .venv\Scripts\pip install -r requirements.txt"
-}
-if (-not (Test-Path -LiteralPath $raw)) {
-    throw "Raw data file not found: $raw`nDrop the updated DOH-EB export in data\raw\ first."
-}
-$hasDb = (Test-Path -LiteralPath '.env') -and (Select-String -LiteralPath '.env' -Pattern '^\ufeff?DATABASE_URL=.' -Quiet)
-if (-not $hasDb) {
-    Write-Warning "No DATABASE_URL in .env - the final sync step (src.db) will fail; the pipeline steps will still run."
-}
-
-$steps = @(
-    'src.fwbd_ingest'           # DOH FWD line-lists (ABD/Cholera/Typhoid/Hep A) -> monthly series
-    'src.doh_eb_ingest'          # canonical DOH-EB file -> monthly series
-    'src.forecast'               # Prophet fits + 12-month forecasts, validation folds
-    'src.classify'               # month-of-year thresholds, risk + probe classification
-    'src.rank_escalation'        # risk-tier escalation ranking (hotspot priority)
-    'src.outbreak'               # season-level outbreak flags
-    'src.validate_2025'          # prospective check of the 2025 flags (real data)
-    'src.validate_known_epidemic' # independent 2019 dengue outbreak check (line-list 2019 monthly cross-check)
-    'src.db'                     # mirrors processed CSVs into PostgreSQL (DATABASE_URL)
-)
-
-foreach ($step in $steps) {
-    Write-Host ''
-    Write-Host ">>> $step"
-    & $py -m $step
-    if ($LASTEXITCODE -ne 0) {
-        throw "Pipeline step '$step' failed (exit $LASTEXITCODE). Postgres was NOT synced - fix the step and re-run."
-    }
-}
-
-Write-Host ''
-Write-Host "Data update complete. Processed CSVs in data\processed\; Postgres is synced." -ForegroundColor Green
-Write-Host "Commit the regenerated data\processed\*.csv to the repo to version the new artifacts."
+Set-Location -LiteralPath $PSScriptRoot
+$py = if ($env:HEALTHWATCH_PYTHON) { $env:HEALTHWATCH_PYTHON } elseif (Test-Path (Join-Path $PSScriptRoot '.venv-sarimax\Scripts\python.exe')) { Join-Path $PSScriptRoot '.venv-sarimax\Scripts\python.exe' } else { Join-Path $PSScriptRoot '.venv\Scripts\python.exe' }
+& $py -m src.build_cleaned --output ([System.IO.Path]::GetFullPath($OutputDirectory))
+if ($LASTEXITCODE -ne 0) { throw "Cleaned-input SARIMAX build failed. No database was published." }

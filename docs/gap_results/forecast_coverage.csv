@@ -1,0 +1,133 @@
+disease,region,start,end,forecast_rows
+Acute Bloody Diarrhea,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Bicol Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,CALABARZON,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Cagayan Valley,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Caraga,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Central Luzon,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Central Visayas,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Davao Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Eastern Visayas,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Ilocos Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,MIMAROPA,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,National,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,National Capital Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Negros Island Region,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Northern Mindanao,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,SOCCSKSARGEN,2026-09-01,2027-08-01,12
+Acute Bloody Diarrhea,Western Visayas,2026-08-01,2027-07-01,12
+Acute Bloody Diarrhea,Zamboanga Peninsula,2026-09-01,2027-08-01,12
+Acute Viral Hepatitis,Bangsamoro (BARMM),2023-06-01,2024-05-01,12
+Acute Viral Hepatitis,Bicol Region,2024-03-01,2025-02-01,12
+Acute Viral Hepatitis,CALABARZON,2025-09-01,2026-08-01,12
+Acute Viral Hepatitis,Cagayan Valley,2024-02-01,2025-01-01,12
+Acute Viral Hepatitis,Caraga,2025-06-01,2026-05-01,12
+Acute Viral Hepatitis,Central Luzon,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,Central Visayas,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,Cordillera Administrative Region,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,Davao Region,2025-09-01,2026-08-01,12
+Acute Viral Hepatitis,Eastern Visayas,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,Ilocos Region,2024-03-01,2025-02-01,12
+Acute Viral Hepatitis,MIMAROPA,2023-12-01,2024-11-01,12
+Acute Viral Hepatitis,National,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,National Capital Region,2025-09-01,2026-08-01,12
+Acute Viral Hepatitis,Northern Mindanao,2025-09-01,2026-08-01,12
+Acute Viral Hepatitis,SOCCSKSARGEN,2025-10-01,2026-09-01,12
+Acute Viral Hepatitis,Western Visayas,2025-09-01,2026-08-01,12
+Acute Viral Hepatitis,Zamboanga Peninsula,2025-10-01,2026-09-01,12
+Cholera,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Cholera,Bicol Region,2026-09-01,2027-08-01,12
+Cholera,CALABARZON,2026-08-01,2027-07-01,12
+Cholera,Cagayan Valley,2025-05-01,2026-04-01,12
+Cholera,Caraga,2025-09-01,2026-08-01,12
+Cholera,Central Luzon,2026-09-01,2027-08-01,12
+Cholera,Central Visayas,2026-09-01,2027-08-01,12
+Cholera,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Cholera,Davao Region,2026-09-01,2027-08-01,12
+Cholera,Eastern Visayas,2026-09-01,2027-08-01,12
+Cholera,Ilocos Region,2026-09-01,2027-08-01,12
+Cholera,MIMAROPA,2024-09-01,2025-08-01,12
+Cholera,National,2026-09-01,2027-08-01,12
+Cholera,National Capital Region,2026-09-01,2027-08-01,12
+Cholera,Negros Island Region,2026-09-01,2027-08-01,12
+Cholera,Northern Mindanao,2026-08-01,2027-07-01,12
+Cholera,SOCCSKSARGEN,2025-10-01,2026-09-01,12
+Cholera,Western Visayas,2026-09-01,2027-08-01,12
+Cholera,Zamboanga Peninsula,2026-09-01,2027-08-01,12
+Dengue,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Dengue,Bicol Region,2026-09-01,2027-08-01,12
+Dengue,CALABARZON,2026-09-01,2027-08-01,12
+Dengue,Cagayan Valley,2026-09-01,2027-08-01,12
+Dengue,Caraga,2026-09-01,2027-08-01,12
+Dengue,Central Luzon,2026-09-01,2027-08-01,12
+Dengue,Central Visayas,2026-09-01,2027-08-01,12
+Dengue,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Dengue,Davao Region,2026-09-01,2027-08-01,12
+Dengue,Eastern Visayas,2026-09-01,2027-08-01,12
+Dengue,Ilocos Region,2026-09-01,2027-08-01,12
+Dengue,MIMAROPA,2026-09-01,2027-08-01,12
+Dengue,National,2026-09-01,2027-08-01,12
+Dengue,National Capital Region,2026-09-01,2027-08-01,12
+Dengue,Negros Island Region,2026-09-01,2027-08-01,12
+Dengue,Northern Mindanao,2026-09-01,2027-08-01,12
+Dengue,SOCCSKSARGEN,2026-09-01,2027-08-01,12
+Dengue,Western Visayas,2026-09-01,2027-08-01,12
+Dengue,Zamboanga Peninsula,2026-09-01,2027-08-01,12
+Influenza-like Illness,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Influenza-like Illness,Bicol Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,CALABARZON,2026-09-01,2027-08-01,12
+Influenza-like Illness,Cagayan Valley,2026-09-01,2027-08-01,12
+Influenza-like Illness,Caraga,2026-09-01,2027-08-01,12
+Influenza-like Illness,Central Luzon,2026-09-01,2027-08-01,12
+Influenza-like Illness,Central Visayas,2026-09-01,2027-08-01,12
+Influenza-like Illness,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,Davao Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,Eastern Visayas,2026-09-01,2027-08-01,12
+Influenza-like Illness,Ilocos Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,MIMAROPA,2026-09-01,2027-08-01,12
+Influenza-like Illness,National,2026-09-01,2027-08-01,12
+Influenza-like Illness,National Capital Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,Negros Island Region,2026-09-01,2027-08-01,12
+Influenza-like Illness,Northern Mindanao,2026-09-01,2027-08-01,12
+Influenza-like Illness,SOCCSKSARGEN,2026-09-01,2027-08-01,12
+Influenza-like Illness,Western Visayas,2026-09-01,2027-08-01,12
+Influenza-like Illness,Zamboanga Peninsula,2026-09-01,2027-08-01,12
+Leptospirosis,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Leptospirosis,Bicol Region,2026-09-01,2027-08-01,12
+Leptospirosis,CALABARZON,2026-09-01,2027-08-01,12
+Leptospirosis,Cagayan Valley,2026-09-01,2027-08-01,12
+Leptospirosis,Caraga,2026-09-01,2027-08-01,12
+Leptospirosis,Central Luzon,2026-09-01,2027-08-01,12
+Leptospirosis,Central Visayas,2026-09-01,2027-08-01,12
+Leptospirosis,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Leptospirosis,Davao Region,2026-09-01,2027-08-01,12
+Leptospirosis,Eastern Visayas,2026-09-01,2027-08-01,12
+Leptospirosis,Ilocos Region,2026-09-01,2027-08-01,12
+Leptospirosis,MIMAROPA,2026-09-01,2027-08-01,12
+Leptospirosis,National,2026-09-01,2027-08-01,12
+Leptospirosis,National Capital Region,2026-09-01,2027-08-01,12
+Leptospirosis,Negros Island Region,2026-09-01,2027-08-01,12
+Leptospirosis,Northern Mindanao,2026-09-01,2027-08-01,12
+Leptospirosis,SOCCSKSARGEN,2026-09-01,2027-08-01,12
+Leptospirosis,Western Visayas,2026-09-01,2027-08-01,12
+Leptospirosis,Zamboanga Peninsula,2026-09-01,2027-08-01,12
+Typhoid Fever,Bangsamoro (BARMM),2026-09-01,2027-08-01,12
+Typhoid Fever,Bicol Region,2026-09-01,2027-08-01,12
+Typhoid Fever,CALABARZON,2026-09-01,2027-08-01,12
+Typhoid Fever,Cagayan Valley,2026-09-01,2027-08-01,12
+Typhoid Fever,Caraga,2026-09-01,2027-08-01,12
+Typhoid Fever,Central Luzon,2026-09-01,2027-08-01,12
+Typhoid Fever,Central Visayas,2026-09-01,2027-08-01,12
+Typhoid Fever,Cordillera Administrative Region,2026-09-01,2027-08-01,12
+Typhoid Fever,Davao Region,2026-09-01,2027-08-01,12
+Typhoid Fever,Eastern Visayas,2026-09-01,2027-08-01,12
+Typhoid Fever,Ilocos Region,2026-09-01,2027-08-01,12
+Typhoid Fever,MIMAROPA,2026-09-01,2027-08-01,12
+Typhoid Fever,National,2026-09-01,2027-08-01,12
+Typhoid Fever,National Capital Region,2026-09-01,2027-08-01,12
+Typhoid Fever,Negros Island Region,2026-09-01,2027-08-01,12
+Typhoid Fever,Northern Mindanao,2026-09-01,2027-08-01,12
+Typhoid Fever,SOCCSKSARGEN,2026-09-01,2027-08-01,12
+Typhoid Fever,Western Visayas,2026-09-01,2027-08-01,12
+Typhoid Fever,Zamboanga Peninsula,2026-09-01,2027-08-01,12

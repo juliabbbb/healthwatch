@@ -1,4 +1,4 @@
-"""Prospective validation of the 2025 seasonal outbreak indicator.
+"""Retrospective validation of the 2025 seasonal outbreak indicator.
 
 The probe forecasts are fit through 2024-12-31, so the 2025 dry (Jan-Mar) and
 wet (Jul-Sep) seasons were NOT part of training. This module validates the
@@ -38,7 +38,13 @@ def load_observed():
 
 
 def load_indicators():
-    return pd.read_csv(ingest.PROCESSED_DIR / "outbreak_indicators.csv")
+    from .classify import classify_seasonal
+    from .outbreak import detect_outbreaks
+    # Both predictions and actual reference labels use the same pre-2025 pools.
+    cls = classify_seasonal(load_monthly_thresholds())
+    indicators = detect_outbreaks(cls, load_seasonal_thresholds())
+    ingest.save_processed(indicators, "evaluation_outbreak_indicators_2025.csv")
+    return indicators
 
 
 def load_monthly_thresholds():
@@ -56,100 +62,43 @@ def _actual_high_run(month_cases, month_p75s):
 
 
 def validate(observed=None, indicators=None, monthly=None, seasonal=None):
-    observed = observed if observed is not None else load_observed()
-    indicators = indicators if indicators is not None else load_indicators()
-    monthly = monthly if monthly is not None else load_monthly_thresholds()
-    seasonal = seasonal if seasonal is not None else load_seasonal_thresholds()
-
-    rows = []
-    for disease, region in indicators[["disease", "region"]].drop_duplicates().itertuples(index=False):
-        for season, (start, end) in PROBE_WINDOWS.items():
-            seg = observed[
-                (observed["disease"] == disease)
-                & (observed["region"] == region)
-                & (observed["date"] >= start)
-                & (observed["date"] <= end)
-            ].sort_values("date")
-            if seg.empty:
-                continue
-
-            avg_actual = float(seg["cases"].mean())
-            max_actual = float(seg["cases"].max())
-
-            thr = monthly[
-                (monthly["disease"] == disease) & (monthly["region"] == region)
-            ]
-            seg = with_month_of_year(seg).merge(
-                thr[["month", "p75", "p50"]], on="month", how="left"
-            )
-            p75s = seg["p75"].fillna(0).tolist()
-            high_run_actual = _actual_high_run(seg["cases"].tolist(), p75s)
-            rule_a_actual = high_run_actual >= CONSECUTIVE_HIGH_N
-
-            srow = seasonal[
-                (seasonal["disease"] == disease)
-                & (seasonal["region"] == region)
-                & (seasonal["season"] == season)
-            ]
-            season_p75 = float(srow["p75"].iloc[0]) if not srow.empty else float("nan")
-            rule_b_actual = avg_actual > season_p75 if pd.notna(season_p75) else False
-            actual_flag = bool(rule_a_actual or rule_b_actual)
-
-            ind = indicators[
-                (indicators["disease"] == disease)
-                & (indicators["region"] == region)
-                & (indicators["season"] == season)
-            ]
-            predicted = bool(ind["outbreak"].iloc[0]) if not ind.empty else False
-            forecast_avg = float(ind["season_avg"].iloc[0]) if not ind.empty else float("nan")
-
-            rows.append(
-                {
-                    "disease": disease,
-                    "region": region,
-                    "season": season,
-                    "forecast_avg": forecast_avg,
-                    "actual_avg": round(avg_actual, 1),
-                    "actual_max": round(max_actual, 1),
-                    "season_p75": season_p75,
-                    "actual_high_run": int(high_run_actual),
-                    "predicted": predicted,
-                    "actual_outbreak": actual_flag,
-                    "rule_a_actual": rule_a_actual,
-                    "rule_b_actual": rule_b_actual,
-                }
-            )
-
-    df = pd.DataFrame(rows)
-    df["tp"] = df["predicted"] & df["actual_outbreak"]
-    df["fp"] = df["predicted"] & ~df["actual_outbreak"]
-    df["fn"] = ~df["predicted"] & df["actual_outbreak"]
-    df["tn"] = ~df["predicted"] & ~df["actual_outbreak"]
-    return df.sort_values(["region", "season"], ignore_index=True)
+    from .integrity import seasonal_rules
+    observed = load_observed() if observed is None else observed
+    indicators = load_indicators() if indicators is None else indicators
+    monthly = load_monthly_thresholds() if monthly is None else monthly
+    seasonal = load_seasonal_thresholds() if seasonal is None else seasonal
+    rows, exclusions = [], []
+    for disease,region in indicators[["disease","region"]].drop_duplicates().itertuples(index=False):
+        for season,(start,end) in PROBE_WINDOWS.items():
+            key=dict(disease=disease,region=region,season=season)
+            dates=pd.date_range(start,end,freq="MS")
+            seg=observed[(observed.disease==disease)&(observed.region==region)&observed.date.isin(dates)].sort_values("date")
+            thr=monthly[(monthly.disease==disease)&(monthly.region==region)]
+            seg=with_month_of_year(seg).merge(thr[["month","p50","p75"]],on="month",how="left",validate="many_to_one")
+            pool=seasonal[(seasonal.disease==disease)&(seasonal.region==region)&(seasonal.season==season)]
+            if len(pool)>1: raise ValueError("Duplicate seasonal pool")
+            s75=float(pool.p75.iloc[0]) if len(pool) else float("nan")
+            actual=seasonal_rules(seg.date,seg.cases,seg.p50,seg.p75,s75)
+            pred=indicators[(indicators.disease==disease)&(indicators.region==region)&(indicators.season==season)]
+            if len(pred)>1: raise ValueError("Duplicate predicted probe")
+            pred_valid=len(pred)==1 and pd.notna(pred.outbreak.iloc[0])
+            if pred_valid and "eligible" in pred: pred_valid=bool(pred.eligible.iloc[0])
+            if pred_valid and {"target_start","target_end"}.issubset(pred):
+                pred_valid=(pd.Timestamp(pred.target_start.iloc[0])==dates[0] and pd.Timestamp(pred.target_end.iloc[0])==dates[-1])
+            if not actual["eligible"] or not pred_valid:
+                exclusions.append(dict(**key,reason="incomplete_actual_prediction_threshold_or_dates"));continue
+            p,a=bool(pred.outbreak.iloc[0]),actual["combined_flag"]
+            rows.append(dict(**key,forecast_avg=float(pred.season_avg.iloc[0]),actual_avg=float(seg.cases.mean()),
+                actual_max=float(seg.cases.max()),season_p75=s75,actual_high_run=_actual_high_run(seg.cases,seg.p75),
+                predicted=p,actual_outbreak=a,rule_a_actual=actual["rule_a"],rule_b_actual=actual["rule_b"],
+                tp=p and a,fp=p and not a,fn=not p and a,tn=not p and not a))
+    ingest.save_processed(pd.DataFrame(exclusions,columns=["disease","region","season","reason"]),"outbreak_validation_exclusions.csv")
+    return pd.DataFrame(rows,columns=["disease","region","season","forecast_avg","actual_avg","actual_max","season_p75","actual_high_run","predicted","actual_outbreak","rule_a_actual","rule_b_actual","tp","fp","fn","tn"])
 
 
 def summarize(df):
-    lines = []
-    n = len(df)
-    tp, fp = int(df["tp"].sum()), int(df["fp"].sum())
-    fn, tn = int(df["fn"].sum()), int(df["tn"].sum())
-    precision = tp / (tp + fp) if tp + fp else float("nan")
-    recall = tp / (tp + fn) if tp + fn else float("nan")
-    f1 = 2 * precision * recall / (precision + recall) if precision + recall else float("nan")
-    lines.append(f"region-seasons validated: {n}")
-    lines.append(f"confusion  TP={tp}  FP={fp}  FN={fn}  TN={tn}")
-    lines.append(f"precision  {precision:.2f}   recall  {recall:.2f}   F1  {f1:.2f}")
-
-    # forecast accuracy per season
-    for s in ["dry", "wet"]:
-        sub = df[df["season"] == s].copy()
-        sub["ape"] = (sub["forecast_avg"] - sub["actual_avg"]).abs() / sub["actual_avg"].replace(0, float("nan"))
-        mape = sub["ape"].mean() * 100 if sub["ape"].notna().any() else float("nan")
-        lines.append(
-            f"[{s:>3}] MAPE={mape:.0f}%  mean_forecast={sub['forecast_avg'].mean():.0f}  "
-            f"mean_actual={sub['actual_avg'].mean():.0f}"
-        )
-    return "\n".join(lines)
+    from .integrity import binary_metrics
+    return str(binary_metrics(*(int(df[c].sum()) for c in ("tp","fp","fn","tn"))))
 
 
 def run():

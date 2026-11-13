@@ -1,3 +1,4 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { Suspense, useState, type Ref } from "react";
 import {
   Bot,
@@ -12,7 +13,7 @@ import {
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts.lazy";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 import { useChartType } from "@/hooks/useChartType";
-import { type SeasonalityComponent } from "@/lib/healthwatch/data";
+import { ILLNESS_BY_ID, type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 
 interface SeasonalityChartCardProps {
@@ -84,7 +85,7 @@ export function SeasonalityChartCard({
   };
 
   return (
-    <div
+    <div data-text-card
       data-explain={`seasonality-chart-${component}`}
       onContextMenu={(e) => onOpenMenu(e, component)}
       className={cn(
@@ -95,14 +96,15 @@ export function SeasonalityChartCard({
       {/* Header with Title, Badges, and Per-Chart Actions */}
       <div className="flex flex-wrap items-start justify-between gap-2 mb-2.5">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span
               className={cn("size-2.5 rounded-full shrink-0", styling.dot)}
               aria-hidden="true"
             />
-            <h3 className="text-lg font-semibold tracking-tight text-foreground truncate">
+            <h3 className="min-w-0 max-w-full text-lg font-semibold tracking-tight text-foreground truncate">
               {title}
             </h3>
+            {ILLNESS_BY_ID[illness]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[illness]?.provisionalNote} />}
             {statBadge && (
               <span className="hidden sm:inline-flex items-center gap-1 rounded-md border border-border/60 bg-secondary/50 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                 <span className="opacity-70">{statBadge.label}:</span>

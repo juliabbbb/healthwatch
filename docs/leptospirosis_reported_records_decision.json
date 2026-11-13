@@ -1,0 +1,27 @@
+{
+  "decision_date": "2026-11-13",
+  "authorization": "User explicitly selected one per S/P/C-coded row across all years, ignore numeric Cases and Deaths, label reported records.",
+  "raw_sha256": "beb2f36486b16e2f30ce49039cc66432b930c2f1cc6a6e1943154abc5c3d0b6e",
+  "counted_records": 30605,
+  "blank_records_excluded": 187,
+  "rejected_nonblank_records": 0,
+  "annual_records": {
+    "2019": 2338,
+    "2020": 1389,
+    "2021": 1594,
+    "2022": 3163,
+    "2023": 4252,
+    "2024": 4971,
+    "2025": 6987,
+    "2026": 5911
+  },
+  "duplicates": "retained; no evidence of erroneous duplicates",
+  "classification": "S/P/C only used as inclusion gate; every row counted once regardless of code",
+  "numeric_case_weights": "ignored, including 2023",
+  "death_values": "excluded from derived files",
+  "calendar": "Provisional project ISO-Thursday mapping; W53 folded into W52",
+  "missing_periods": "absent rows remain unknown; no zero filling",
+  "geography": "Existing project label mapping; boundary comparability unconfirmed",
+  "model_target": "cases column is an interface alias for reported_records, not validated individual cases",
+  "new_model_fits_run": false
+}

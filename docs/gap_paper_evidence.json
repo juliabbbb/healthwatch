@@ -1,0 +1,11 @@
+{
+  "operational_run": "gap-rules-ddb64e035033",
+  "research_run": "research-gap-945fb497f392",
+  "forecast_rows": 1584,
+  "metric_rows": 1920,
+  "prediction_rows": 23040,
+  "zero_rule_months": 1447,
+  "selection": "SARIMAX",
+  "HealthWatch_Chapters_4_and_5.pdf_sha256": "b92c7e9c9f7464001dd09b59585a29df254e296fe47c74aea7ebf4a2364bb0ed",
+  "HealthWatch_Chapters_4_and_5.md_sha256": "98f493b261c19cc7a095fdc6d969f1448c720a8b614579a898f389d89aa19267"
+}

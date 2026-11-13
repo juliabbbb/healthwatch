@@ -1,0 +1,12 @@
+{
+  "verified_manifest": true,
+  "run_id": "sarimax_advisory_final_20261113",
+  "model": "SARIMAX",
+  "forecast_series": 119,
+  "forecast_rows": 1428,
+  "regression_checks": 1050,
+  "tier_cells_checked": 210,
+  "numerical_retries": 3,
+  "interval_calibration": "not_established",
+  "runtime_seconds": 321.6481924999971
+}

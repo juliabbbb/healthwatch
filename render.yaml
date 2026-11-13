@@ -5,6 +5,7 @@
 services:
   - type: web
     name: healthwatch-api-xepv
+    branch: input-sarimax
     runtime: python
     rootDir: .
     plan: free
@@ -23,6 +24,7 @@ services:
 
   - type: web
     name: healthwatch-ui
+    branch: input-sarimax
     runtime: node
     rootDir: frontend
     plan: free

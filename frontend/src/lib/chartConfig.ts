@@ -48,7 +48,7 @@ export const CHART_AXIS_STYLE: AxisStyle = {
 /** Rounded-top bar radius used across all bar charts. */
 export const CHART_BAR_RADIUS: [number, number, number, number] = [4, 4, 0, 0];
 
-/** Prophet CI bounds are clipped to >= 0 upstream; guard the UI anyway. */
+/** Model interval bounds are clipped to >= 0 upstream; guard the UI anyway. */
 export function clampNonNeg(value: number): number {
   return Math.max(0, value);
 }

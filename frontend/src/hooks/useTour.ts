@@ -1,17 +1,59 @@
-/**
- * useExplainMode.ts
- * ─────────────────────────────────────────────────────────────────────────────
- * Simple hook that manages the boolean on/off state for the Explain inspector.
- * The actual overlay rendering is handled by <ExplainOverlay />.
- */
+import { useCallback, useMemo, useState } from "react";
+import type { TourStep } from "@/lib/explainRegistry";
 
-import { useCallback, useState } from "react";
+const AUTO_START_SESSION_KEY = "healthwatch:home-tour-started";
+let autoStartedThisPage = false;
 
-export function useExplainMode() {
-  const [explainActive, setExplainActive] = useState(false);
+interface TourState {
+  active: boolean;
+  currentId: string | null;
+  skipped: string[];
+}
 
-  const toggleExplain = useCallback(() => setExplainActive((v) => !v), []);
-  const exitExplain = useCallback(() => setExplainActive(false), []);
+export function useTour(steps: readonly TourStep[]) {
+  const [state, setState] = useState<TourState>({ active: false, currentId: null, skipped: [] });
+  const available = useMemo(() => steps.filter((step) => !state.skipped.includes(step.id)), [steps, state.skipped]);
+  const index = available.findIndex((step) => step.id === state.currentId);
+  const start = useCallback(() => {
+    setState({ active: steps.length > 0, currentId: steps[0]?.id ?? null, skipped: [] });
+  }, [steps]);
+  const startOnce = useCallback(() => {
+    if (typeof window === "undefined" || autoStartedThisPage || steps.length === 0) return;
+    try {
+      if (window.sessionStorage.getItem(AUTO_START_SESSION_KEY) === "true") {
+        autoStartedThisPage = true;
+        return;
+      }
+      window.sessionStorage.setItem(AUTO_START_SESSION_KEY, "true");
+    } catch {
+      // The in-memory flag still prevents repeats if browser storage is blocked.
+    }
+    autoStartedThisPage = true;
+    start();
+  }, [start, steps.length]);
+  const exit = useCallback(() => setState((previous) => ({ ...previous, active: false })), []);
+  const next = useCallback(() => setState((previous) => {
+    if (!previous.active) return previous;
+    const remaining = steps.filter((step) => !previous.skipped.includes(step.id));
+    const position = remaining.findIndex((step) => step.id === previous.currentId);
+    const following = remaining[position + 1];
+    return following ? { ...previous, currentId: following.id } : { ...previous, active: false };
+  }), [steps]);
+  const back = useCallback(() => setState((previous) => {
+    if (!previous.active) return previous;
+    const remaining = steps.filter((step) => !previous.skipped.includes(step.id));
+    const position = remaining.findIndex((step) => step.id === previous.currentId);
+    return { ...previous, currentId: remaining[Math.max(0, position - 1)]?.id ?? previous.currentId };
+  }), [steps]);
+  const omit = useCallback((ids: string[]) => setState((previous) => {
+    if (!previous.active || ids.every((id) => previous.skipped.includes(id))) return previous;
+    const skipped = [...new Set([...previous.skipped, ...ids])];
+    const remaining = steps.filter((step) => !skipped.includes(step.id));
+    const currentPosition = steps.findIndex((step) => step.id === previous.currentId);
+    const current = remaining.find((step) => step.id === previous.currentId)
+      ?? remaining.find((step) => steps.indexOf(step) > currentPosition);
+    return { active: Boolean(current), currentId: current?.id ?? null, skipped };
+  }), [steps]);
 
-  return { explainActive, toggleExplain, exitExplain };
+  return { active: state.active, index, step: available[index], total: available.length, start, startOnce, next, back, exit, omit };
 }

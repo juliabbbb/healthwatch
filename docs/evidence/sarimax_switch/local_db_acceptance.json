@@ -1,0 +1,13 @@
+{
+  "database": "explicit_local_sqlite",
+  "run_id": "sarimax_advisory_final_20261113",
+  "model": "SARIMAX",
+  "observations": 9832,
+  "forecasts": 1428,
+  "risk_classifications": 1428,
+  "seasonal_signal_rows": 222,
+  "validation_metric_rows": 210,
+  "api_base_url": "http://127.0.0.1:8011",
+  "shared_database_modified": false,
+  "original_snapshot_modified": false
+}

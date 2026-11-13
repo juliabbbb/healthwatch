@@ -2,7 +2,7 @@ import { RISK_META, type RiskLevel } from "@/lib/healthwatch/data";
 import { KpiCard } from "./KpiCard";
 
 export interface KpiStripData {
-  /** Next-month forecast + 95% CI. */
+  /** Next-month forecast + 80% model interval. */
   nextMonth: { value: string; sub: string };
   /** Current risk tier of the active baseline month. */
   currentRisk: { level: RiskLevel; sub: string };
@@ -17,7 +17,7 @@ export function KpiStrip({ data }: { data: KpiStripData }) {
   return (
     <div className="grid grid-cols-2 gap-2">
       <KpiCard
-        label="Next Month Forecast"
+        label="Next Available Forecast"
         value={data.nextMonth.value}
         sub={data.nextMonth.sub}
       />

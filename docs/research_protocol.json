@@ -1,0 +1,80 @@
+{
+  "run_id": "HW-four-model-2026-11-12-v1",
+  "study_start": "2019-01-01",
+  "folds": {
+    "CV2022": "2022",
+    "CV2023": "2023",
+    "CV2024": "2024",
+    "TEST2025": "2025"
+  },
+  "mode": "fixed-origin recursive 12-month; no within-test actual updates",
+  "minimum_observed_train": 24,
+  "minimum_observed_targets_with_prior_year": 9,
+  "minimum_observed_RF_targets_after_12_months": 12,
+  "threshold_min_month_samples": 2,
+  "missingness": "No missing actual zero filling. Prophet uses observed targets; SARIMAX native missing-state handling; RF past-only lag median fallback; naive unavailable when prior-year value missing. Score only shared observed actual and observed prior-year dates.",
+  "selection": "Unweighted disease mean of region-fold MASE means on matched CV2022-2024 primary diseases; National and provisional datasets excluded from selection",
+  "primary_diseases": [
+    "Dengue",
+    "Acute Bloody Diarrhea",
+    "Cholera",
+    "Typhoid Fever"
+  ],
+  "provisional": [
+    "ILI",
+    "Hep A (provisional row count)"
+  ],
+  "case_policy": "All source numeric counts/classifications retained; duplicate candidates not removed; Hep A one-row-one-case is provisional.",
+  "weekly_calendar": "Declared legacy ISO Thursday; W53 folded to52; source verification unresolved for Dengue and provisional ILI",
+  "prophet": {
+    "yearly_seasonality": false,
+    "weekly_seasonality": false,
+    "daily_seasonality": false,
+    "seasonality_mode": "multiplicative",
+    "wet_regressor": true,
+    "uncertainty_samples": 0
+  },
+  "sarimax": {
+    "order": [
+      1,
+      0,
+      0
+    ],
+    "seasonal_order": [
+      1,
+      0,
+      0,
+      12
+    ],
+    "trend": "c",
+    "wet_regressor": true,
+    "maxiter": 200
+  },
+  "random_forest": {
+    "implementation": "WEKA3.8.7",
+    "trees": 200,
+    "max_depth": 8,
+    "min_leaf": 2,
+    "seed": 2026,
+    "num_slots": 1,
+    "features": [
+      "lag1",
+      "lag2",
+      "lag3",
+      "lag6",
+      "lag12",
+      "pastmean3",
+      "pastmean6",
+      "month_sin",
+      "month_cos",
+      "wet",
+      "time_index"
+    ],
+    "lag_fallback_detail": "Past-observed same-month median, otherwise past-observed overall median; zero only if no earlier observed history is available for an initial feature. Targets are never filled."
+  },
+  "floor": 0,
+  "point_forecast_only": true,
+  "seed": 2026,
+  "holdout_status": "Retrospective 2025 evaluation; earlier project has inspected 2025 outcomes; no untouched-holdout claim",
+  "export_precision_note": "Initial ARFF serialization rounded checkpoints. Full-precision export regenerated, all320 RF forecasts replayed identically; native WEKA errors match recorded metrics."
+}

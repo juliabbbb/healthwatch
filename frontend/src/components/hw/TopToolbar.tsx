@@ -35,9 +35,9 @@ export interface TopToolbarProps {
   trailing?: React.ReactNode;
   /** Currently selected region on the map; carried as ?region= into Seasonality links. */
   selectedRegionCode?: string | null;
-  /** Callback to toggle the Explain Mode inspector. */
+  /** Callback to replay the guided tour from its first step. */
   onStartTour?: () => void;
-  /** Whether Explain Mode is currently active (highlights the ? button). */
+  /** Whether the guided tour is currently active (highlights the ? button). */
   explainActive?: boolean;
 }
 
@@ -148,8 +148,8 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
   return (
     <>
-      {/* ===================== DESKTOP TOP TOOLBAR (>= md) ===================== */}
-      <div className="pointer-events-auto hidden md:flex items-start gap-2">
+      {/* ===================== DESKTOP TOP TOOLBAR (>= xl) ===================== */}
+      <div className="pointer-events-auto hidden xl:flex flex-wrap justify-end items-start gap-2 max-w-[calc(100vw-2rem)]">
         {/* Search input with autocomplete */}
         <div className="relative">
           <div className="glass-panel flex items-center gap-2 rounded-xl px-3.5 py-2.5">
@@ -161,7 +161,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
               onBlur={() => window.setTimeout(() => setFocused(false), 180)}
               placeholder="Search region or PSGC code"
               aria-label="Search regions"
-              className="w-48 bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+              className="min-w-0 w-40 bg-transparent text-[13px] outline-none placeholder:text-muted-foreground"
             />
             {q && (
               <button
@@ -182,10 +182,10 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       onPick(r.code);
                       setQ("");
                     }}
-                    className="flex w-full items-center justify-between px-3 py-2 text-left text-xs hover:bg-secondary/80 transition-colors"
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-[13px] hover:bg-secondary/80 transition-colors"
                   >
                     <span className="font-medium">{r.name}</span>
-                    <span className="label-caps text-[10px] text-primary">{r.short}</span>
+                    <span className="label-caps text-xs text-primary">{r.short}</span>
                   </button>
                 </li>
               ))}
@@ -206,19 +206,19 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
         {/* Audience Mode Switcher (Healthcare Worker vs General Public) */}
         <div
           data-explain="audience-mode"
-          className="glass-panel flex items-center p-0.5 rounded-xl border border-border/80 text-xs shadow-xs"
+          className="glass-panel flex items-center p-0.5 rounded-xl border border-border/80 text-[13px] shadow-xs"
         >
           <button
             type="button"
             onClick={() => setAudienceMode("clinical")}
             aria-pressed={audienceMode === "clinical"}
             className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[13px] font-semibold transition-all cursor-pointer",
               audienceMode === "clinical"
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
             )}
-            title="Healthcare Worker Mode: Comprehensive surveillance, admission rates, Prophet 95% CIs, and clinical response protocols"
+            title="Healthcare Worker Mode: Comprehensive surveillance, admission rates, uncalibrated 80% model intervals, and clinical response protocols"
           >
             <Stethoscope className="size-3.5 shrink-0" />
             <span className="hidden lg:inline">Healthcare</span>
@@ -229,7 +229,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
             onClick={() => setAudienceMode("public")}
             aria-pressed={audienceMode === "public"}
             className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer",
+              "flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[13px] font-semibold transition-all cursor-pointer",
               audienceMode === "public"
                 ? "bg-primary text-primary-foreground shadow-xs"
                 : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
@@ -248,17 +248,17 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           id="hw-tour-btn"
           onClick={onStartTour}
           aria-pressed={explainActive}
-          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
-          title={explainActive ? "Exit Explain Mode" : "Explain Mode — Click to inspect and understand any chart, formula, or metric"}
+          aria-label="Replay guided tour"
+          title="Replay guided tour"
           className={cn(
-            "glass-panel flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold shadow-xs transition-all cursor-pointer border",
+            "glass-panel flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-[13px] font-semibold shadow-xs transition-all cursor-pointer border",
             explainActive
               ? "border-primary bg-primary text-primary-foreground ring-2 ring-primary/40 shadow-sm"
               : "border-primary/50 text-primary hover:bg-primary/15 hover:border-primary",
           )}
         >
           <HelpCircle className="size-4 shrink-0" />
-          <span>{explainActive ? "Exit Explain" : "Explain Mode"}</span>
+          <span>{"Explain Mode"}</span>
           {!explainActive && (
             <span className="relative flex size-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -296,8 +296,8 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
         </div>
       </div>
 
-      {/* ===================== MOBILE TOP TOOLBAR (< md) ===================== */}
-      <div className="pointer-events-auto flex md:hidden items-center gap-1.5">
+      {/* ===================== MOBILE TOP TOOLBAR (< xl) ===================== */}
+      <div className="pointer-events-auto flex xl:hidden items-center gap-1.5">
         {/* Search trigger button */}
         <button
           onClick={() => setMobileSearchOpen(true)}
@@ -309,17 +309,18 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
         {/* Mobile Explain trigger button */}
         <button
+          data-tour="replay-tour"
           onClick={onStartTour}
-          aria-label={explainActive ? "Exit Explain Mode" : "Explain Mode"}
+          aria-label="Replay guided tour"
           className={cn(
-            "glass-panel flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-xs font-semibold transition-colors border",
+            "glass-panel flex items-center gap-1.5 rounded-xl px-2.5 py-2 text-[13px] font-semibold transition-colors border",
             explainActive
               ? "border-primary bg-primary text-primary-foreground"
               : "border-primary/40 text-primary hover:bg-primary/10",
           )}
         >
           <HelpCircle className="size-3.5" />
-          <span>{explainActive ? "Exit" : "Explain"}</span>
+          <span>{"Explain"}</span>
         </button>
 
         {/* Trailing item (Notification bell) */}
@@ -330,7 +331,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
           onClick={() => setMobileMenuOpen(true)}
           aria-label="Open mobile navigation menu"
           aria-expanded={mobileMenuOpen}
-          className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-medium text-foreground transition-colors hover:bg-secondary active:scale-95"
+          className="glass-panel flex items-center gap-1.5 rounded-xl px-3 py-2 text-[13px] font-medium text-foreground transition-colors hover:bg-secondary active:scale-95"
         >
           <Menu className="size-4" />
           <span className="hidden min-[420px]:inline font-semibold">Menu</span>
@@ -366,7 +367,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
               </div>
               <button
                 onClick={() => setMobileSearchOpen(false)}
-                className="rounded-xl bg-secondary px-3 py-2 text-xs font-semibold text-foreground transition-colors"
+                className="rounded-xl bg-secondary px-3 py-2 text-[13px] font-semibold text-foreground transition-colors"
               >
                 Cancel
               </button>
@@ -375,7 +376,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
             {/* Search match list */}
             <div className="mt-3 flex-1 overflow-y-auto hw-scroll">
               {q.trim() && matches.length === 0 && (
-                <p className="py-8 text-center text-xs text-muted-foreground">
+                <p className="py-8 text-center text-sm text-muted-foreground">
                   No regions found matching "{q}".
                 </p>
               )}
@@ -393,7 +394,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       >
                         <div>
                           <p className="text-sm font-medium text-foreground">{r.name}</p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                          <p className="text-sm text-muted-foreground mt-0.5">
                             {r.classification} · {r.density.toLocaleString()} persons/km²
                           </p>
                         </div>
@@ -405,7 +406,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
               )}
               {!q.trim() && (
                 <div className="mt-2 p-2">
-                  <p className="label-caps mb-2 text-[10px]">Popular Regions</p>
+                  <p className="label-caps mb-2 text-xs">Popular Regions</p>
                   <div className="flex flex-wrap gap-1.5">
                     {REGIONS.slice(0, 6).map((r) => (
                       <button
@@ -414,7 +415,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                           onPick(r.code);
                           setMobileSearchOpen(false);
                         }}
-                        className="rounded-lg border border-border/80 bg-secondary/40 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition-colors"
+                        className="rounded-lg border border-border/80 bg-secondary/40 px-3 py-1.5 text-[13px] font-medium text-foreground hover:bg-secondary transition-colors"
                       >
                         {r.short} ({r.name})
                       </button>
@@ -449,7 +450,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
               <div className="flex items-center justify-between border-b border-border/70 pb-3">
                 <div>
                   <h2 className="text-base font-bold text-foreground">HEALTHWATCH</h2>
-                  <p className="text-[10px] text-muted-foreground font-medium">
+                  <p className="text-sm text-muted-foreground font-medium">
                     Regional Outbreak Hotspot Map & Forecasts
                   </p>
                 </div>
@@ -464,13 +465,13 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
               {/* Audience Mode Switcher (Mobile) */}
               <div className="py-2.5 border-b border-border/70">
-                <p className="label-caps mb-1.5 text-[10px]">Audience Mode</p>
+                <p className="label-caps mb-1.5 text-xs">Audience Mode</p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setAudienceMode("clinical")}
                     className={cn(
-                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-xs transition-all",
+                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-[13px] transition-all",
                       audienceMode === "clinical"
                         ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/40 font-semibold"
                         : "border-border/80 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -480,7 +481,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       <Stethoscope className="size-3.5 text-primary shrink-0" />
                       <span>Healthcare</span>
                     </div>
-                    <span className="text-[10px] leading-tight opacity-75">
+                    <span className="text-xs leading-tight opacity-75">
                       Epidemiological metrics &amp; surge preparation
                     </span>
                   </button>
@@ -488,7 +489,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                     type="button"
                     onClick={() => setAudienceMode("public")}
                     className={cn(
-                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-xs transition-all",
+                      "flex flex-col gap-1 rounded-xl border p-2.5 text-left text-[13px] transition-all",
                       audienceMode === "public"
                         ? "border-primary bg-primary/10 text-primary ring-1 ring-primary/40 font-semibold"
                         : "border-border/80 bg-secondary/40 text-muted-foreground hover:bg-secondary hover:text-foreground",
@@ -498,7 +499,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       <Users className="size-3.5 text-primary shrink-0" />
                       <span>General Public</span>
                     </div>
-                    <span className="text-[10px] leading-tight opacity-75">
+                    <span className="text-xs leading-tight opacity-75">
                       Simplified risk &amp; household 4S guide
                     </span>
                   </button>
@@ -507,7 +508,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
               {/* Nav Links */}
               <div className="py-3 space-y-1">
-                <p className="label-caps mb-1.5 text-[10px]">Views &amp; Tools</p>
+                <p className="label-caps mb-1.5 text-xs">Views &amp; Tools</p>
                 <MobileNavLink
                   to="/"
                   icon={MapIcon}
@@ -537,7 +538,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
 
               {/* Quick Actions / Preferences */}
               <div className="border-t border-border/70 py-3 space-y-2">
-                <p className="label-caps mb-1 text-[10px]">Preferences &amp; Actions</p>
+                <p className="label-caps mb-1 text-xs">Preferences &amp; Actions</p>
 
                 {/* Explain Mode Trigger */}
                 <button
@@ -547,7 +548,7 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                     onStartTour?.();
                   }}
                   className={cn(
-                    "w-full flex items-center justify-between rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors",
+                    "w-full flex items-center justify-between rounded-xl border p-2.5 text-left text-[13px] font-semibold transition-colors",
                     explainActive
                       ? "border-primary bg-primary text-primary-foreground shadow-xs"
                       : "border-primary/50 bg-primary/10 text-primary hover:bg-primary/20",
@@ -555,15 +556,15 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                 >
                   <div className="flex items-center gap-2">
                     <HelpCircle className="size-4 shrink-0" />
-                    <span>{explainActive ? "Exit Explain Mode" : "Activate Explain Mode"}</span>
+                    <span>{"Replay guided tour"}</span>
                   </div>
-                  <span className="text-[10px] opacity-80">Click-to-inspect UI</span>
+                  <span className="text-xs opacity-80">Step-by-step tour</span>
                 </button>
 
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={toggleTheme}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-[13px] font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
                     {theme === "dark" ? (
                       <Sun className="size-4 text-primary" />
@@ -577,14 +578,14 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       setMobileMenuOpen(false);
                       setSettingsOpen(true);
                     }}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-[13px] font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
                     <Settings className="size-4 text-primary" />
                     <span>Settings</span>
                   </button>
                   <button
                     onClick={handleShare}
-                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-xs font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
+                    className="flex items-center gap-2 rounded-xl border border-border/80 bg-secondary/40 p-2.5 text-left text-[13px] font-medium text-foreground hover:bg-secondary transition-colors active:scale-98"
                   >
                     <Share2 className="size-4 text-primary" />
                     <span>Share Link</span>
@@ -594,14 +595,14 @@ export function TopToolbar({ onPick, onZoom, trailing, selectedRegionCode, onSta
                       setMobileMenuOpen(false);
                       onStartTour?.();
                     }}
-                    className={`col-span-2 flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs font-semibold transition-colors active:scale-98 ${
+                    className={`col-span-2 flex items-center gap-2 rounded-xl border p-2.5 text-left text-[13px] font-semibold transition-colors active:scale-98 ${
                       explainActive
                         ? "border-primary/60 bg-primary/20 text-primary hover:bg-primary/30"
                         : "border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
                     }`}
                   >
                     <HelpCircle className="size-4" />
-                    <span>{explainActive ? "Exit Explain Mode" : "Explain Mode"}</span>
+                    <span>{"Explain Mode"}</span>
                   </button>
                 </div>
               </div>
@@ -629,7 +630,7 @@ function NavLink({
       to={to}
       {...(search ? { search } : {})}
       activeOptions={{ exact: to === "/" }}
-      className="rounded-lg px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      className="rounded-lg px-3 py-1.5 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
       activeProps={{ className: "bg-secondary/80 text-foreground font-medium" }}
     >
       {children}

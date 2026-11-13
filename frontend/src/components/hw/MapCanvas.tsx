@@ -12,7 +12,7 @@ import {
   REGIONS,
   TOTAL_MONTHS,
   assessRegion,
-  dataReady,
+  ensureHealthwatchData,
   formatMetric,
   metricValue,
   RISK_META,
@@ -221,7 +221,7 @@ export default function MapCanvas({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      await dataReady;
+      await ensureHealthwatchData();
       const Lf = leafletRef.current;
       const group = markerRef.current;
       const icon = alertIconRef.current;
@@ -274,7 +274,7 @@ export default function MapCanvas({
     return () => {
       cancelled = true;
     };
-  }, [illness, monthIndex, mode, showOutbreakMarkers, mapReady, dataReady]);
+  }, [illness, monthIndex, mode, showOutbreakMarkers, mapReady, ensureHealthwatchData]);
 
   // Fly to a searched/selected region
   useEffect(() => {

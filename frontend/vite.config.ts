@@ -18,6 +18,9 @@ export default defineConfig({
     preset: "node-server",
   },
   vite: {
+    // Keep contract tests from invalidating the running app's dependency cache.
+    cacheDir: "node_modules/.vite-app",
+    server: { host: "127.0.0.1", port: 8080, strictPort: true },
     ssr: {
       // @react-pdf/renderer uses Node.js subpath imports (#standard-fonts/Helvetica)
       // that break when Nitro bundles them for SSR. Externalise the entire package

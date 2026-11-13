@@ -16,7 +16,7 @@ import pandas as pd
 
 DATA_START_YEAR = 2019
 DATA_END_YEAR = 2026
-DATA_END_MONTH = 8  # last complete reported month (2026-09 is in-progress)
+DATA_END_MONTH = 8  # Declared legacy cutoff; completeness still requires source confirmation.
 DATA_START = pd.Timestamp(f"{DATA_START_YEAR}-01-01")
 
 # Single source of truth for all diseases known to HealthWatch.
@@ -124,6 +124,25 @@ DISEASE_METADATA = {
     },
 }
 
+from .source_registry import policy as source_policy
+for _disease, _metadata in DISEASE_METADATA.items():
+    _metadata["source_policy"] = source_policy(_disease)
+    if _disease == "Leptospirosis":
+        _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
+                         unavailable_reason=None, reported_records_research_available=True, research_target_unit="reported_records", source_warning="Provisional one-case-per-source-record rule authorized by the user; row grain and fatality columns are not source-confirmed.")
+    elif _disease == "Acute Viral Hepatitis":
+        _metadata.update(name="Hepatitis A", status="provisional", forecast_available=True,
+                         unavailable_reason=None, source_warning="Provisional Hepatitis A source-record counts; wider reporting coverage is unresolved.", driver="Source-specific Hepatitis A surveillance")
+    elif _disease == "Influenza-like Illness":
+        _metadata.update(status="provisional", analytical_available=True, forecast_available=True,
+                         unavailable_reason=None,
+                         source_warning="Provisional ILI year/week header reversal and calendar mapping; not source-confirmed.")
+    _metadata['main_disease']=_disease not in {'Acute Viral Hepatitis','Heat-Related Illness'}
+    _metadata['target_unit']='reported_records' if _disease=='Leptospirosis' else 'reported_records_provisional' if _disease=='Acute Viral Hepatitis' else 'reported_cases'
+    if _disease in {'Influenza-like Illness','Leptospirosis'}:
+        _metadata['status']='forecast_ready'
+        _metadata['source_warning']=('Corrected main-disease input; source calendar/geography remain conditional and not source-confirmed. '
+                                     + ('Target counts S/P/C-coded reported records; deaths excluded.' if _disease=='Leptospirosis' else 'Numeric reported cases after header normalization.'))
 SUPPORTED_DISEASES = list(DISEASE_METADATA.keys())
 FORECAST_READY_DISEASES = [d for d, m in DISEASE_METADATA.items() if m["forecast_available"]]
 DISEASE_GROUPS = {d: m["group"] for d, m in DISEASE_METADATA.items()}

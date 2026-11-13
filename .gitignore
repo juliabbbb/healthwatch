@@ -1,11 +1,36 @@
+# Local Python environments (including the SARIMAX setup)
 .venv/
+.venv-*/
+venv/
+env/
 __pycache__/
-*.pyc
+*.py[cod]
 .ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
+# Installed frontend packages and generated builds
+node_modules/
+dist/
+dist-ssr/
+.output/
+.vinxi/
+.tanstack/
+.nitro/
+*.tsbuildinfo
+
+# Local credentials and machine-specific configuration
 .env
+.env.*
+!.env.example
 
+# Runtime output; cleaned inputs in data/cleaned remain tracked
 *.log
 error.txt
 *.db
-data/*.db
+*.db-journal
+*.db-shm
+*.db-wal
+data/local/
+implementation_runs/

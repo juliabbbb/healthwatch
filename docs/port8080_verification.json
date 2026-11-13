@@ -1,0 +1,35 @@
+{
+  "Dengue": {
+    "selected_month": "2026-11",
+    "regions_with_values": 18,
+    "sum_available_cases": 32384.385505347644
+  },
+  "Acute Bloody Diarrhea": {
+    "selected_month": "2026-11",
+    "regions_with_values": 18,
+    "sum_available_cases": 828.4750647526171
+  },
+  "Cholera": {
+    "selected_month": "2026-11",
+    "regions_with_values": 13,
+    "sum_available_cases": 40.444899357529984
+  },
+  "Typhoid Fever": {
+    "selected_month": "2026-11",
+    "regions_with_values": 18,
+    "sum_available_cases": 2470.5109203120705
+  },
+  "Influenza-like Illness": {
+    "selected_month": "2026-11",
+    "regions_with_values": 18,
+    "sum_available_cases": 18952.55286335994
+  },
+  "health": {
+    "system": "HEALTHWATCH",
+    "status": "ok",
+    "data_ready": true,
+    "database": "sqlite",
+    "snapshot_run_id": "operational-ili-a78819fcd460",
+    "shared_database": false
+  }
+}

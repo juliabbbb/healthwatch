@@ -1,0 +1,19 @@
+{
+  "target": "disposable_local_SQLite",
+  "injected_failure": "after_actual_raw_case_seeding",
+  "before": {
+    "monthly_observations": 11279,
+    "forecasts": 1584,
+    "dengue_case_records": 749683,
+    "fwbd_case_records": 179034,
+    "pipeline_runs": 1
+  },
+  "after": {
+    "monthly_observations": 11279,
+    "forecasts": 1584,
+    "dengue_case_records": 749683,
+    "fwbd_case_records": 179034,
+    "pipeline_runs": 1
+  },
+  "rollback_preserved": true
+}

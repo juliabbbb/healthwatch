@@ -86,7 +86,7 @@ export const Route = createFileRoute("/compare")({
   component: ComparePage,
 });
 
-export default function ComparePage() {
+function ComparePage() {
   const search = Route.useSearch();
   // Spec #1: Top region selection row is the single source of truth (starts empty per #2)
   const [selected, setSelected] = useState<string[]>([]);
@@ -95,7 +95,6 @@ export default function ComparePage() {
   // Spec #2: Month slider extended to include past & forecast months (-12m to +12m)
   // Default to 0m (Current baseline Now: 2026-09)
   const [horizon, setHorizon] = useState<number>(() => search.horizon ?? 0);
-  const [season, setSeason] = useState<"all" | "wet" | "dry">("all");
   const [mode, setMode] = useState<MetricMode>("percapita");
 
   // Spec #3 & #4: Centered floating modal state for Regional Benchmark Reference Table
@@ -242,7 +241,7 @@ export default function ComparePage() {
             title={
               selected.length === 0
                 ? "Select at least one region to export"
-                : "Export a customizable epidemiological report PDF"
+                : "Export a CSV dataset or PDF surveillance report"
             }
           >
             <FileDown className="size-4" />
@@ -385,21 +384,8 @@ export default function ComparePage() {
         />
       </div>
 
-      {/* Season & Metric Mode filters */}
+      {/* Metric Mode filters */}
       <div className="flex flex-wrap items-center gap-1.5 mt-6">
-        {/* Season convention */}
-        {(["all", "wet", "dry"] as const).map((s) => (
-          <Chip key={s} active={season === s} onClick={() => setSeason(s)}>
-            {s === "all"
-              ? "All seasons"
-              : s === "wet"
-                ? SEASON_CONFIG.wet.display
-                : SEASON_CONFIG.dry.display}
-          </Chip>
-        ))}
-
-        <span className="mx-1.5 h-4 w-px bg-border/80" />
-
         {/* Metric Mode */}
         {(["percapita", "raw"] as const).map((m) => (
           <Chip key={m} active={mode === m} onClick={() => setMode(m)}>
@@ -549,7 +535,7 @@ export default function ComparePage() {
                       <th className="px-4 py-3 text-right border-r border-border/50">
                         {currentMonth.forecast ? "Predicted" : "Reported"} ({meta.unit})
                       </th>
-                      <th className="px-4 py-3 text-right border-r border-border/50">95% CI</th>
+                      <th className="px-4 py-3 text-right border-r border-border/50">80% model interval</th>
                       <th className="px-4 py-3 text-right border-r border-border/50">Percentile</th>
                       <th className="px-4 py-3 text-right border-r border-border/50">3m Change</th>
                       <th className="px-4 py-3 border-r border-border/50">Dominant Illness</th>
@@ -856,7 +842,7 @@ export default function ComparePage() {
                 <div className="rounded-xl border border-border/60 bg-secondary/15 p-5 space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="label-caps text-[10px] font-semibold text-muted-foreground">
-                      Prophet Model Backtest & Reliability
+                      Forecast Model Backtest & Reliability
                     </p>
                     <span
                       className="rounded px-2 py-0.5 text-[10px] font-semibold uppercase font-mono"
@@ -917,7 +903,7 @@ export default function ComparePage() {
                   </span>
                 </div>
                 <div className="font-mono text-[11px] text-muted-foreground">
-                  <span className="font-medium text-foreground/85">95% CI Range:</span>{" "}
+                  <span className="font-medium text-foreground/85">80% model interval Range:</span>{" "}
                   {formatMetric(
                     metricValue(detailedAssessment.point.lower, detailedAssessment.region, mode),
                     mode,
@@ -1013,12 +999,13 @@ function RegionalOverviewCard({
 
   return (
     <div
+      data-text-card
       role="button"
       tabIndex={0}
-      onClick={() => onOpenModal(a.region.code)}
+      onClick={() => { if (!window.getSelection()?.toString().trim()) onOpenModal(a.region.code); }}
       onKeyDown={handleKeyDown}
       aria-label={`Open detailed analysis for ${a.region.name}`}
-      className="group relative flex flex-col justify-between rounded-xl glass-panel p-5 transition-all duration-200 cursor-pointer select-none hover:border-teal-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+      className="group relative flex flex-col justify-between rounded-xl glass-panel p-5 transition-all duration-200 cursor-pointer select-text hover:border-teal-500/50 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
     >
       <div>
         {/* Card Header: Region short code, density & action buttons */}
@@ -1422,7 +1409,7 @@ function DetailedChart({
           <span className="inline-flex items-center gap-1.5">
             <span className="size-2.5 rounded-full" style={{ backgroundColor: riskColor }} />
             <span style={{ color: riskColor }} className="font-semibold">
-              Predicted & 95% CI
+              Predicted & 80% model interval
             </span>
           </span>
         </div>
@@ -1466,7 +1453,7 @@ function DetailedChart({
                 </span>
               </div>
               <div className="flex items-center justify-between gap-3 text-[10px] text-muted-foreground">
-                <span>95% CI Bounds:</span>
+                <span>80% model interval Bounds:</span>
                 <span className="font-medium text-foreground/80">
                   {formatMetric(hoveredPoint.vLower, mode)} –{" "}
                   {formatMetric(hoveredPoint.vUpper, mode)}
@@ -1540,7 +1527,7 @@ function DetailedChart({
                   className="transition-all duration-150 pointer-events-none"
                 />
 
-                {/* Forecast 95% CI whisker */}
+                {/* Forecast 80% model interval whisker */}
                 {isForecast && (
                   <g className="pointer-events-none">
                     <line

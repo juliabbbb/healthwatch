@@ -9,6 +9,7 @@ import { ForecastCard } from "./ForecastCard";
 
 export interface MobileBottomSheetProps {
   regionCode: string | null;
+  tourExpanded?: boolean;
   illness: string;
   monthIndex: number;
   mode?: MetricMode;
@@ -16,10 +17,12 @@ export interface MobileBottomSheetProps {
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
   onClose?: () => void;
+  onSelectMonth?: ((index: number) => void) | undefined;
 }
 
 export function MobileBottomSheet({
   regionCode,
+  tourExpanded = false,
   illness,
   monthIndex,
   mode = "percapita",
@@ -27,6 +30,7 @@ export function MobileBottomSheet({
   layer = "hotspot",
   onLayerChange,
   onClose,
+  onSelectMonth,
 }: MobileBottomSheetProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [lastRegionCode, setLastRegionCode] = useState<string | null>(regionCode);
@@ -44,10 +48,10 @@ export function MobileBottomSheet({
   useEffect(() => {
     if (regionCode) {
       setLastRegionCode(regionCode);
-      setIsExpanded(false);
+      setIsExpanded(tourExpanded);
       setDragOffsetY(0);
     }
-  }, [regionCode]);
+  }, [regionCode, tourExpanded]);
 
   const activeCode = regionCode || lastRegionCode;
   const isVisible = Boolean(regionCode);
@@ -181,7 +185,7 @@ export function MobileBottomSheet({
         onClick={() => setIsExpanded(false)}
         style={{ opacity: showBackdrop ? calculatedOpacity : 0 }}
         className={cn(
-          "fixed inset-0 z-[590] bg-black/60 backdrop-blur-xs transition-opacity duration-300 md:hidden",
+          "fixed inset-0 z-[590] bg-black/60 backdrop-blur-xs transition-opacity duration-300 xl:hidden",
           showBackdrop ? "pointer-events-auto" : "pointer-events-none",
         )}
         aria-hidden="true"
@@ -189,8 +193,9 @@ export function MobileBottomSheet({
 
       {/* 2. State-driven Sheet / Floating Card Container */}
       <div
+        data-tour="region-card"
         className={cn(
-          "fixed z-[600] flex flex-col md:hidden",
+          "hw-home-chrome fixed z-[600] flex flex-col xl:hidden",
           isExpanded
             ? "inset-x-0 bottom-0 h-dvh px-0 pb-0"
             : "inset-x-3 bottom-3 h-auto max-w-lg mx-auto",
@@ -234,24 +239,24 @@ export function MobileBottomSheet({
             />
 
             {/* Single-Row Summary Bar */}
-            <div className="flex items-center justify-between gap-2.5 min-w-0">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 min-w-0">
               {/* Left: Region Badge & Name */}
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <span className="rounded-md bg-primary/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-primary shrink-0">
+              <div className="flex items-center gap-2 min-w-0 basis-full sm:basis-auto sm:flex-1">
+                <span className="rounded-md bg-primary/15 px-1.5 py-0.5 font-mono text-xs font-bold text-primary shrink-0">
                   {a.region.short}
                 </span>
-                <span className="truncate text-xs font-bold text-foreground leading-tight">
+                <span className="truncate text-[13px] font-bold text-foreground leading-tight">
                   {a.region.name}
                 </span>
               </div>
 
               {/* Right: Key Metric + Risk Badge + Action Controls */}
-              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <div className="ml-auto flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0">
                 <div className="text-right leading-none min-w-0">
-                  <span className="inline-block max-w-[7rem] truncate align-bottom font-mono text-xs font-bold tabular-nums text-foreground">
+                  <span className="inline-block max-w-[7rem] truncate align-bottom font-mono text-[13px] font-bold tabular-nums text-foreground">
                     {formatMetric(a.value, mode)}
                   </span>
-                  <span className="hidden min-[420px]:inline-block ml-0.5 text-[9px] text-muted-foreground">
+                  <span className="hidden min-[420px]:inline-block ml-0.5 text-xs text-muted-foreground">
                     {unit}
                   </span>
                 </div>
@@ -293,9 +298,9 @@ export function MobileBottomSheet({
             </div>
           </div>
 
-          {/* Deep-Dive Content — always mounted, visibility controlled by height */}
+          {/* Expanded region content — always mounted, visibility controlled by height */}
           <div
-            className="overflow-y-auto hw-scroll overscroll-contain"
+            className="min-h-0 overflow-y-auto hw-scroll overscroll-contain"
             style={{
               height: isExpanded ? "calc(100dvh - 3.5rem)" : "0px",
               transition: isDragging

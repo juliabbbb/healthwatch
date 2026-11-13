@@ -1,32 +1,18 @@
-"""Monthly disease forecasting (dengue + food/waterborne disease groups).
+"""Monthly SARIMAX (1,0,0)x(1,0,0,12) with constant and June-November flag.
 
-Monthly Prophet (~55 observed months per region, 3 full yearly cycles) with a
-wet-season regressor only (Config B, the deployed default: yearly Fourier
-seasonality disabled after the ablation in src/ablation reported Config C, the
-former yearly + wet-regressor stack, as strictly worse, with a projected R2 of
-1.0 between the wet step and the Fourier columns on the training calendar), a
-12-month production horizon and a 12-month walk-forward validation that REFITS
-EVERY MONTH (REFIT_EVERY = 1). Two validation windows:
-
-  last_12m         train through 2025-08, hold out 2025-09 .. 2026-08
-  2025_prospective train through 2024-12, hold out 2025-01 .. 2025-12
-
-Seasonal outbreak "probe" forecasts (dry = Jan-Mar, wet = Jul-Sep of the next
-season) are fit on history through 2024-12-31 so the 2025 seasons are true
-prospective holdouts for validate_2025.
-
-Run: python -m src.forecast
+Forecasts use a zero floor and uncalibrated 80% model intervals. Operational
+validation refits monthly in last_12m and 2025_prospective; the separate
+fixed-origin CV comparison must not be reported as this operational validation.
+2025 Jan-Mar / Jul-Sep probes use only history through December 2024.
+PAGASA is advisory-only and never changes forecasts, tiers or outbreak flags.
 """
-
-import logging
 
 import numpy as np
 import pandas as pd
-from prophet import Prophet
+from pathlib import Path
 
-from . import config, features, ingest
-
-logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
+from . import config, ingest
+from .operational_model import model_name, fingerprint
 
 FORECAST_MONTHS = 12
 VAL_MONTHS = 12
@@ -52,103 +38,102 @@ FREQ = "MS"
 
 
 def load_series():
-    return ingest.load_monthly_series().sort_values(
-        ["disease", "region", "date"], ignore_index=True
-    )
+    observations = ingest.load_monthly_series()
+    end = pd.Timestamp(year=config.DATA_END_YEAR,month=config.DATA_END_MONTH,day=1)
+    parts=[]
+    for (disease,region),group in observations[observations.date<=end].groupby(['disease','region']):
+        own_end=min(end,pd.Timestamp(config.DISEASE_METADATA[disease]['last_reported_month']+'-01'))
+        grid=group.set_index('date').reindex(pd.date_range(config.DATA_START,own_end,freq='MS')).rename_axis('date').reset_index()
+        grid['disease'],grid['region']=disease,region
+        parts.append(grid)
+    return pd.concat(parts,ignore_index=True).sort_values(["disease","region","date"],ignore_index=True)
 
 
-def fit_prophet(train, use_year_seasonality=False, use_wet_regressor=True):
-    model = Prophet(
-        yearly_seasonality=use_year_seasonality,
-        weekly_seasonality=False,
-        daily_seasonality=False,
-        seasonality_mode="multiplicative",
-    )
-    if use_wet_regressor:
-        model.add_regressor("is_wet_season")
-    flagged = features.add_season_flags(train, date_col="ds")
-    cols = ["ds", "y"]
-    if use_wet_regressor:
-        cols.append("is_wet_season")
-    model.fit(flagged[cols])
-    return model
+def fit_model(train,start_params=None):
+    from .sarimax_forecast import fit
+    return fit(train,start_params=start_params)
 
 
-def predict(model, dates, use_wet_regressor=True):
-    future = pd.DataFrame({"ds": pd.to_datetime(dates)})
-    flagged = features.add_season_flags(future, date_col="ds")
-    cols = ["ds"]
-    if use_wet_regressor:
-        cols.append("is_wet_season")
-    fcst = model.predict(flagged[cols])
-    return fcst[["ds", "yhat", "yhat_lower", "yhat_upper"]]
+def predict(model, dates, include_intervals=True):
+    from .sarimax_forecast import predict as predict_sarimax
+    return predict_sarimax(model,dates,include_intervals=include_intervals)
 
 
 def _split_index(series, val_months, end_date):
+    # end_date is the last allowed training date, never the last target date.
     if end_date is None:
         return len(series) - val_months
-    eligible = series.index[series["ds"] <= pd.Timestamp(end_date)]
-    if len(eligible) == 0:
-        return -1
-    return int(eligible[-1]) - val_months + 1
+    targets = series.index[series["ds"] > pd.Timestamp(end_date)]
+    return int(targets[0]) if len(targets) else -1
 
 
 def walk_forward_validation(series, val_months=VAL_MONTHS, refit_every=REFIT_EVERY, end_date=None):
-    series = series.reset_index(drop=True)
-    split = _split_index(series, val_months, end_date)
-    if split < MIN_TRAIN_MONTHS:
+    series = series.sort_values("ds").reset_index(drop=True)
+    if series.ds.duplicated().any():
+        raise ValueError("Duplicate month targets")
+    if end_date is None:
+        if len(series) <= val_months:
+            return None
+        end_date = series.iloc[-val_months].ds - pd.offsets.MonthBegin(1)
+    origin = pd.Timestamp(end_date).to_period("M").to_timestamp()
+    targets = pd.date_range(origin + pd.offsets.MonthBegin(1), periods=val_months, freq="MS")
+    history = series[series.ds <= origin].dropna(subset=["y"])
+    if len(history) < MIN_TRAIN_MONTHS:
         return None
-    preds = []
-    model = None
-    for step in range(val_months):
-        cutoff = split + step
+    actuals = series.set_index("ds").y.reindex(targets)
+    if not actuals.notna().any():
+        return None
+    preds, model, retries = [], None, []
+    for step, target in enumerate(targets):
+        train = series[series.ds < target]
         if model is None or step % refit_every == 0:
-            model = fit_prophet(series.iloc[:cutoff][["ds", "y"]])
-        preds.append(predict(model, [series.loc[cutoff, "ds"]])["yhat"].iloc[0])
-    out = series.iloc[split : split + val_months][["ds", "y"]].copy()
-    out["yhat"] = np.clip(preds, 0, None)
+            try:
+                new_model=fit_model(train[["ds", "y"]])
+            except np.linalg.LinAlgError as exc:
+                if model is None:raise
+                # Same model/optimizer/settings, with a previous past-only fit
+                # as the numerical initial guess. Never use a future outcome.
+                new_model=fit_model(train[['ds','y']],start_params=model.result.params)
+                retries.append(dict(target_date=str(target.date()),reason=str(exc),strategy='previous_origin_parameters_as_start_only'))
+            model=new_model
+        preds.append(float(predict(model, [target],include_intervals=False).yhat.iloc[0]))
+    out=pd.DataFrame({"ds": targets, "y": actuals.to_numpy(), "yhat": np.clip(preds, 0, None)})
+    out.attrs['numerical_retries']=retries
     return out
 
 
 def score(validation):
-    err = validation["y"] - validation["yhat"]
-    nonzero = validation["y"] != 0
-    return {
-        "MAE": round(float(np.mean(np.abs(err))), 2),
-        "RMSE": round(float(np.sqrt(np.mean(err**2))), 2),
-        "MAPE": round(float(np.mean(np.abs(err[nonzero] / validation["y"][nonzero])) * 100), 2),
-        "months": int(len(validation)),
-        # Auditability for the MAPE zero-exclusion (methodology 3.5.5): the
-        # module reports how many zero-actual months were dropped from the
-        # percentage-error denominator, per window, so a future dataset where
-        # zeros become common surfaces the data loss immediately instead of
-        # silently.
-        "excluded_zero_actual": int((~nonzero).sum()),
-    }
+    from .integrity import paired_score
+    return paired_score(validation["y"], validation["yhat"])
 
 
 def naive_scores(series, val_months=VAL_MONTHS, end_date=None):
-    series = series.reset_index(drop=True)
-    split = _split_index(series, val_months, end_date)
-    if split < val_months:
-        return None
-    actual = series.iloc[split : split + val_months]["y"].to_numpy(dtype=float)
-    naive = series["y"].shift(val_months).iloc[split : split + val_months].to_numpy(dtype=float)
-    ok = ~(np.isnan(actual) | np.isnan(naive))
-    return round(float(np.mean(np.abs(actual[ok] - naive[ok]))), 2)
+    series = series.sort_values("ds").reset_index(drop=True)
+    if end_date is None:
+        if len(series) <= val_months:
+            return None
+        end_date = series.iloc[-val_months].ds - pd.offsets.MonthBegin(1)
+    origin = pd.Timestamp(end_date).to_period("M").to_timestamp()
+    targets = pd.date_range(origin + pd.offsets.MonthBegin(1), periods=val_months, freq="MS")
+    lookup = series.set_index("ds").y
+    actual = lookup.reindex(targets).to_numpy()
+    baseline = lookup.reindex(targets - pd.DateOffset(years=1)).to_numpy()
+    paired = np.isfinite(actual) & np.isfinite(baseline)
+    return float(np.abs(actual[paired] - baseline[paired]).mean()) if paired.any() else None
 
 
 def build_forecast(series, horizon=FORECAST_MONTHS):
-    """Production forecast: fit on ALL observed history (through 2026-08) and
-    forecast the next 12 months."""
-    series = series[["ds", "y"]].reset_index(drop=True)
-    model = fit_prophet(series)
-    last = series["ds"].max()
-    future_dates = pd.date_range(last, periods=horizon + 1, freq=FREQ)[1:]
-    fcst = predict(model, future_dates)
-    fcst["yhat"] = fcst["yhat"].clip(lower=1)
-    fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=1)
-    return fcst
+    """Operational horizon starts after its own declared training calendar."""
+    series = series[["ds","y"]].sort_values("ds").reset_index(drop=True)
+    if series.y.notna().sum() < MIN_TRAIN_MONTHS:
+        return pd.DataFrame(columns=["ds","yhat","yhat_lower","yhat_upper"])
+    model = fit_model(series)
+    origin = series.ds.max()
+    dates = pd.date_range(origin + pd.offsets.MonthBegin(1), periods=horizon, freq="MS")
+    fcst = predict(model,dates)
+    if not (fcst.ds > origin).all(): raise ValueError("Production targets must follow training")
+    return fcst[["ds","yhat","yhat_lower","yhat_upper"]]
+
 
 
 def build_season_probes(series, horizon=PROBE_HORIZON):
@@ -161,9 +146,10 @@ def build_season_probes(series, horizon=PROBE_HORIZON):
     count months after the last training month.
     """
     series = series[series["ds"] <= TRAIN_END].reset_index(drop=True)
-    model = fit_prophet(series)
-    last = series["ds"].max()
-    future_dates = pd.date_range(last, periods=horizon + 1, freq=FREQ)[1:]
+    if series["y"].notna().sum() < MIN_TRAIN_MONTHS:
+        return pd.DataFrame(columns=["ds", "season", "yhat", "yhat_lower", "yhat_upper"])
+    model = fit_model(series)
+    future_dates = pd.date_range(TRAIN_END.to_period("M").to_timestamp() + pd.offsets.MonthBegin(1), periods=horizon, freq=FREQ)
     fcst = predict(model, future_dates)
     fcst["yhat"] = fcst["yhat"].clip(lower=0)
     fcst["yhat_lower"] = fcst["yhat_lower"].clip(lower=0)
@@ -180,93 +166,77 @@ def build_season_probes(series, horizon=PROBE_HORIZON):
     return out[["ds", "season", "yhat", "yhat_lower", "yhat_upper"]]
 
 
+def _series_job(job):
+    """Independent, resumable region job; caches are keyed by input and code hashes."""
+    import hashlib, json
+    disease, region, group, probes_only = job
+    series = group.rename(columns={"date":"ds","cases":"y"})[["ds","y"]].sort_values("ds")
+    digest = hashlib.sha256(series.to_csv(index=False).encode() + Path(__file__).read_bytes() + fingerprint().encode() + str(probes_only).encode()).hexdigest()
+    cache = ingest.PROCESSED_DIR / "checkpoints" / (hashlib.sha256((disease+region).encode()).hexdigest()[:16]+".json")
+    if cache.exists():
+        saved=json.loads(cache.read_text(encoding="utf-8"))
+        if saved.get("input_code_hash")==digest:return saved
+    result=dict(disease=disease,region=region,model=model_name(),input_code_hash=digest,forecasts=[],probes=[],metrics=[],validation=[],exclusions=[],retries=[])
+    if series.y.notna().sum()<MIN_TRAIN_MONTHS or series.y.dropna().eq(0).all():
+        result["exclusions"].append(dict(reason="insufficient_observed_history_or_all_zero"))
+    else:
+        def records(frame):
+            frame=frame.copy()
+            if "ds" in frame:frame["ds"]=pd.to_datetime(frame.ds).dt.strftime("%Y-%m-%d")
+            return frame.astype(object).where(pd.notna(frame),None).to_dict(orient="records")
+        result["probes"]=records(build_season_probes(series))
+        if not probes_only:
+            for window,end in WINDOWS.items():
+                if disease=='Acute Viral Hepatitis':
+                    result['exclusions'].append(dict(window=window,reason='provisional_Hep_A_no_operational_validation_metrics'))
+                    continue
+                validation=walk_forward_validation(series,end_date=end)
+                if validation is None:
+                    result["exclusions"].append(dict(window=window,reason="insufficient_train_or_no_observed_targets"));continue
+                result['retries'].extend(dict(window=window,**r) for r in validation.attrs.get('numerical_retries',[]))
+                # Shared actual/prior-year mask for comparable model/baseline scores.
+                lookup=series.set_index("ds").y
+                baseline=lookup.reindex(pd.DatetimeIndex(validation.ds)-pd.DateOffset(years=1)).to_numpy()
+                scoreable=validation.y.notna().to_numpy() & np.isfinite(baseline)
+                scored=validation.copy();scored.loc[~scoreable,"y"]=np.nan
+                scores=score(scored)
+                naive=float(np.abs(validation.y.to_numpy()[scoreable]-baseline[scoreable]).mean()) if scoreable.any() else None
+                result["validation"].extend(records(validation.assign(window=window)))
+                if scores["months"]==0:
+                    result["exclusions"].append(dict(window=window,reason="no_paired_actual_and_prior_year"));continue
+                result["metrics"].append(dict(window=window,**scores,naive_MAE=naive,skill_vs_naive_pct=(1-scores["MAE"]/naive)*100 if naive is not None and naive>0 else None))
+            result["forecasts"]=records(build_forecast(series))
+    cache.parent.mkdir(parents=True,exist_ok=True)
+    temporary=cache.with_suffix(".tmp");temporary.write_text(json.dumps(result,allow_nan=False),encoding="utf-8");temporary.replace(cache)
+    return result
+
+
 def run(probes_only=False):
-    df = load_series()
-    probe_frames = []
-    forecast_frames = []
-    metric_rows = []
-    val_rows = []
-    for (disease, region), group in df.groupby(["disease", "region"]):
-        if disease not in config.FORECAST_READY_DISEASES:
-            continue
-        series = group.rename(columns={"date": "ds", "cases": "y"})[["ds", "y"]]
-        if len(series) < MIN_TRAIN_MONTHS:
-            print(
-                f"SKIP {region:<32} [{disease}]: only {len(series)} months"
-                f" (< {MIN_TRAIN_MONTHS})"
-            )
-            continue
-        probes = build_season_probes(series)
-        probes.insert(0, "region", region)
-        probes.insert(0, "disease", disease)
-        probe_frames.append(probes)
-        if probes_only:
-            continue
-        for window_name, end_date in WINDOWS.items():
-            validation = walk_forward_validation(series, end_date=end_date)
-            if validation is None:
-                print(f"SKIP {region} [{window_name}]: not enough history")
-                continue
-            val_rows.append(
-                validation.assign(disease=disease, region=region, window=window_name)
-            )
-            scores = score(validation)
-            naive_mae = naive_scores(series, end_date=end_date)
-            skill = (
-                round((1 - scores["MAE"] / naive_mae) * 100, 1) if naive_mae else None
-            )
-            metric_rows.append(
-                {
-                    "disease": disease,
-                    "region": region,
-                    "window": window_name,
-                    **{k: v for k, v in scores.items()},
-                    "naive_MAE": naive_mae,
-                    "skill_vs_naive_pct": skill,
-                }
-            )
-            print(
-                f"{region:<32} [{window_name:<18}] MAE={scores['MAE']:>9.2f}  "
-                f"naive={naive_mae:>9.2f}  skill={skill if skill is not None else 'n/a':>6}%"
-            )
-        fcst = build_forecast(series)
-        fcst.insert(0, "region", region)
-        fcst.insert(0, "disease", disease)
-        forecast_frames.append(fcst)
+    from concurrent.futures import ProcessPoolExecutor
+    import os
+    for key in ["OMP_NUM_THREADS","OPENBLAS_NUM_THREADS","MKL_NUM_THREADS"]:os.environ[key]="1"
+    df=load_series()
+    jobs=[(disease,region,group,probes_only) for (disease,region),group in df.groupby(["disease","region"]) if disease in config.FORECAST_READY_DISEASES]
+    collected={"forecasts":[],"probes":[],"metrics":[],"validation":[],"exclusions":[],"retries":[]}
+    with ProcessPoolExecutor(max_workers=int(os.environ.get("HEALTHWATCH_WORKERS","4"))) as pool:
+        for result in pool.map(_series_job,jobs):
+            for kind in collected:
+                collected[kind].extend(dict(disease=result["disease"],region=result["region"],**row) for row in result[kind])
+            print("COMPLETE",result["disease"],result["region"],flush=True)
+    mapping={"forecasts":"forecasts.csv","probes":"season_probes.csv","metrics":"validation_metrics.csv","validation":"validation_predictions.csv","exclusions":"forecast_exclusions.csv","retries":"fit_numerical_retries.csv"}
+    for kind,rows in collected.items():
+        if probes_only and kind not in {"probes","exclusions"}:continue
+        columns={'forecasts':['disease','region','ds','yhat','yhat_lower','yhat_upper'],
+                 'probes':['disease','region','ds','season','yhat','yhat_lower','yhat_upper'],
+                 'metrics':['disease','region','window','MAE','RMSE','MAPE','months','excluded_zero_actual','missing_targets','mape_denominator','naive_MAE','skill_vs_naive_pct'],
+                 'validation':['disease','region','ds','y','yhat','window'],
+                 'exclusions':['disease','region','reason','window'],
+                 'retries':['disease','region','window','target_date','reason','strategy']}
+        frame=pd.DataFrame(rows) if rows else pd.DataFrame(columns=columns[kind])
+        if kind in {"forecasts","probes"}:frame=frame.rename(columns={"ds":"target_date"})
+        ingest.save_processed(frame,mapping[kind])
+    return pd.DataFrame(collected["forecasts"]),pd.DataFrame(collected["metrics"])
 
-    probes_df = pd.concat(probe_frames, ignore_index=True)
-    probes_df = probes_df.rename(columns={"ds": "target_date"})
-    probes_df = probes_df[
-        ["disease", "region", "target_date", "season", "yhat", "yhat_lower", "yhat_upper"]
-    ]
-    probes_path = ingest.save_processed(probes_df, "season_probes.csv")
-    print(f"Saved {len(probes_df)} seasonal probe rows -> {probes_path}")
-    if probes_only:
-        print(
-            probes_df.groupby("season")["target_date"]
-            .agg(["min", "max", "count"])
-            .to_string()
-        )
-        return probes_df, pd.DataFrame()
-
-    forecasts = pd.concat(forecast_frames, ignore_index=True)
-    forecasts = forecasts.rename(columns={"ds": "target_date"})
-    forecasts = forecasts[
-        ["disease", "region", "target_date", "yhat", "yhat_lower", "yhat_upper"]
-    ]
-    fcst_path = ingest.save_processed(forecasts, "forecasts.csv")
-
-    metrics_df = pd.DataFrame(metric_rows)
-    metrics_df = metrics_df.sort_values(["region", "window"], ignore_index=True)
-    metrics_path = ingest.save_processed(metrics_df, "validation_metrics.csv")
-
-    val_df = pd.concat(val_rows, ignore_index=True)
-    val_path = ingest.save_processed(val_df, "validation_predictions.csv")
-
-    print(f"\nSaved {len(forecasts)} forecast rows -> {fcst_path}")
-    print(f"Saved {len(metrics_df)} validation rows -> {metrics_path}")
-    print(f"Saved {len(val_df)} validation prediction rows -> {val_path}")
-    return forecasts, metrics_df
 
 
 if __name__ == "__main__":

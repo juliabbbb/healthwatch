@@ -1,3 +1,4 @@
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
 import { Suspense, useEffect, useState } from "react";
 import {
   Copy,
@@ -20,7 +21,7 @@ import {
 import { DecompositionChart, AcfChart } from "@/components/hw/Charts.lazy";
 import { ChartTypeToggle } from "@/components/ui/ChartTypeToggle";
 import { useChartType } from "@/hooks/useChartType";
-import { REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
+import { ILLNESS_BY_ID, REGION_BY_CODE, decompose, acf, type SeasonalityComponent } from "@/lib/healthwatch/data";
 import { cn } from "@/lib/utils";
 import { formatMonthYear } from "@/utils/formatDate";
 
@@ -285,8 +286,9 @@ export function ChartExpandModal({
             </div>
           </div>
 
-          <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
+          <DialogTitle className="flex flex-wrap items-center gap-2 text-xl font-bold tracking-tight text-foreground">
             {meta.title}
+            {ILLNESS_BY_ID[illness]?.provisional && <ProvisionalTag note={ILLNESS_BY_ID[illness]?.provisionalNote} />}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
             {meta.description}

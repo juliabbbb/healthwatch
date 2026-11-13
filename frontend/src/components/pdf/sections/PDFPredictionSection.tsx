@@ -26,7 +26,7 @@ export function PDFPredictionSection({ regions }: PDFPredictionSectionProps) {
           <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 6 }}>
             <Text style={pdfStyles.value}>{r.name}</Text>
             <Text style={pdfStyles.muted}>
-              95% CI {r.lower.toLocaleString()}–{r.upper.toLocaleString()} {r.unit}
+              80% model interval {r.lower.toLocaleString()}–{r.upper.toLocaleString()} {r.unit}
             </Text>
           </View>
 

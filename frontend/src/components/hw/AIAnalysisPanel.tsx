@@ -215,7 +215,7 @@ function GroundingReadout({ data }: { data: GroundingData }) {
       <Group title={`Forecast (${formatMonthYear(data.forecast.target_date)})`}>
         <Row label="Predicted" value={fmt(data.forecast.yhat)} />
         <Row
-          label="95% interval"
+          label="80% model interval"
           value={`${fmt(data.forecast.yhat_lower)} – ${fmt(data.forecast.yhat_upper)}`}
         />
       </Group>

@@ -89,7 +89,7 @@ function ForecastTooltip({
       </p>
       {row.yhatLower !== null && row.yhatUpper !== null && (
         <p className="text-muted-foreground">
-          95% CI {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
+          80% model interval {row.yhatLower.toLocaleString(undefined, { maximumFractionDigits: 1 })}–
           {row.yhatUpper.toLocaleString(undefined, { maximumFractionDigits: 1 })}
         </p>
       )}
@@ -137,9 +137,11 @@ export function ForecastChart({
 
   const region = REGION_BY_CODE[regionCode]!;
   const conv = (v: number) => metricValue(v, region, mode);
-  const clip = (v: number) => Math.max(0, v);
-  const start = Math.max(0, HIST_MONTHS - monthsBack);
-  const slice: Row[] = series.slice(start, HIST_MONTHS + horizon).map((p) => {
+  const clip = (v: number) => Number.isFinite(v) ? Math.max(0, v) : null;
+  const firstForecast = series.findIndex((p) => p.forecast && p.raw >= 0 && Number.isFinite(p.cases));
+  const cutoff = firstForecast >= 0 ? firstForecast : series.length;
+  const start = Math.max(0, cutoff - monthsBack);
+  const slice: Row[] = series.slice(start, cutoff + horizon).map((p) => {
     const reported = p.forecast ? null : clip(conv(p.cases));
     const predicted = p.forecast ? clip(conv(p.cases)) : null;
     const yhatUpper = p.forecast ? clip(conv(p.upper)) : null;
@@ -219,7 +221,7 @@ export function ForecastChart({
                 stroke="none"
                 fill="transparent"
                 isAnimationActive={false}
-                name="95% CI"
+                name="80% model interval"
                 stackId="band"
               />,
               <Area
@@ -230,7 +232,7 @@ export function ForecastChart({
                 fill="var(--chart-3)"
                 fillOpacity={0.22}
                 isAnimationActive={false}
-                name="95% CI"
+                name="80% model interval"
                 stackId="band"
               />,
               <Line
@@ -295,7 +297,7 @@ export function ForecastChart({
         <ReferenceLine
           x={
             series.find((p) => p.forecast)?.label ??
-            monthMeta(HIST_MONTHS - 1).label
+            series[Math.max(0, cutoff - 1)]!.label
           }
           stroke="var(--color-muted-foreground)"
           strokeDasharray="3 3"

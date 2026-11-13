@@ -1,3 +1,4 @@
+import type { OutbreakIndicator } from "@/lib/healthwatch/data";
 import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
 import type { ReactNode } from "react";
 import type { Style } from "@react-pdf/types";
@@ -14,6 +15,7 @@ export interface ExportOptions {
   layout: ReportLayout;
   baseline: string;
   generatedAt: string;
+  provenance?: string | undefined;
   pathology: string;
   sections: {
     overview: boolean;
@@ -42,6 +44,7 @@ export interface ExportOptions {
     season: "wet" | "dry";
     driver: string;
     forecastWindow: MonthPoint[];
+    outbreak?: OutbreakIndicator | undefined;
   }[];
 }
 
@@ -57,7 +60,7 @@ const SUMMARY_COLS = [
   { key: "rank", label: "Rank", flex: 0.9, align: "right" },
   { key: "region", label: "Region", flex: 4.2, align: "left" },
   { key: "risk", label: "Risk Tier", flex: 2.2, align: "center" },
-  { key: "predicted", label: "Predicted (Next Season)", flex: 3.2, align: "right" },
+  { key: "predicted", label: "Selected month value", flex: 3.2, align: "right" },
   { key: "outbreak", label: "Outbreak Flag", flex: 2.8, align: "center" },
 ] as const;
 
@@ -103,6 +106,8 @@ function RiskBadge({ risk }: { risk: RiskLevel }) {
     <View
       style={{
         backgroundColor: riskAccent(risk),
+        alignSelf: "flex-start",
+        flexShrink: 0,
         borderRadius: 2,
         paddingHorizontal: 6,
         paddingVertical: 2,
@@ -162,6 +167,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
           generatedAt={options.generatedAt}
           meta={[
             `Illness: ${options.pathology}`,
+            options.provenance ?? "Source interpretation conditional; operational snapshot not research-certified.",
             `Forecast Period: ${forecastPeriod}`,
             `Regions included: ${options.regions.length}`,
             `Baseline: ${formatMonthYear(options.baseline)} · Source: DOH PIDSR Surveillance Data`,
@@ -224,7 +230,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
           <PDFHeader />
           <View style={pdfStyles.section}>
             <View style={pdfStyles.metaRow}>
-              <Text style={pdfStyles.title}>{r.profile.name}</Text>
+              <Text style={[pdfStyles.title, {flex: 1, marginRight: 10}]}>{r.profile.name}</Text>
               <RiskBadge risk={r.risk} />
             </View>
 
@@ -268,7 +274,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
                       <Text style={pdfStyles.td}>{fpUpper}</Text>
                     </Cell>
                     <Cell fl={FORECAST_COLS[4]!.flex} align={FORECAST_ALIGNS.risk}>
-                      <RiskBadge risk={r.risk} />
+                      <RiskBadge risk={fp.canonicalRisk ?? "unavailable"} />
                     </Cell>
                   </View>
                 );
@@ -276,30 +282,29 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
             </View>
 
             <View style={{ marginTop: 10 }}>
-              <Text style={pdfStyles.sectionTitle}>Seasonal Outbreak Indicator</Text>
+              <Text style={pdfStyles.sectionTitle}>Retrospective 2025 Seasonal Reference Indicator</Text>
+              <Text style={pdfStyles.body}>Benchmark targets: January–March or July–September 2025. These flags do not describe the upcoming operational forecast.</Text>
               <View style={pdfStyles.card}>
                 <Text style={[pdfStyles.body, { fontSize: 9 }]}>
-                  Rule A (P75 exceedance):{" "}
+                  Rule A (three consecutive High months):{" "}
                   <Text
                     style={{
                       color: r.risk === "high" ? COLORS.high : COLORS.slate,
                       fontWeight: "bold",
                     }}
                   >
-                    {r.percentile >= 75 ? "Fired — outbreak threshold breached" : "Not fired"}
+                    {r.outbreak ? (["both", "consecutive_high"].includes(r.outbreak.trigger) ? "Fired" : "Not fired") : "Unavailable"}
                   </Text>
                 </Text>
                 <Text style={[pdfStyles.body, { fontSize: 9, marginTop: 4 }]}>
-                  Rule B (trajectory acceleration):{" "}
+                  Rule B (probe mean above seasonal P75):{" "}
                   <Text
                     style={{
-                      color: r.changePct >= 10 ? COLORS.moderate : COLORS.slate,
+                      color: r.outbreak && ["both", "season_p75"].includes(r.outbreak.trigger) ? COLORS.moderate : COLORS.slate,
                       fontWeight: "bold",
                     }}
                   >
-                    {r.changePct >= 10
-                      ? `Fired — ${r.changePct >= 0 ? "+" : ""}${r.changePct}% change`
-                      : "Not fired"}
+                    {r.outbreak ? (["both", "season_p75"].includes(r.outbreak.trigger) ? "Fired" : "Not fired") : "Unavailable"}
                   </Text>
                 </Text>
               </View>
@@ -358,7 +363,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
             ))}
           </View>
           {sortedForSummary.map((r, i) => {
-            const outbreakFired = r.percentile >= 75 || r.changePct >= 10;
+            const outbreakFired = r.outbreak?.outbreak;
             return (
               <View
                 key={r.profile.code}
@@ -380,7 +385,7 @@ export function SurveillanceReportPDF({ options }: { options: ExportOptions }) {
                 </Cell>
                 <Cell fl={SUMMARY_COLS[4]!.flex} align={SUMMARY_ALIGNS.outbreak}>
                   <Text style={[pdfStyles.td, { fontWeight: "bold", color: COLORS.slate }]}>
-                    {outbreakFired ? "\u26A0 Yes" : "\u2014"}
+                    {outbreakFired == null ? "Unavailable" : outbreakFired ? "Yes" : "No"}
                   </Text>
                 </Cell>
               </View>

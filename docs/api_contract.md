@@ -1,3 +1,5 @@
+> SARIMAX switch: see [docs/SARIMAX_SWITCH.md](SARIMAX_SWITCH.md). The operational engine is SARIMAX; PAGASA is advisory-only. Older Prophet results below describe historical development, not the new model.
+
 # HEALTHWATCH API Contract
 
 Base URL (dev): `http://localhost:8000`
@@ -22,7 +24,7 @@ ids reported by `GET /status` in `supported_diseases`:
 | `Typhoid Fever` | Food and Waterborne Diseases | 2018-01 … 2026-09 (105 mo) |
 | `Acute Viral Hepatitis` | Food and Waterborne Diseases | 2018-01 … 2025-09 (93 mo) |
 
-Each disease is modelled independently: its own series, Prophet fit, risk tiers,
+Each disease is modelled independently: its own series, SARIMAX fit, risk tiers,
 outbreak flags and escalation ranking. "Food and Waterborne Diseases" is a
 presentation grouping only, never an analytical rollup. Dengue is the default
 for every `disease`-scoped endpoint that omits the parameter.
@@ -54,7 +56,7 @@ headless consumers. Their OpenAPI entries remain available under
 - **`target_date` / `date`** — ISO `YYYY-MM-DD`, always month-start (`…-01`).
 - **`yhat`** — point forecast of monthly cases. **Non-negative by construction**
   (production floor of 1); never log-scale. Rounding to an integer is safe.
-- **`yhat_lower` / `yhat_upper`** — 80% Prophet interval, floor applied.
+- **`yhat_lower` / `yhat_upper`** — uncalibrated 80% SARIMAX model interval, floor applied.
 - **`p50` / `p75`** — historical 50th/75th percentile of monthly cases for that
   region-month, computed from that disease's own observed baseline (dengue
   2019-01..2026-08; FWD 2018-01..2026-09, or 2018-01..2025-09 for acute viral
@@ -124,3 +126,9 @@ curl "https://healthwatch-api-xepv.onrender.com/escalation?top=5" \
 ```
 
 See `docs/examples/integration_client.py` for a working `requests` client.
+
+## Regional availability (local implementation, November 2026)
+
+GET /availability?disease=<supported disease> returns source_policy and regions keyed by stable region code. /dashboard includes the same availability map. Each entry separates source_status, source_warning, history_available, observed_months, required_observed_months, first_observed/last_observed, disease_forecast_enabled, forecast_available, forecast_start/forecast_end, reason_code and message. Dates are ISO strings or null; history counts exclude null reports and include actual zeros. Reasons include insufficient_observed_history, source_confirmation_pending, unresolved_measure, annual_reference_only and forecast_not_built. Provisional status is retained even with eligible ILI forecasts. Disease-level capability alone does not guarantee a region forecast.
+
+GET /reference/heat-events accepts region_code (or canonical region name). It returns annual source rows only; no row is not proof of a zero. ILI/leptospirosis/heat have no supported /reported record-level demographic breakdown and return 422 with an explanation. Snapshot identity comes from /health and the database provenance. Current startup reads monthly/model tables from the explicitly configured database; the heat reference endpoint reads matching selected artifacts. The older data-freshness description above is superseded by IMPLEMENTATION_WORKFLOW.md and LOCAL_BACKEND.md.

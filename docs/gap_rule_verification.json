@@ -1,0 +1,110 @@
+{
+  "operational_run": "gap-rules-ddb64e035033",
+  "research_run": "research-gap-945fb497f392",
+  "diseases": {
+    "Dengue": {
+      "regional_history_rows": 1656,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 0,
+      "unavailable_regions": {}
+    },
+    "Acute Bloody Diarrhea": {
+      "regional_history_rows": 1655,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 100,
+      "unavailable_regions": {}
+    },
+    "Cholera": {
+      "regional_history_rows": 1258,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 539,
+      "unavailable_regions": {}
+    },
+    "Typhoid Fever": {
+      "regional_history_rows": 1656,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 2,
+      "unavailable_regions": {}
+    },
+    "Influenza-like Illness": {
+      "regional_history_rows": 1656,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 0,
+      "unavailable_regions": {}
+    },
+    "Leptospirosis": {
+      "regional_history_rows": 1534,
+      "regional_forecast_rows": 216,
+      "zero_rule_months": 0,
+      "unavailable_regions": {}
+    },
+    "Acute Viral Hepatitis": {
+      "regional_history_rows": 1231,
+      "regional_forecast_rows": 204,
+      "zero_rule_months": 806,
+      "unavailable_regions": {
+        "450000000": "12 observed months; 24 required. Missing reports are not assumed zero."
+      }
+    }
+  },
+  "health": {
+    "system": "HEALTHWATCH",
+    "status": "ok",
+    "data_ready": true,
+    "database": "sqlite",
+    "snapshot_run_id": "gap-rules-ddb64e035033",
+    "shared_database": false
+  },
+  "zero_breakdown": {
+    "disease": "Acute Bloody Diarrhea",
+    "region": "Bangsamoro (BARMM)",
+    "region_code": "150000000",
+    "year": 2022,
+    "month": 1,
+    "label": "2022-01",
+    "total_cases": 0,
+    "total_deaths": null,
+    "records": 0,
+    "breakdowns": {},
+    "observation_status": "zero_by_user_relayed_DOH_rule",
+    "availability_note": "Zero cases under the interior-gap reporting rule; no demographic records or death measure are supplied."
+  },
+  "live_http": {
+    "health": {
+      "system": "HEALTHWATCH",
+      "status": "ok",
+      "data_ready": true,
+      "database": "sqlite",
+      "snapshot_run_id": "gap-rules-ddb64e035033",
+      "shared_database": false
+    },
+    "research": {
+      "run_id": "research-gap-945fb497f392",
+      "experiment_id": "fixed_origin_2019_CV2022_2024_TEST2025",
+      "validation_status": "verified_local",
+      "retrospective": true,
+      "production_model_unchanged": true,
+      "source_confirmation": "conditional",
+      "models": [
+        "Seasonal Naive",
+        "Prophet",
+        "SARIMAX",
+        "Random Forest WEKA"
+      ]
+    },
+    "selected_date_coverage": {
+      "Leptospirosis": {
+        "regions_with_values_2026_11": 18,
+        "cases_available_2026_11": 1036.915039164514
+      },
+      "Acute Viral Hepatitis": {
+        "regions_with_values_2026_11": 0,
+        "cases_available_2026_11": null
+      },
+      "Cholera": {
+        "regions_with_values_2026_11": 14,
+        "cases_available_2026_11": 39.11778862209235
+      }
+    }
+  }
+}

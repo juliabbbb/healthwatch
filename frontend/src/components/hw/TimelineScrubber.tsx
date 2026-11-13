@@ -54,7 +54,7 @@ export function TimelineScrubber({
 
   const modeBadge = (
     <span
-      className="rounded px-1.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider shrink-0 font-mono"
+      className="rounded px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wider shrink-0 font-mono"
       style={{
         color: meta.forecast ? "var(--risk-moderate)" : "var(--muted-foreground)",
         backgroundColor: meta.forecast
@@ -73,7 +73,7 @@ export function TimelineScrubber({
         className,
       )}
     >
-      <div className="flex items-center gap-1.5 sm:gap-3">
+      <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
         {/* Transport — icon-only cluster */}
         <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <button
@@ -100,7 +100,7 @@ export function TimelineScrubber({
         </div>
 
         {/* Track Slider */}
-        <div className="relative min-w-0 flex-1">
+        <div className="relative order-3 basis-full min-w-0 sm:order-none sm:basis-auto sm:flex-1">
           <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 overflow-hidden rounded-full bg-secondary">
             <div className="h-full bg-primary/50" style={{ width: `${pct}%` }} />
             <div
@@ -124,8 +124,8 @@ export function TimelineScrubber({
         </div>
 
         {/* Readout */}
-        <div className="flex shrink-0 items-center gap-1 sm:gap-2 text-xs">
-          <span className="font-mono text-[11px] sm:text-xs font-semibold tabular-nums text-foreground">
+        <div className="ml-auto flex min-w-0 flex-wrap items-center gap-1 sm:gap-2 text-[13px]">
+          <span className="font-mono text-xs sm:text-[13px] font-semibold tabular-nums text-foreground">
             {formatMonthYear(meta.label)}
           </span>
           <span className="hidden sm:inline-flex">
@@ -159,7 +159,7 @@ export function TimelineScrubber({
       </div>
 
       {expanded && (
-        <div className="mt-1.5 flex justify-between items-baseline text-xs text-muted-foreground border-t border-border/40 pt-1">
+        <div className="mt-1.5 flex justify-between items-baseline text-[13px] text-muted-foreground border-t border-border/40 pt-1">
           <span>{formatMonthYear(monthMeta(0).label)}</span>
           <span className="hidden sm:inline">
             Reported → Forecast ({monthMeta(0).year}–{monthMeta(TOTAL_MONTHS - 1).year})

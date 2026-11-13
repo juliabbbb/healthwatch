@@ -1,3 +1,7 @@
+import { HeatReferencePanel } from "./HeatReferencePanel";
+import { ProvisionalTag } from "@/components/hw/ProvisionalTag";
+import { AvailabilityNotice } from "./AvailabilityNotice";
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { Link } from "@tanstack/react-router";
 import {
   ArrowUpRight,
@@ -17,17 +21,13 @@ import { useAudienceMode } from "@/hooks/useAudienceMode";
 import {
   METRIC_META,
   assessRegion,
-  classify,
-  forecastCategoryMix,
+  availabilityForRegion,
   formatMetric,
   getOutbreak,
   metricValue,
-  modelMetrics,
   monthMeta,
-  seriesFor,
   ILLNESS_BY_ID,
   OUTBREAK_BENCHMARK_SEASON,
-  OUTBREAK_TRIGGER_LABEL,
   REGION_BY_CODE,
   upcomingSeasonForMonth,
   type ForecastCategoryMix,
@@ -35,16 +35,10 @@ import {
   type Season,
 } from "@/lib/healthwatch/data";
 import { formatMonthYear } from "@/utils/formatDate";
-import { groupForIllness, illnessDisplayName } from "@/lib/illnessGroups";
 import { RiskBadge, SeasonTag } from "./RiskBadge";
-import { StatusChip } from "./StatusChip";
 import { OutbreakBanner } from "./OutbreakBanner";
-import { KpiStrip, type KpiStripData } from "./KpiStrip";
 import { ForecastSparkline, type SparklinePoint } from "./ForecastSparkline";
-import { RiskDistributionRow, riskCountsFor } from "./RiskDistributionRow";
-import { AiInsightLine } from "./AiInsightLine";
 import { LiveWeatherCard } from "./LiveWeatherCard";
-import { useAiAnalysisSetting } from "@/hooks/use-ai-analysis-setting";
 
 const MONTH_ABBR = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -67,6 +61,7 @@ export interface ForecastCardProps {
   layer?: DataLayer;
   onLayerChange?: (l: DataLayer) => void;
   onClose?: () => void;
+  onSelectMonth?: ((index: number) => void) | undefined;
   variant?: "panel" | "sheet";
   className?: string;
   showHeader?: boolean;
@@ -80,10 +75,8 @@ export function ForecastCard({
   illness,
   monthIndex,
   mode = "percapita",
-  onModeChange,
   onClose,
-  layer = "hotspot",
-  onLayerChange,
+  onSelectMonth,
   variant = "panel",
   className,
   showHeader = true,
@@ -93,60 +86,17 @@ export function ForecastCard({
 }: ForecastCardProps) {
   const a = assessRegion(regionCode, illness, monthIndex, mode);
   const meta = monthMeta(a.monthIndex);
-  const validation = modelMetrics(regionCode, illness);
   const unit = METRIC_META[mode].unit;
   const outlookData = getOutbreak(regionCode, illness);
   const upcoming = upcomingSeasonForMonth(meta.month);
   const upcomingInd = outlookData[upcoming];
-  const [aiEnabled] = useAiAnalysisSetting();
   const { mode: audienceMode } = useAudienceMode();
   const isSheet = variant === "sheet";
   const illnessMeta = ILLNESS_BY_ID[illness];
-  const isForecastUnavailable = illnessMeta?.forecastAvailable === false;
+  const availability = availabilityForRegion(regionCode, illness);
+  const isForecastUnavailable = illness !== "all" && (availability ? !availability.forecast_available : illnessMeta?.forecastAvailable === false);
 
-  /* ---------- Derived KPI data ---------- */
-
-  const nextPt = a.forecastWindow[0];
-  const nextMonthKpi = isForecastUnavailable
-    ? { value: "—", sub: illnessMeta?.unavailableReason ?? "Forecast not available" }
-    : nextPt
-    ? {
-        value: formatMetric(metricValue(nextPt.cases, a.region, mode), mode),
-        sub: `95% CI ${formatMetric(metricValue(nextPt.lower, a.region, mode), mode)}–${formatMetric(
-          metricValue(nextPt.upper, a.region, mode),
-          mode,
-        )}`,
-      }
-    : { value: "—", sub: "No forecast" };
-
-  const seasonKpi = upcomingInd
-    ? {
-        label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May",
-        sub: upcomingInd.outbreak
-          ? `Outbreak signal — ${OUTBREAK_TRIGGER_LABEL[upcomingInd.trigger] ?? upcomingInd.trigger}`
-          : "Normal seasonal range",
-      }
-    : { label: upcoming === "wet" ? "Wet · Jun–Nov" : "Dry · Dec–May", sub: "Normal seasonal range" };
-
-  const histPts = seriesFor(regionCode, illness).filter((p) => !p.forecast);
-  const peakPt = histPts.length
-    ? histPts.reduce((best, p) => (p.cases > best.cases ? p : best))
-    : undefined;
-  const peakKpi = peakPt
-    ? {
-        value: formatMetric(metricValue(peakPt.cases, a.region, mode), mode),
-        sub: `${formatMonthYear(peakPt.label)} — highest on record`,
-      }
-    : { value: "—", sub: "No historical data" };
-
-  const kpi: KpiStripData = {
-    nextMonth: nextMonthKpi,
-    currentRisk: { level: a.risk, sub: `${a.percentileRank}th %ile of nat'l pool` },
-    season: seasonKpi,
-    peak: peakKpi,
-  };
-
-  const sparkData: SparklinePoint[] = a.forecastWindow.slice(0, 6).map((p) => {
+  const sparkData: SparklinePoint[] = a.forecastWindow.filter((point) => point.forecast).slice(0, 6).map((p) => {
     const val = metricValue(p.cases, a.region, mode);
     return {
       label: MONTH_ABBR[p.month - 1] ?? String(p.month),
@@ -154,22 +104,26 @@ export function ForecastCard({
       yhat: val,
       lower: metricValue(p.lower, a.region, mode),
       upper: metricValue(p.upper, a.region, mode),
-      risk: classify(val, a.thresholds),
+      risk: assessRegion(regionCode, illness, p.index, mode).risk,
     };
   });
 
-  const riskCounts = riskCountsFor(
-    a.forecastWindow.slice(0, 6).map((p) => classify(metricValue(p.cases, a.region, mode), a.thresholds)),
+  if (illness === "Heat-Related Illness") return (
+    <div data-text-card className={cn(isSheet ? "w-full space-y-3" : "glass-panel w-[24rem] xl:w-[30rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden", className)}>
+      <div className="flex items-center justify-between gap-3 px-5 py-4">
+        <h2 className="text-base font-semibold">{a.region.name}</h2>
+        {onClose && <button type="button" onClick={onClose} className="rounded border border-border px-3 py-1.5 text-sm hover:bg-secondary">Close</button>}
+      </div>
+      <div className="mx-5 mb-5"><HeatReferencePanel regionCode={regionCode} /></div>
+    </div>
   );
 
-  const mix = forecastCategoryMix(regionCode, a.monthIndex, 6);
-
   return (
-    <div
+    <div data-text-card
       className={cn(
         isSheet
           ? "w-full space-y-3"
-          : "glass-panel w-[22rem] xl:w-[28rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
+          : "glass-panel w-[24rem] xl:w-[30rem] max-w-[calc(100vw-2rem)] rounded-xl shadow-2xl flex flex-col overflow-hidden",
         className,
       )}
     >
@@ -181,26 +135,7 @@ export function ForecastCard({
             <h2 className="text-xl font-semibold leading-tight tracking-tight text-foreground truncate">
               {a.region.name}
             </h2>
-            <p className="mt-0.5 text-[11px] text-muted-foreground">
-              {audienceMode === "clinical"
-                ? `${a.region.classification} · ${a.region.density.toLocaleString()} persons/km²`
-                : "Philippine Administrative Region · Community Health Outlook"}
-            </p>
-            <div className="flex items-center gap-1.5 mt-1.5">
-              <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border border-border/70 bg-secondary/50">
-                {audienceMode === "clinical" ? (
-                  <>
-                    <Stethoscope className="size-3 text-primary shrink-0" />
-                    <span>Healthcare Worker Mode</span>
-                  </>
-                ) : (
-                  <>
-                    <Users className="size-3 text-primary shrink-0" />
-                    <span>General Public Mode</span>
-                  </>
-                )}
-              </span>
-            </div>
+            {illnessMeta?.provisional && <ProvisionalTag note={illnessMeta.provisionalNote} />}
           </div>
           {onClose && (
             <button
@@ -214,6 +149,8 @@ export function ForecastCard({
         </div>
       )}
 
+      {!showHeader && illnessMeta?.provisional && <div className="px-5 pt-3"><ProvisionalTag note={illnessMeta.provisionalNote} /></div>}
+
       {/* Outbreak Alert (conditional — only for forecast-ready diseases) */}
       {!isForecastUnavailable && (
       <OutbreakBanner
@@ -224,169 +161,85 @@ export function ForecastCard({
       />
       )}
 
-      {/* Forecast Unavailable Notice (for non-forecast diseases) */}
-      {isForecastUnavailable && (
-        <div className="mx-5 mt-3 shrink-0 flex items-start gap-2.5 rounded-lg border border-border/70 bg-secondary/30 px-4 py-3">
-          <Info className="size-4 text-muted-foreground shrink-0 mt-0.5" />
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-foreground">Historical Data Only</p>
-            <p className="text-[11px] text-muted-foreground leading-relaxed mt-0.5">
-              {illnessMeta?.unavailableReason ?? "Forecast model not yet available for this disease."}
-            </p>
-          </div>
-        </div>
-      )}
+      <AvailabilityNotice regionCode={regionCode} disease={illness} monthIndex={monthIndex} onSelectMonth={onSelectMonth} />
 
       {/* 2. Current Status Card */}
       <section className="border-b border-border/70 px-5 py-3.5">
-        <p className="label-caps text-xs text-muted-foreground tracking-wider mb-2.5">
+        <p className="label-caps text-[13px] text-muted-foreground tracking-wider mb-2.5">
           {audienceMode === "clinical" ? "CURRENT SURVEILLANCE STATUS" : "CURRENT COMMUNITY STATUS"}
         </p>
 
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="label-caps text-xs">
-              {meta.forecast ? "Predicted" : "Reported"} · {unit}
+            <p className="label-caps text-[13px]">
+              {a.point.forecast ? "Predicted" : "Reported"} · {unit}
             </p>
-            <p className="font-mono text-3xl sm:text-4xl font-bold leading-none tracking-tight tabular-nums text-foreground mt-1">
-              {formatMetric(a.value, mode)}
+            <p className="font-mono text-2xl sm:text-3xl font-bold leading-tight tracking-tight tabular-nums text-foreground mt-1 break-words">
+              {Number.isFinite(a.value) ? formatMetric(a.value, mode) : "—"}
             </p>
 
-            {audienceMode === "clinical" && onModeChange && (
-              <div
-                role="radiogroup"
-                aria-label="Metric representation"
-                className="relative mt-2.5 inline-flex h-7 w-44 items-center rounded-full border border-border/80 bg-secondary/50 p-0.5 shadow-inner select-none"
-              >
-                <div
-                  className={cn(
-                    "absolute top-0.5 bottom-0.5 w-[calc(50%-3px)] rounded-full bg-primary shadow-xs transition-all duration-200 ease-out",
-                    mode === "percapita" ? "left-0.5" : "left-[calc(50%+1.5px)]",
-                  )}
-                  aria-hidden="true"
-                />
-                {(["percapita", "raw"] as MetricMode[]).map((m) => {
-                  const isActive = mode === m;
-                  return (
-                    <button
-                      key={m}
-                      type="button"
-                      role="radio"
-                      aria-checked={isActive}
-                      onClick={() => onModeChange(m)}
-                      className={cn(
-                        "relative z-10 flex-1 text-center text-xs font-semibold transition-colors duration-200 py-0.5",
-                        isActive
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground hover:text-foreground",
-                      )}
-                    >
-                      {METRIC_META[m].short}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
           </div>
 
           <div className="flex flex-col items-end gap-1.5 shrink-0">
+            {illness === "all" && <span className="text-xs text-muted-foreground">Highest available tier</span>}
             <RiskBadge risk={a.risk} />
             <SeasonTag season={meta.season} label={SEASON_CONFIG[meta.season].display} />
-            {audienceMode === "clinical" && onLayerChange && (
-              <div className="mt-1 inline-flex rounded-lg border border-border/70 p-0.5 bg-secondary/30">
-                {(["hotspot", "density"] as const).map((l) => (
-                  <button
-                    key={l}
-                    type="button"
-                    onClick={() => onLayerChange(l)}
-                    className={cn(
-                      "rounded-md px-2 py-0.5 text-[11px] font-medium capitalize transition-colors text-center",
-                      layer === l
-                        ? "bg-primary/20 text-primary font-semibold shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {l}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Stat Chips: Clinical (5 detailed metrics) vs Public (simplified 2-badge summary) */}
+        {/* Stat Chips: Clinical metrics vs Public summary */}
         {audienceMode === "clinical" ? (
-          <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
+          <div className="mt-3.5 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-              <span className="label-caps text-[11px] block">Period</span>
+              <span className="label-caps text-xs block">Period</span>
               <span className="font-mono text-sm font-bold text-foreground truncate block">
                 {formatMonthYear(meta.label)}
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-              <span className="label-caps text-[11px] block">Cases</span>
+              <span className="label-caps text-xs block">Cases</span>
               <span className="font-mono text-sm font-bold text-foreground truncate block">
-                {a.point.cases.toLocaleString()}
+                {formatMetric(a.point.cases, "raw")}
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-              <span className="label-caps text-[11px] block">3-Mo Trend</span>
+              <span className="label-caps text-xs block">3-Mo Trend</span>
               <span
                 className="inline-flex min-w-0 items-center gap-1 font-mono text-sm font-bold"
-                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+                style={{ color: !Number.isFinite(a.changePct) ? "var(--muted-foreground)" : a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
               >
-                {a.changePct >= 0 ? (
+                {!Number.isFinite(a.changePct) ? <Info className="size-3.5 shrink-0" /> : a.changePct >= 0 ? (
                   <TrendingUp className="size-3.5 shrink-0" />
                 ) : (
                   <TrendingDown className="size-3.5 shrink-0" />
                 )}
                 <span className="truncate">
-                  {a.changePct >= 0 ? "+" : ""}
-                  {a.changePct}%
+                  {Number.isFinite(a.changePct) ? `${a.changePct >= 0 ? "+" : ""}${a.changePct}%` : "Unavailable"}
                 </span>
-              </span>
-            </div>
-            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5">
-              <span className="label-caps text-[11px] block">Nat'l Rank</span>
-              <span className="font-mono text-sm font-bold text-foreground truncate block">
-                {a.percentileRank}th %ile
-              </span>
-            </div>
-            <div className="rounded-lg bg-secondary/40 border border-border/50 px-2.5 py-1.5 col-span-2 sm:col-span-4">
-              <span className="label-caps text-[11px] block">Data Source</span>
-              <span className="text-xs font-medium text-muted-foreground truncate block">
-                {meta.forecast
-                  ? isForecastUnavailable
-                    ? "Historical Surveillance Only — Forecast Pending"
-                    : `Prophet Forecast · 95% CI ${formatMetric(
-                      metricValue(a.point.lower, a.region, mode),
-                      mode,
-                    )}–${formatMetric(metricValue(a.point.upper, a.region, mode), mode)}`
-                  : "DOH Epidemiology Bureau PIDSR Surveillance"}
               </span>
             </div>
           </div>
         ) : (
           <div className="mt-3 grid grid-cols-2 gap-2">
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
-              <span className="label-caps text-[10px] text-muted-foreground block">Forecast Period</span>
+              <span className="label-caps text-xs text-muted-foreground block">Forecast Period</span>
               <span className="font-mono text-sm font-bold text-foreground truncate block mt-0.5">
                 {formatMonthYear(meta.label)}
               </span>
             </div>
             <div className="rounded-lg bg-secondary/40 border border-border/50 px-3 py-2">
-              <span className="label-caps text-[10px] text-muted-foreground block">Case Direction</span>
+              <span className="label-caps text-xs text-muted-foreground block">Case Direction</span>
               <span
-                className="inline-flex min-w-0 items-center gap-1.5 text-xs font-bold mt-0.5"
-                style={{ color: a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
+                className="inline-flex min-w-0 items-center gap-1.5 text-[13px] font-bold mt-0.5"
+                style={{ color: !Number.isFinite(a.changePct) ? "var(--muted-foreground)" : a.changePct >= 0 ? "var(--risk-high)" : "var(--risk-low)" }}
               >
-                {a.changePct >= 0 ? (
+                {!Number.isFinite(a.changePct) ? <Info className="size-3.5 shrink-0" /> : a.changePct >= 0 ? (
                   <TrendingUp className="size-3.5 shrink-0" />
                 ) : (
                   <TrendingDown className="size-3.5 shrink-0" />
                 )}
                 <span className="truncate">
-                  {a.changePct > 5
+                  {!Number.isFinite(a.changePct) ? "Unavailable" : a.changePct > 5
                     ? `Increasing (+${a.changePct}%)`
                     : a.changePct < -5
                     ? `Decreasing (${a.changePct}%)`
@@ -398,77 +251,51 @@ export function ForecastCard({
         )}
       </section>
 
-      {/* 3. Epicentra-style KPI Strip (Healthcare Worker Mode only, forecast-ready diseases) */}
-      {audienceMode === "clinical" && !isForecastUnavailable && (
-        <section className="border-b border-border/70 px-5 py-3.5 shrink-0">
-          <KpiStrip data={kpi} />
-        </section>
-      )}
-
-      {/* 4. Projected Horizon Sparkline (Healthcare Worker Mode only, forecast-ready diseases) */}
-      {audienceMode === "clinical" && !isForecastUnavailable && (
+      {illness === "all" && <p className="px-5 py-2 text-sm text-muted-foreground">Contributing sources: {a.point.contributors?.join(", ") || "None for this month"}. Color shows the highest available individual illness tier; there is no combined prediction interval.</p>}
+      {a.risk === "unavailable" && <p className="px-5 py-3 text-sm text-muted-foreground" role="status">{illness === "all" ? "No contributing illness has both a value and a valid risk tier for this month." : "Risk unavailable: this date lacks a valid observation, forecast, or canonical threshold."}</p>}
+      {(illness === "Influenza-like Illness" || illness === "Leptospirosis") && <p className="px-5 py-3 text-sm text-muted-foreground">Provisional source interpretation. Case definitions and calendar mapping require source confirmation.</p>}
+      {/* Projected Horizon Sparkline (forecast-ready diseases) */}
+      {!isForecastUnavailable && (
         <section className="border-b border-border/70 px-5 py-3 shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <span className="label-caps text-xs text-muted-foreground tracking-wider">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span className="label-caps text-[13px] text-muted-foreground tracking-wider">
               6-MONTH PROJECTION TRAJECTORY
             </span>
-            <span className="text-[10px] font-mono text-muted-foreground">
-              95% Confidence Bounds
+            <span className="text-xs font-mono text-muted-foreground">
+              80% model interval (uncalibrated)
             </span>
           </div>
-          <ForecastSparkline data={sparkData} unit={unit} height={52} />
+          <ForecastSparkline data={sparkData} />
         </section>
       )}
 
 
-
-
-      {/* 5. Compact AI Insight (gated) */}
-      {aiEnabled && (
-        <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
-          <AiInsightLine
-            regionShort={a.region.short}
-            regionName={a.region.name}
-            monthLabel={meta.label}
-            illness={illness}
-          />
-        </section>
-      )}
-
-      {/* 6. Live PAGASA Daily Weather Nowcast & Disease Transmission Alerts */}
-      <section className="border-b border-border/70 px-5 py-3 shrink-0">
-        <LiveWeatherCard
-          regionCode={regionCode}
-          illness={illness}
-          nextForecast={nextPt ? {
-            value: metricValue(nextPt.cases, a.region, mode),
-            lower: metricValue(nextPt.lower, a.region, mode),
-            upper: metricValue(nextPt.upper, a.region, mode),
-            label: nextPt.label,
-            unit,
-            mode,
-          } : undefined}
-        />
+      {/* Weather details */}
+      <section className="border-b border-border/70 px-5 py-3 shrink-0" aria-label="Weather">
+        <p className="label-caps text-[13px] text-muted-foreground mb-2">Weather</p>
+        <CollapsibleSection title="More details" key={`weather-${regionCode}-${illness}`}>
+          <LiveWeatherCard regionCode={regionCode} illness={illness} />
+        </CollapsibleSection>
       </section>
 
-      {/* 7. Clinical Surge Decision Support (Healthcare Worker Mode) */}
-      {audienceMode === "clinical" ? (
+      {/* Data-dependent guidance is hidden when the risk is unavailable. */}
+      {a.risk !== "unavailable" && (audienceMode === "clinical" ? (
         <>
-          <section className="border-b border-border/70 px-5 py-3 shrink-0 bg-secondary/15">
-            <div className="flex items-center justify-between mb-2">
-              <span className="label-caps text-xs text-primary font-bold tracking-wider flex items-center gap-1.5">
+          {illness === "Dengue" && <section className="border-b border-border/70 px-5 py-3 shrink-0 bg-secondary/15">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <span className="label-caps text-[13px] text-primary font-bold tracking-wider flex items-center gap-1.5">
                 <Stethoscope className="size-3.5 text-primary" /> CLINICAL SURGE &amp; TRIAGE PROTOCOL
               </span>
-              <span className="text-[10px] font-mono text-muted-foreground uppercase">
+              <span className="text-xs font-mono text-muted-foreground uppercase">
                 {a.risk} Risk Protocol
               </span>
             </div>
-            <div className="space-y-2 text-xs">
+            <div className="space-y-2 text-sm">
               <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 space-y-1">
                 <p className="font-semibold text-foreground flex items-center gap-1.5">
                   <ShieldAlert className="size-3.5 text-primary" /> Hospital Capacity &amp; Logistics Buffer
                 </p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   {a.risk === "high"
                     ? "Surge threshold exceeded. Buffer 20%+ hospital bed capacity, pre-position 100+ L IV fluids/ORS, and notify provincial blood centers for platelet concentrate readiness."
                     : a.risk === "moderate"
@@ -476,154 +303,122 @@ export function ForecastCard({
                       : "Baseline operational status. Standard PIDSR weekly reporting; maintain routine buffer supplies."}
                 </p>
               </div>
+              <CollapsibleSection title="More details" key={`clinical-${regionCode}-${illness}`}>
               <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 space-y-1">
                 <p className="font-semibold text-foreground flex items-center gap-1.5">
                   <CheckCircle2 className="size-3.5 text-primary" /> Diagnostic &amp; Sentinel Directives
                 </p>
-                <p className="text-[11px] text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Ensure Dengue NS1 / IgM rapid diagnostic test (RDT) kits and water sampling culture media are distributed to Rural Health Units (RHUs).
                 </p>
               </div>
+              </CollapsibleSection>
             </div>
-          </section>
+          </section>}
 
-          {/* Model Statistical Validation Panel (forecast-ready diseases only) */}
-          {!isForecastUnavailable && (
-          <section className="border-b border-border/70 px-5 py-2.5 shrink-0">
-            <div className="flex items-center justify-between py-0.5 text-xs">
-              <span className="label-caps text-xs text-muted-foreground tracking-wider">
-                MODEL VALIDATION (PROPHET)
-              </span>
-              <StatusChip className="text-xs py-0.5 px-2.5 text-muted-foreground">
-                {validation.label} · MAPE {validation.mape}%
-              </StatusChip>
-            </div>
-            <div className="mt-2 space-y-1.5 pt-0.5">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                {[
-                  { k: "MAE", v: validation.mae.toLocaleString() },
-                  { k: "RMSE", v: validation.rmse.toLocaleString() },
-                  { k: "MAPE", v: `${validation.mape}%` },
-                ].map((m) => (
-                  <div
-                    key={m.k}
-                    className="rounded-lg bg-secondary/40 px-2 py-1.5 border border-border/40"
-                  >
-                    <p className="label-caps text-[11px] text-muted-foreground">{m.k}</p>
-                    <p className="font-mono text-sm font-bold tabular-nums text-foreground mt-0.5">
-                      {m.v}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">{validation.note}</p>
-            </div>
-          </section>
-          )}
         </>
       ) : (
         /* General Public Mode: Household 4S Guide & Emergency Warning Signs */
         <section className="border-b border-border/70 px-5 py-3.5 shrink-0 bg-secondary/15">
-          <div className="flex items-center justify-between mb-2">
-            <span className="label-caps text-xs text-primary font-bold tracking-wider flex items-center gap-1.5">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <span className="label-caps text-[13px] text-primary font-bold tracking-wider flex items-center gap-1.5">
               <Users className="size-3.5 text-primary" /> COMMUNITY HEALTH &amp; FAMILY GUIDE
             </span>
-            <span className="text-[10px] font-mono text-muted-foreground uppercase font-semibold">
+            <span className="text-xs font-mono text-muted-foreground uppercase font-semibold">
               {a.risk} Alert
             </span>
           </div>
 
-          <div className="space-y-2.5 text-xs">
+          <div className="space-y-2.5 text-sm">
             {/* Action Checklist */}
             <div className="rounded-lg border border-border/60 bg-card/80 p-3 space-y-2">
-              <p className="font-semibold text-foreground flex items-center gap-1.5 text-xs">
+              <p className="font-semibold text-foreground flex items-center gap-1.5 text-sm">
                 <CheckCircle2 className="size-3.5 text-primary shrink-0" />
                 {illness === "Dengue" ? "DOH 4S Strategy to Protect Your Family"
                   : illness === "Leptospirosis" ? "Flood-Water Safety Precautions"
                   : illness === "Influenza-like Illness" ? "Respiratory Illness Prevention"
-                  : illness === "Heat-Related Illness" ? "Beat the Heat Safety Tips"
                   : "Safe Water & Hygiene Precautions"}
               </p>
               {illness === "Dengue" ? (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
                   <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Search &amp; Destroy:</strong> Empty water drums, buckets, tires, and flower pot plates where mosquitoes breed.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Self-Protection:</strong> Apply DEET/citronella insect repellent and wear long-sleeved clothing.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Seek Early Consultation:</strong> If fever lasts &gt;2 days, visit your nearest Barangay Health Center immediately.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">4. Say Yes to Fogging:</strong> Support localized misting during declared hotspot cluster outbreaks.
+                    <strong className="text-foreground">1. Search &amp; Destroy:</strong> Empty water drums, buckets, tires, and flower pot plates where mosquitoes breed.
                   </li>
                 </ul>
               ) : illness === "Leptospirosis" ? (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
                   <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Avoid Floodwater:</strong> Do not wade or swim in floodwater, especially with open wounds or cuts.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Wear Protective Footwear:</strong> Use boots or waterproof footwear when walking through flooded or muddy areas.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Seek Immediate Care:</strong> If you develop fever, muscle pain, or dark-colored urine after flood exposure, go to the nearest health center.
+                    <strong className="text-foreground">1. Avoid Floodwater:</strong> Do not wade or swim in floodwater, especially with open wounds or cuts.
                   </li>
                 </ul>
               ) : illness === "Influenza-like Illness" ? (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
                   <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Cover Coughs &amp; Sneezes:</strong> Use a tissue or your elbow, and dispose of tissues properly.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Practice Handwashing:</strong> Wash hands frequently with soap, especially after being in public spaces.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Stay Home When Sick:</strong> If you have fever with cough or sore throat, rest at home and avoid crowded places.
-                  </li>
-                </ul>
-              ) : illness === "Heat-Related Illness" ? (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Stay Hydrated:</strong> Drink plenty of water throughout the day, even if you don't feel thirsty.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Limit Sun Exposure:</strong> Avoid prolonged outdoor activities between 10 AM and 3 PM during heat advisories.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Recognize Warning Signs:</strong> Dizziness, rapid heartbeat, confusion, or cessation of sweating are emergencies — move to shade and seek help.
+                    <strong className="text-foreground">1. Cover Coughs &amp; Sneezes:</strong> Use a tissue or your elbow, and dispose of tissues properly.
                   </li>
                 </ul>
               ) : (
-                <ul className="space-y-1.5 text-[11px] text-muted-foreground pl-1">
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
                   <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">1. Boil Drinking Water:</strong> Roll-boil tap or well water for at least 1–2 minutes before drinking.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">2. Food Safety:</strong> Eat thoroughly cooked meals while still warm; avoid questionable raw street foods.
-                  </li>
-                  <li className="flex items-start gap-1.5">
-                    <strong className="text-foreground shrink-0">3. Hand Hygiene:</strong> Wash hands thoroughly with soap for 20 seconds before eating and after using the restroom.
+                    <strong className="text-foreground">1. Boil Drinking Water:</strong> Roll-boil tap or well water for at least 1–2 minutes before drinking.
                   </li>
                 </ul>
               )}
             </div>
-
+            <CollapsibleSection title="More details" key={`public-${regionCode}-${illness}`}>
+              {illness === "Dengue" ? (
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">2. Self-Protection:</strong> Apply DEET/citronella insect repellent and wear long-sleeved clothing.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">3. Seek Early Consultation:</strong> If fever lasts &gt;2 days, visit your nearest Barangay Health Center immediately.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">4. Say Yes to Fogging:</strong> Support localized misting during declared hotspot cluster outbreaks.
+                  </li>
+                </ul>
+              ) : illness === "Leptospirosis" ? (
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">2. Wear Protective Footwear:</strong> Use boots or waterproof footwear when walking through flooded or muddy areas.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">3. Seek Immediate Care:</strong> If you develop fever, muscle pain, or dark-colored urine after flood exposure, go to the nearest health center.
+                  </li>
+                </ul>
+              ) : illness === "Influenza-like Illness" ? (
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">2. Practice Handwashing:</strong> Wash hands frequently with soap, especially after being in public spaces.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">3. Stay Home When Sick:</strong> If you have fever with cough or sore throat, rest at home and avoid crowded places.
+                  </li>
+                </ul>
+              ) : (
+                <ul className="space-y-1.5 text-sm text-muted-foreground pl-1">
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">2. Food Safety:</strong> Eat thoroughly cooked meals while still warm; avoid questionable raw street foods.
+                  </li>
+                  <li className="flex items-start gap-1.5">
+                    <strong className="text-foreground">3. Hand Hygiene:</strong> Wash hands thoroughly with soap for 20 seconds before eating and after using the restroom.
+                  </li>
+                </ul>
+              )}
             {/* Red-Flag Symptoms / Emergency Warning Signs */}
             <div className="rounded-lg border border-destructive/40 bg-destructive/10 p-2.5 space-y-1 text-destructive">
-              <p className="font-bold text-xs flex items-center gap-1.5 text-destructive">
+              <p className="font-bold text-sm flex items-center gap-1.5 text-destructive">
                 <AlertTriangle className="size-3.5 shrink-0" /> When to Rush to the Hospital / ER
               </p>
-              <p className="text-[11px] leading-relaxed opacity-90">
+              <p className="text-sm leading-relaxed opacity-90">
                 Go to the nearest emergency clinic if you experience: severe abdominal pain, persistent vomiting, bleeding gums or nose, blood in stool, or sudden extreme weakness.
               </p>
             </div>
+            </CollapsibleSection>
           </div>
         </section>
-      )}
-
-
+      ))}
 
       {/* 8. Pinned CTA */}
       <div
@@ -637,7 +432,7 @@ export function ForecastCard({
         <Link
           to="/seasonality"
           search={{ region: regionCode }}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-xs font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-95 hover:shadow active:scale-[0.99]"
+          className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-[13px] font-semibold text-primary-foreground shadow-sm transition-all hover:opacity-95 hover:shadow active:scale-[0.99]"
         >
           Open region analysis <ArrowUpRight className="size-3.5" />
         </Link>
@@ -697,7 +492,7 @@ function CategoryMixBar({ mix, regionCode, mode, illness }: CategoryMixBarProps)
       </div>
       <div className="mt-2 flex flex-col gap-1">
         {segs.map((s) => (
-          <div key={s.key} className="flex items-center justify-between gap-2 text-[10px]">
+          <div key={s.key} className="flex items-center justify-between gap-2 text-xs">
             <span className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
               <span
                 className="size-1.5 shrink-0 rounded-full"

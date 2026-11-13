@@ -1,0 +1,86 @@
+{
+  "health": {
+    "system": "HEALTHWATCH",
+    "status": "ok",
+    "data_ready": true,
+    "database": "sqlite",
+    "snapshot_run_id": "operational-ili-a78819fcd460",
+    "shared_database": false
+  },
+  "ili": {
+    "regions": 18,
+    "regional_forecast_rows": 216,
+    "source_status": "provisional",
+    "national_forecast_rows": 12
+  },
+  "cholera_exclusions": {
+    "010000000": {
+      "source_status": "numeric_count",
+      "source_warning": null,
+      "history_available": true,
+      "observed_months": 8,
+      "required_observed_months": 24,
+      "first_observed": "2022-10-01",
+      "last_observed": "2026-08-01",
+      "disease_forecast_enabled": true,
+      "forecast_available": false,
+      "forecast_start": null,
+      "forecast_end": null,
+      "reason_code": "insufficient_observed_history",
+      "message": "8 observed months; 24 required. Missing reports are not assumed zero."
+    },
+    "020000000": {
+      "source_status": "numeric_count",
+      "source_warning": null,
+      "history_available": true,
+      "observed_months": 12,
+      "required_observed_months": 24,
+      "first_observed": "2022-11-01",
+      "last_observed": "2025-04-01",
+      "disease_forecast_enabled": true,
+      "forecast_available": false,
+      "forecast_start": null,
+      "forecast_end": null,
+      "reason_code": "insufficient_observed_history",
+      "message": "12 observed months; 24 required. Missing reports are not assumed zero."
+    },
+    "170000000": {
+      "source_status": "numeric_count",
+      "source_warning": null,
+      "history_available": true,
+      "observed_months": 11,
+      "required_observed_months": 24,
+      "first_observed": "2019-09-01",
+      "last_observed": "2024-08-01",
+      "disease_forecast_enabled": true,
+      "forecast_available": false,
+      "forecast_start": null,
+      "forecast_end": null,
+      "reason_code": "insufficient_observed_history",
+      "message": "11 observed months; 24 required. Missing reports are not assumed zero."
+    }
+  },
+  "Acute Viral Hepatitis": "source_confirmation_pending",
+  "Leptospirosis": "unresolved_measure",
+  "Heat-Related Illness": "annual_reference_only",
+  "heat_totals": {
+    "events": 113,
+    "cases": 1275,
+    "deaths": 20
+  },
+  "research_status": {
+    "run_id": "HW-20261112-100923",
+    "experiment_id": "fixed_origin_2019_CV2022_2024_TEST2025",
+    "validation_status": "verified_local",
+    "retrospective": true,
+    "production_model_unchanged": true,
+    "source_confirmation": "conditional",
+    "models": [
+      "Seasonal Naive",
+      "Prophet",
+      "SARIMAX",
+      "Random Forest WEKA"
+    ]
+  },
+  "live_http_verified": true
+}

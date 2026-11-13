@@ -44,7 +44,10 @@ import {
   TOTAL_MONTHS,
   acf,
   decompose,
-  getThresholds,
+  forecastPoints,
+  operationalModelForDisease,
+  provenanceForDisease,
+  formatMetric,
   getOutbreak,
   monthMeta,
   OUTBREAK_TRIGGER_LABEL,
@@ -64,7 +67,6 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import { BackToTop } from "@/components/BackToTop";
-import { ExplainModeButton } from "@/components/hw/ExplainModeButton";
 
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -168,41 +170,24 @@ function SeasonalityPage() {
   const [code, setCode] = useState(
     initialRegion && REGION_BY_CODE[initialRegion] ? initialRegion : "130000000",
   );
-  const [illness, setIllness] = useState("all");
+  const [illness, setIllness] = useState("Dengue");
   const [horizon, setHorizon] = useState<number>(0);
   const [forecastHorizon, setForecastHorizon] = useState(12);
   const [seasonFilter, setSeasonFilter] = useState<"all" | "wet" | "dry">("all");
   const { chartType: forecastChartType, setChartType: setForecastChartType } = useChartType("bar");
   const region = REGION_BY_CODE[code]!;
 
-  const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + horizon));
+  const lastAvailableIndex = seriesFor(code, illness).filter((p) => p.raw >= 0 && Number.isFinite(p.cases)).at(-1)?.index ?? CURRENT_MONTH_INDEX;
+  const maxFutureMonths = Math.max(0, Math.min(12, lastAvailableIndex - CURRENT_MONTH_INDEX));
+  const effectiveHorizon = Math.min(horizon, maxFutureMonths);
+  const monthIndex = Math.max(0, Math.min(TOTAL_MONTHS - 1, CURRENT_MONTH_INDEX + effectiveHorizon));
   const currentMonth = monthMeta(monthIndex);
   const baselineMonth = monthMeta(CURRENT_MONTH_INDEX);
-  const isHistorical = horizon < 0;
-  const isCurrent = horizon === 0;
-  const isForecast = horizon > 0;
+  const isHistorical = effectiveHorizon < 0;
+  const isCurrent = effectiveHorizon === 0;
+  const isForecast = effectiveHorizon > 0;
   const currentSeasonLabel =
     currentMonth.season === "wet" ? SEASON_CONFIG.wet.display : SEASON_CONFIG.dry.display;
-
-  // Simple / Advanced View mode toggle with localStorage persistence (defaults to "simple")
-  const [viewMode, setViewMode] = useState<"simple" | "advanced">(() => {
-    if (typeof window === "undefined") return "simple";
-    try {
-      const saved = localStorage.getItem("hw_seasonality_view");
-      return saved === "advanced" ? "advanced" : "simple";
-    } catch {
-      return "simple";
-    }
-  });
-
-  const handleViewModeChange = (mode: "simple" | "advanced") => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem("hw_seasonality_view", mode);
-    } catch {
-      // ignore
-    }
-  };
 
   // Active decomposition chart tab
   const [decompTab, setDecompTab] = useState<"observed" | "trend" | "seasonal" | "residual">("observed");
@@ -298,20 +283,17 @@ function SeasonalityPage() {
     };
   }, [decompData, acfData]);
 
-  // Regional analysis computed values
-  const assessment = useMemo(
-    () => assessRegion(code, illness, CURRENT_MONTH_INDEX + forecastHorizon),
-    [code, illness, forecastHorizon],
-  );
-  const forecastSeries = useMemo(() => seriesFor(code, illness), [code, illness]);
-  const forecastRows = useMemo(
-    () =>
-      forecastSeries
-        .filter((p) => p.forecast && p.raw >= 0)
-        .slice(0, forecastHorizon)
-        .filter((p) => seasonFilter === "all" || p.season === seasonFilter),
-    [forecastSeries, forecastHorizon, seasonFilter],
-  );
+  // Select the final month of the saved horizon, never today + 12 months.
+  const savedForecast = useMemo(() => forecastPoints(code, illness, forecastHorizon), [code, illness, forecastHorizon]);
+  const targetIndex = savedForecast.at(-1)?.index ?? TOTAL_MONTHS - 1;
+  const assessment = useMemo(() => assessRegion(code, illness, targetIndex), [code, illness, targetIndex]);
+  const forecastRows = savedForecast.filter((p) => seasonFilter === "all" || p.season === seasonFilter);
+  const forecastPeriodLabel = savedForecast.length
+    ? `${formatMonthYear(savedForecast[0]!.label)} – ${formatMonthYear(savedForecast.at(-1)!.label)}`
+    : "No eligible forecast for this series";
+  const model = operationalModelForDisease(illness);
+  const runId = provenanceForDisease(illness)?.run_id;
+  const fmt = (value: number) => Number.isFinite(value) ? Math.round(value).toLocaleString() : "—";
 
   const exportCsv = (comp: SeasonalityComponent) => {
     let csvContent = "";
@@ -410,7 +392,7 @@ function SeasonalityPage() {
       const illnessLabel = illness === "all" ? "all illnesses" : illness;
 
       // Risk tier classification
-      const riskThresholds = getThresholds(illness, assessment.point.month, "percapita");
+      const riskThresholds = assessment.thresholds;
 
       // Outbreak indicator
       const outbreakData = getOutbreak(code, illness);
@@ -428,9 +410,10 @@ function SeasonalityPage() {
         <SeasonalityPdfDocument
           regionName={region.name}
           illnessLabel={illnessLabel}
-          forecastPeriod={{ start: monthMeta(0).label, end: currentMonth.label }}
+          forecastPeriod={{ start: savedForecast[0]?.label ?? "Unavailable", end: savedForecast.at(-1)?.label ?? "Unavailable" }}
           charts={charts}
           generatedAt={generatedAt}
+          provenance={`${model}; run ${runId ?? "unavailable"}; uncalibrated 80% model interval. Aggregate risk and intervals are not estimated.`}
           decomposition={{
             trendDirection: stats.trendChange >= 0 ? "Upward" : "Downward",
             trendChangePct: stats.trendChange,
@@ -469,7 +452,7 @@ function SeasonalityPage() {
               : null
           }
           forecast={{
-            horizon: forecastHorizon,
+            horizon: savedForecast.length,
             predictedCases: Math.round(assessment.point.cases),
             predictedLower: Math.round(assessment.point.lower),
             predictedUpper: Math.round(assessment.point.upper),
@@ -605,50 +588,6 @@ function SeasonalityPage() {
             the recurring annual cycle with 12-month autocorrelation indicators.
           </p>
 
-          {/* Simple / Advanced View Toggle */}
-          <div className="mt-3.5 flex flex-wrap items-center gap-2.5">
-            <span className="label-caps text-[10px] text-muted-foreground">View:</span>
-            <div
-              role="radiogroup"
-              aria-label="Seasonality view mode"
-              data-explain="view-toggle"
-              className="inline-flex items-center rounded-lg border border-border/80 bg-card/60 p-1 shadow-xs"
-            >
-              <button
-                type="button"
-                role="radio"
-                aria-checked={viewMode === "simple"}
-                onClick={() => handleViewModeChange("simple")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
-                  viewMode === "simple"
-                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span>Simple</span>
-              </button>
-              <button
-                type="button"
-                role="radio"
-                aria-checked={viewMode === "advanced"}
-                onClick={() => handleViewModeChange("advanced")}
-                className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-all cursor-pointer touch-manipulation",
-                  viewMode === "advanced"
-                    ? "bg-primary/20 text-primary font-bold shadow-xs border border-primary/30"
-                    : "text-muted-foreground hover:text-foreground",
-                )}
-              >
-                <span>Advanced</span>
-              </button>
-            </div>
-            <span className="text-[11px] text-muted-foreground hidden sm:inline">
-              {viewMode === "simple"
-                ? "Showing plain-language summary & observed cases"
-                : "Showing full statistical indicators & decomposition tabs"}
-            </span>
-          </div>
         </div>
         <div className="flex flex-col items-start md:items-end gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-lg border border-border/80 bg-card/60 px-3 py-1.5 text-xs text-muted-foreground shadow-xs">
@@ -656,7 +595,6 @@ function SeasonalityPage() {
             {region.island}
           </span>
           <div className="flex items-center gap-2">
-            <ExplainModeButton />
             <button
               type="button"
               onClick={() => void exportPdf()}
@@ -678,15 +616,13 @@ function SeasonalityPage() {
         </div>
       </div>
 
-      {/* 12-Month Risk Strip (shown in Advanced view) */}
-      {viewMode === "advanced" && (
-        <div className="mt-5 glass-panel rounded-2xl p-4" data-explain="risk-outlook">
+      {/* 12-Month Risk Outlook */}
+      <div className="mt-5 glass-panel rounded-2xl p-4" data-text-card data-explain="risk-outlook">
           <p className="label-caps mb-2 text-[10px] text-muted-foreground">
-            12-Month Risk Outlook · {region.name}
+            Saved 12-Month Risk Outlook · {region.name}
           </p>
           <HotspotTimeline regionCode={code} illness={illness} />
         </div>
-      )}
 
       {/* Unified Filter Panel */}
       <div className="mt-8" data-explain="filter-panel">
@@ -730,9 +666,9 @@ function SeasonalityPage() {
                             : undefined
                         }
                       >
-                        {isHistorical && `${Math.abs(horizon)}m past reported`}
+                        {isHistorical && `${Math.abs(effectiveHorizon)}m before today`}
                         {isCurrent && "Current baseline (Now)"}
-                        {isForecast && `+${horizon}m forecast`}
+                        {isForecast && `+${effectiveHorizon}m forecast`}
                       </span>
                       <span
                         className="rounded-full px-2 py-0.5 text-[10px] font-semibold border"
@@ -771,19 +707,19 @@ function SeasonalityPage() {
                     >
                       Now (0) · {formatMonthYear(baselineMonth.label)}
                     </span>
-                    <span>Forecast (+12m)</span>
+                    <span>Available (+{maxFutureMonths}m)</span>
                   </div>
 
                   {/* Range slider with generous touch target for mobile */}
                   <input
                     type="range"
                     min={-12}
-                    max={12}
+                    max={maxFutureMonths}
                     step={1}
-                    value={horizon}
+                    value={effectiveHorizon}
                     onChange={(e) => setHorizon(Number(e.target.value))}
                     className="w-full accent-primary h-2.5 cursor-pointer bg-secondary rounded-lg my-1"
-                    aria-label="Temporal surveillance scrubber from -12 past months to +12 forecast months"
+                    aria-label="Analysis month within available data"
                   />
 
                   {/* Quick Jump Buttons covering both Past and Future */}
@@ -800,10 +736,11 @@ function SeasonalityPage() {
                       <button
                         key={s.label}
                         type="button"
+                        disabled={s.val > maxFutureMonths}
                         onClick={() => setHorizon(s.val)}
                         className={cn(
-                          "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center",
-                          horizon === s.val
+                          "rounded-md px-1.5 sm:px-2 py-1 text-[10px] font-mono font-medium transition-colors border min-w-[32px] text-center disabled:opacity-40 disabled:cursor-not-allowed",
+                          effectiveHorizon === s.val
                             ? "border-primary bg-primary/15 text-primary font-bold shadow-xs"
                             : "border-border/60 text-muted-foreground hover:text-foreground hover:bg-secondary/40",
                         )}
@@ -839,9 +776,8 @@ function SeasonalityPage() {
           ))}
         </span>
       </div>
-      {/* Summary Metrics (shown in Advanced view with hover/focus tooltips) */}
-      {viewMode === "advanced" && (
-        <div className="mt-8">
+      {/* Summary metrics with hover/focus tooltips */}
+      <div className="mt-8">
           <div className="mb-2.5 flex items-center justify-between gap-2">
             <p className="label-caps text-xs">Summary Metrics</p>
             <button
@@ -895,9 +831,8 @@ function SeasonalityPage() {
             </div>
           </TooltipProvider>
         </div>
-      )}
 
-      {/* Decomposition Section: Single Observed chart + summary in Simple; Tabbed decomposition in Advanced */}
+      {/* Unified seasonal summary and decomposition charts */}
       <section className="mt-8 glass-panel rounded-2xl p-5">
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
@@ -906,16 +841,14 @@ function SeasonalityPage() {
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {region.name} · {illness === "all" ? "all illnesses" : illness} · window{" "}
-              {formatMonthYear(monthMeta(0).label)} – {formatMonthYear(currentMonth.label)}
-              {viewMode === "advanced"
-                ? " split into a 12-month centred moving-average trend, a month-of-year seasonal index and the irregular remainder."
-                : " monthly reported surveillance records."}
+              {decompData[0] ? formatMonthYear(decompData[0].label) : "Unavailable"} – {decompData.at(-1) ? formatMonthYear(decompData.at(-1)!.label) : "Unavailable"}
+              {" monthly reported surveillance records, split into a 12-month centred moving-average trend, a month-of-year seasonal index and the irregular remainder."}
             </p>
           </div>
           <button
             onClick={(e) => openMenu(e, "decomposition", "Full Decomposition")}
             aria-label="Open AI analysis overview menu"
-            data-explain="ai-overview"
+            data-text-card data-explain="ai-overview"
             className="flex items-center gap-1.5 rounded-lg border border-primary/45 bg-primary/10 px-2.5 py-1.5 text-xs font-semibold text-primary shadow-xs transition-all hover:bg-primary/20 active:scale-95 shrink-0 cursor-pointer touch-manipulation"
           >
             <Sparkles className="size-3.5" />
@@ -924,9 +857,8 @@ function SeasonalityPage() {
           </button>
         </div>
 
-        {/* In Simple View: Plain-language seasonal summary banner */}
-        {viewMode === "simple" && (
-          <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-explain="simple-summary">
+        {/* Plain-language seasonal summary */}
+        <div className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-4 sm:p-5" data-text-card data-explain="seasonal-summary">
             <div className="flex items-start gap-3">
               <div className="rounded-lg bg-primary/15 p-2 text-primary shrink-0 mt-0.5">
                 <Sparkles className="size-4" />
@@ -941,11 +873,9 @@ function SeasonalityPage() {
               </div>
             </div>
           </div>
-        )}
 
-        {/* In Advanced View: Chart Tabs with colored dots matching series color */}
-        {viewMode === "advanced" && (
-          <div className="mb-4">
+        {/* Decomposition tabs with dots matching the series colour */}
+        <div className="mb-4">
             <div
               role="tablist"
               aria-label="Decomposition series tabs"
@@ -991,9 +921,8 @@ function SeasonalityPage() {
               </span>
             </div>
           </div>
-        )}
 
-        {/* Charts: In Simple mode, only Observed is shown. In Advanced mode, only active tab is shown.
+        {/* Charts: show the active decomposition tab.
             All chart cards remain in DOM with hidden/block to preserve refs for PDF export. */}
         <div>
           {/* 1. Observed Series */}
@@ -1001,7 +930,7 @@ function SeasonalityPage() {
             id="tabpanel-observed"
             role="tabpanel"
             aria-labelledby="tab-observed"
-            className={viewMode === "simple" || decompTab === "observed" ? "block" : "hidden"}
+            className={decompTab === "observed" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1020,12 +949,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 2. Trend Component (Advanced only) */}
+          {/* 2. Trend Component */}
           <div
             id="tabpanel-trend"
             role="tabpanel"
             aria-labelledby="tab-trend"
-            className={viewMode === "advanced" && decompTab === "trend" ? "block" : "hidden"}
+            className={decompTab === "trend" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1047,12 +976,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 3. Seasonality Component (Advanced only) */}
+          {/* 3. Seasonality Component */}
           <div
             id="tabpanel-seasonal"
             role="tabpanel"
             aria-labelledby="tab-seasonal"
-            className={viewMode === "advanced" && decompTab === "seasonal" ? "block" : "hidden"}
+            className={decompTab === "seasonal" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1071,12 +1000,12 @@ function SeasonalityPage() {
             />
           </div>
 
-          {/* 4. Noise (Residual) (Advanced only) */}
+          {/* 4. Noise (Residual) */}
           <div
             id="tabpanel-residual"
             role="tabpanel"
             aria-labelledby="tab-residual"
-            className={viewMode === "advanced" && decompTab === "residual" ? "block" : "hidden"}
+            className={decompTab === "residual" ? "block" : "hidden"}
           >
             <SeasonalityChartCard
               regionCode={code}
@@ -1106,8 +1035,8 @@ function SeasonalityPage() {
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {illness === "all"
-                ? "Average all-illness cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically declared."
-                : "Average reported cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. Bars above P75 mark months where an outbreak is typically declared."}
+                ? "Average all-illness cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. The pooled burden reference is descriptive, not an official outbreak declaration or the regional risk threshold."
+                : "Average reported cases by calendar month (wet Jun–Nov / dry Dec–May) with the pulled P50 and P75 alert baselines. The pooled burden reference is descriptive, not an official outbreak declaration or the regional risk threshold."}
             </p>
           </div>
         </div>
@@ -1160,8 +1089,7 @@ function SeasonalityPage() {
           <SeasonTag season="wet" />
           <span>
             Interpretation: lag 12 = {stats.lag12.toFixed(2)}, lag 6 = {stats.lag6.toFixed(2)}.
-            Values above 0.4 at lag 12 indicate the series repeats reliably year over year, which is
-            what the forecast's seasonal-naive-with-drift baseline exploits.
+            A positive lag-12 correlation suggests an annual pattern; it does not establish forecast reliability. SARIMAX models the monthly series with an annual seasonal term.
           </span>
         </div>
       </section>
@@ -1171,29 +1099,29 @@ function SeasonalityPage() {
         <div className="mb-2.5 flex items-center justify-between gap-2">
           <p className="label-caps text-xs">Forecast & Risk Metrics</p>
           <div className="flex items-center gap-2">
-            <RiskBadge risk={assessment.risk} />
+            {illness !== "all" && <RiskBadge risk={assessment.risk} />}
             <SeasonTag season={monthMeta(assessment.monthIndex).season} />
-            <ClassificationInfo
-              mode={assessment.mode}
-              thresholds={assessment.thresholds}
-              label="Risk method"
-            />
+            {illness !== "all" && <ClassificationInfo mode={assessment.mode} thresholds={assessment.thresholds} label="Risk method" />}
           </div>
         </div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          {model} · {forecastPeriodLabel}{runId ? ` · Run ${runId}` : ""}.
+          {illness === "all" && " Totals use available Dengue, ABD, Cholera and Typhoid contributors. Risk tiers apply to each disease separately; no aggregate interval is estimated."}
+        </p>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Kpi
             label={`Predicted (${formatMonthYear(monthMeta(assessment.monthIndex).label)})`}
-            value={assessment.point.cases.toLocaleString()}
-            sub={`CI ${assessment.point.lower.toLocaleString()}–${assessment.point.upper.toLocaleString()}`}
+            value={fmt(assessment.point.cases)}
+            sub={illness === "all" ? "Sum of available disease forecasts" : `80% model interval ${fmt(assessment.point.lower)}–${fmt(assessment.point.upper)}`}
           />
           <Kpi
-            label="Historical percentile"
-            value={`${assessment.percentileRank}th`}
-            sub={`P50 ${Math.round(assessment.thresholds.p50).toLocaleString()} · P75 ${Math.round(assessment.thresholds.p75).toLocaleString()}`}
+            label="Cross-region percentile"
+            value={Number.isFinite(assessment.percentileRank) ? `${assessment.percentileRank}th` : "—"}
+            sub={illness === "all" ? "Burden comparison; not an aggregate risk tier" : `Own-region P50 ${formatMetric(assessment.thresholds.p50, assessment.mode)} · P75 ${formatMetric(assessment.thresholds.p75, assessment.mode)} per 100k`}
           />
           <Kpi
             label="3-month change"
-            value={`${assessment.changePct >= 0 ? "+" : ""}${assessment.changePct}%`}
+            value={Number.isFinite(assessment.changePct) ? `${assessment.changePct >= 0 ? "+" : ""}${assessment.changePct}%` : "—"}
             sub="vs. same series 3 months prior"
           />
           <Kpi
@@ -1212,8 +1140,7 @@ function SeasonalityPage() {
               Case volume forecast
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Reported through August 2026 with {forecastHorizon}-month predicted horizon and 95%
-              interval, wet-season shading.
+              {model} · {forecastPeriodLabel}. Uncalibrated 80% model interval for individual diseases; wet-season shading. Saved forecasts are not refreshed automatically as time passes.
             </p>
           </div>
           <ChartTypeToggle value={forecastChartType} onChange={setForecastChartType} />
@@ -1249,13 +1176,13 @@ function SeasonalityPage() {
                   <td className="py-3 px-4">{formatMonthYear(p.label)}</td>
                   <td className="py-3 px-4 capitalize text-muted-foreground">{p.season}</td>
                   <td className="py-3 px-4 text-right font-mono tabular-nums">
-                    {p.cases.toLocaleString()}
+                    {fmt(p.cases)}
                   </td>
                   <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
-                    {p.lower.toLocaleString()}
+                    {fmt(p.lower)}
                   </td>
                   <td className="py-3 px-4 text-right font-mono tabular-nums text-muted-foreground">
-                    {p.upper.toLocaleString()}
+                    {fmt(p.upper)}
                   </td>
                 </tr>
               ))}
@@ -1269,17 +1196,16 @@ function SeasonalityPage() {
         <div className="flex flex-wrap items-start justify-between gap-2 mb-4">
           <div>
             <h2 className="text-lg font-semibold tracking-tight text-foreground">
-              Outbreak outlook — dry vs wet
+              2025 outbreak benchmark — dry vs wet
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Season-average forecast for the coming dry (Dec–May) and wet (Jun–Nov) windows vs. the
-              region's long-run seasonal P75 baseline.
+              Retrospective January–March and July–September 2025 probes against pre-2025 seasonal baselines; these are not future outbreak alerts.
             </p>
           </div>
         </div>
         <SeasonalOutbreakView code={code} illness={illness} />
         <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-          The detection rules were validated prospectively against real 2025 DOH-EB data; live
+          The detection rules were evaluated retrospectively against 2025 reference labels;
           precision / recall / F1 are in the Validation panel below.
         </p>
       </section>
@@ -1297,7 +1223,7 @@ function SeasonalityPage() {
             </p>
           </div>
         </div>
-        <InterventionPanel assessment={assessment} />
+        {assessment.risk === "unavailable" ? <p className="text-sm text-muted-foreground">Select an eligible individual disease to see risk-based recommendations.</p> : <InterventionPanel assessment={assessment} />}
       </section>
 
       {/* Validation Metrics */}
@@ -1309,7 +1235,7 @@ function SeasonalityPage() {
             </h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               Forecast accuracy (this region, walk-forward) and outbreak classification performance
-              (national 2025 prospective holdout) — pulled live from the data API.
+              (national retrospective 2025 evaluation) — pulled live from the data API.
             </p>
           </div>
         </div>
@@ -1456,7 +1382,7 @@ function SeasonalOutbreakView({ code, illness }: { code: string; illness: string
         return (
           <div key={season} className="rounded-lg border border-border bg-card/60 p-3">
             <div className="flex items-center justify-between">
-              <p className="label-caps capitalize">{season} season outlook</p>
+              <p className="label-caps capitalize">{season} 2025 benchmark</p>
               <span
                 className="rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider"
                 style={

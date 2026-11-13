@@ -11,12 +11,10 @@
  * series/forecast/risk; the "Food and Waterborne Diseases" grouping is a
  * presentation tag only.
  *
- * Three additional disease sources are available with historical data only
- * (no 12-month Prophet forecast yet):
+ * Two additional disease sources are available with historical data only
+ * (no 12-month SARIMAX forecast yet):
  * - Leptospirosis: DOH line-list (2019-2026), monthly time series
  * - Influenza-like Illness (ILI): DOH sentinel surveillance (2019-2026), monthly
- * - Heat-Related Illness: DOH reference data, annual aggregates only (no
- *   monthly time series; not included in the shared calendar or "All" sum)
  *
  * Series, validation metrics and outbreak probes are fetched once at startup
  * via `loadHealthwatchData()` (one /dashboard call per disease); every
@@ -26,7 +24,7 @@
  * monthly series data.
  */
 
-export type RiskLevel = "low" | "moderate" | "high";
+export type RiskLevel = "low" | "moderate" | "high" | "unavailable";
 export type Season = "wet" | "dry";
 
 export interface Region {
@@ -272,18 +270,20 @@ export interface Illness {
   /** Transmission route for the FWD group: Food-Borne or Water-Borne (dengue has none). */
   transmission?: "Food-Borne" | "Water-Borne";
   driver: string;
-  peakMonth: number; // month-of-year of climatological peak
-  season: Season;
-  amplitude: number; // seasonal swing strength
-  baseRate: number; // cases / 100k / month
-  trend: number; // yearly multiplicative drift
+  peakMonth?: number; // month-of-year of climatological peak
+  season?: Season;
+  amplitude?: number; // seasonal swing strength
+  baseRate?: number; // cases / 100k / month
+  trend?: number; // yearly multiplicative drift
   /**
-   * Whether a 12-month Prophet forecast is available for this disease.
+   * Whether a 12-month SARIMAX forecast is available for this disease.
    * False for diseases pending model evaluation or with reference-only data.
    */
   forecastAvailable?: boolean;
   /** Human-readable explanation when forecastAvailable is false. */
   unavailableReason?: string;
+  provisional?: boolean;
+  provisionalNote?: string;
 }
 
 /** Presentation grouping only — the pipeline runs each disease independently. */
@@ -295,8 +295,10 @@ export const DISEASE_GROUPS = {
   "Acute Viral Hepatitis": "Food and Waterborne Diseases",
   "Leptospirosis": "Zoonotic Diseases",
   "Influenza-like Illness": "Respiratory Diseases",
-  "Heat-Related Illness": "Environmental and Climate Hazards",
 } as const;
+
+// Forecast capability does not silently expand the primary aggregate cohort.
+export const PRIMARY_AGGREGATE_DISEASES = ["Dengue", "Acute Bloody Diarrhea", "Cholera", "Typhoid Fever"];
 
 export const ILLNESSES: Illness[] = [
   {
@@ -352,7 +354,10 @@ export const ILLNESSES: Illness[] = [
   },
   {
     id: "Acute Viral Hepatitis",
-    name: "Acute Viral Hepatitis",
+    name: "Hepatitis A",
+    forecastAvailable: true,
+    provisional: true,
+    provisionalNote: "Provisional Hepatitis A source-record counts; forecasts depend on regional history and target dates.",
     shortName: "Hep A",
     group: "Food and Waterborne Diseases",
     transmission: "Water-Borne",
@@ -374,8 +379,8 @@ export const ILLNESSES: Illness[] = [
     amplitude: 0.9,
     baseRate: 0.04,
     trend: 0.02,
-    forecastAvailable: false,
-    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
+    forecastAvailable: true,
+    unavailableReason: "Provisional one-case-per-source-record rule; fatality fields remain unresolved.",
   },
   {
     id: "Influenza-like Illness",
@@ -388,22 +393,8 @@ export const ILLNESSES: Illness[] = [
     amplitude: 0.6,
     baseRate: 0.7,
     trend: 0.03,
-    forecastAvailable: false,
-    unavailableReason: "Forecast unavailable — pending comparative model evaluation and schema confirmation.",
-  },
-  {
-    id: "Heat-Related Illness",
-    name: "Heat-Related Illness",
-    shortName: "Heat",
-    group: "Environmental and Climate Hazards",
-    driver: "Extreme heat events and prolonged high heat-index exposure",
-    peakMonth: 4,
-    season: "dry",
-    amplitude: 0.0,
-    baseRate: 0.0,
-    trend: 0.0,
-    forecastAvailable: false,
-    unavailableReason: "Reference-only — annual aggregate data; no monthly time series available for forecasting.",
+    forecastAvailable: true,
+    unavailableReason: "Provisional ILI forecast; header/calendar interpretation is not source-confirmed.",
   },
 ];
 
@@ -511,22 +502,6 @@ const ILI_CASE_NOTES: ReportedCaseNotes = {
   source: "Source: DOH ILI sentinel surveillance data (2019-2026)",
 };
 
-const HEAT_CASE_NOTES: ReportedCaseNotes = {
-  disclaimer: [
-    "Heat-related illness data are annual reference aggregates, not monthly time series.",
-    "Counts may include heat stroke, heat exhaustion, and heat cramp events reported to DOH.",
-  ],
-  heading: "Heat-Related Illness Events",
-  classes: [
-    {
-      label: "Heat-Related Event",
-      definition:
-        "An illness episode attributed to excessive environmental heat exposure, including heat stroke, heat exhaustion, and heat cramps.",
-    },
-  ],
-  source: "Source: DOH heat-related illness reports (reference data)",
-};
-
 /** Reported-case classification notes per canonical disease id. */
 export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Dengue": DENGUE_CASE_NOTES,
@@ -536,7 +511,6 @@ export const REPORTED_CASE_NOTES: Record<string, ReportedCaseNotes> = {
   "Acute Viral Hepatitis": FWD_CASE_NOTES,
   "Leptospirosis": LEPTO_CASE_NOTES,
   "Influenza-like Illness": ILI_CASE_NOTES,
-  "Heat-Related Illness": HEAT_CASE_NOTES,
 };
 
 /** One-line source attribution per disease for the reported-case tables. */
@@ -548,7 +522,6 @@ export const REPORTED_SOURCE: Record<string, string> = {
   "Acute Viral Hepatitis": "Source: DOH FWD line-list (2019-2026)",
   "Leptospirosis": "Source: DOH leptospirosis case line-list (2019-2026)",
   "Influenza-like Illness": "Source: DOH ILI sentinel surveillance data (2019-2026)",
-  "Heat-Related Illness": "Source: DOH heat-related illness reports (reference data)",
 };
 
 /** Resolve display notes (and source) for any illness selection, incl. "all". */
@@ -556,7 +529,17 @@ export function caseNotesFor(illness: string): ReportedCaseNotes {
   return REPORTED_CASE_NOTES[illness] ?? DENGUE_CASE_NOTES;
 }
 
-export const ILLNESS_BY_ID = Object.fromEntries(ILLNESSES.map((i) => [i.id, i]));
+/** Annual references are selectable on the map, separate from monthly analyses. */
+export const REFERENCE_ILLNESSES: Illness[] = [{
+  id: "Heat-Related Illness",
+  name: "Heat-Related Illness",
+  shortName: "Heat (annual)",
+  group: "Environmental and Climate Hazards",
+  driver: "Annual events listed in the supplied DOH report",
+  forecastAvailable: false,
+  unavailableReason: "The original source contains annual event records, not monthly surveillance.",
+}];
+export const ILLNESS_BY_ID = Object.fromEntries([...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => [i.id, i]));
 
 export const MONTHS_PER_YEAR = 12;
 /**
@@ -609,6 +592,11 @@ export interface MonthPoint {
   lower: number;
   upper: number;
   raw: number; // unadjusted model output (may be negative / spiked)
+  contributors?: string[];
+  canonicalRisk?: RiskLevel;
+  observation_status?: string;
+  coverage_basis?: string | null;
+  source_record_count?: number | null;
   adjusted: boolean; // true when a post-processing rule changed the value
   adjustReason?: string;
 }
@@ -638,7 +626,47 @@ export function upcomingSeasonForMonth(month: number): Season {
 
 const API_BASE = import.meta.env?.["VITE_API_URL"] ?? "http://localhost:8000";
 
+export interface SeriesAvailability {
+  source_status: string;
+  source_warning?: string | null;
+  history_available: boolean;
+  observed_months: number;
+  zero_rule_months?: number;
+  required_observed_months: number;
+  first_observed: string | null;
+  last_observed: string | null;
+  forecast_available: boolean;
+  forecast_start: string | null;
+  forecast_end: string | null;
+  reason_code: string | null;
+  message: string | null;
+}
+export interface HeatReferenceEvent {
+  year: number;
+  canonical_region: string;
+  province: string;
+  illness: string;
+  events: number;
+  cases: number;
+  deaths: number;
+}
+let heatReferenceEvents: HeatReferenceEvent[] = [];
+export function heatReferenceForRegion(regionCode?: string): HeatReferenceEvent[] {
+  if (!regionCode || regionCode === "000000000") return heatReferenceEvents;
+  return heatReferenceEvents.filter((event) => event.canonical_region === REGION_BY_CODE[regionCode]?.name);
+}
+
+interface OperationalProvenance { run_id?: string; validation_status?: string; metadata?: { production_model?: string }; model?: string }
+const provenanceCache = new Map<string, OperationalProvenance>();
+export function provenanceForDisease(disease: string) { return provenanceCache.get(disease === "all" ? "Dengue" : disease); }
+export function operationalModelForDisease(disease: string) { const p = provenanceForDisease(disease); return p?.metadata?.production_model ?? p?.model ?? "Unverified model"; }
+const availabilityCache = new Map<string, SeriesAvailability>();
+export function availabilityForRegion(code: string, disease: string): SeriesAvailability | undefined {
+  return availabilityCache.get(`${code}:${disease}`);
+}
+
 const seriesCache = new Map<string, MonthPoint[]>();
+const thresholdCache = new Map<string, Thresholds>();
 const metricsCache = new Map<string, ModelMetrics>();
 const outbreakCache = new Map<string, Partial<Record<Season, OutbreakIndicator>>>();
 
@@ -647,7 +675,7 @@ async function fetchJson<T>(path: string, attempts = 3): Promise<T> {
   for (let i = 0; i < attempts; i++) {
     try {
       const res = await fetch(`${API_BASE}${path}`, {
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.timeout(60000),
       });
       if (!res.ok) throw new Error(`API ${path} failed: HTTP ${res.status}`);
       return (await res.json()) as T;
@@ -688,34 +716,42 @@ async function hydratePopulations(): Promise<void> {
  * diseases) is derived client-side after every disease series lands.
  *
  * Diseases with `forecastAvailable === false` still load historical series via
- * /dashboard but skip forecast metrics and outbreak probes. Heat-Related
- * Illness is reference-only (annual aggregates) and is loaded separately via
- * /reference/heat-events — it does not participate in the shared calendar or
- * the "all" aggregate.
+ * /dashboard but skip forecast metrics and outbreak probes.
  */
 export async function loadHealthwatchData(): Promise<void> {
   interface DashboardResponse {
     disease: string;
     forecast_available?: boolean;
+    provenance?: OperationalProvenance;
+    availability?: Record<string, SeriesAvailability>;
+    thresholds?: { region: string; region_code?: string; month: number; p50: number | null; p75: number | null }[];
+    annual_reference?: HeatReferenceEvent[];
     series: Record<string, MonthPoint[]>;
-    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: "low" | "moderate" | "high" } }>;
+    metrics: Record<string, { mae: number; rmse: number; mape: number; months: number; confidence: { label: string; tone: RiskLevel; note?: string } }>;
     outbreak: OutbreakIndicator[];
   }
 
   await hydratePopulations();
 
-  // Separate diseases into dashboard-eligible and reference-only
-  const dashboardDiseases = ILLNESSES.filter((i) => i.id !== "Heat-Related Illness").map((i) => i.id);
+  const dashboardDiseases = [...ILLNESSES, ...REFERENCE_ILLNESSES].map((i) => i.id);
   const codeByShort = Object.fromEntries(REGIONS.map((r) => [r.short, r.code]));
 
-  await Promise.all([
-    // Dashboard diseases (historical + optional forecast)
-    ...dashboardDiseases.map(async (disease) => {
+  const failedDiseases: string[] = [];
+  const loadDisease = async (disease: string) => {
       try {
         const res = await fetchJson<DashboardResponse>(
           `/dashboard?disease=${encodeURIComponent(disease)}`,
         );
 
+        if (res.annual_reference) heatReferenceEvents = res.annual_reference;
+        if (res.provenance) provenanceCache.set(disease,res.provenance);
+        const diseaseMeta = ILLNESS_BY_ID[disease];
+        if (diseaseMeta && res.forecast_available != null) diseaseMeta.forecastAvailable = res.forecast_available;
+        for (const [code, facts] of Object.entries(res.availability ?? {})) availabilityCache.set(`${code}:${disease}`, facts);
+        for (const row of res.thresholds ?? []) {
+          const code = row.region_code ?? regionCodeForApiLabel(row.region);
+          if (code) thresholdCache.set(`${code}:${disease}:${row.month}`, { p50: row.p50 ?? NaN, p75: row.p75 ?? NaN });
+        }
         // Historical series — always loaded
         for (const [short, points] of Object.entries(res.series)) {
           const code = codeByShort[short];
@@ -733,19 +769,20 @@ export async function loadHealthwatchData(): Promise<void> {
               folds: m.months,
               label: m.confidence.label,
               tone: m.confidence.tone,
-              note:
+              note: m.confidence.note ?? (
                 m.confidence.tone === "low"
                   ? "Model error is small relative to monthly case counts."
                   : m.confidence.tone === "moderate"
                     ? "Reasonable accuracy on holdout months."
-                    : "Volatile series inflates error metrics.",
+                    : "Evaluation unavailable or limited."),
               mae: m.mae,
               rmse: m.rmse,
-              mape: m.mape,
+              mape: m.mape ?? NaN,
             });
           }
 
           for (const item of res.outbreak) {
+            if (item.outbreak == null) continue;
             const code = regionCodeForApiLabel(item.region);
             if (!code) continue;
             const entry = outbreakCache.get(`${code}:${disease}`) ?? {};
@@ -754,26 +791,24 @@ export async function loadHealthwatchData(): Promise<void> {
           }
         }
       } catch (err) {
+        for (const region of REGIONS) availabilityCache.set(`${region.code}:${disease}`, { source_status: "request_failed", history_available: false, observed_months: 0, required_observed_months: 24, first_observed: null, last_observed: null, forecast_available: false, forecast_start: null, forecast_end: null, reason_code: "request_failed", message: "Data request failed. Retry loading the dashboard; this is not a zero-case report." });
+        failedDiseases.push(disease);
         console.warn(`[healthwatch] dashboard load failed for ${disease}`, err);
       }
-    }),
-    // Heat-Related Illness — reference-only, fetched from dedicated endpoint
-    (async () => {
-      try {
-        await fetchJson<{ count: number; items: unknown[] }>("/reference/heat-events");
-        // Heat data is reference-only (annual aggregates per region) and does
-        // not map onto the monthly shared calendar — we load it for the /diseases
-        // metadata but do not inject it into seriesCache.
-      } catch (err) {
-        console.warn("[healthwatch] heat reference load failed", err);
-      }
-    })(),
-  ]);
+  };
+  // Avoid saturating the free API CPU with all illnesses and duplicate batches.
+  const pending = [...dashboardDiseases];
+  await Promise.all(Array.from({ length: 2 }, async () => {
+    let disease: string | undefined;
+    while ((disease = pending.shift()) !== undefined) await loadDisease(disease);
+  }));
+  if (failedDiseases.length) {
+    throw new Error("Could not load reported data for " + failedDiseases.join(", ") + ". Please retry the connection.");
+  }
 
-  // Derive the "all" aggregate: per-month sum across forecast-ready diseases
-  // only, plus an outbreak probe that fires for a season when any member
-  // disease flags. Non-forecast diseases (Lepto, ILI) are included in the sum
-  // for their historical months but contribute no forecast points.
+  // Derive the primary four-disease aggregate. Provisional ILI/Hep A, unresolved
+  // leptospirosis do not change this cohort when enabled
+  // individually. Contributors remain explicit for every month.
   for (const region of REGIONS) {
     buildAllSeries(region.code);
     buildAllOutbreak(region.code);
@@ -801,11 +836,12 @@ export function normalizeSeries(points: MonthPoint[]): MonthPoint[] {
   if (!points.length) return [];
   const dest: MonthPoint[] = [];
   let last = -1;
-  for (const p of points) {
+  for (const input of points) {
+    const p = input.cases == null ? { ...input, cases: NaN, lower: NaN, upper: NaN, raw: NO_DATA_RAW, observation_status: "missing_report" } : input;
     const gi = indexForYearMonth(p.year, p.month);
     if (gi < 0) continue;
     while (dest.length < gi) dest.push(emptyMonth(dest.length));
-    dest[gi] = p;
+    dest[gi] = { ...p, index: gi };
     last = gi;
   }
   if (last < 0) return [];
@@ -822,16 +858,16 @@ function emptyMonth(index: number): MonthPoint {
     date: meta.date,
     season: meta.season,
     forecast: index >= HIST_MONTHS,
-    cases: 0,
-    lower: 0,
-    upper: 0,
+    cases: NaN,
+    lower: NaN,
+    upper: NaN,
     raw: NO_DATA_RAW,
     adjusted: false,
   };
 }
 
 function buildAllSeries(code: string): void {
-  const diseases = ILLNESSES.map((i) => i.id);
+  const diseases = PRIMARY_AGGREGATE_DISEASES;
   let any = false;
   const out: MonthPoint[] = [];
   for (let i = 0; i < TOTAL_MONTHS; i++) {
@@ -840,10 +876,12 @@ function buildAllSeries(code: string): void {
     let upper = 0;
     let raw = 0;
     let forecast = true;
+    const contributors: string[] = [];
     for (const d of diseases) {
       const p = seriesCache.get(`${code}:${d}`)?.[i];
-      if (!p) continue;
+      if (!p || p.raw < 0 || !Number.isFinite(p.cases)) continue;
       any = true;
+      contributors.push(d);
       cases += p.cases;
       lower += p.lower;
       upper += p.upper;
@@ -859,10 +897,12 @@ function buildAllSeries(code: string): void {
       date: meta.date,
       season: meta.season,
       forecast,
-      cases: Math.round(cases),
-      lower,
-      upper,
-      raw: Math.round(raw),
+      cases: contributors.length ? cases : NaN,
+      lower: NaN, // Sum of marginal bounds is not an aggregate interval.
+      upper: NaN,
+      raw: contributors.length ? raw : NO_DATA_RAW,
+      contributors,
+      observation_status: contributors.length ? "partial_reporting_aggregate" : "missing_report",
       adjusted: false,
     };
   }
@@ -870,7 +910,7 @@ function buildAllSeries(code: string): void {
 }
 
 function buildAllOutbreak(code: string): void {
-  const diseases = ILLNESSES.map((i) => i.id);
+  const diseases = PRIMARY_AGGREGATE_DISEASES;
   const union: Partial<Record<Season, OutbreakIndicator>> = {};
   for (const d of diseases) {
     for (const [season, ind] of Object.entries(outbreakCache.get(`${code}:${d}`) ?? {})) {
@@ -881,14 +921,37 @@ function buildAllOutbreak(code: string): void {
 }
 
 let loadPromise: Promise<void> | null = null;
+let dataLoaded = false;
 
 export function reloadHealthwatchData(): Promise<void> {
-  loadPromise = loadHealthwatchData();
+  if (!loadPromise) {
+    dataLoaded = false;
+    loadPromise = loadHealthwatchData()
+      .then(() => { dataLoaded = true; })
+      .finally(() => { loadPromise = null; });
+  }
   return loadPromise;
 }
 
-/** Starts loading immediately on module import. */
-export const dataReady = reloadHealthwatchData();
+/** Loading starts at the page gate, never during module import or server rendering. */
+export function ensureHealthwatchData(): Promise<void> {
+  return dataLoaded ? Promise.resolve() : reloadHealthwatchData();
+}
+
+export function latestReportedMonthForDisease(disease: string): number | undefined {
+  const indices = REGIONS.flatMap((region) => seriesFor(region.code, disease)
+    .filter((point) => !point.forecast && point.raw >= 0 && Number.isFinite(point.cases))
+    .map((point) => point.index));
+  return indices.length ? Math.max(...indices) : undefined;
+}
+
+export function availableMonthForDisease(disease: string, selected: number): number {
+  const hasValue = REGIONS.some((region) => {
+    const point = seriesFor(region.code, disease)[selected];
+    return point && point.raw >= 0 && Number.isFinite(point.cases);
+  });
+  return hasValue ? selected : latestReportedMonthForDisease(disease) ?? selected;
+}
 
 /** Cached per region+illness so charts and the map share one source of truth. */
 export function getSeries(regionCode: string, illnessId: string): MonthPoint[] {
@@ -929,7 +992,7 @@ export function forecastCategoryMix(
   months: number = FORECAST_MONTHS,
 ): ForecastCategoryMix {
   const mix: ForecastCategoryMix = { dengue: 0, foodBorne: 0, waterBorne: 0, total: 0 };
-  for (const disease of ILLNESSES) {
+  for (const disease of ILLNESSES.filter((item) => PRIMARY_AGGREGATE_DISEASES.includes(item.id))) {
     const series = getSeries(regionCode, disease.id);
     for (let i = monthIndex + 1; i <= monthIndex + months; i++) {
       const p = series[i];
@@ -975,11 +1038,14 @@ export const METRIC_META: Record<MetricMode, { label: string; short: string; uni
 
 /** Convert a case count into the active metric for a region. */
 export function metricValue(cases: number, region: Region, mode: MetricMode): number {
+  if (!Number.isFinite(cases)) return NaN;
   if (mode === "raw") return cases;
+  if (!Number.isFinite(region.population) || region.population <= 0) return NaN;
   return Number(((cases / region.population) * 100000).toFixed(2));
 }
 
 export function formatMetric(value: number, mode: MetricMode): string {
+  if (!Number.isFinite(value)) return "Unavailable";
   if (mode === "raw") return Math.round(value).toLocaleString();
   if (value > 0 && value < 0.1) return "<0.1";
   return value.toLocaleString(undefined, { maximumFractionDigits: 1 });
@@ -1033,9 +1099,17 @@ export function getThresholds(
 }
 
 export function classify(value: number, t: Thresholds): RiskLevel {
+  if (![value, t.p50, t.p75].every(Number.isFinite)) return "unavailable";
   if (value > t.p75) return "high";
   if (value >= t.p50) return "moderate";
   return "low";
+}
+
+/** Saved forecast months, anchored to each series' training cutoff, not today's date. */
+export function forecastPoints(regionCode: string, illnessId: string, horizon = 12): MonthPoint[] {
+  return seriesFor(regionCode, illnessId)
+    .filter((point) => point.forecast && point.raw >= 0 && Number.isFinite(point.cases))
+    .slice(0, horizon);
 }
 
 export interface RegionAssessment {
@@ -1054,6 +1128,21 @@ export interface RegionAssessment {
   changePct: number;
 }
 
+/** All colors summarize existing individual tiers, never a threshold on summed cases. */
+function highestAvailableContributorRisk(regionCode: string, point: MonthPoint): RiskLevel {
+  let highest: RiskLevel = "unavailable";
+  const rank: Record<RiskLevel, number> = { unavailable: -1, low: 0, moderate: 1, high: 2 };
+  for (const disease of point.contributors ?? []) {
+    const source = getSeries(regionCode, disease)[point.index];
+    if (!source || source.raw < 0 || !Number.isFinite(source.cases)) continue;
+    const threshold = thresholdCache.get(regionCode + ":" + disease + ":" + source.month);
+    if (!threshold) continue;
+    const risk = classify(source.cases, threshold);
+    if (rank[risk] > rank[highest]) highest = risk;
+  }
+  return highest;
+}
+
 export function assessRegion(
   regionCode: string,
   illnessId: string | "all",
@@ -1063,11 +1152,10 @@ export function assessRegion(
   const region = REGION_BY_CODE[regionCode]!;
   const series = seriesFor(regionCode, illnessId);
 
-  if (!series.length) {
+  if (!series.length || !series[monthIndex] || series[monthIndex]!.raw < 0 || !Number.isFinite(series[monthIndex]!.cases)) {
     // A region with no series yet (backend incomplete or unreachable) must not
-    // take the dashboard down. Report the requested calendar location with a
-    // zeroed point so maps and charts render; the tier falls to Low by
-    // construction and the rank lands at the bottom of the national pool.
+    // take the dashboard down. Report the requested calendar location with an
+    // unavailable point without substituting zero cases, a rank or a trend.
     const idx = Math.min(Math.max(monthIndex, 0), Math.max(0, TOTAL_MONTHS - 1));
     const safeMeta = monthMeta(idx);
     const point: MonthPoint = {
@@ -1078,41 +1166,39 @@ export function assessRegion(
       date: safeMeta.date,
       season: safeMeta.season,
       forecast: safeMeta.forecast,
-      cases: 0,
-      lower: 0,
-      upper: 0,
-      raw: 0,
+      cases: NaN,
+      lower: NaN,
+      upper: NaN,
+      raw: NO_DATA_RAW,
       adjusted: false,
     };
     const thresholds = getThresholds(illnessId, point.month, mode);
-    const dist = pooledValues(illnessId, point.month, mode);
     return {
       region,
       monthIndex: idx,
       point,
       mode,
-      value: 0,
+      value: NaN,
       thresholds,
-      risk: classify(0, thresholds),
-      percentileRank: Math.round(
-        (dist.filter((v) => v <= 0).length / Math.max(1, dist.length)) * 100,
-      ),
+      risk: "unavailable",
+      percentileRank: NaN,
       dominantIllness: ILLNESSES[0]!,
       forecastWindow: [],
-      changePct: 0,
+      changePct: NaN,
     };
   }
 
-  const idx = Math.min(Math.max(monthIndex, 0), series.length - 1);
+  const idx = monthIndex;
   const point = series[idx]!;
-  const thresholds = getThresholds(illnessId, point.month, mode);
+  const rawThreshold = thresholdCache.get(`${regionCode}:${illnessId}:${point.month}`);
+  const thresholds = rawThreshold ? { p50: metricValue(rawThreshold.p50, region, mode), p75: metricValue(rawThreshold.p75, region, mode) } : { p50: NaN, p75: NaN };
   const value = metricValue(point.cases, region, mode);
 
   const dist = pooledValues(illnessId, point.month, mode);
   const below = dist.filter((v) => v <= value).length;
-  const percentileRank = Math.round((below / Math.max(1, dist.length)) * 100);
+  const percentileRank = dist.length && Number.isFinite(value) ? Math.round((below / dist.length) * 100) : NaN;
 
-  const dominantIllness = ILLNESSES.reduce((best, ill) => {
+  const dominantIllness = illnessId !== "all" ? ILLNESS_BY_ID[illnessId]! : ILLNESSES.filter((ill) => PRIMARY_AGGREGATE_DISEASES.includes(ill.id)).reduce((best, ill) => {
     const ra =
       metricValue(getSeries(regionCode, ill.id)[idx]?.cases ?? 0, region, mode) /
       (getThresholds(ill.id, point.month, mode).p75 || 1);
@@ -1123,8 +1209,8 @@ export function assessRegion(
   }, ILLNESSES[0]!);
 
   const forecastWindow = series.slice(idx + 1, idx + 1 + FORECAST_MONTHS);
-  const prev = series[Math.max(0, idx - 3)]!.cases || 1;
-  const changePct = Math.round(((point.cases - prev) / prev) * 100);
+  const prev = idx >= 3 ? series[idx - 3]?.cases : NaN;
+  const changePct = prev != null && Number.isFinite(prev) && prev > 0 ? Math.round(((point.cases - prev) / prev) * 100) : NaN;
 
   return {
     region,
@@ -1133,7 +1219,7 @@ export function assessRegion(
     mode,
     value,
     thresholds,
-    risk: classify(value, thresholds),
+    risk: illnessId === "all" ? highestAvailableContributorRisk(regionCode, point) : classify(point.cases, rawThreshold ?? { p50: NaN, p75: NaN }),
     percentileRank,
     dominantIllness,
     forecastWindow,
@@ -1147,6 +1233,18 @@ export function assessAll(
   mode: MetricMode = "percapita",
 ): RegionAssessment[] {
   return REGIONS.map((r) => assessRegion(r.code, illnessId, monthIndex, mode));
+}
+
+/** Missing regional values do not erase the available reports or become zeros.
+ * Per-capita totals retain the full selected regional population denominator.
+ */
+export function summarizeRegionalValues(assessments: RegionAssessment[]) {
+  const reporting = assessments.filter((a) => a.point.raw >= 0 && Number.isFinite(a.point.cases));
+  const cases = reporting.length ? reporting.reduce((sum, a) => sum + a.point.cases, 0) : NaN;
+  const population = assessments.reduce((sum, a) => sum + a.region.population, 0);
+  const forecastCount = reporting.filter((a) => a.point.forecast).length;
+  const valueKind = !reporting.length ? "unavailable" : forecastCount === reporting.length ? "forecast" : forecastCount ? "mixed" : "reported";
+  return { reportingRegions: reporting.length, cases, per100k: population > 0 ? cases / population * 100000 : NaN, valueKind };
 }
 
 export interface NationalDominant {
@@ -1168,21 +1266,22 @@ export function nationalDominant(
   monthIndex: number,
   mode: MetricMode = "percapita",
 ): NationalDominant {
-  const pool = illnessId === "all" ? ILLNESSES : ILLNESSES.filter((i) => i.id === illnessId);
-  let best: Illness = ILLNESSES[0]!;
-  let bestCases = -1;
+  const pool = ILLNESSES.filter((i) => illnessId === "all" ? PRIMARY_AGGREGATE_DISEASES.includes(i.id) : i.id === illnessId);
+  let best: Illness = pool[0] ?? ILLNESSES[0]!;
+  let bestCases = NaN;
   for (const ill of pool) {
     let cases = 0;
+    let supplied = false;
     for (const region of REGIONS) {
       const p = getSeries(region.code, ill.id)[monthIndex];
-      if (p && p.raw >= 0) cases += p.cases;
+      if (p && p.raw >= 0 && Number.isFinite(p.cases)) { cases += p.cases; supplied = true; }
     }
-    if (cases > bestCases) {
+    if (supplied && (!Number.isFinite(bestCases) || cases > bestCases)) {
       bestCases = cases;
       best = ill;
     }
   }
-  const cases = Math.max(0, bestCases);
+  const cases = bestCases;
   const population = REGIONS.reduce((s, r) => s + r.population, 0);
   return {
     illness: best,
@@ -1206,21 +1305,21 @@ export interface ModelMetrics {
 }
 
 /**
- * Walk-forward backtest metrics from the pipeline: the Prophet monthly model
+ * Walk-forward backtest metrics from the pipeline: the SARIMAX monthly model
  * is refit every month and scored on holdout months it never saw (two windows,
  * each up to 12 months), reported per region by /metrics/{region}.
  */
 export function modelMetrics(regionCode: string, illnessId: string | "all"): ModelMetrics {
-  const key = illnessId === "all" ? "Dengue" : illnessId;
+  const key = illnessId === "all" ? "__all" : illnessId;
   return (
     metricsCache.get(`${regionCode}:${key}`) ?? {
       folds: 0,
-      label: "No data",
-      tone: "moderate",
+      label: "Evaluation unavailable",
+      tone: "unavailable",
       note: "—",
-      mae: 0,
-      rmse: 0,
-      mape: 0,
+      mae: NaN,
+      rmse: NaN,
+      mape: NaN,
     }
   );
 }
@@ -1245,7 +1344,7 @@ export function decompose(
   endIndex?: number,
 ): DecompPoint[] {
   const series = seriesFor(regionCode, illnessId).filter((p) =>
-    (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+    !p.forecast && (endIndex === undefined || p.index <= endIndex) && p.raw >= 0,
   );
   const values = series.map((p) => p.cases);
   const half = 6;
@@ -1285,7 +1384,7 @@ export function acf(regionCode: string, illnessId: string | "all", maxLag = 24, 
   const values = seriesFor(regionCode, illnessId)
     .filter(
       (p) =>
-        (endIndex === undefined ? !p.forecast : p.index <= endIndex) && p.raw >= 0,
+        !p.forecast && (endIndex === undefined || p.index <= endIndex) && p.raw >= 0,
     )
     .map((p) => p.cases);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
@@ -1311,6 +1410,7 @@ export interface Recommendation {
 }
 
 export function recommendations(a: RegionAssessment): Recommendation[] {
+  if (a.risk === "unavailable") return [];
   const ill = a.dominantIllness;
   const base: Recommendation[] = [];
   if (a.risk === "high") {
@@ -1463,6 +1563,7 @@ export const RISK_META: Record<
   RiskLevel,
   { label: string; color: string; solidColor: string; tone: string }
 > = {
+  unavailable: { label: "Unavailable", color: "var(--muted-foreground)", solidColor: "var(--muted-foreground)", tone: "muted" },
   low: {
     label: "Low",
     color: "var(--risk-low)",
@@ -1553,7 +1654,7 @@ export const REPORT_DATE = monthMeta(CURRENT_MONTH_INDEX).date; // e.g. "2026-09
  * prospectively against observed 2025).
  */
 export const OUTBREAK_BENCHMARK_SEASON: Season = "wet";
-export const OUTBREAK_BENCHMARK_LABEL = "Validated Outbreak Signal (Jul–Sep 2025 benchmark)";
+export const OUTBREAK_BENCHMARK_LABEL = "Retrospective seasonal reference signal (Jul–Sep 2025 benchmark)";
 /** Calendar window each season's benchmark probe describes (2025 validation). */
 export const OUTBREAK_BENCHMARK_WINDOW: Record<Season, string> = {
   dry: "Jan–Mar 2025",

@@ -56,18 +56,23 @@ def rank_escalation(classification=None):
         classification = load_classification()
 
     records = []
+    exclusions = []
     for (disease, region), grp in classification.groupby(["disease", "region"]):
+        if not grp.risk_level.isin(TIER_ORDER).all():
+            exclusions.append(dict(disease=disease,region=region,reason="unavailable_canonical_risk"));continue
         records.append({"disease": disease, "region": region, **_escalation_for(grp)})
     out = pd.DataFrame(records).sort_values(
         ["tier_climbs", "n_high_months"], ascending=[False, False], ignore_index=True
     )
-    out.insert(0, "rank", np.arange(1, len(out) + 1))
+    out.insert(0, "rank", out.groupby("disease").cumcount() + 1)
+    out.attrs["exclusions"] = exclusions
     return out
 
 
 def run():
     classification = load_classification()
     ranking = rank_escalation(classification)
+    ingest.save_processed(pd.DataFrame(ranking.attrs.get("exclusions",[]),columns=["disease","region","reason"]),"escalation_exclusions.csv")
     path = ingest.save_processed(ranking, "risk_escalation_ranking.csv")
 
     horizon = classification.groupby("disease", sort=True)["date"].agg(

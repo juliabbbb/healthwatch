@@ -1,3 +1,7 @@
+# Current local implementation instructions
+
+Use docs/IMPLEMENTATION_WORKFLOW.md as the current analytical and publication contract. Operational Prophet and the four-model research benchmark are separate. ILI, Hepatitis A and leptospirosis case-record counts/eligible forecasts are provisional; leptospirosis death totals remain excluded; heat is annual reference-only. FWBD zeros are limited to internal regional gaps under docs/source_decisions.json. Never run shared database publication, deployment or live provider/participant studies as a routine test. Use explicit local targets and disposable databases. Run `python -m unittest discover -s tests -v`, frontend type checking and build. The original instructions below remain useful for architecture/design but older data/validation/single-model/SQLite statements are superseded by the current workflow.
+
 # AGENTS.md
 
 ## Project Overview
